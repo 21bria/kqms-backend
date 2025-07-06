@@ -1,0 +1,302 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Task
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Task import to database</h5>
+                        </div>
+                        <div class="box-body">
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="grid grid-cols-12 gap-4 mb-5">
+                                    <div class="xl:col-span-4 col-span-12">
+                                        <label for="type_table" class="form-label">Sources to targets:</label>
+                                        <select name="import_type" id="import_type" class="form-select" required>
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-12 gap-4 mb-5">
+                                    <div class="xl:col-span-4 col-span-12">
+                                        <div>
+                                            <label for="small-file-input" class="sr-only">Choose file</label>
+                                            <input type="file" name="file" id="file" required class="block w-full border border-gray-200 focus:shadow-sm dark:focus:shadow-white/10 rounded-sm text-sm focus:z-10 focus:outline-0 focus:border-gray-200 dark:focus:border-white/10 dark:border-white/10 dark:text-white/50
+                                                file:border-0
+                                                file:bg-light file:me-4
+                                                file:py-2 file:px-4
+                                                dark:file:bg-black/20 dark:file:text-white/50">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="submit" class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">
+                                        Upload data
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">#</th>
+                                            <th class="bg-soft-secondary">file_name</th>
+                                            <th class="bg-soft-secondary" width="10%">destination</th>
+                                            <th class="bg-soft-secondary">successful_imports</th>
+                                            <th class="bg-soft-secondary">failed_imports</th>
+                                            <th class="bg-soft-secondary">duplicate</th>
+                                            <th class="bg-soft-secondary">duplicate_file_path</th>
+                                            <th class="bg-soft-secondary">errors</th>
+                                            <th class="bg-soft-secondary">created_at</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-task-import'%}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                // Loop melalui data dan tambahkan sebagai opsi
+                var options = '';
+                // Loop melalui data dan tambahkan sebagai opsi Select2
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.type_table + '</option>';
+                });
+                $('#import_type').append(options);
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+        });
+
+        /*-- Render DataTable --*/
+        let data_url = '{% url "task-list-imports" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            "autoWidth": false,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+
+            },
+            columns: [
+
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'file_name',
+                    name: 'file_name'
+                },
+                {
+                    data: 'destination',
+                    name: 'destination'
+                },
+                {
+                    data: 'successful_imports',
+                    name: 'successful_imports'
+                },
+                {
+                    data: 'failed_imports',
+                    name: 'failed_imports'
+                },
+                {
+                    data: 'duplicate_imports',
+                    name: 'duplicate_imports'
+                },
+                {
+                    data: 'duplicate_file_path',
+                    name: 'duplicate_file_path',
+                    render: function (data, type, row) {
+                        if (data) {
+                            return `<a href="/media/${data}" target="_blank" class="text-blue-600 underline">Download</a>`;
+                        } else {
+                            return `<span class="text-gray-400 italic">No file</span>`;
+                        }
+                    }
+                },
+
+                {
+                    data: 'errors',
+                    name: 'errors'
+                },
+
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [0, 'desc']
+            ],
+
+        });
+        // For Upload File
+
+        $("#uploadForm").on("submit", function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            $.ajax({
+                url: '{% url "upload-file" %}',
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    Toast.fire({
+                        icon: 'success',
+                        text: response.message,
+                        padding: '2em',
+                    });
+                    table.draw()
+
+                },
+                error: function (xhr, status, error) {
+                    Toast.fire({
+                        icon: 'error',
+                        text: "Error occurred: " + error,
+                    });
+                    // table.draw()
+                },
+            });
+        });
+
+        // load();
+        setInterval(function () {
+            // alert('Load');
+            table.draw();
+        }, 9000); // 9000 ms = 9 detik
+    });
+</script>
+
+</body>
+
+</html>
+
+<style>
+    /* Membuat teks dalam tabel otomatis wrap */
+    #data_table td {
+        white-space: normal !important;
+        word-wrap: break-word;
+        word-break: break-word;
+        max-width: 380px;
+        /* Sesuaikan lebar kolom */
+        overflow: hidden;
+        /* Hindari teks keluar dari kolom */
+
+    }
+</style>

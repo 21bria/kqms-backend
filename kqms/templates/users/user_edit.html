@@ -1,0 +1,168 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Add Task
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">User Add</h5>
+                        </div>
+                        {% block content %}
+                        <div class="box-body">
+                            <div class="overflow-auto">
+                                <form method="post" class="px-6">
+                                    {% csrf_token %}
+                                    <!-- Info KQMS -->
+
+                                    <div class="grid grid-cols-12 sm:gap-6">
+                                        <div
+                                            class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12">
+                                            <label for="username"
+                                                class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">Username</label>
+                                            {{ form.username }}
+                                        </div>
+                                        <div
+                                            class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12">
+                                            <label for="username" class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">First
+                                                Name</label>
+                                            {{ form.first_name }}
+                                        </div>
+                                        <div
+                                            class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12">
+                                            <label for="username" class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">Last
+                                                Name</label>
+                                            {{ form.last_name }}
+                                        </div>
+                                        <div
+                                            class="xl:col-span-6 lg:col-span-6 md:col-span-6 sm:col-span-12 col-span-12">
+                                            <label for="email"
+                                                class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">Email</label>
+                                            {{ form.email }}
+                                        </div>
+
+                                    </div>
+
+                                    <div
+                                        class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-12 col-span-12 mt-4">
+                                        <label for="is_staff" class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">Staff
+                                            Status</label>
+                                        {{ form.is_staff }}
+                                    </div>
+                                    <div class="xl:col-span-2 lg:col-span-2 md:col-span-2 sm:col-span-12 col-span-12">
+                                        <label for="is_active"
+                                            class="form-label mb-0 w-24 ltr:mr-2 rtl:ml-2">Active</label>
+                                        {{ form.is_active }}
+                                    </div>
+
+                                    <!-- Field Checkbox untuk Groups -->
+                                    <div class="mt-4 mb-4">
+                                        <label class="form-label mb-4 ltr:mr-2 rtl:ml-2">Groups</label>
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                                            {% for group in form.groups %}
+                                            <div class="flex items-center">
+                                                {{ group }}
+                                                <span class="text-white-dark">{{ group.label }}</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <hr class="my-6 border-[#e0e6ed] dark:border-[#1b2e4b]">
+                                    <button type="submit" class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">
+                                        Save data
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<!-- JavaScript -->
+<script>
+    function toggleCheckboxes(check) {
+        // Menyeleksi semua checkbox yang ada di dalam form.user_permissions
+        const checkboxes = document.querySelectorAll('.permissions-checkbox input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = check;
+        });
+    }
+</script>
+
+
+</body>
+
+</html>
+<style>
+    label {
+        margin-bottom: 0.375rem;
+        display: block;
+        font-weight: 400;
+    }
+</style>

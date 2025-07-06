@@ -1,0 +1,712 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Master Data</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Truck Factors
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Truck Factors</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="createNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
+                                </div>
+                            </div>
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                                <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary" width="10%">Type</th>
+                                            <th class="bg-soft-secondary">Material</th>
+                                            <th class="bg-soft-secondary" width="7%">Bcm</th>
+                                            <th class="bg-soft-secondary" width="7%">Density</th>
+                                            <th class="bg-soft-secondary" width="7%">Ton</th>
+                                            <th class="bg-soft-secondary" width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Create Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form id="entryForm" name="entryForm">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Type Trucks</label>
+                                <input type="text" id="type_tf" name="type_tf" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Material</label>
+                                <select class="form-control w-full !rounded-md" id="material" name="material">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">BCM</label>
+                                <input type="text" id="bcm" name="bcm" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Density</label>
+                                <input type="text" id="density" name="density" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="text" id="ton" name="ton" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <input type="text" id="reference_tf" name="reference_tf"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="saveBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form>
+                        <input type="hidden" name="id" id="id">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Type Trucks</label>
+                                <input type="text" id="type_tf_edit" name="type_tf_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Material</label>
+                                <select class="form-control w-full !rounded-md" id="material_edit" name="material_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">BCM</label>
+                                <input type="text" id="bcm_edit" name="bcm_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Density</label>
+                                <input type="text" id="density_edit" name="density_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="text" id="ton_edit" name="ton_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <input type="text" id="reference_edit" name="reference_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#edit-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="updateBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+        });
+        $("#material").change(function (e) {
+            var type_tf = $('#type_tf').val();
+            var selectMaterial = $(this).val();
+            // Mendapatkan nilai 
+            var selectedVal = type_tf + selectMaterial;
+            $('#reference_tf').val(selectedVal);
+
+        });
+
+        $("#type_tf").keyup(function (e) {
+            var material = $('#material').val();
+            var type_tf = $(this).val();
+            // Mendapatkan nilai 
+            var selectedVal = type_tf + material;
+            $('#reference_tf').val(selectedVal);
+        });
+
+        $("#material_edit").change(function (e) {
+            var type_tf = $('#type_tf_edit').val();
+            var selectMaterial = $(this).val();
+            // Mendapatkan nilai 
+            var selectedVal = type_tf + selectMaterial;
+            $('#reference_edit').val(selectedVal);
+
+        });
+
+        $("#type_tf_edit").keyup(function (e) {
+            var material = $('#material_edit').val();
+            var type_tf = $(this).val();
+            // Mendapatkan nilai 
+            var selectedVal = type_tf + material;
+
+            $('#reference_edit').val(selectedVal);
+
+        });
+
+        $.ajax({
+            url: "{% url 'material-id-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                });
+                // Set options in the Select2 element
+                $('#material').append(options);
+                $('#material_edit').append(options);
+            }
+        });
+
+        /*-- Render DataTable --*/
+        table = $('#data_table').DataTable().clear().destroy();
+        let url = '{% url "ore-factors-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'type_tf',
+                    name: 'type_tf'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material'
+                },
+                {
+                    data: 'bcm',
+                    name: 'bcm'
+                },
+                {
+                    data: 'density',
+                    name: 'density'
+                },
+                {
+                    data: 'ton',
+                    name: 'ton'
+                },
+
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                    <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                    }
+                }
+            ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#createNew').click(function () {
+            $('#id').val('');
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
+            $.ajax({
+                url: "{% url 'insert-ore-factors' %}",
+                method: 'POST',
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#type_tf').val('');
+                        $('#unit_model').val('');
+                        $('#unit_type').val('');
+                        $('#category').val('').trigger('change');
+                        $('#vendor').val('').trigger('change');
+                        $('#supports').val('').trigger('change');
+                        $('#description').val('');
+                        window.HSOverlay.close('#add-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Update---*/
+        $('#updateBtn').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/config/ore-factors/update/' + id + '/';
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    type_tf: $('#type_tf_edit').val(),
+                    material: $('#material_edit').val(),
+                    unit_type: $('#unit_type_edit').val(),
+                    density: $('#density_edit').val(),
+                    bcm: $('#bcm_edit').val(),
+                    ton: $('#ton_edit').val(),
+                    reference_tf: $('#reference_edit').val()
+                },
+
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#type_tf_edit').val('');
+                        $('#density_edit').val('');
+                        $('#bcm_edit').val('');
+                        $('#material_edit').val('').trigger('change');
+                        $('#reference_edit').val('');
+                        window.HSOverlay.close('#edit-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-ore-factors" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    dataType: 'json',
+                    success: function (data) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Your file has been deleted.',
+                            icon: 'success',
+                        })
+                        // Refresh table or remove row
+                        table.draw();
+
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            Swal.fire(
+                                'Access Denied!',
+                                xhr.responseJSON.message,
+                                'error'
+                            );
+                        } else if (xhr.status === 404) {
+                            Swal.fire(
+                                'Not Found!',
+                                xhr.responseJSON.message,
+                                'error'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong.',
+                                'error'
+                            );
+                        }
+                    }
+                });
+            })
+        });
+
+    });
+</script>
+
+<!-- Call for Edit Data  -->
+<script>
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '/kqms/config/ore-truck-factors/get-id/' + id + '/';
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                if (response) {
+                    // Mengisi formulir dengan data yang diterima
+                    window.HSOverlay.open('#edit-data');
+                    $('#id').val(response.id);
+                    $('#type_tf_edit').val(response.type_tf);
+                    $('#material_edit').val(response.material).trigger('change');
+                    $('#bcm_edit').val(response.bcm);
+                    $('#density_edit').val(response.density);
+                    $('#ton_edit').val(response.ton);
+                    $('#reference_edit').val(response.reference_tf);
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    ); // Atau tindakan lain jika data tidak ditemukan
+                }
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 403) {
+                    const toast = window.Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        padding: '2em',
+                    });
+                    toast.fire({
+                        icon: 'error',
+                        html: 'You do not have permission',
+                        padding: '2em',
+                    });
+                } else {
+                    alert('Terjadi kesalahan: ' + error);
+                }
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

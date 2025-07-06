@@ -1,0 +1,380 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Grade Control</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Grade Control
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Grade Expectation - mral</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="exportFilter" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <!-- <div id="basic-table" class="ti-custom-table ti-striped-table ti-custom-table-hover"></div> -->
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary">Date</th>
+                                            <th class="bg-soft-secondary">Shift</th>
+                                            <th class="bg-soft-secondary">Source</th>
+                                            <th class="bg-soft-secondary">Block</th>
+                                            <th class="bg-soft-secondary">Materials</th>
+                                            <th class="bg-soft-secondary">Ore Class</th>
+                                            <th class="bg-soft-secondary">Ritase</th>
+                                            <th class="bg-soft-secondary">Tonnage</th>
+                                            <th class="bg-soft-secondary">Batch</th>
+                                            <th class="bg-soft-secondary">Grade Control</th>
+                                            <th class="bg-soft-secondary">Sample Id</th>
+                                            <th class="bg-soft-secondary">Ni [Expt]</th>
+                                            <th class="bg-soft-secondary">Ni [Act]</th>
+                                            <th class="bg-soft-secondary">Ni [Diff]</th>
+                                            <th class="bg-soft-secondary">Accuration</th>
+                                            <th class="bg-soft-secondary">From_rl</th>
+                                            <th class="bg-soft-secondary">To_rl</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        $(".form-select").select2({
+            width: '100%'
+        });
+        /*  Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        /*-- Render DataTable --*/
+        table = $('#data_table').DataTable().clear().destroy();
+        let data_url = '{% url "list-grade-expectations-mral" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                searchPlaceholder: 'search...',
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.from_date = $('#from_date').val();
+                    data.to_date = $('#to_date').val();
+                    data.materialFilter = $('#materialFilter').val();
+                    data.sourceFilter = $('#sourceFilter').val();
+                    return data;
+                },
+            },
+
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                { 'data': 'tgl_production', 'name': 'tgl_production', 'searchable': true },
+                { 'data': 'shift', 'name': 'shift', 'searchable': true },
+                { 'data': 'prospect_area', 'name': 'prospect_area', 'searchable': true },
+                { 'data': 'mine_block', 'name': 'mine_block', 'searchable': true },
+                { 'data': 'nama_material', 'name': 'nama_material', 'searchable': true },
+                { 'data': 'ore_class', 'name': 'ore_class', 'searchable': true },
+                { 'data': 'ritase', 'name': 'ritase', 'searchable': true },
+
+                {
+                    data: 'tonnage',
+                    name: 'tonnage',
+                    searchable: false,
+                    render: function (data) {
+                        if (data === null) {
+                            return 0;
+                        } else {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    }
+                },
+                { 'data': 'batch_code', 'name': 'batch_code', 'searchable': true },
+                { 'data': 'grade_control', 'name': 'grade_control', 'searchable': true },
+                { 'data': 'sample_number', 'name': 'sample_number', 'searchable': true },
+                {
+                    data: 'ex_ni',
+                    name: 'ex_ni',
+                    searchable: false,
+                    render: function (data) {
+                        if (data === null) {
+                            return 0;
+                        } else {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    }
+                },
+                {
+                    data: 'ni_act',
+                    name: 'ni_act',
+                    searchable: false,
+                    render: function (data) {
+                        if (data === null) {
+                            return 0;
+                        } else {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    }
+                },
+                {
+                    data: 'ni_diff',
+                    name: 'ni_diff',
+                    searchable: false,
+                    render: function (data) {
+                        if (data === null) {
+                            return 0;
+                        } else {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    }
+                },
+                {
+                    data: 'ni_percentage',
+                    name: 'ni_percentage',
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row) {
+                        if (type === 'display') {
+                            // Memeriksa apakah ex_ni adalah nol atau tidak
+                            if (row.ni_act == 0) {
+                                return '0%'; // Jika ni_act adalah nol, tampilkan "0%"
+                            }
+                            // Hitung persentase dan format ke dua angka desimal
+                            var avg_nilai = ((row.ni_act / row.ex_ni) + 2);
+                            var percentage = ((1 - Math.abs((row.ni_act - row.ex_ni) / avg_nilai)) * 100).toFixed(1);
+                            return percentage + '%';
+                        } else {
+                            // Return data as is for sorting and filtering
+                            return data;
+                        }
+                    }
+                },
+                { 'data': 'from_rl', 'name': 'from_rl', 'searchable': true },
+                { 'data': 'to_rl', 'name': 'to_rl', 'searchable': true },
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ]
+        });
+        /*--Filter Modal and Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var materialFilter = $('#materialFilter').val();
+            var method_filter = $('#method_filter').val();
+            var sourceFilter = $('#sourceFilter').val();
+            // Kirim permintaan AJAX ke server dengan filter
+            table.ajax.reload();
+        });
+        // Tombol Reset
+        $('#reload').on('click', function () {
+            $('#from_date').val('');
+            $('#to_date').val('');
+            $('#materialFilter').val('').trigger('change');
+            $('#sourceFilter').val('').trigger('change');
+            table.ajax.reload();
+        });
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#openFilter').click(function () {
+             window.HSOverlay.open('#search-modal');
+            $('#exportButton').hide();
+            $('#applyFilterBtn').show();
+            $('#no-sample').show();
+            $('#factory').show();
+            $('#product').show();
+            $('#area').show();
+            $('#point').show();
+        });
+        $.ajax({
+            url: "{% url 'samples-material' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.details_materials, function (key, value) {
+                    options += '<option value="' + value.nama_material + '">' + value
+                        .nama_material +
+                        '</option>';
+                });
+                $('#materialFilter').append(options);
+            }
+        });
+
+        $('#sourceFilter').select2({
+            ajax: {
+                url: "{% url 'get-mine-loading-point' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,  // Mengirimkan data pencarian ke server
+                        page: params.page || 1  // Pagination halaman
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,  // Menggunakan teks sebagai ID
+                                text: item.text  // Teks sebagai label
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more  
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,  
+            placeholder: 'Select data',  // Placeholder di dropdown
+            allowClear: true,  
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#exportFilter').on('click', function () {
+            // const modal = document.getElementById('filterModal');
+             window.HSOverlay.open('#search-modal');
+            $('#exportButton').show();
+            $('#applyFilterBtn').hide();
+            $('#no-sample').hide();
+            $('#area').hide();
+        });
+
+        $('#exportButton').click(function () {
+            // Dapatkan nilai dari filter tanggal
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var materialFilter = $('#materialFilter').val();
+            // Buat URL dengan filter
+            var exportUrl = "{% url 'export-samples-data' %}?from_date=" + from_date + "&to_date=" +
+                to_date + "&materialFilter=" + materialFilter
+            // Redirect ke URL eksport dengan filter
+            window.location.href = exportUrl;
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

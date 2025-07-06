@@ -1,0 +1,289 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">List samples orders</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 gap-4 mb-5">
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{start_date}}"
+                                            name="startDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{end_date}}"
+                                            name="endDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="button" id="applyFilter"
+                                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="4%">No</th>
+                                            <th class="bg-soft-secondary" width="11%">Delivery</th>
+                                            <th class="bg-soft-secondary" width="10%">Time</th>
+                                            <th class="bg-soft-secondary">Sample id</th>
+                                            <th class="bg-soft-secondary">Waybill</th>
+                                            <th class="bg-soft-secondary">Qty</th>
+                                            <th class="bg-soft-secondary">Mral</th>
+                                            <th class="bg-soft-secondary">Roa</th>
+                                            <th class="bg-soft-secondary">Job Mral</th>
+                                            <th class="bg-soft-secondary">Release Date</th>
+                                            <th class="bg-soft-secondary">Time</th>
+                                            <th class="bg-soft-secondary">Day</th>
+                                            <th class="bg-soft-secondary">Job Roa</th>
+                                            <th class="bg-soft-secondary">Release Date</th>
+                                            <th class="bg-soft-secondary">Time</th>
+                                            <th class="bg-soft-secondary">Day</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+        });
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "samples-orders-list" %}';
+        // var material_filter = 'LIM';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.startDate = $('#startDate').val();
+                    data.endDate = $('#endDate').val();
+                    data.mralOrder = $('#mralOrder').val();
+                    data.roaOrder = $('#roaOrder').val();
+                    return data;
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'tgl_deliver',
+                    name: 'tgl_deliver'
+                },
+
+                {
+                    data: 'delivery_time',
+                    name: 'delivery_time',
+                    render: function (data, type, row) {
+                        // Pastikan data adalah string yang sesuai dengan format waktu
+                        if (type === 'display' && typeof data === 'string' && data.length >=
+                            8) {
+                            // Ambil bagian pertama (hh:mm:ss) dari data waktu
+                            var shortTime = data.substring(0, 8);
+                            return shortTime;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: 'sample_id',
+                    name: 'sample_id'
+                },
+                {
+                    data: 'waybill_number',
+                    name: 'waybill_number'
+                },
+                {
+                    data: 'numb_sample',
+                    name: 'numb_sample'
+                },
+
+                {
+                    data: 'mral_order',
+                    name: 'mral_order'
+                },
+                {
+                    data: 'roa_order',
+                    name: 'roa_order'
+                },
+                {
+                    data: 'job_mral',
+                    name: 'job_mral'
+                },
+                {
+                    data: 'release_mral',
+                    name: 'release_mral'
+                },
+                {
+                    data: 'time_mral',
+                    name: 'time_mral'
+                },
+                {
+                    data: 'day_mral',
+                    name: 'day_mral'
+                },
+                {
+                    data: 'job_roa',
+                    name: 'job_roa'
+                },
+                {
+                    data: 'release_roa',
+                    name: 'release_roa'
+                },
+                {
+                    data: 'time_roa',
+                    name: 'time_roa'
+                },
+                {
+                    data: 'day_roa',
+                    name: 'day_roa'
+                },
+
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+        /*--Apply Filter---*/
+        $('#applyFilter').click(function () {
+            table.ajax.reload();
+
+        });
+
+        /*  Reset */
+        $('#reload').on('click', function () {
+            $('#startDate').val('');
+            $('#endDate').val('');
+            table.ajax.reload(); //just reload table
+        });
+
+
+    });
+</script>
+
+<!-- Exports to Excel -->
+
+
+</body>
+
+</html>

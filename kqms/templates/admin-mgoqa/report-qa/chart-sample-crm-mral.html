@@ -1,0 +1,400 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 8rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-4 mb-5">
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                class="ri-calendar-line"></i> </div>
+                        <input type="text" class="form-control" id="date" value="{{start_date}}" name="startDate"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                class="ri-calendar-line"></i> </div>
+                        <input type="text" class="form-control" id="date" value="{{end_date}}" name="endDate"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <select class="form-control" id="filterTypeCrm" name="filterTypeCrm">
+                        <option value="">-- CRM --</option>
+                    </select>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <button type="button" id="applyFilter"
+                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-4 mt-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="flex flex-wrap justify-between mt-2 mb-2 p-3 border-b !border-dange">
+                            <div class="me-[3rem] flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-success/10 !text-success"><i
+                                            class="text-[1rem]"></i>A</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-success font-semibold" id="accepted_ni">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Accepted</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-danger/10 !text-danger"><i
+                                            class="text-[1rem]"></i>E</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="error_ni">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Error</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-primary/10 !text-primary"><i
+                                            class="text-[1rem]"></i>T</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="total_ni">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Totals</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_ni"
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="flex flex-wrap justify-between mt-2 mb-2 p-3 border-b !border-dange">
+                            <div class="me-[3rem] flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-success/10 !text-success"><i
+                                            class="text-[1rem]"></i>A</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-success font-semibold" id="accepted_fe">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Accepted</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-danger/10 !text-danger"><i
+                                            class="text-[1rem]"></i>E</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="error_fe">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Error</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-primary/10 !text-primary"><i
+                                            class="text-[1rem]"></i>T</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="total_fe">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Totals</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_fe"
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="flex flex-wrap justify-between mt-2 mb-2 p-3 border-b !border-dange">
+                            <div class="me-[3rem] flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-success/10 !text-success"><i
+                                            class="text-[1rem]"></i>A</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-success font-semibold" id="accepted_mgo">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Accepted</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-danger/10 !text-danger"><i
+                                            class="text-[1rem]"></i>E</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="error_mgo">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Error</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-primary/10 !text-primary"><i
+                                            class="text-[1rem]"></i>T</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="total_mgo">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Totals</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_mgo"
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="flex flex-wrap justify-between mt-2 mb-2 p-3 border-b !border-dange">
+                            <div class="me-[3rem] flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-success/10 !text-success"><i
+                                            class="text-[1rem]"></i>A</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-success font-semibold" id="accepted_sio2">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Accepted</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-danger/10 !text-danger"><i
+                                            class="text-[1rem]"></i>E</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="error_sio2">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Error</span>
+                                </div>
+                            </div>
+                            <div class="me-4 flex items-center">
+                                <div class="me-2">
+                                    <span class="avatar !rounded-full bg-primary/10 !text-primary"><i
+                                            class="text-[1rem]"></i>T</span>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="total_sio2">0</p>
+                                    <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Totals</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_sio2"
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    // Fungsi ambil tema saat ini (light/dark)
+    const getTheme = () =>
+        document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+    // Fungsi untuk render chart dari server
+    const createChart = (filter) => {
+        $.ajax({
+            url: "{% url 'samples-crm-mral-plotly-get' %}",
+            method: 'GET',
+            data: filter,
+            success: function (response) {
+                // Update angka
+                $('#accepted_ni').html(response.acceptedNi);
+                $('#error_ni').html(response.errorNi);
+                $('#total_ni').html(response.jml_row);
+
+                $('#accepted_fe').html(response.acceptedFe);
+                $('#error_fe').html(response.errorFe);
+                $('#total_fe').html(response.jml_row);
+
+                $('#accepted_mgo').html(response.acceptedMgo);
+                $('#error_mgo').html(response.errorMgo);
+                $('#total_mgo').html(response.jml_row);
+
+                $('#accepted_sio2').html(response.acceptedSio2);
+                $('#error_sio2').html(response.errorSio2);
+                $('#total_sio2').html(response.jml_row);
+
+                // Update grafik (dari plotly HTML)
+                $('#line_ni').html(response.plotNi);
+                $('#line_fe').html(response.plotFe);
+                $('#line_mgo').html(response.plotMgo);
+                $('#line_sio2').html(response.plotSio2);
+            }
+        });
+    };
+
+    // Fungsi ambil data dari filter dan update chart
+    const updateChartWithFilters = () => {
+        const start_date = $("#start_date").val();
+        const end_date = $("#end_date").val();
+        const filterTypeCrm = $("#filterTypeCrm").val();
+        const theme = getTheme();
+
+        if (!start_date || !end_date || !filterTypeCrm) return;
+
+        const filter = {
+            start_date: start_date,
+            end_date: end_date,
+            filterTypeCrm: filterTypeCrm,
+            theme: theme
+        };
+        createChart(filter);
+    };
+
+    $(document).ready(function () {
+        // Setup CSRF untuk Django
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Select2 inisialisasi
+        $(".form-select").select2({ width: '100%' });
+
+        // Ambil daftar CRM dari endpoint
+        $.ajax({
+            url: "{% url 'get-crm' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.data_crm, function (key, value) {
+                    options += '<option value="' + value.oreas_name + '">' + value.oreas_name + '</option>';
+                });
+                $('#filterTypeCrm').append(options);
+            }
+        });
+
+        // Ketika tombol Apply Filter diklik
+        $("#applyFilter").on("click", function () {
+            const start_date = $("#start_date").val();
+            const end_date = $("#end_date").val();
+            const filterTypeCrm = $("#filterTypeCrm").val();
+
+            if (!start_date) return $('#start_date').focus();
+            if (!end_date) return $('#end_date').focus();
+            if (!filterTypeCrm) return $('#filterTypeCrm').select2('open');
+
+            updateChartWithFilters();
+        });
+
+        // Load awal chart
+        updateChartWithFilters();
+
+        // Theme observer: perhatikan perubahan tema
+        const observer = new MutationObserver(() => {
+            updateChartWithFilters();
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'] // hanya perhatikan class (dark mode toggle)
+        });
+    });
+</script>
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,326 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        assay roa
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Remove assay roa</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-start">
+                                <form id="add_item">
+                                    <div class="w-64">
+                                        <label for="hs-trailing-button-add-on-with-icon" class="sr-only">Finds..</label>
+                                        <div class="flex rounded-sm">
+                                            <input type="text" id="job_number" name="job_number" required=""
+                                                class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
+                                            <button aria-label="button" type="button" id="applyFilterBtn"
+                                                class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                    height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                          <tr>
+                                        <th width="4%">No</th>
+                                        <th width="11%">Release Date</th>
+                                        <th width="10%">Job Number</th>
+                                        <th>Sample Id</th>
+                                        <th>Ni</th>
+                                        <th>Co</th>
+                                        <th>Fe2O3</th>
+                                        <th>Fe</th>
+                                        <th>Mgo</th>
+                                        <th>SiO2</th>
+                                        <th>MC</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*-- Pass Header Token ---*/
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $('#btn_clear').hide(); // 
+            $(".form-select").select2({
+                width: '100%', // Sesuaikan lebar dengan kontainer
+                // dropdownParent: document.getElementById("filterModal")
+            });
+            table = $('#data_table').DataTable().clear().destroy();
+            /*-- Render DataTable --*/
+            let data_url = '{% url "remove-roa-list" %}';
+            // var material_filter = 'LIM';
+            var table = $('#data_table').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'responsive': true,
+                'autoWidth': true,
+                'searching': false,
+                 language: {
+                    paginate: {
+                        previous: "«",
+                        next: "»"
+                    }
+                },
+                "ajax": {
+                    "url": data_url,
+                    "type": "POST",
+                    dataType: 'json',
+                    "data": function (data) {
+                        data.job_number = $('#job_number').val();
+                        return data;
+                    },
+                },
+                columns: [
+                    {
+                        data: null,
+                        searchable: false,
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, // Kolom nomor otomatis
+                    {
+                        data: 'release_roa',
+                        name: 'release_roa'
+                    },
+
+                    {
+                        data: 'job_number',
+                        name: 'job_number'
+                    },
+                    {
+                        data: 'sample_id',
+                        name: 'sample_id'
+                    },
+                    {
+                        data: 'ni',
+                        name: 'ni',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'co',
+                        name: 'co',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(3);
+                        }
+                    },
+                    {
+                        data: 'fe2o3',
+                        name: 'fe2o3',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'fe',
+                        name: 'fe',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'mgo',
+                        name: 'mgo',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'sio2',
+                        name: 'sio2',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'mc',
+                        name: 'mc',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+
+                ],
+                // Mengatur default sort pada kolom secara desc
+                order: [
+                    [1, 'desc']
+                ],
+
+            });
+
+            /*--Apply Filter---*/
+            $('#applyFilterBtn').click(function () {
+                var job_number = $('#job_number').val();
+                $('#btn_clear').hide(); // 
+                if (job_number == '') {
+                    $("#job_number").focus();
+                    return false;
+                } else {
+                    // $('#data_table').DataTable().clear().destroy();
+                    table.ajax.reload();
+                    $('#btn_clear').show(); // 
+                }
+
+            });
+
+            /* Remove data */
+            $('#applyRemoveBtn').click(function () {
+                var id = $('#job_number').val();
+                var url = '{% url "delete-group-roa" %}';
+                if (id == '') {
+                    $("#job_number").focus();
+                    return false;
+                } else {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "Waybill : " + " " + id,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: 'btn btn-success',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Delete it!',
+                        // width: 320,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: url,
+                                type: "DELETE",
+                                contentType: 'application/json',
+                                data: JSON.stringify({ id: id }), // Sending data in the body
+                                success: function (data) {
+                                    Swal.fire(
+                                        'Deleted!',
+                                        data.message,
+                                        'success'
+                                    );
+                                    table.draw();
+                                    $('#btn_clear').hide(); // 
+                                },
+                                error: function (xhr) {
+                                    if (xhr.status === 403) {
+                                        Swal.fire(
+                                            'Access Denied!',
+                                            xhr.responseJSON.message,
+                                            'error'
+                                        );
+                                    } else if (xhr.status === 404) {
+                                        Swal.fire(
+                                            'Not Found!',
+                                            xhr.responseJSON.message,
+                                            'error'
+                                        );
+                                    } else {
+                                        Swal.fire(
+                                            'Error!',
+                                            'Something went wrong.',
+                                            'error'
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,2370 @@
+{% load static %}
+
+<!DOCTYPE html>
+<!-- <html lang="en" dir="ltr" data-nav-layout="vertical" class="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close"> -->
+<html lang="en" dir="ltr" data-nav-layout="horizontal" class="light" data-header-styles="light" data-menu-styles="light"
+    loader="enable" data-nav-style="menu-click">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> KQMS </title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="description"
+        content="A Tailwind CSS admin template is a pre-designed web page for an admin dashboard. Optimizing it for SEO includes using meta descriptions and ensuring it's responsive and fast-loading.">
+    <meta name="keywords"
+        content="html dashboard,tailwind css,tailwind admin dashboard,template dashboard,html and css template,tailwind dashboard,tailwind css templates,admin dashboard html template,tailwind admin,html panel,template tailwind,html admin template,admin panel html">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/brand-logos/colorful.png' %}">
+
+    <!-- Main JS -->
+    <script src="{% static 'assets/js/main.js' %}"></script>
+
+    <!-- Style Css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <!-- Simplebar Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/simplebar/simplebar.min.css' %}">
+
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/@simonwep/pickr/themes/nano.min.css' %}">
+
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/@simonwep/pickr/themes/nano.min.css' %}">
+
+    <!-- Tabulator Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/tabulator-tables/css/tabulator.min.css' %}">
+
+    <!-- Choices Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/choices.js/public/assets/styles/choices.min.css' %}">
+
+
+    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.tailwindcss.css" rel="stylesheet" type="text/css" />
+
+    <link href="{% static 'assets/libs/datatables/datatables.min.css'%}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+    <!-- Latest -->
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/erimicel/select2-tailwindcss-theme/dist/select2-tailwindcss-theme-plain.min.css">
+
+    <!-- CSS SweetAlert2 -->
+    <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">
+
+    <!-- JS SweetAlert2 -->
+    <script src="{% static 'assets/libs/sweetalert2/sweetalert2.all.min.js' %}"></script>
+
+</head>
+
+<style>
+    [data-nav-layout=horizontal] .content {
+        inset-inline-start: 0px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-top: 0.4rem !important;
+        min-height: calc(100vh - 10.5rem) !important;
+        width: 100% !important;
+    }
+
+    /* Custom DataTable pagination agar sesuai Tailwind */
+    /* Tambahkan jarak bawah keseluruhan */
+    .dataTables_wrapper {
+        padding-bottom: 1.5rem;
+        /* atau coba 2rem jika masih terlalu mepet */
+    }
+
+    /* Atau khusus bagian pagination */
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        /* jarak bawah */
+    }
+
+    /* Tombol Pagination */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5rem 0.75rem;
+        margin: 0 0.10rem;
+        border-radius: 0.375rem;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        color: #374151;
+        font-weight: 500;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+        background-color: #1f2937;
+        /* bg-gray-800 */
+        border-color: #374151;
+        /* border-gray-700 */
+        color: #d1d5db;
+        /* text-gray-300 */
+    }
+
+    /* Tombol aktif */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #6366f1;
+        color: white !important;
+        border-color: #6366f1;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #818cf8;
+        /* indigo-400 */
+        border-color: #818cf8;
+        color: #1e293b !important;
+        /* slate-800 */
+    }
+
+    /* Hover */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #e0e7ff;
+        border-color: #6366f1;
+        color: #111827 !important;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #4b5563;
+        color: #f9fafb !important;
+    }
+
+    /* Filter input dan select dropdown */
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #e5e7eb;
+        padding: 0.375rem 0.5rem;
+        border-radius: 0.375rem;
+        background-color: white;
+        color: #111827;
+    }
+
+    .dark .dataTables_wrapper .dataTables_filter input,
+    .dark .dataTables_wrapper .dataTables_length select {
+        background-color: #1f2937;
+        /* gray-800 */
+        border-color: #374151;
+        color: #f3f4f6;
+        /* gray-100 */
+    }
+
+    /* Label select & search */
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter {
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+
+    .dark .dataTables_wrapper .dataTables_length label,
+    .dark .dataTables_wrapper .dataTables_filter {
+        color: #d1d5db;
+    }
+
+    /* Margin bawah & atas */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1rem;
+        text-align: right;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_wrapper .dataTables_length label {
+        font-size: 0;
+        /* Sembunyikan semua teks */
+    }
+
+    .dataTables_wrapper .dataTables_length label select {
+        font-size: 0.875rem;
+        /* Kembalikan ukuran font dropdown */
+    }
+
+    .custom-popup {
+        padding: 1.5rem !important;
+        border-radius: 1rem !important;
+        background-color: #2f3052 !important;
+        color: #ffffff !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .custom-icon {
+        border: 4px solid #ff6b6b !important;
+        border-radius: 50% !important;
+        padding: 0.5rem !important;
+        background: rgba(255, 107, 107, 0.1) !important;
+        color: #ff6b6b !important;
+        font-size: 2.5rem !important;
+    }
+
+    .custom-title {
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        margin-top: 0.75rem;
+    }
+
+    #toast-container {
+        position: fixed;
+        top: 1.25rem;
+        /* top-5 */
+        right: 1.25rem;
+        /* right-5 */
+        z-index: 9999;
+
+    }
+
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    .swal2-popup {
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px !important;
+        box-sizing: border-box;
+    }
+
+    .dark .swal2-popup {
+        background: #0e1726;
+    }
+
+    .dark .swal2-popup .swal2-title {
+        color: #888ea8;
+    }
+
+    .swal2-popup .swal2-title {
+        display: block;
+        margin: 0 !important;
+        width: 100%;
+        color: #3b3f5c;
+        font-size: 24px;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-title) {
+        padding-right: 2.5rem !important;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-title) {
+        padding-left: 2.5rem !important;
+    }
+
+    .swal2-popup .swal2-styled {
+        box-shadow: 0 5px 20px 0 #0000001a !important;
+        letter-spacing: 1px;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        transition: all 0.3s ease-out;
+        -webkit-transition: all 0.3s ease-out;
+        margin: 0 5px;
+        padding: 8px 20px;
+        border-radius: 6px;
+    }
+
+    .swal2-popup .swal2-styled.swal2-cancel {
+        background-color: #fff !important;
+        color: #4361ee;
+        border: 1px solid #e8e8e8;
+        box-shadow: none;
+        padding: 7px 20px;
+    }
+
+    .dark .swal2-popup .swal2-styled.swal2-cancel {
+        background-color: #3b3f5c !important;
+        color: #e0e6ed;
+        border-color: #3b3f5c;
+    }
+
+    .swal2-popup .swal2-styled.swal2-confirm {
+        background-color: #4361ee;
+    }
+
+    .swal2-popup .swal2-styled.swal2-confirm:focus {
+        box-shadow: none !important;
+    }
+
+    .swal2-popup .swal2-html-container {
+        margin: 0 !important;
+        color: #e95f2b;
+        font-weight: 300;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-html-container) {
+        padding-right: 2.5rem !important;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-html-container) {
+        padding-left: 2.5rem !important;
+    }
+
+    .swal2-popup .swal2-close {
+        position: absolute;
+        top: 16px;
+        transition: color 0.1s ease-out;
+        font-family: serif;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-close) {
+        right: 1rem;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-close) {
+        left: 1rem;
+    }
+
+    .dark .swal2-popup .swal2-close {
+        color: #888ea8;
+    }
+
+    .swal2-popup.swal2-toast {
+        flex-direction: row;
+        align-items: center;
+        width: auto !important;
+        box-shadow: 0 0 0.625em #d9d9d9;
+        padding: 2em;
+        overflow-y: hidden;
+        display: flex !important;
+    }
+
+    .swal2-popup.swal2-toast.swal2-show {
+        animation: showSweetToast 0.5s;
+    }
+
+    .swal2-popup pre {
+        color: #009688;
+    }
+
+    .swal2-icon {
+        position: relative;
+        box-sizing: initial;
+        justify-content: center;
+        width: 5em;
+        height: 5em;
+        margin: 1.25em auto 1.875em;
+        border-radius: 50%;
+        border: 0.25em solid #000;
+        font-family: inherit;
+        line-height: 5em;
+        cursor: default;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    .swal2-icon:not(.swal2-error):not(.swal2-success) {
+        width: 2em !important;
+        line-height: 119px !important;
+        height: 2em !important;
+        margin: 0.25em auto 0.875em !important;
+    }
+
+    .swal2-icon.swal2-error {
+        border: 5px solid #f1f2f3 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+    }
+
+    .swal2-icon.swal2-warning {
+        color: #fb4 !important;
+    }
+
+    .swal2-icon.swal2-info,
+    .swal2-icon.swal2-warning {
+        border: 5px solid #f1f2f3 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+        font-size: 60px;
+        line-height: 80px;
+        text-align: center;
+    }
+
+    .swal2-icon.swal2-info {
+        color: #4361ee !important;
+    }
+
+    .swal2-icon.swal2-question {
+        color: #805dca !important;
+        border-style: solid;
+        border-width: 4px !important;
+        border-color: #0000 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+        font-size: 60px;
+        line-height: 80px;
+        text-align: center;
+    }
+
+    .dark .swal2-icon.swal2-error,
+    .dark .swal2-icon.swal2-info,
+    .dark .swal2-icon.swal2-question,
+    .dark .swal2-icon.swal2-warning {
+        border-color: #888ea8 !important;
+        box-shadow: none !important;
+    }
+
+    .swal2-iconswal2-success [class^="swal2-success-line"][class$="tip"] {
+        top: 2.875em;
+        left: 0.875em;
+        width: 1.5625em;
+        transform: rotate(45deg);
+    }
+
+    .swal2-icon.swal2-success swal2-success [class^="swal2-success-line"][class$="long"] {
+        top: 2.375em;
+        right: 0.5em;
+        width: 2.9375em;
+        transform: rotate(-45deg);
+    }
+
+    .swal2-icon.swal2-success .swal2-success-fix {
+        position: absolute;
+        top: 0.5em;
+        left: 1.625em;
+        width: 0.4375em;
+        height: 5.625em;
+        transform: rotate(-45deg);
+        z-index: 1;
+    }
+
+    .swal2-icon.swal2-success .swal2-success-ring {
+        position: absolute;
+        top: -0.25em;
+        left: -0.25em;
+        width: 100%;
+        height: 100%;
+        border: 0.25em solid #a5dc864d;
+        border-radius: 50%;
+        z-index: 2;
+        box-sizing: initial;
+    }
+
+    .swal2-icon.swal2-success [class^="swal2-success-circular-line"][class$="right"] {
+        top: -0.6875em;
+        left: 1.875em;
+        transform: rotate(-45deg);
+        transform-origin: 0 3.75em;
+        border-radius: 0 7.5em 7.5em 0;
+    }
+
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+        background: #25d5e4 !important;
+    }
+
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+        background: #ebedf2 !important;
+    }
+
+    .dark .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+        background: #3b3f5c !important;
+        color: #888ea8 !important;
+    }
+
+    .dark .swal2-progress-steps .swal2-progress-step {
+        color: #e0e6ed;
+    }
+
+    .swal2-icon-content {
+        font-size: 5.75rem !important;
+    }
+
+    .swal2-show {
+        animation: swal2-show 0.3s;
+    }
+
+    .swal2-modal.background-modal .swal2-title {
+        color: #fff !important;
+    }
+
+    .dark .swal2-input {
+        background-color: #1b2e4b;
+        border-color: #253b5c;
+        color: #888ea8;
+    }
+
+    .dark .swal2-footer {
+        border-color: #888ea8;
+    }
+
+    .swal2-image {
+        margin-bottom: 32px !important;
+    }
+
+    .sweet-alerts.swal2-popup .swal2-html-container {
+        margin-top: 1rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    :is([dir="ltr"] .sweet-alerts.swal2-popup .swal2-title) {
+        padding-right: 1.5rem !important;
+    }
+
+    :is([dir="rtl"] .sweet-alerts.swal2-popup .swal2-title) {
+        padding-left: 1.5rem !important;
+    }
+
+    /* Select 2 */
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Styling untuk Select2 container */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Styling untuk Select2 selection */
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 12px !important;
+        background-color: #fff !important;
+    }
+
+    /* Styling untuk rendered text (teks yang dipilih) */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+        line-height: normal !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    /* Styling untuk placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af !important;
+    }
+
+    /* Styling untuk tombol clear (X) */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+        text-align: center !important;
+        line-height: 18px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+
+    /* Styling untuk dropdown arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 8px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #6b7280 transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
+        height: 0 !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        width: 0 !important;
+    }
+
+    /* Styling untuk dropdown */
+    .select2-dropdown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Styling untuk search box di dropdown */
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+    }
+
+    /* Styling untuk options */
+    .select2-results__option {
+        padding: 8px 12px !important;
+        color: #374151 !important;
+    }
+
+    .select2-results__option--highlighted {
+        background-color: #6466f1 !important;
+        color: white !important;
+    }
+
+    /* Styling untuk container dengan allowClear */
+    .select2-container--default.select2-container--allowclear .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        /* Beri ruang untuk tombol clear dan arrow */
+    }
+
+    /* Styling khusus untuk multiple select jika diperlukan */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #6466f1 !important;
+        border: 1px solid #6466f1 !important;
+        border-radius: 4px !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        margin: 2px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 6px !important;
+        font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fecaca !important;
+    }
+
+    /* Styling untuk focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6466f1 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Styling untuk disabled state */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #f9fafb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+    }
+</style>
+
+<body>
+    <!-- ========== Switcher  ========== -->
+    {% include 'layout/switcher.html' %}
+    <!-- ========== END Switcher  ========== -->
+
+    <!-- Loader -->
+    <div id="loader">
+        <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+    </div>
+    <!-- Loader -->
+    <div class="page">
+        <div class="content">
+            <!-- Start::main-content -->
+            <div class="main-content">
+                <!-- Page Header -->
+                <div class="block justify-between page-header md:flex">
+                    <div>
+                        <h3
+                            class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                            Productions</h3>
+                    </div>
+                    <ol class="flex items-center whitespace-nowrap min-w-0">
+                        <li class="text-[0.813rem] ps-[0.5rem]">
+                            <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                                href="javascript:void(0);">
+                                Form
+                                <i
+                                    class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                            </a>
+                        </li>
+                        <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50"
+                            aria-current="page">Ore
+                        </li>
+                    </ol>
+                </div>
+                <!-- Page Header Close -->
+
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-6">
+                    <div class="col-span-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h5 class="box-title">Entry Ore</h5>
+                            </div>
+                            <div class="box-body">
+                                <div class="flex justify-start">
+                                    <div class="w-64">
+                                        <label for="hs-trailing-button-add-on-with-icon" class="sr-only">Label</label>
+                                        <div class="flex rounded-sm">
+                                            <input type="text" id="no_production" name='no_production'
+                                                value="{{ ore_entry }}"
+                                                class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
+                                            <button aria-label="button" type="button" id="applyFilterBtn"
+                                                class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                    height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form id="multiRowForm" class="mt-5">
+                                    {% include 'admin-mgoqa/production-ore/add/table-from.html' %}
+                                    <!-- button -->
+                                    <div
+                                        class="mb-6 mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
+                                        <a href="javascript:void(0)" id="addRow"
+                                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave"> Add item
+                                        </a>
+                                        <button type="submit" id="save"
+                                            class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Save data
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Tabel view -->
+                                {% include 'admin-mgoqa/production-ore/add/table-view.html' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End::row-1 -->
+            </div>
+            <!-- Start::main-content -->
+        </div>
+
+
+        <!-- Start::edit modal -->
+        <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+            <!-- <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 max-w-7xl w-full ease-out"> -->
+            <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 !max-w-full !w-full !m-0 ease-out">
+                <div class="ti-modal-content">
+                    <div class="ti-modal-header">
+                        <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                            Edit Ore Production
+                        </h6>
+                        <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                            data-hs-overlay="#edit-data">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                    <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                        <form class="min-w-0">
+
+                            <input type="hidden" name="id" id="id">
+                            <div class="grid grid-cols-12 gap-4">
+                                <!-- Date -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Date</label>
+                                    <input id="tgl_production" type="date" name="tgl_production"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Category -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Category</label>
+                                    <select id="category" name="category" class="form-control w-full !rounded-md">
+                                        <option value="">Select</option>
+                                        <option value="Mining">Mining</option>
+                                        <option value="Project">Project</option>
+                                    </select>
+                                </div>
+
+                                <!-- Shift -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Shift</label>
+                                    <select id="shift" name="shift" class="form-control w-full !rounded-md">
+                                        <option value="">Select</option>
+                                        <option value="D">D</option>
+                                        <option value="N">N</option>
+                                    </select>
+                                </div>
+
+                                <!-- Source -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Source</label>
+                                    <select id="id_prospect_area" name="id_prospect_area"
+                                        class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+
+                                <!-- Block -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Block</label>
+                                    <select id="id_block" name="id_block" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+
+                                <!-- From RL -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">From (RL)</label>
+                                    <input type="number" id="from_rl" name="from_rl"
+                                        class="form-control w-full !rounded-md" placeholder="From RL">
+                                </div>
+
+                                <!-- To RL -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">To (RL)</label>
+                                    <input type="number" id="to_rl" name="to_rl" class="form-control w-full !rounded-md"
+                                        placeholder="To RL">
+                                </div>
+
+                                <!-- Layer -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Layer</label>
+                                    <select id="id_material" name="id_material" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+
+                                <!-- Dome -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Dome</label>
+                                    <select id="id_pile" name="id_pile" class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Expect Ni -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Expect. Ni</label>
+                                    <input type="text" id="grade_expect" name="grade_expect"
+                                        class="form-control w-full !rounded-md" placeholder="Expectation">
+                                </div>
+
+                                <!-- Mine Geology -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Mine Geology</label>
+                                    <select id="grade_control" name="grade_control"
+                                        class="form-control w-full !rounded-md"></select>
+                                </div>
+
+                                <!-- Batch Code -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Batch Code</label>
+                                    <input type="text" id="batch_code" name="batch_code"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Increment -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Increment</label>
+                                    <input type="number" id="increment" name="increment"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Batch Status -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Batch Status</label>
+                                    <select id="batch_status_edit" name="batch_status_edit"
+                                        class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                        <option value="Complete">Complete</option>
+                                        <option value="Incomplete">Incomplete</option>
+                                    </select>
+                                </div>
+
+                                <!-- Pile Status -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Pile Status</label>
+                                    <select id="pile_status" name="pile_status" class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                        <option value="Continue">Continue</option>
+                                        <option value="Close">Close</option>
+                                    </select>
+                                </div>
+
+                                <!-- Ritase -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Ritase</label>
+                                    <input type="number" id="ritase" name="ritase"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Tonnage -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Tonnage</label>
+                                    <input readonly type="text" id="tonnage" name="tonnage"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Truck -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Truck</label>
+                                    <input type="text" id="unit_truck" name="unit_truck"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Calculate -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Calculate</label>
+                                    <select id="calculate" name="calculate"
+                                        class="form-control w-full !rounded-md"></select>
+                                </div>
+
+                                <!-- Ore Class -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Ore Class</label>
+                                    <select id="ore_class" name="ore_class"
+                                        class="form-control w-full !rounded-md"></select>
+                                </div>
+
+                                <!-- No Production -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">No. Production</label>
+                                    <input type="text" id="no_production_edit" name="no_production_edit"
+                                        class="form-control w-full !rounded-md" disabled>
+                                </div>
+
+                                <!-- Sale Adjust -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Sale Adjust</label>
+                                    <input type="text" id="sale_adjust" name="sale_adjust"
+                                        class="form-control w-full !rounded-md" disabled>
+                                </div>
+
+                                <!-- Truck Factor -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Truck Factor</label>
+                                    <input type="text" id="truck_factor" name="truck_factor"
+                                        class="form-control w-full !rounded-md" disabled>
+                                </div>
+
+                                <!-- Stockpile -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Stockpile</label>
+                                    <input type="text" id="id_stockpile" name="id_stockpile"
+                                        class="form-control w-full !rounded-md" disabled>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mt-4">
+                                <label class="form-label">Description</label>
+                                <textarea id="remarks" name="remarks" rows="3"
+                                    class="form-control w-full !rounded-md resize-none"
+                                    placeholder="Enter Description"></textarea>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-6 flex justify-end gap-2">
+                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                    data-hs-overlay="#edit-data">
+                                    Cancel
+                                </button>
+                                <button type="button" value="edit" id="updateButton"
+                                    class="ti-btn bg-primary text-white">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Toast Container -->
+        <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+        <!-- End::add task modal -->
+        <!-- Footer Start -->
+        {% include 'layout/footer.html' %}
+        <!-- Footer End -->
+
+    </div>
+
+    <!-- Back To Top -->
+    <div class="scrollToTop">
+        <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+    </div>
+
+    <div id="responsive-overlay"></div>
+
+    <!-- Call JS -->
+    {% include 'layout/js.html' %}
+
+
+    <script type="text/javascript">
+
+        $(document).on("focus", ".select2", function (e) {
+            if (e.originalEvent) {
+                var s2element = $(this).siblings("select:enabled");
+                s2element.select2("open");
+                // Set focus back to select2 element on closing.
+                s2element.on("select2:closing", function () {
+                    if (s2element.val()) s2element.select2("focus");
+                });
+            }
+        });
+        //Number Only Decimal
+        $(document).on('keyup', '#from_rl,#to_rl', function (e) {
+            var regex = /[^\d.]|\.(?=.*\.)/g;
+            var subst = "";
+            var str = $(this).val();
+            var result = str.replace(regex, subst);
+            $(this).val(result);
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Inisialisasi flatpickr (opsional)
+            flatpickr("#startDate", { dateFormat: "Y-m-d" });
+            flatpickr("#endDate", { dateFormat: "Y-m-d" });
+            flatpickr("#tgl_production", { dateFormat: "Y-m-d" });
+
+            // Flag untuk hindari double init
+            let isSelect2Init = false;
+
+            // Saat buka modal
+
+            setTimeout(function () {
+                // Hanya inisialisasi sekali
+                if (!isSelect2Init) {
+                    $('#edit-data select').each(function () {
+                        const $el = $(this);
+                        if (!$el.hasClass('select2-hidden-accessible')) {
+                            $el.select2({
+                                placeholder: 'Select an option',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#edit-data .ti-modal-body')
+                            });
+                        }
+                    });
+                    isSelect2Init = true;
+                }
+            }, 300); // delay agar modal sudah muncul
+        });
+
+    </script>
+
+    <script type="text/javascript">
+        // Fungsi untuk mengisi dropdown material
+        function loadMaterials(selectElement) {
+            $.ajax({
+                url: "{% url 'material-id-dropdown' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '<option value="">-- Select --</option>'; // Opsi default
+                    $.each(data.list, function (key, value) {
+                        options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                    });
+                    selectElement.html(options); // Mengisi dropdown dengan opsi
+                },
+                error: function () {
+                    console.error('Failed to load materials');
+                }
+            });
+        }
+
+        function loadOreClasses(selectElement, materialId) {
+            $.ajax({
+                url: '/kqms/dropdown/get-ore-classes/',
+                method: "GET",
+                data: { material_id: materialId },
+                dataType: "json",
+                success: function (data) {
+                    var options = '<option value="">-- Select --</option>'; // Opsi default
+                    $.each(data, function (key, value) {
+                        options += '<option value="' + value.ore_class + '">' + value.ore_class + '</option>';
+                    });
+                    selectElement.html(options); // Mengisi dropdown dengan opsi
+                },
+                error: function () {
+                    console.error('Failed to load ore classes');
+                }
+            });
+        }
+
+        function loadOreFactors(selectElement, materialId) {
+            $.ajax({
+                url: '/kqms/dropdown/get-ore-factors/',
+                method: "GET",
+                data: { material_id: materialId },
+                dataType: "json",
+                success: function (data) {
+                    var options = '<option value="">-- Select --</option>'; // Opsi default
+                    $.each(data, function (key, value) {
+                        options += '<option value="' + value.type_tf + '">' + value.type_tf + '</option>';
+                    });
+                    selectElement.html(options); // Mengisi dropdown dengan opsi
+                },
+                error: function () {
+                    console.error('Failed to load ore classes');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            initializeSelect2($('#oreTable tbody tr:first'));
+            $('#addRow').on('click', function () {
+                var newRow = '<tr>' +
+                    '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="copyRow ti-btn ti-btn-icon bg-success/10 text-success hover:bg-success hover:text-white !rounded-full ti-btn-wave">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+                    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0 ltr:mr-2 rtl:ml-2">' +
+                    '<line x1="12" y1="5" x2="12" y2="19"></line> <line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
+                    '</i></button>' +
+                    '<button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
+                    '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                    '</i></button></td></div>' +
+                    '<td><input type="date" name="tgl_production[]" value="{{ day_date }}" class="form-control w-full !rounded-md"></td>' +
+                    '<td><div class="select-wrapper"><select name="category[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- Select --</option>' +
+                    '<option value="Mining">Mining</option>' +
+                    '<option value="Project">Project</option>' +
+                    '</select></div></td>' +
+                    '<td><div class="select-wrapper"><select name="shift[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- Select --</option>' +
+                    '<option value="D">D</option>' +
+                    '<option value="N">N</option>' +
+                    '</select></div></td>' +
+                    '<td><div class="select-wrapper"><select name="id_prospect_area[]" class="form-control w-full !rounded-md prospect_area"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><div class="select-wrapper"><select name="id_block[]" class="form-control w-full !rounded-md mine_block"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" name="from_rl[]"></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" name="to_rl[]"></td>' +
+                    '<td><div class="select-wrapper"><select name="id_material[]" class="form-control w-full !rounded-md"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" name="grade_expect[]"></td>' +
+                    '<td><div class="select-wrapper"><select class="form-control w-full !rounded-md mine_geos" name="grade_control[]"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" readonly name="unit_truck[]"></td>' +
+                    '<td><div class="select-wrapper"><select class="form-control w-full !rounded-md dome" name="id_pile[]"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" name="batch_code[]"></td>' +
+                    '<td><input type="text" class="form-control w-full !rounded-md" name="increment[]"></td>' +
+                    '<td>' +
+                    '<div class="select-wrapper"><select name="batch_status[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- Select --</option>' +
+                    '<option value="Complete">Complete</option>' +
+                    '<option value="Incomplete">Incomplete</option>' +
+                    '</select></div>' +
+                    '</td>' +
+                    '<td><input type="number" class="form-control w-full !rounded-md" name="ritase[]"></td>' +
+                    '<td><input type="text" name="tonnage[]"  class="form-control w-full !rounded-md disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed" readonly></td>' +
+                    '<td><div class="select-wrapper"><select name="calculate[]" class="form-control w-full !rounded-md"><option value="">-- Select --</option></select></div></td>' +
+                    '<td><div class="select-wrapper"><select name="ore_class[]" class="form-control w-full !rounded-md"><option value="">-- Select --</option></select></div></td>' +
+                    '<td> <input id="remarks[]" name="remarks[]"class="form-control w-full !rounded-md wide-input" placeholder="Enter Description"></input></td>' +
+                    '<td><input type="hidden" name="truck_factor[]" class="form-control w-full !rounded-md disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed" readonly ></td>' +
+                    '<td><input type="hidden" name="sale_adjust[]" class="form-control w-full !rounded-md disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed" readonly ></td>' +
+                    '</tr>';
+
+                $('#oreTable tbody').append(newRow);
+                var newRowElement = $('#oreTable tbody tr:last');
+                // Ambil dropdown yang baru ditambahkan dan isi dengan data material
+                var newSelect = $('#oreTable tbody tr:last select[name="id_material[]"]');
+                loadMaterials(newSelect); // Panggil fungsi untuk memuat material
+
+                // Initialize Select2 for the newly added row
+                initializeSelect2(newRowElement);
+            });
+
+            $('#oreTable').on('click', '.copyRow', function () {
+                var currentRow = $(this).closest('tr');
+
+                currentRow.find('select').each(function () {
+                    $(this).select2('destroy'); // Destroy Select2
+                });
+
+                var clonedRow = currentRow.clone();  // Clone row
+
+                // Salin nilai dari input dan select dari currentRow ke clonedRow
+                clonedRow.find('input, select').each(function (index) {
+                    var currentElement = currentRow.find('input, select').eq(index); // Ambil elemen berdasarkan index
+                    var clonedElement = $(this); // Elemen pada row yang di-clone
+
+                    // Jika elemen adalah input atau select, salin nilainya
+                    if (clonedElement.is('input')) {
+                        clonedElement.val(currentElement.val()); // Salin value input
+                    } else if (clonedElement.is('select')) {
+                        clonedElement.val(currentElement.val()).trigger('change'); // Salin value select dan trigger Select2 jika ada
+                    }
+                });
+                // Re-inisialisasi Select2 pada row yang asli dan yang di-clone
+                $('#oreTable tbody').append(clonedRow);
+                initializeSelect2(currentRow);
+                initializeSelect2(clonedRow);
+            });
+
+            // Remove a row when the "Remove" button is clicked
+            $('#oreTable').on('click', '.removeRow', function () {
+                $(this).closest('tr').remove();
+            });
+
+            // Function to initialize Select2 for a given element
+            function initializeSelect2(element) {
+                element.find('select').select2({
+                    width: '100%',
+                    theme: 'tailwindcss-3',
+                    allowClear: true,
+                });
+                let debounceTimer;
+                // Inisialisasi event handler change untuk elemen id_method[]
+                element.find('select[name="id_material[]"]').change(function (e) {
+                    clearTimeout(debounceTimer);
+                    var selectMaterial = $(this);
+
+                    // Mendapatkan nilai 
+                    var selectedVal = selectMaterial.val();
+                    var ritase = selectMaterial.closest('tr').find("[name='ritase[]']").val();
+                    var tonnage = selectMaterial.closest('tr').find('input[name="tonnage[]"]');
+                    var truck = selectMaterial.closest('tr').find('input[name="unit_truck[]"]');
+                    var tf = selectMaterial.closest('tr').find('input[name="truck_factor[]"]');
+
+                    var adjust = selectMaterial.closest('tr').find('input[name="sale_adjust[]"]');
+                    var idSelect = selectMaterial.closest('tr').find('select[name="calculate[]"]');
+                    var oreClassSelect = selectMaterial.closest('tr').find('select[name="ore_class[]"]');
+
+                    var selectedText = selectMaterial.find(':selected').text().trim();
+
+                    debounceTimer = setTimeout(() => {
+                        loadOreClasses(oreClassSelect, selectedVal);
+                        if (selectedVal) {
+                            tonnage.val('');
+                            // AJAX untuk memuat data lain berdasarkan selectedVal
+                            loadOreFactors(idSelect, selectedVal);
+                            // Mengatur nilai adjust berdasarkan nilai selectedVal
+                            if (selectedText == 'LIM') {
+                                adjust.val('HPAL');
+                            } else if (selectedText == 'SAP') {
+                                adjust.val('RKEF');
+                            } else {
+                                adjust.val('');
+                            }
+
+                        } else {
+                            // Jika selectedVal kosong, kosongkan dropdown terkait
+                            idSelect.empty();
+                            adjust.val('');
+
+                        }
+                    }, 300); // Waktu debounce dalam milidetik
+
+                });
+
+                // Inisialisasi event handler change untuk 
+                element.find('select[name="calculate[]"]').change(function (e) {
+                    var selectCalculate = $(this);
+                    // Mendapatkan nilai 
+                    var selectedVal = selectCalculate.val();
+                    var ritase = selectCalculate.closest('tr').find("[name='ritase[]']").val();
+                    var material = selectCalculate.closest('tr').find("[name='id_material[]']").val();
+                    var tonnage = selectCalculate.closest('tr').find('input[name="tonnage[]"]');
+                    var tf = selectCalculate.closest('tr').find('input[name="truck_factor[]"]');
+                    var truck = selectCalculate.closest('tr').find('input[name="unit_truck[]"]');
+
+                    console.log('ini calculate ' + selectedVal + ' Mat ' + material);
+
+                    var selectedText = (selectedVal + material).trim().replace(/\s+/g, '');
+                    var selectedTruck = (selectedVal).trim().replace(/\s+/g, '');
+
+                    // Menghapus nilai di belakang tanda minus (-)
+                    var trimmedText = selectedText.replace(/-\w+(\s.*)?$/, '');
+                    var trimmedTruck = selectedTruck.replace(/-\w+(\s.*)?$/, '');
+
+                    // Debug log
+                    console.log('Selected Text:', selectedText);
+                    console.log('Trimmed Text:', trimmedText);
+                    console.log('Truck:', trimmedText);
+                    $.ajax({
+                        url: '/kqms/dropdown/ore-ton/get-id/' + selectedText + '/',
+                        method: "GET",
+                        dataType: "json",
+                        success: function (data) {
+                            // Kosongkan opsi yang ada sebelumnya
+                            tonnage.val('');
+                            var jumlah = data.ton;
+                            // var type = data.type_tf
+                            var total = ritase * jumlah;
+                            tonnage.val(total);
+                            tf.val(trimmedTruck);
+                            truck.val(trimmedTruck); // Tf
+                        }
+                    });
+                });
+
+                // Fetch and populate select options dynamically 
+                $('.prospect_area').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-loading-point'%}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1  // Pagination halaman
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more  
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 2,  // Jumlah karakter sebelum memulai pencarian
+                    placeholder: 'Loading point',
+                    width: '100%',
+                    theme: 'tailwindcss-3',
+                    allowClear: true
+                });
+
+                $('.mine_block').select2({
+                    ajax: {
+                        url: "{% url 'get-block-mine' %}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1  // Pagination halaman
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more  
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 2,  // Jumlah karakter sebelum memulai pencarian
+                    placeholder: 'Block',
+                    width: '100%',
+                    theme: 'tailwindcss-3',
+                    allowClear: true
+                });
+
+                $('.stockpile').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-dumping-point' %}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1  // Pagination halaman
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more  
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    theme: 'tailwindcss-3',
+                    placeholder: 'Stockpile',
+                });
+
+                $('.dome').select2({
+
+                    ajax: {
+                        url: "{% url 'get-mine-dome' %}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1  // Pagination halaman
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more  
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select dome',
+                    theme: 'tailwindcss-3',
+                });
+
+                $('.mine_geos').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-geos' %}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select geos',
+                    theme: 'tailwindcss-3',
+                });
+            }
+
+        });
+
+    </script>
+
+    <!-- Get list Data -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*-- Pass Header Token ---*/
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            table = $('#data_table').DataTable().clear().destroy();
+            /*-- Render DataTable --*/
+            let url = '{% url "ore-entry-list" %}';
+            var table = $('#data_table').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'responsive': true,
+                'autoWidth': true,
+                language: {
+                    paginate: {
+                        previous: "«",
+                        next: "»"
+                    }
+                },
+                "ajax": {
+                    "url": url,
+                    "type": "POST",
+                    dataType: 'json',
+                    "data": function (data) {
+                        data.no_production = $('#no_production').val();
+                        return data;
+                    },
+                },
+                columns: [
+                    {
+                        data: null,
+                        searchable: false,
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, // Kolom nomor otomatis
+                    {
+                        'data': null,
+                        'name': 'action',
+                        'orderable': false,
+                        'searchable': false,
+                        'render': function (data, type, row) {
+                            return `
+                                     <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                        }
+                    },
+
+                    {
+                        data: 'tgl_production',
+                        name: 'tgl_production'
+                    },
+                    {
+                        data: 'category',
+                        name: 'category'
+                    },
+                    {
+                        data: 'shift',
+                        name: 'shift'
+                    },
+                    {
+                        data: 'prospect_area',
+                        name: 'prospect_area',
+
+                    },
+                    {
+                        data: 'mine_block',
+                        name: 'mine_block',
+
+                    },
+
+                    {
+                        data: 'from_rl',
+                        name: 'from_rl'
+                    },
+                    {
+                        data: 'to_rl',
+                        name: 'to_rl'
+                    },
+                    {
+                        data: 'nama_material',
+                        name: 'nama_material',
+
+                    },
+                    {
+                        data: 'ore_class',
+                        name: 'ore_class'
+                    },
+                    {
+                        data: 'ni_grade',
+                        name: 'ni_grade',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'grade_control',
+                        name: 'grade_control'
+                    },
+                    {
+                        data: 'unit_truck',
+                        name: 'unit_truck'
+                    },
+                    {
+                        data: 'stockpile',
+                        name: 'stockpile',
+
+                    },
+                    {
+                        data: 'pile_id',
+                        name: 'pile_id',
+
+                    },
+                    {
+                        data: 'batch_code',
+                        name: 'batch_code'
+                    },
+                    {
+                        data: 'increment',
+                        name: 'increment'
+                    },
+                    {
+                        data: 'batch_status',
+                        name: 'batch_status'
+                    },
+                    {
+                        data: 'ritase',
+                        name: 'ritase'
+                    },
+                    {
+                        data: 'tonnage',
+                        name: 'tonnage'
+                    },
+                    {
+                        data: 'pile_status',
+                        name: 'pile_status'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
+                    },
+
+                    {
+                        data: 'truck_factor',
+                        name: 'truck_factor'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+
+
+                ],
+                // Mengatur default sort pada kolom secara desc
+                order: [
+                    [23, 'desc']
+                ],
+                // Menambahkan opsi footerCallback
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(),
+                        data;
+                    // converting to interger to find total
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    // computing column Total the complete result 
+
+                    var col_19 = api
+                        .column(19)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    var col_20 = api
+                        .column(20)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer by showing the total with the reference of the column index   
+                    $(api.column(19).footer()).html(col_19.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","));
+                    $(api.column(20).footer()).html(col_20.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","));
+
+                },
+
+            });
+            $('.th_hide').show();
+            /*--Filter Modal and Apply Filter---*/
+            $('#applyFilterBtn').click(function () {
+                var no_production = $('#no_production').val();
+                table.ajax.reload();
+            });
+
+            /* Update*/
+            $('#updateButton').click(function () {
+                var id = $('#id').val();
+                var tgl_production = $('#tgl_production').val();
+                var category = $('#category').val();
+                var shift = $('#shift').val();
+                var id_prospect_area = $('#id_prospect_area').val();
+                var id_block = $('#id_block').val();
+                var from_rl = $('#from_rl').val();
+                var to_rl = $('#to_rl').val();
+                var id_material = $('#id_material').val();
+                var id_stockpile = $('#id_stockpile').val();
+                var id_pile = $('#id_pile').val();
+                var grade_expect = $('#grade_expect').val();
+                var grade_control = $('#grade_control').val();
+                var unit_truck = $('#unit_truck').val();
+                var batch_code = $('#batch_code').val();
+                var increment = $('#increment').val();
+                var batch_status = $('#batch_status').val();
+                var pile_status = $('#pile_status').val();
+                var ore_class = $('#ore_class').val();
+                var ritase = $('#ritase').val();
+                var tonnage = $('#tonnage').val();
+                var truck_factor = $('#truck_factor').val();
+                var no_production = $('#no_production_edit').val();
+                var sale_adjust = $('#sale_adjust').val();
+                var remarks = $('#remarks').val();
+
+                var updatedData = {
+                    tgl_production: tgl_production,
+                    category: category,
+                    shift: shift,
+                    id_prospect_area: id_prospect_area,
+                    id_block: id_block,
+                    from_rl: from_rl,
+                    to_rl: to_rl,
+                    id_material: id_material,
+                    id_stockpile: id_stockpile,
+                    id_pile: id_pile,
+                    grade_expect: grade_expect,
+                    grade_control: grade_control,
+                    unit_truck: unit_truck,
+                    batch_code: batch_code,
+                    increment: increment,
+                    batch_status: batch_status,
+                    pile_status: pile_status,
+                    ore_class: ore_class,
+                    ritase: ritase,
+                    tonnage: tonnage,
+                    truck_factor: truck_factor,
+                    no_production: no_production,
+                    remarks: remarks,
+                    sale_adjust: sale_adjust
+                };
+
+                var url = '/kqms/geology/ore/update/' + id + '/';
+                $.ajax({
+                    url: url,
+                    type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
+                    data: updatedData,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#id').val('');
+                            $('#tgl_production').val('');
+                            $('#shift').val('').trigger('change');
+                            $('#id_prospect_area').trigger('change');
+                            $('#id_block').trigger('change');
+                            $('#from_rl').val('');
+                            $('#to_rl').val('');
+                            $('#id_material').val('').trigger('change');
+                            $('#id_stockpile').val('').trigger('change');
+                            $('#id_pile').val('').trigger('change');
+                            $('#grade_expect').val('');
+                            $('#grade_control').val('').trigger('change');
+                            $('#unit_truck').val('')
+                            $('#batch_code').val()
+                            $('#increment').val('');
+                            $('#batch_status').val('').trigger('change');
+                            $('#pile_status').val('').trigger('change');
+                            $('#ore_class').val('').trigger('change');
+                            $('#ritase').val('');
+                            $('#tonnage').val('');
+                            $('#truck_factor').val('');
+                            $('#no_production_edit').val('');
+                            $('#remarks').val('');
+                            $('#sale_adjust').val('');
+                            // Tutup modal (gunakan HSOverlay jika pakai Tailwind UI HS)
+                            window.HSOverlay.close('#edit-data');
+
+                            // Tampilkan notifikasi sukses
+                            Swal.fire({
+                                title: response.message,
+                                icon: "success",
+                                timer: 3000,
+                                showConfirmButton: false,
+                                confirmButtonText: 'OK',
+                            });
+
+                            // Kirim permintaan AJAX ke server
+                            $('#data_table').DataTable().clear().draw();
+                        } else {
+                            // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
+                            alert('Terjadi kesalahan: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, textStatus, status, errorThrown, error) {
+                        if (xhr.status === 422) {
+                            showToast(xhr.responseJSON.message, 'danger');
+                        } else if (xhr.status === 400) {
+                            showToast(xhr.responseJSON.error, 'danger');
+                        } else {
+                            showToast('Terjadi kesalahan server', 'danger');
+                        }
+                    }
+
+                });
+            });
+
+            /* Insert Data */
+            $('#multiRowForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    method: 'POST',
+                    url: "{% url 'create-ore' %}",
+                    data: formData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                // title: 'Insert successfully',
+                                title: response.message,
+                                howConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+
+                            // Membersihkan formulir setelah sukses input
+                            $("[name='tgl_production[]']").val('');
+                            $("[name='shift[]']").val('').trigger('change');
+                            $("[name='id_prospect_area[]']").val('').trigger('change');
+                            $("[name='id_type_sample[]']").val('').trigger('change');
+                            $("[name='id_block[]']").val('').trigger('change');
+                            $("[name='from_rl[]']").val('');
+                            $("[name='to_rl[]']").val('');
+                            $("[name='id_material[]']").val('').trigger('change');
+                            $("[name='id_stockpile[]']").val('').trigger('change');
+                            $("[name='id_pile[]']").val('').trigger('change');
+                            $("[name='grade_expect[]']").val('');
+                            $("[name='grade_control[]']").val('').trigger('change');
+                            $("[name='unit_truck[]']").val('');
+                            $("[name='batch_code[]']").val('');
+                            $("[name='increment[]']").val('');
+                            $("[name='batch_status[]']").val('').trigger('change');
+                            $("[name='pile_status[]']").val('').trigger('change');
+                            $("[name='ore_class[]']").val('').trigger('change');
+                            $("[name='ritase[]']").val('');
+                            $("[name='tonnage[]']").val('');
+                            $("[name='sale_adjust[]']").val('');
+                            $("[name='remarks[]']").val('');
+                            // Hapus baris formulir yang baru ditambahkan
+                            $('#oreTable tbody tr:last').remove();
+                            var no_production = $('#no_production').val();
+                            // Kirim permintaan AJAX ke server dengan filter
+                            $('#data_table').DataTable().clear().draw();
+                        } else {
+                            // Handle kesalahan validasi atau kesalahan lainnya
+                            alert('Terjadi kesalahan: ' + response.messages);
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+
+                        if (xhr.status === 422) {
+                            showToast(xhr.responseJSON.message, 'danger');
+                        } else if (xhr.status === 400) {
+                            showToast(xhr.responseJSON.error, 'danger');
+                        } else if (xhr.status === 403) {
+                            showToast(xhr.responseJSON.error, 'danger');
+                        } else {
+                            showToast('Terjadi kesalahan server', 'danger');
+                        }
+                    }
+                });
+            });
+
+            /*--- Delete ---*/
+            $('#data_table').on('click', '.deleteData', function () {
+                var id = $(this).data('id');
+                var url = '{% url "delete-data-ore-temp" %}?id=' + id;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete',
+                    width: 380,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            dataType: 'json',
+                            data: { id: id },
+                            success: function (data) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
+                                );
+                                // Refresh table or remove row
+                                table.draw();
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                })
+            });
+
+        });
+    </script>
+
+    <!-- Toats -->
+    <script>
+        function showToast(message, type = 'primary') {
+            const container = document.getElementById('toast-container');
+            if (!container) {
+                console.warn('Toast container not found');
+                return;
+            }
+
+            const toast = document.createElement('div');
+            //   toast.className = `ti-toast bg-${type}/10 text-sm text-${type} shadow-lg rounded-md transition-all`;
+            toast.className = `flex items-center justify-between bg-red-100 text-red-700 border border-red-300  rounded shadow-md`;
+            toast.setAttribute('role', 'alert');
+
+            toast.innerHTML = `
+                <div class="flex p-4 items-start justify-between gap-4">
+                    ${message}
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-${type} hover:opacity-70">✕</button>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.parentElement.removeChild(toast);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+    </script>
+
+    <!-- For Edit Row--->
+    <script>
+        $(document).ready(function () {
+            $('#category').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+
+            });
+            $('#shift').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+
+            });
+            $('#batch_status_edit').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+            $('#pile_status').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+            $('#ore_class').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+
+            $('#grade_control').select2({
+                ajax: {
+                    url: "{% url 'get-mine-geos' %}",
+                    dataType: 'json',
+                    delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+
+                allowClear: true,
+                minimumInputLength: 2,
+                placeholder: 'Select geos',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+
+            $.ajax({
+                url: "{% url 'material-id-dropdown' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    
+                    $.each(data.list, function (key, value) {
+                        options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                    });
+                    // Set options in the Select2 element
+                    $('#id_material').html(options).select2({
+                        width: '100%',
+                        dropdownParent: $('#edit-data .ti-modal-body')
+                    });
+                }
+            });
+
+            $('#id_prospect_area').select2({
+                ajax: {
+                    url: "{% url 'get-mine-loading-point'%}",
+                    dataType: 'json',
+                    delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                    data: function (params) {
+                        return {
+                            q: params.term,  // Term dari input pencarian
+                            page: params.page || 1  // Pagination halaman
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more  
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,  // Jumlah karakter sebelum memulai pencarian
+                placeholder: 'Select ',
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body'),
+                allowClear: true
+            });
+
+            $('#id_block').select2({
+                ajax: {
+                    url: "{% url 'get-block-mine' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select ',
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body'),
+                allowClear: true
+            });
+
+            $('#id_pile').select2({
+                ajax: {
+                    url: "{% url 'get-mine-dome' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                plplaceholder: 'Select ',
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body'),
+                allowClear: true
+            });
+        });
+
+        /*--- Click to Edit Button ---*/
+        $('body').on('click', '.editData', function () {
+            var id = $(this).data('id');
+            var url = '/kqms/geology/ore-productions/get-id/' + id + '/';
+
+            /* Hide */
+            $('#batchcodeError').hide();
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
+                        // Mengisi formulir dengan data yang diterima
+                        window.HSOverlay.open('#edit-data');
+                        $('#saveBtn').html('Update Data');
+                        $('#id').val(response.id);
+                        $('#tgl_production').val(response.tgl_production);
+                        $('#category').val(response.category).trigger('change');
+                        $('#shift').val(response.shift).trigger('change');
+                        $('#from_rl').val(response.from_rl);
+                        $('#to_rl').val(response.to_rl);
+                        $('#id_material').val(response.id_material).trigger('change');
+                        var grade_expect = parseFloat(response.grade_expect).toFixed(2); // Format desimal
+                        $('#grade_expect').val(grade_expect);
+                        $('#unit_truck').val(response.unit_truck);
+                        $('#batch_code').val(response.batch_code);
+                        $('#increment').val(response.increment);
+                        $('#batch_status').val(response.batch_status).trigger('change');
+                        $('#pile_status').val(response.pile_status).trigger('change');
+                        $('#ore_class').val(response.ore_class).trigger('change');
+                        $('#ritase').val(response.ritase);
+                        $('#tonnage').val(response.tonnage);
+                        $('#no_production_edit').val(response.no_production);
+                        $('#truck_factor').val(response.truck_factor);
+                        $('#calculate').val(response.ore_class).trigger('change');
+                        $('#remarks').val(response.remarks);
+                        $('#id_stockpile').val(response.id_stockpile);
+                        // Memuat class ore setelah material dipilih
+                        loadClassOre(response.id_material, response.ore_class);
+
+                        // Setelah mendapatkan data, tambahkan sebagai option ke select2
+                        $('#id_block').val(response.id_block).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newOption = new Option(response.block_name, response.id_block, true, true);
+                        $('#id_block').append(newOption).trigger('change');
+
+                        $('#id_prospect_area').val(response.id_prospect_area).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newSource = new Option(response.loading_point, response.id_prospect_area, true, true);
+                        $('#id_prospect_area').append(newSource).trigger('change');
+
+                        $('#id_pile').val(response.id_pile).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newDome = new Option(response.dome_point, response.id_pile, true, true);
+                        $('#id_pile').append(newDome).trigger('change');
+
+                        $('#grade_control').val(response.grade_control).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newGc = new Option(response.grade_control, response.grade_control, true, true);
+                        $('#grade_control').append(newGc).trigger('change');
+
+                    } else {
+                        alert(
+                            'Data tidak ditemukan'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Terjadi kesalahan: ' + error); // Handle kesalahan AJAX
+                }
+            });
+
+            // Tambahkan event listener untuk perubahan pada dropdown material
+            $('#id_material').change(function () {
+                var materialId = $(this).val();
+                var materialText = $('#id_material option:selected').text().trim();
+                var ritase = $('#ritase').val();
+                var tf = $('#calculate').val();
+                var adjust = $('#sale_adjust').val()
+                console.log("Selected material ID: " + materialId);
+                console.log("Selected material text (trimmed): " + materialText);
+
+                // Pastikan materialId tidak kosong 
+                if (materialId) {
+                    loadClassOre(materialId, null);
+                } else {
+                    $('#ore_class').empty().append('<option value="">----</option>');
+                }
+
+                // Cek nilai dari materialText dan ubah nilai #sale_adjust sesuai dengan kondisinya
+                if (materialText === 'LIM') {
+                    $('#sale_adjust').val('HPAL');
+                } else if (materialText === 'SAP') {
+                    $('#sale_adjust').val('RKEF');
+                } else {
+                    $('#sale_adjust').val('');
+                }
+
+                $.ajax({
+                    url: '{% url "get-ore-factors" %}',
+                    method: 'GET',
+                    data: { material_id: materialId },
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#calculate').empty().append('<option value="">----</option>');
+                        
+                        $.each(data, function (key, value) {
+                            $('#calculate').append('<option value="' + value.type_tf + '">' + value.type_tf + '</option>');
+                        });
+
+                        // Set nilai awal jika ada
+                        if (materialId) {
+                            $('#calculate').val(materialId).trigger('change');
+                        }
+                        $('#calculate').select2({
+                            width: '100%',
+                            dropdownParent: $('#edit-data .ti-modal-body')
+                        });
+
+                    },
+                    error: function () {
+                        console.error('Failed to load ore classes');
+                    }
+                });
+
+            });
+
+            // Function to load class based on materials selected
+            function loadClassOre(materialId, selectedClassOre) {
+                console.log("Loading ore class for material ID: " + materialId); // Debugging
+
+                $.ajax({
+                    url: '{% url "get-ore-classes" %}', // Pastikan URL ini benar
+                    data: {
+                        'material_id': materialId
+                    },
+                    success: function (data) {
+                        console.log("Ore Class loaded: ", data); // Debugging
+                        var oreClassDropdown = $('#ore_class');
+                        oreClassDropdown.empty();
+                        oreClassDropdown.append('<option value="">-----</option>');
+
+                        // Tambahkan Class Ore ke dropdown
+                        data.forEach(function (ore_class) {
+                            oreClassDropdown.append(
+                                $('<option></option>').attr('value', ore_class.ore_class).text(ore_class.ore_class)
+                            );
+                        });
+
+                        // Set ore_class jika ada
+                        if (selectedClassOre) {
+                            oreClassDropdown.val(selectedClassOre);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading cities: ', error); // Tangani kesalahan AJAX
+                    }
+                });
+            }
+
+            $("#calculate").change(function (e) {
+                var selectedVal = $(this).val();
+                var ritase = $('#ritase').val();
+                var material = $('#id_material').val();
+                // Mendapatkan nilai 
+                var selectedText = (selectedVal + material).trim().replace(/\s+/g, '');
+                // var selectedTruck = (selectedVal).trim().replace(/\s+/g, '');
+
+                if (selectedVal) {
+                    // Menghapus nilai di belakang tanda minus (-)
+                    var trimmedText = selectedVal.replace(/-\w+(\s.*)?$/, '');
+                } else {
+                    var trimmedText = "";
+                }
+
+                // Debug log
+                console.log('Selected Text:', selectedText);
+                console.log('Trimmed Text:', trimmedText);
+
+                var url = '/kqms/dropdown/ore-ton/get-id/' + selectedText + '/';  // Construct the URL
+
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        // Kosongkan opsi yang ada sebelumnya
+                        $('#tonnage').val('');
+                        $('#truck_factor').val('');
+                        $('#unit_truck').val('');
+                        var jumlah = data.ton;
+                        // var type = data.type_tf
+                        var total = ritase * jumlah;
+                        $('#tonnage').val(total);
+                        $('#truck_factor').val(trimmedText);
+                        $('#unit_truck').val(trimmedText);
+
+                    }
+                });
+
+                $("#ritase").keyup(function (e) {
+                    $('#tonnage').val('');
+                });
+
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
+
+<style>
+    .select-wrapper {
+        position: relative;
+    }
+
+    .select2-container,
+    .select2-dropdown {
+        z-index: 9999 !important;
+    }
+
+    .select2-container--open {
+        z-index: 9999 !important;
+    }
+
+    .ti-modal-body {
+        position: relative;
+        z-index: 9999;
+        overflow: visible;
+    }
+</style>

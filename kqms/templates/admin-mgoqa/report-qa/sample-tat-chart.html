@@ -1,0 +1,433 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-2 px-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="grid grid-cols-12 gap-4 mb-4">
+                        <div class="xl:col-span-4 col-span-12">
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control" id="startDate" value="{{start_date}}"
+                                    name="startDate" placeholder="Choose date">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-4 col-span-12">
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control" id="endDate" value="{{end_date}}" name="endDate"
+                                    placeholder="Choose date">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-2 col-span-12">
+                            <button type="button" id="applyFilter"
+                                class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End::row-1 -->
+            <div class="grid grid-cols-12  gap-4">
+                <div class="xl:col-span-6 col-span-12 px-4">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Data TAT - sample mral
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-mral') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-mral"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">#</th>
+                                            <th class="bg-soft-secondary">Weeks</th>
+                                            <th class="bg-soft-secondary">Order</th>
+                                            <th class="bg-soft-secondary">ON TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">OVER TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">Released
+                                            </th>
+                                            <th class="bg-soft-secondary">
+                                                Pre-Released</th>
+                                            <th class="bg-soft-secondary">TAT</th>
+                                            <th class="bg-soft-secondary">Limit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th>Grand Total</th>
+                                            <th id="total-mral">-</th>
+                                            <th id="total-mral-on">-</th>
+                                            <th id="total-mral-over">-</th>
+                                            <th id="total-mral-released">-</th>
+                                            <th id="total-mral-unreleased">-</th>
+                                            <th>-</th>
+                                            <th>-</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12 px-4">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Data TAT - sample roa
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-roa') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-roa"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">#</th>
+                                            <th class="bg-soft-secondary">Weeks</th>
+                                            <th class="bg-soft-secondary">Order</th>
+                                            <th class="bg-soft-secondary">ON TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">OVER TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">Released
+                                            </th>
+                                            <th class="bg-soft-secondary">
+                                                Pre-Released</th>
+                                            <th class="bg-soft-secondary">TAT</th>
+                                            <th class="bg-soft-secondary">Limit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th>Grand Total</th>
+                                            <th id="total-roa">-</th>
+                                            <th id="total-roa-on">-</th>
+                                            <th id="total-roa-over">-</th>
+                                            <th id="total-roa-released">-</th>
+                                            <th id="total-roa-unreleased">-</th>
+                                            <th>-</th>
+                                            <th>-</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box-body">
+                        <div id="chart_by_mral"
+                            class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box-body">
+                        <div id="chart_by_roa"
+                            class="rounded-lg relative  bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    let lastFilter = {}; // simpan filter terakhir
+
+    const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+    // Fungsi update chart dan tabel (dipakai di filter atau saat tema berubah)
+    function updateAll(filter = {}) {
+        // Gabungkan filter dengan theme
+        let fullFilter = {...filter, theme: getTheme()};
+
+        // Update chart
+        createChartMral(fullFilter);
+        createChartRoa(fullFilter);
+
+        // Update tabel
+        updateTables(fullFilter);
+    }
+
+    // Fungsi update tabel MRAL dan ROA
+    function updateTables(filter) {
+        const { startDate, endDate, theme } = filter;
+
+        // Reset tabel MRAL
+        let table = $("#list-table-mral tbody");
+        table.empty();
+        let grandOrder = 0, grandOnTat = 0, grandOverTat = 0, grandReleased = 0, grandUnReleased = 0;
+
+        // Reset tabel ROA
+        let table_roa = $("#list-table-roa tbody");
+        table_roa.empty();
+        let grandOrderRoa = 0, grandOnTatRoa = 0, grandOverTatRoa = 0, grandReleasedRoa = 0, grandUnReleasedRoa = 0;
+
+        // AJAX MRAL
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-analyse-tat-mral' %}",
+            data: { startDate, endDate, theme },
+            success: function (response) {
+                let data = response.data;
+                table.empty();
+                $.each(data, function (i, row) {
+                    let newRow = $("<tr>");
+                    newRow.append(`<td>${i+1}</td>`);
+                    newRow.append(`<td>${row.tgl_produksi}</td>`);
+                    newRow.append(`<td>${parseFloat(row.jml_mral).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.released_on_tat).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.released_over_tat).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.total_released).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.not_released).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${row.average_time}</td>`);
+                    newRow.append(`<td>${row.time_limit}</td>`);
+                    table.append(newRow);
+
+                    grandOrder += parseFloat(row.jml_mral);
+                    grandOnTat += parseFloat(row.released_on_tat);
+                    grandOverTat += parseFloat(row.released_over_tat);
+                    grandReleased += parseFloat(row.total_released);
+                    grandUnReleased += parseFloat(row.not_released);
+                });
+
+                $("#total-mral").text(grandOrder.toLocaleString('en-US'));
+                $("#total-mral-on").text(grandOnTat.toLocaleString('en-US'));
+                $("#total-mral-over").text(grandOverTat.toLocaleString('en-US'));
+                $("#total-mral-released").text(grandReleased.toLocaleString('en-US'));
+                $("#total-mral-unreleased").text(grandUnReleased.toLocaleString('en-US'));
+            },
+            error: function () {
+                console.log("Gagal mengambil data MRAL.");
+            }
+        });
+
+        // AJAX ROA
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-analyse-tat-roa' %}",
+            data: { startDate, endDate, theme },
+            success: function (response) {
+                let data = response.data;
+                table_roa.empty();
+                $.each(data, function (i, row) {
+                    let newRow = $("<tr>");
+                    newRow.append(`<td>${i+1}</td>`);
+                    newRow.append(`<td>${row.tgl_produksi}</td>`);
+                    newRow.append(`<td>${parseFloat(row.jml_roa).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.released_on_tat).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.released_over_tat).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.total_released).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${parseFloat(row.not_released).toLocaleString('en-US')}</td>`);
+                    newRow.append(`<td>${row.average_time}</td>`);
+                    newRow.append(`<td>${row.time_limit}</td>`);
+                    table_roa.append(newRow);
+
+                    grandOrderRoa += parseFloat(row.jml_roa);
+                    grandOnTatRoa += parseFloat(row.released_on_tat);
+                    grandOverTatRoa += parseFloat(row.released_over_tat);
+                    grandReleasedRoa += parseFloat(row.total_released);
+                    grandUnReleasedRoa += parseFloat(row.not_released);
+                });
+
+                $("#total-roa").text(grandOrderRoa.toLocaleString('en-US'));
+                $("#total-roa-on").text(grandOnTatRoa.toLocaleString('en-US'));
+                $("#total-roa-over").text(grandOverTatRoa.toLocaleString('en-US'));
+                $("#total-roa-released").text(grandReleasedRoa.toLocaleString('en-US'));
+                $("#total-roa-unreleased").text(grandUnReleasedRoa.toLocaleString('en-US'));
+            },
+            error: function () {
+                console.log("Gagal mengambil data ROA.");
+            }
+        });
+    }
+
+    // Fungsi buat chart MRAL
+    function createChartMral(filter = {}) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'sample-analyse-chart-tat-mral' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#chart_by_mral').html(data.plot_div);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error MRAL Chart: ", status, error);
+            }
+        });
+    }
+
+    // Fungsi buat chart ROA
+    function createChartRoa(filter = {}) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'sample-analyse-chart-tat-roa' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#chart_by_roa').html(data.plot_div);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error ROA Chart: ", status, error);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Init flatpickr
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+
+        // Setup CSRF token
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        // Apply filter tombol click
+        $('#applyFilter').click(function () {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            lastFilter = { startDate, endDate };
+
+            updateAll(lastFilter);
+        });
+
+        // Pantau perubahan tema di <html> via MutationObserver
+        const observer = new MutationObserver(() => {
+            // Update ulang chart & tabel pakai filter terakhir saat tema berubah
+            updateAll(lastFilter);
+        });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        // Load chart & tabel pertama kali (tanpa filter)
+        updateAll(lastFilter);
+    });
+</script>
+
+</body>
+
+</html>

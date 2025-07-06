@@ -1,0 +1,647 @@
+{% load static %}
+<aside class="app-sidebar" id="sidebar">
+
+    <!-- Start::main-sidebar-header -->
+    <div class="main-sidebar-header">
+        <a href="index.html" class="header-logo">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="desktop-logo">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="toggle-logo">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="desktop-dark">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="toggle-dark">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="desktop-white">
+            <img src="{% static 'assets/images/brand-logos/colorful.png' %}" alt="logo" class="toggle-white">
+        </a>
+    </div>
+    <!-- End::main-sidebar-header -->
+
+    <!-- Start::main-sidebar -->
+    <div class="main-sidebar" id="sidebar-scroll">
+        <!-- Start::nav -->
+        <nav class="main-menu-container nav nav-pills flex-column sub-open">
+            <div class="slide-left" id="slide-left"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"
+                    height="24" viewBox="0 0 24 24">
+                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                </svg></div>
+            <ul class="main-menu">
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Main</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-home side-menu__icon"></i>
+                        <span class="side-menu__label">Dashboards<span
+                                class="badge !bg-warning/10 !text-warning !py-[0.25rem] !px-[0.45rem] !text-[0.75em] ms-2">2</span></span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Geology</a>
+                        </li>
+                        <li class="slide">
+                            <a href="index.html" class="side-menu__item">Mining</a>
+                        </li>
+                        <li class="slide">
+                            <a href="index-6.html" class="side-menu__item">Analytics</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+                <!-- End::slide -->
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Geology</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-file-blank side-menu__icon"></i>
+                        <span class="side-menu__label">Samples</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Samples</a></li>
+                        <li class="slide"><a href="{% url 'samples-productions-page'%}" class="side-menu__item">List Data</a></li>
+                        <li class="slide has-sub"><a href="javascript:void(0);" class="side-menu__item">From Entry<i
+                                    class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{% url 'samples-entry-page'%}" target="_blank" class="side-menu__item">Samples Qa</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="#" class="side-menu__item" target="_blank">Sample Selling</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide has-sub"><a href="javascript:void(0);" class="side-menu__item">Check Data<i
+                                    class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide"><a href="#" class="side-menu__item">No Relation PDS</a></li>
+                                <li class="slide"><a href="#" class="side-menu__item">Pending to Lab</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                 <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-task side-menu__icon"></i>
+                        <span class="side-menu__label">Waybills<span
+                            class="text-secondary text-[0.75em] rounded-sm badge !py-[0.25rem] !px-[0.45rem] !bg-secondary/10 ms-2">New</span></span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Waybills</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'waybill-create-page'%}" class="side-menu__item">Entry data</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'waybill-page'%}" class="side-menu__item">List Data</a>
+                        </li>
+                        <li class="slide has-sub"><a href="javascript:void(0);" class="side-menu__item">Check Data<i
+                                    class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide"><a href="{%url 'over-mral-page'%}" class="side-menu__item">Mral Over</a></li>
+                                <li class="slide"><a href="{%url 'over-roa-page'%}" class="side-menu__item">Roa Over</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-fingerprint side-menu__icon"></i>
+                        <span class="side-menu__label">Productions</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Productions</a></li>
+                        <li class="slide"><a href="{% url 'ore-entry-page'%}" target="_blank" class="side-menu__item">Entry data</a></li>
+                        <li class="slide has-sub"><a href="javascript:void(0);" class="side-menu__item">List Data
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide"><a href="{% url 'ore-productions-page' %}" class="side-menu__item">List Ore</a></li>
+                                <li class="slide"><a href="{% url 'ore-details-page' %}"
+                                        class="side-menu__item">Details Ore</a></li>
+                            </ul>
+                        </li>
+                        <li class="slide"><a href="#" class="side-menu__item">Batch Status</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-error side-menu__icon"></i>
+                        <span class="side-menu__label">Assay Data</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Data roa</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'assay-mral-page'%}" class="side-menu__item">Data mral</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'assay-roa-page'%}" class="side-menu__item">Data roa</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Mining</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-box side-menu__icon"></i>
+                        <span class="side-menu__label">Data Productions</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1 mega-menu">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Production</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'mine-production-plan-page'%}" class="side-menu__item">Data Plan</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'mine-production-page'%}" class="side-menu__item">Daily productions</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-file  side-menu__icon"></i>
+                        <span class="side-menu__label">Forms</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Forms</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">Form Quick</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">List Data</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+                      <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-medal side-menu__icon"></i>
+                        <span class="side-menu__label">Configuration</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Configuration</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'mine-production-truck-factor-page'%}" class="side-menu__item">Truck Factors</a>
+                        </li>
+                        <li class="slide">
+                            <a href="{%url 'mine-production-volume-adjustment-page'%}" class="side-menu__item">Adjust volume</a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Selling Ore</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-grid-alt side-menu__icon"></i>
+                        <span class="side-menu__label">Selling<span
+                            class="text-secondary text-[0.75em] rounded-sm badge !py-[0.25rem] !px-[0.45rem] !bg-secondary/10 ms-2">New</span></span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Selling</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">Daily Selling</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">Selling Plan</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">Samples Split</a>
+                        </li>
+                        <li class="slide">
+                            <a href="#" class="side-menu__item">Data Official</a>
+                        </li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Split Official
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="#" class="side-menu__item">Data mral</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="#" class="side-menu__item">Data roa</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="#" class="side-menu__item">Data by Range</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-layer side-menu__icon"></i>
+                        <span class="side-menu__label">Analytics</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Analytics</a>
+                        </li>
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Daily Grade</a>
+                        </li>
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Grade by code</a>
+                        </li>
+                        <li class="slide">
+                            <a href="javascript:void(0);" class="side-menu__item">Daily mral</a>
+                        </li>
+              
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Report &amp; Charts</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-table side-menu__icon"></i>
+                        <span class="side-menu__label">Achievements<span
+                                class="text-success text-[0.75em] badge !py-[0.25rem] !px-[0.45rem] rounded-sm bg-success/10 ms-2">-</span></span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Achievements</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'achievement-mral-page'%}" class="side-menu__item">Data by mral</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'achievement-roa-page'%}" class="side-menu__item">Data by roa</a>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">By Stockpile
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'stockpile-mral-page'%}" class="side-menu__item">Data mral</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'stockpile-roa-page'%}" class="side-menu__item">Data roa</a>
+                                </li>
+                            </ul>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">By Sources
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'source-mral-page'%}" class="side-menu__item">Data mral</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'source-roa-page'%}" class="side-menu__item">Data roa</a>
+                                </li>
+                            </ul>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Sources to Stock
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'to-stockpile-mral-page'%}" class="side-menu__item">Data mral</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'to-stockpile-roa-page'%}" class="side-menu__item">Data roa</a>
+                                </li>
+                            </ul>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Sources to dome
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <!-- <li class="slide">
+                                    <a href="#" class="side-menu__item">Data mral</a>
+                                </li> -->
+                                <li class="slide">
+                                    <a href="{%url 'to-dome-roa-page'%}" class="side-menu__item">Data roa</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                 <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-chart side-menu__icon"></i>
+                        <span class="side-menu__label">Inventory stock<span
+                                class="text-success text-[0.75em] badge !py-[0.25rem] !px-[0.45rem] rounded-sm bg-success/10 ms-2">-</span></span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1">
+                            <a href="javascript:void(0)">Inventory</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'inventory-page-all'%}" class="side-menu__item">Data All</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'inventory-page-hpal'%}" class="side-menu__item">Limonite</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'inventory-page-rkef'%}" class="side-menu__item">Saprolite</a>
+                        </li>
+                         <li class="slide">
+                            <a href="{%url 'inventory-page-stockpile'%}" class="side-menu__item">By Stockpile</a>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Finish Selling
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'inventory-finished'%}" class="side-menu__item">Data all</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'stockpile-finished'%}" class="side-menu__item">By stockpile</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-map side-menu__icon"></i>
+                        <span class="side-menu__label">Geology</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Geology</a></li>
+                        <li class="slide"><a href="{%url 'page-sample-gc'%}" class="side-menu__item">Data Samples</a></li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Expect-mral
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'page-grade-expectations-mral'%}" class="side-menu__item">Data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'page-grade-expect-chart-mral'%}" class="side-menu__item">Chart</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Expect-roa
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'page-grade-expectations-roa'%}" class="side-menu__item">Data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'page-grade-expect-chart-roa'%}" class="side-menu__item">Chart</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-bar-chart-square side-menu__icon"></i>
+                        <span class="side-menu__label">Quality Assurance</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Quality Assurance</a></li>
+                        <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Sample dup-roa
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'samples-duplicated-roa-page'%}" class="side-menu__item">List data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'scatter-duplicate-roa'%}" class="side-menu__item">Scatter Charts</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'sample-duplicate-wet-roa'%}" class="side-menu__item">Sample wet</a>
+                                </li>
+                            </ul>
+                        </li>
+                          <li class="slide"><a href="{%url 'sample-crm-page'%}" class="side-menu__item">CRM Certificate</a></li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">CRM MRAL
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'sample-crm-mral-page' %}" class="side-menu__item">Data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'samples-crm-mral-chart-page' %}" class="side-menu__item">Charts</a>
+                                </li> 
+                            </ul>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">CRM ROA
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'sample-crm-roa-page' %}" class="side-menu__item">Data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'samples-crm-roa-chart-page' %}" class="side-menu__item">Charts</a>
+                                </li> 
+                            </ul>
+                        </li>
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">MRAL vs ROA
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'sample-analyse-page'%}" class="side-menu__item">Data</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'chart-analyse-page'%}" class="side-menu__item">Wet Charts</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{%url 'scatter-analyse-page'%}" class="side-menu__item">Scatter Charts</a>
+                                </li> 
+                            </ul>
+                        </li>
+
+                         <li class="slide has-sub">
+                            <a href="javascript:void(0);" class="side-menu__item">Laboratory (tat)
+                                <i class="fe fe-chevron-right side-menu__angle"></i></a>
+                            <ul class="slide-menu child2">
+                                <li class="slide">
+                                    <a href="{%url 'sample-orders-tat-page'%}" class="side-menu__item">Sample order</a>
+                                </li>
+                                <li class="slide">
+                                    <a href="{%url 'sample-analyse-type-page'%}" class="side-menu__item">Charts samples(type)</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{%url 'sample-analyse-tat-page'%}" class="side-menu__item">By Week Charts</a>
+                                </li> 
+                                <li class="slide">
+                                    <a href="{%url 'sample-analyse-week-tat-page'%}" class="side-menu__item">Last Week Charts</a>
+                                </li> 
+                            </ul>
+                        </li>
+                        <li class="slide"><a href="{%url 'analyst-data-ore-plan'%}" class="side-menu__item">Plan Grede</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide__category -->
+                <li class="slide__category"><span class="category-name">Settings</span></li>
+                <!-- End::slide__category -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-fingerprint side-menu__icon"></i>
+                        <span class="side-menu__label">Users</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Users</a></li>
+                        <li class="slide"><a href="{%url 'user-page'%}" class="side-menu__item">Users</a></li>
+                        <li class="slide"><a href="{%url 'group-page'%}" class="side-menu__item">Group</a></li>
+                        <li class="slide"><a href="#" class="side-menu__item">Permmissions</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-store-alt side-menu__icon"></i>
+                        <span class="side-menu__label">Master</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Master</a></li>
+                        <li class="slide"><a href="{%url 'block-page' %}" class="side-menu__item">Block</a></li>
+                        <li class="slide"><a href="{%url 'material-page'%}" class="side-menu__item">Material</a></li>
+                        <li class="slide"><a href="{%url 'source-dome-point-page'%}" class="side-menu__item">Dome</a></li>
+                        <li class="slide"><a href="{%url 'source-dumping-point-page'%}" class="side-menu__item">Dumping point</a></li>
+                        <li class="slide"><a href="{%url 'source-loading-point-page'%}" class="side-menu__item">Loading point</a></li>
+                        <li class="slide"><a href="{%url 'source-page'%}" class="side-menu__item">Sources area</a></li>
+                        <li class="slide"><a href="{%url 'mine-units-page'%}" class="side-menu__item">Mine units</a></li>
+                        <li class="slide"><a href="{%url 'sample-method-page'%}" class="side-menu__item">Sample method</a></li>
+                        <li class="slide"><a href="{%url 'sample-type-page'%}" class="side-menu__item">Sample type</a></li>
+                        <li class="slide"><a href="{%url 'mine-geologies-page'%}" class="side-menu__item">Mine geology</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-cog side-menu__icon"></i>
+                        <span class="side-menu__label">Configuration</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Configuration</a></li>
+                        <li class="slide"><a href="{%url 'ore-class-page'%}" class="side-menu__item">Class Ore</a></li>
+                        <li class="slide"><a href="{%url 'ore-factors-page'%}" class="side-menu__item">Truck Factors</a></li>
+                        <li class="slide"><a href="{%url 'ore-adjustment-page'%}" class="side-menu__item">Volume Adjust.</a></li>
+                        <li class="slide"><a href="{%url 'dome-close-status-page'%}" class="side-menu__item">Dome close</a></li>
+                        <li class="slide"><a href="{%url 'dome-finish-status-page'%}" class="side-menu__item">Dome finished</a></li>
+                        <li class="slide"><a href="{%url 'merge-dome-page'%}" class="side-menu__item">Merge dome</a></li>
+                        <li class="slide"><a href="{%url 'merge-stockpile-page'%}" class="side-menu__item">Merge stock</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-bell side-menu__icon"></i>
+                        <span class="side-menu__label">Remove data</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Remove data</a></li>
+                        <li class="slide"><a href="{%url 'remove-waybills-page'%}" class="side-menu__item">Waybill</a></li>
+                        <li class="slide"><a href="{%url 'remove-mral-page'%}" class="side-menu__item">Mral Job</a></li>
+                        <li class="slide"><a href="{%url 'remove-roa-page'%}" class="side-menu__item">Roa Job</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+                <!-- Start::slide -->
+                <li class="slide has-sub">
+                    <a href="javascript:void(0);" class="side-menu__item">
+                        <i class="bx bx-task side-menu__icon"></i>
+                        <span class="side-menu__label">Task</span>
+                        <i class="fe fe-chevron-right side-menu__angle"></i>
+                    </a>
+                    <ul class="slide-menu child1">
+                        <li class="slide side-menu__label1"><a href="javascript:void(0)">Task</a></li>
+                        <li class="slide"><a href="{%url 'import-excel-page'%}" class="side-menu__item">Import data</a></li>
+                        <li class="slide"><a href="{%url 'format-excel'%}" class="side-menu__item">Template excel</a></li>
+                        <li class="slide"><a href="{%url 'task-table-page'%}" class="side-menu__item">Master task</a></li>
+                    </ul>
+                </li>
+                <!-- End::slide -->
+            </ul>
+
+            <div class="slide-right" id="slide-right"><svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24"
+                    height="24" viewBox="0 0 24 24">
+                    <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+                </svg>
+            </div>
+        </nav>
+        <!-- End::nav -->
+
+    </div>
+    <!-- End::main-sidebar -->
+
+</aside>

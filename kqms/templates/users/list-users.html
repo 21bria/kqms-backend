@@ -1,0 +1,261 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Users
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Users list</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <a href="{% url 'user_create' %}" id="createNew" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave"> Add New</a>
+                                </div>
+                            </div>
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                                <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                           <th>#</th>
+                                        <th>User</th>
+                                        <th>Fisrt Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Groups</th>
+                                        <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        /*-- Render DataTable --*/
+        let data_url = '{% url "user-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+               language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'username',
+                    name: 'username',
+                    orderable: true,
+                },
+                {
+                    data: 'first_name',
+                    name: 'first_name',
+                    orderable: true,
+                },
+                {
+                    data: 'last_name',
+                    name: 'last_name',
+                    orderable: true,
+                },
+                {
+                    data: 'email',
+                    name: 'email',
+                    orderable: true,
+                },
+                {
+                    data: 'groups',
+                    name: 'groups',
+                    orderable: true,
+                },
+
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                            <div  class="flex gap-2 items-center" >
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                         <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                          <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                       </svg>
+                                    </a>
+                                     <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            `;
+                    }
+                }
+
+            ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#createNew').click(function () {
+            $('#id').val('');
+            $('#entryForm').trigger("reset");
+            $('#duplicateError').hide();
+            $('#saveBtn').html('Add');
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-users" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: {
+                            id: id,
+                        },
+                        success: function (data) {
+                            table.draw();
+
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        icon: 'success',
+                        // width: 320,
+                    })
+                }
+            })
+        });
+
+        /*--- Click to Edit Button ---*/
+        $('body').on('click', '.editData', function () {
+            var id = $(this).data('id');
+            var url = '/kqms/users/users/' + id + '/edit/'; 
+            window.location.href = url;
+        });
+
+    });
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+﻿
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-2 px-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="grid grid-cols-12 gap-4 mb-4">
+                        <div class="xl:col-span-4 col-span-12">
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="number" class="form-control" id="jml_week" 
+                                    name="jml_week" placeholder="Jumlah week">
+                            </div>
+                        </div>
+                      
+                        <div class="xl:col-span-2 col-span-12">
+                            <button type="button" id="applyFilter"
+                                class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End::row-1 -->
+            <div class="grid grid-cols-12  gap-4">
+                <div class="xl:col-span-6 col-span-12 px-4">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Data TAT - sample mral
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-mral') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-mral"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">#</th>
+                                            <th class="bg-soft-secondary">Weeks</th>
+                                            <th class="bg-soft-secondary">Order</th>
+                                            <th class="bg-soft-secondary">ON TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">OVER TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">Released
+                                            </th>
+                                            <th class="bg-soft-secondary">
+                                                Pre-Released</th>
+                                            <th class="bg-soft-secondary">TAT</th>
+                                            <th class="bg-soft-secondary">Limit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th>Grand Total</th>
+                                            <th id="total-mral">-</th>
+                                            <th id="total-mral-on">-</th>
+                                            <th id="total-mral-over">-</th>
+                                            <th id="total-mral-released">-</th>
+                                            <th id="total-mral-unreleased">-</th>
+                                            <th>-</th>
+                                            <th>-</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12 px-4">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Data TAT - sample roa
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-roa') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-roa"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">#</th>
+                                            <th class="bg-soft-secondary">Weeks</th>
+                                            <th class="bg-soft-secondary">Order</th>
+                                            <th class="bg-soft-secondary">ON TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">OVER TAT
+                                            </th>
+                                            <th class="bg-soft-secondary">Released
+                                            </th>
+                                            <th class="bg-soft-secondary">
+                                                Pre-Released</th>
+                                            <th class="bg-soft-secondary">TAT</th>
+                                            <th class="bg-soft-secondary">Limit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th>Grand Total</th>
+                                            <th id="total-roa">-</th>
+                                            <th id="total-roa-on">-</th>
+                                            <th id="total-roa-over">-</th>
+                                            <th id="total-roa-released">-</th>
+                                            <th id="total-roa-unreleased">-</th>
+                                            <th>-</th>
+                                            <th>-</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box-body">
+                        <div id="chart_by_mral"
+                            class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box-body">
+                        <div id="chart_by_roa"
+                            class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script>
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        // Fungsi cek tema saat ini
+        const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+        // Fungsi refresh semua chart dan tabel sekaligus
+        function refreshAllCharts() {
+            var jml_week = $('#jml_week').val();
+            var filter = {
+                jml_week: jml_week,
+                theme: getTheme() // kirim tema juga kalau perlu server
+            };
+
+            createChartMral(filter);
+            createChartRoa(filter);
+
+            // Refresh tabel MRAL
+            loadMralTable(filter);
+            // Refresh tabel ROA
+            loadRoaTable(filter);
+        }
+
+        // Reusable fungsi load tabel MRAL (sama dengan fungsi append tapi dibikin fungsi terpisah)
+        function loadMralTable(filter) {
+            var table = $("#list-table-mral").find("tbody");
+            table.empty();
+            var grandOrder = 0;
+            var grandOnTat = 0;
+            var grandOverTat = 0;
+            var grandReleased = 0;
+            var grandUnReleased = 0;
+            $("#total-mral").text('-');
+            $("#total-mral-on").text('-');
+            $("#total-mral-over").text('-');
+            $("#total-mral-released").text('-');
+            $("#total-mral-unreleased").text('-');
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'sample-analyse-week-tat-mral' %}",
+                data: filter,
+                success: function (response) {
+                    var data = response.data;
+                    $.each(data, function (index, row) {
+                        var newRow = $("<tr>");
+                        newRow.append("<td>" + (index + 1) + "</td>");
+                        newRow.append("<td>" + row.minggu + "</td>");
+                        newRow.append("<td>" + parseFloat(row.jml_mral).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.released_on_tat).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.released_over_tat).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.total_released).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.not_released).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + row.average_time + "</td>");
+                        newRow.append("<td>" + row.time_limit + "</td>");
+
+                        grandOrder += parseFloat(row.jml_mral);
+                        grandOnTat += parseFloat(row.released_on_tat);
+                        grandOverTat += parseFloat(row.released_over_tat);
+                        grandReleased += parseFloat(row.total_released);
+                        grandUnReleased += parseFloat(row.not_released);
+
+                        table.append(newRow);
+                    });
+
+                    $("#total-mral").text(grandOrder.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-mral-on").text(grandOnTat.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-mral-over").text(grandOverTat.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-mral-released").text(grandReleased.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-mral-unreleased").text(grandUnReleased.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                },
+                error: function () {
+                    console.log("Gagal mengambil data MRAL dari server.");
+                }
+            });
+        }
+
+        // Fungsi load tabel ROA (mirip MRAL)
+        function loadRoaTable(filter) {
+            var table_roa = $("#list-table-roa").find("tbody");
+            table_roa.empty();
+            var grandOrderRoa = 0;
+            var grandOnTatRoa = 0;
+            var grandOverTatRoa = 0;
+            var grandReleasedRoa = 0;
+            var grandUnReleasedRoa = 0;
+            $("#total-roa").text('-');
+            $("#total-roa-on").text('-');
+            $("#total-roa-over").text('-');
+            $("#total-roa-released").text('-');
+            $("#total-roa-unreleased").text('-');
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'sample-analyse-week-tat-roa' %}",
+                data: filter,
+                success: function (response) {
+                    var data = response.data;
+                    $.each(data, function (index, row) {
+                        var newRow = $("<tr>");
+                        newRow.append("<td>" + (index + 1) + "</td>");
+                        newRow.append("<td>" + row.minggu + "</td>");
+                        newRow.append("<td>" + parseFloat(row.jml_roa).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.released_on_tat).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.released_over_tat).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.total_released).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + parseFloat(row.not_released).toLocaleString('en-US', { maximumFractionDigits: 0 }) + "</td>");
+                        newRow.append("<td>" + row.average_time + "</td>");
+                        newRow.append("<td>" + row.time_limit + "</td>");
+
+                        grandOrderRoa += parseFloat(row.jml_roa);
+                        grandOnTatRoa += parseFloat(row.released_on_tat);
+                        grandOverTatRoa += parseFloat(row.released_over_tat);
+                        grandReleasedRoa += parseFloat(row.total_released);
+                        grandUnReleasedRoa += parseFloat(row.not_released);
+
+                        table_roa.append(newRow);
+                    });
+
+                    $("#total-roa").text(grandOrderRoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-roa-on").text(grandOnTatRoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-roa-over").text(grandOverTatRoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-roa-released").text(grandReleasedRoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                    $("#total-roa-unreleased").text(grandUnReleasedRoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+                },
+                error: function () {
+                    console.log("Gagal mengambil data ROA dari server.");
+                }
+            });
+        }
+
+        // Event klik Apply Filter
+        $('#applyFilter').click(function () {
+            refreshAllCharts();
+        });
+
+        // Create Chart MRAL dengan kirim filter tema juga (opsional)
+        function createChartMral(filter = {}) {
+            filter.theme = getTheme();
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'sample-analyse-week-tat-chart-mral' %}",
+                data: filter,
+                dataType: "json",
+                success: function (data) {
+                    if (data.plot_div) {
+                        $('#chart_by_mral').html(data.plot_div);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error (MRAL Chart): ", status, error);
+                }
+            });
+        }
+
+        // Create Chart ROA
+        function createChartRoa(filter = {}) {
+            filter.theme = getTheme();
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'sample-analyse-week-tat-chart-roa' %}",
+                data: filter,
+                dataType: "json",
+                success: function (data) {
+                    if (data.plot_div) {
+                        $('#chart_by_roa').html(data.plot_div);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error (ROA Chart): ", status, error);
+                }
+            });
+        }
+
+        // MutationObserver untuk pantau perubahan class pada <html> (theme toggle)
+        const observer = new MutationObserver(() => {
+            refreshAllCharts();
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+        // Load data & chart pertama kali saat halaman siap
+        refreshAllCharts();
+    });
+</script>
+
+
+
+</body>
+
+</html>

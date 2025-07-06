@@ -1,0 +1,402 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">CRM - relative different (mral)</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 gap-4 mb-5">
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="startDate" value="{{start_date}}"
+                                            name="startDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="endDate" value="{{end_date}}"
+                                            name="endDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="button" id="applyFilter"
+                                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary">Oreas_Name</th>
+                                            <th class="bg-soft-secondary">Ni [Oreas]</th>
+                                            <th class="bg-soft-secondary">CO [Oreas]</th>
+                                            <th class="bg-soft-secondary">Fe2O3 [Oreas]</th>
+                                            <th class="bg-soft-secondary">Fe [Oreas]</th>
+                                            <th class="bg-soft-secondary">MgO [Oreas]</th>
+                                            <th class="bg-soft-secondary">SiO2 [Oreas]</th>
+                                            <th class="bg-soft-secondary">Deskripsi</th>
+                                            <th class="bg-soft-secondary">Sample Id</th>
+                                            <th class="bg-soft-secondary">Realese</th>
+                                            <th class="bg-soft-secondary">Ni</th>
+                                            <th class="bg-soft-secondary">Co</th>
+                                            <th class="bg-soft-secondary">Fe2O3</th>
+                                            <th class="bg-soft-secondary">Fe</th>
+                                            <th class="bg-soft-secondary">MgO</th>
+                                            <th class="bg-soft-secondary">SiO2</th>
+                                            <th class="bg-soft-secondary">Diff [Ni]</th>
+                                            <th class="bg-soft-secondary">Diff [Co]</th>
+                                            <th class="bg-soft-secondary">Diff [Fe2O3]</th>
+                                            <th class="bg-soft-secondary">Diff [Fe]</th>
+                                            <th class="bg-soft-secondary">Diff [MgO]</th>
+                                            <th class="bg-soft-secondary">Diff [SiO2]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+          flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+        });
+        /*  Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-crm' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.data_crm, function (key, value) {
+                    options += '<option value="' + value.oreas_name + '">' + value.oreas_name + '</option>';
+                });
+                $('#filterTypeCrm').append(options);
+            }
+        });
+        /*-- Render DataTable --*/
+        table = $('#data_table').DataTable().clear().destroy();
+        let data_url = '{% url "samples-crm-mral-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            // 'select': true,
+           language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.from_date = $('#from_date').val();
+                    data.to_date = $('#to_date').val();
+                    data.filterTypeCrm = $('#filterTypeCrm').val();
+                    return data;
+                },
+            },
+
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomo
+                { 'data': 'oreas_name', 'name': 'oreas_name', 'searchable': true },
+
+                {
+                    data: 'oreas_ni',
+                    name: 'oreas_ni',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+
+                {
+                    data: 'oreas_co',
+                    name: 'oreas_co',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+
+                {
+                    data: 'oreas_fe2o3',
+                    name: 'oreas_fe2o3',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'oreas_fe',
+                    name: 'oreas_fe',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'oreas_mgo',
+                    name: 'oreas_mgo',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'oreas_sio2',
+                    name: 'oreas_sio2',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'sampling_deskripsi',
+                    name: 'sampling_deskripsi',
+                    searchable: true,
+                },
+                {
+                    data: 'sample_id',
+                    name: 'sample_id',
+                    searchable: true,
+
+                },
+                {
+                    data: 'release_date',
+                    name: 'release_date',
+                    searchable: true,
+
+                },
+                {
+                    data: 'mral_ni',
+                    name: 'mral_ni',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'mral_co',
+                    name: 'mral_co',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'mral_fe2o3',
+                    name: 'mral_fe2o3',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'mral_fe',
+                    name: 'mral_fe',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'mral_mgo',
+                    name: 'mral_mgo',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'mral_sio2',
+                    name: 'mral_sio2',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'diff_ni',
+                    name: 'diff_ni',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'diff_co',
+                    name: 'diff_co',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'diff_fe2o3',
+                    name: 'diff_fe2o3',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'diff_fe',
+                    name: 'diff_fe',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'diff_mgo',
+                    name: 'diff_mgo',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'diff_sio2',
+                    name: 'diff_sio2',
+                    searchable: true,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [10, 'desc']
+            ]
+        });
+
+        /*--Apply Filter---*/
+        $('#applyFilter').click(function () {
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            // var filterTypeCrm = $('#filterTypeCrm').val();
+            // Kirim permintaan AJAX ke server dengan filter
+            table.ajax.reload();
+        });
+        // Tombol Reset
+        $('#reload').on('click', function () {
+            // function resetFilter() {
+            $('#from_date').val('');
+            $('#to_date').val('');
+            $('#filterTypeCrm').val('').trigger('change');
+            table.ajax.reload(); //just reload table;
+            // };
+        });
+    });
+</script>
+</body>
+
+</html>

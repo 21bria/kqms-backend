@@ -1,0 +1,613 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Master Data</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Dumping Point
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Stockpile</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="createNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
+
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="15%">Name</th>
+                                            <th>Description</th>
+                                            <th width="7%">Category</th>
+                                            <th width="7%">Active</th>
+                                            <th width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Create Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form id="entryForm" name="entryForm">
+                        <div class="grid grid-cols-12 gap-4">
+                            <!-- Date -->
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Dumping Point</label>
+                                <input type="text" id="dumping_point" name="dumping_point"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Dome</label>
+                                <select class="form-control w-full !rounded-md" id="category" name="category">
+                                    <option value="">Select</option>
+                                    <option value="Stockpile">Stockpile</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="remarks" name="remarks" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="saveBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form>
+                        <input type="hidden" name="id" id="id">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Dumping point</label>
+                                <input type="text" id="edit_dumping_point" name="edit_dumping_point"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Category</label>
+                                <select class="form-control w-full !rounded-md" id="edit_category" name="edit_category">
+                                    <option value="">Select</option>
+                                    <option value="Stockpile">Stockpile</option>
+                                    <option value="General">General</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="edit_remarks" name="edit_remarks" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#edit-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="updateBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $(".form-select").select2({
+            width: '100%', // Sesuaikan lebar dengan kontainer
+            // dropdownParent: document.getElementById("filterModal")
+        });
+
+        /*-- Render DataTable --*/
+        let url = '{% url "source-dumping-point-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'dumping_point',
+                    name: 'dumping_point'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
+                },
+                {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                    render: function (data, type, row) {
+                        // Ubah nilai status menjadi elemen HTML berdasarkan nilai
+                        return data == 1 ?
+                            '<span class="badge whitespace-nowrap badge-outline-secondary">Yes</span>' :
+                            '<span class="badge whitespace-nowrap badge-outline-warning" : class="badge-outline-primary">No</span>';
+                        '<span class="badge whitespace-nowrap badge-outline-warning" : class="badge-outline-primary">No</span>';
+                    }
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                    <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                    }
+                }
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#createNew').click(function () {
+            $('#id').val('');
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+            $('#duplicateError').hide();
+            $('#categoryError').hide();
+            $('#saveBtn').html('Submit');
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            if ($('#dumping_point').val().trim() === '') {
+                showToast('Dumping point is required', 'danger');
+                return;
+            }
+            if ($('#category').val().trim() === '') {
+                showToast('Category is required', 'danger');
+                return;
+            }
+            $(this).html('Sending..');
+            $.ajax({
+                data: $('#entryForm').serialize(),
+                url: "{% url 'insert-source-dumping-point' %}",
+                type: "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: $('#entryForm').serialize(),
+                success: function (data) {
+                    if (data.status === 'success') {
+                        table.draw();
+                        // Tampilkan notifikasi sukses
+                        $('#success-entry').find('strong').text('Success!');
+                        $('#success-entry').find('span').text('Data saved successfully.');
+                        $('#success-entry').show();
+                        // Sembunyikan notifikasi setelah beberapa detik
+                        window.HSOverlay.close('#add-data');
+                        Swal.fire({
+                            title: 'Data successfully created',
+                            icon: "success",
+                            timer: 3000,
+                            showConfirmButton: false,
+                            confirmButtonText: 'OK',
+                        });
+                    } else {
+                        alert('Error: ' + data.message);
+                        // Handle error, jika perlu
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    let message = 'Terjadi kesalahan server';
+                    if (xhr.responseJSON) {
+                        message = xhr.responseJSON.message || xhr.responseJSON.error || message;
+                    }
+                    if (xhr.status === 422) {
+                        showToast(message, 'danger');
+                    } else if (xhr.status === 400) {
+                        showToast(message, 'danger');
+                    } else if (xhr.status === 403) {
+                        showToast(message || 'You do not have permission.', 'danger');
+                    } else if (xhr.status === 404) {
+                        showToast(message || 'Data tidak ditemukan.', 'danger');
+                    } else if (xhr.status === 500) {
+                        showToast('Data already exists.', 'danger');
+                    } else {
+                        showToast(message, 'danger');
+                    }
+
+                }
+            });
+        });
+
+        /*--- Click to Edit Button ---*/
+        $('body').on('click', '.editData', function () {
+            var id = $(this).data('id');
+            var url = '/kqms/master/mine-source/dumping-point/get/' + id + '/';
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
+                        window.HSOverlay.open('#edit-data');
+                        $('#edit_duplicateError').hide();
+                        $('#edit_categoryError').hide();
+                        $('#id').val(response.id);
+                        $('#edit_dumping_point').val(response.dumping_point);
+                        $('#edit_remarks').val(response.remarks);
+                        $('#edit_category').val(response.category.trim()).trigger('change');
+
+                    } else {
+                        alert(
+                            'Data tidak ditemukan'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    const getMessage = () => {
+                        if (xhr.responseJSON) {
+                            return xhr.responseJSON.message || xhr.responseJSON.error || 'Terjadi kesalahan.';
+                        } else if (xhr.responseText) {
+                            return xhr.responseText;
+                        }
+                        return 'Terjadi kesalahan server';
+                    };
+                    if (xhr.status === 403) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: getMessage() || 'You do not have permission.',
+                            padding: '2em',
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            html: getMessage(),
+                        });
+                    }
+                }
+
+            });
+        });
+
+        /*--- Update---*/
+        $('#updateBtn').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/master/mine-source/dumping-point/update/' + id + '/';
+            if ($('#edit_dumping_point').val().trim() === '') {
+                showToast('Dumping point is required', 'danger');
+                return;
+            }
+            if ($('#edit_category').val().trim() === '') {
+                showToast('Category is required', 'danger');
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    dumping_point: $('#edit_dumping_point').val(),
+                    remarks: $('#edit_remarks').val(),
+                    category: $('#edit_category').val(),
+                },
+                success: function (data) {
+                    if (data) {
+                        window.HSOverlay.close('#edit-data');
+                        table.draw()
+                        $('#success-entry').find('strong').text('Success!');
+                        $('#success-entry').find('span').text('Data update successfully.');
+                        $('#success-entry').show();
+                        Swal.fire({
+                            title: 'Data successfully updated',
+                            icon: "success",
+                            timer: 3000,
+                            showConfirmButton: false,
+                            confirmButtonText: 'OK',
+                        });
+                    } else {
+                        alert('Gagal memperbarui data');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    let message = 'Terjadi kesalahan server';
+                    if (xhr.responseJSON) {
+                        message = xhr.responseJSON.message || xhr.responseJSON.error || message;
+                    }
+                    if (xhr.status === 422) {
+                        showToast(message, 'danger');
+                    } else if (xhr.status === 400) {
+                        showToast('Data already exists.', 'danger');
+                    } else if (xhr.status === 403) {
+                        showToast(message || 'You do not have permission.', 'danger');
+                    } else if (xhr.status === 404) {
+                        showToast(message || 'Data tidak ditemukan.', 'danger');
+                    } else {
+                        showToast(message, 'danger');
+                    }
+                }
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-source-dumping-point" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function (data) {
+                        // if (data.status === 'success') {
+                        Swal.fire(
+                            'Deleted!',
+                            data.message,
+                            'success'
+                        );
+                        // Refresh table or remove row
+                        table.draw();
+                        // }
+                        // table.draw();
+                    },
+                    error: function (xhr) {
+                        if (xhr.status === 403) {
+                            Swal.fire(
+                                'Access Denied!',
+                                xhr.responseJSON.message,
+                                'error'
+                            );
+                        } else if (xhr.status === 404) {
+                            Swal.fire(
+                                'Not Found!',
+                                xhr.responseJSON.message,
+                                'error'
+                            );
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Something went wrong.',
+                                'error'
+                            );
+                        }
+                    }
+                });
+            })
+        });
+
+    });
+</script>
+<!-- Export -->
+<script>
+    $(document).ready(function () {
+        $('#export').click(function () {
+            // Buat URL dengan filter
+            var exportUrl = "{% url 'export-dumping-point' %}"
+            // Redirect ke URL eksport dengan filter
+            window.location.href = exportUrl;
+        });
+    });
+</script>
+
+<!-- Toats -->
+<script>
+    function showToast(message, type = 'primary') {
+        const container = document.getElementById('toast-container');
+        if (!container) {
+            console.warn('Toast container not found');
+            return;
+        }
+        const toast = document.createElement('div');
+        //   toast.className = `ti-toast bg-${type}/10 text-sm text-${type} shadow-lg rounded-md transition-all`;
+        toast.className = `flex items-center justify-between bg-red-100 text-red-700 border border-red-300  rounded shadow-md`;
+        toast.setAttribute('role', 'alert');
+
+        toast.innerHTML = `
+                <div class="flex p-4 items-start justify-between gap-4">
+                ${message}
+                <button onclick="this.parentElement.parentElement.remove()" class="text-${type} hover:opacity-70">
+                    ✕
+                </button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                }
+            }, 300);
+        }, 5000);
+    }
+
+</script>
+</body>
+
+</html>

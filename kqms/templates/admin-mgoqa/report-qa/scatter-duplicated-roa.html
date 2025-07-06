@@ -1,0 +1,368 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 13rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-4 mb-5">
+                <div class="xl:col-span-2 col-span-12">
+                    <!-- <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}" id="startDate"
+                        name="startDate"> -->
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                class="ri-calendar-line"></i> </div>
+                        <input type="text" class="form-control" id="date" value="{{start_date}}" name="startDate"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <!-- <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}" id="endDate"
+                        name="endDate"> -->
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                class="ri-calendar-line"></i> </div>
+                        <input type="text" class="form-control" id="date" value="{{end_date}}" name="endDate"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <button type="button" id="applyFilter"
+                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-4 mt-4">
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <!-- <div class="box-header">
+                            <div class="box-title">Scatter Ni</div>
+                        </div> -->
+                        <div class="box-body">
+                            <div  id="scatter_ni" 
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <!-- <div class="box-header">
+                            <div class="box-title">Scatter Co</div>
+                        </div> -->
+                        <div class="box-body">
+                            <div id="scatter_co" class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <!-- <div class="box-header">
+                            <div class="box-title">Scatter Fe</div>
+                        </div> -->
+                        <div class="box-body">
+                            <div id="scatter_fe" class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <!-- <div class="box-header">
+                            <div class="box-title">Scatter MgO</div>
+                        </div> -->
+                        <div class="box-body">
+                            <div id="scatter_mgo" class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <!-- <div class="box-header">
+                            <div class="box-title">Scatter SiO2</div>
+                        </div> -->
+                        <div class="box-body">
+                            <div id="scatter_sio2" class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script>
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        
+         const getTheme = () => {
+            return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        };
+
+
+        // Fungsi memuat chart sesuai filter
+        const updateCharts = () => {
+            const start_date = $("#start_date").val();
+            const end_date = $("#end_date").val();
+            const theme = getTheme();
+
+            const filter = {
+                start_date: start_date,
+                end_date: end_date,
+                theme: theme,
+            };
+            createScatterNi(filter);
+            createScatterCo(filter);
+            createScatterFe(filter);
+            createScatterMgo(filter);
+            createScatterSiO2(filter);
+        };
+
+        // Jalankan saat awal
+        updateCharts();
+
+        // Jika kamu ingin chart berubah otomatis saat tema diubah (mode terang ↔ gelap)
+        const observer = new MutationObserver(() => {
+            updateCharts();
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']  // Pantau perubahan class "dark"
+        });
+
+        // applyFilter Click
+        $("#applyFilter").on("click", function () {
+              const start_date = $("#start_date").val();
+            const end_date = $("#end_date").val();
+            const theme = getTheme();
+            if (start_date == '') {
+                $('#start_date').focus();
+                return false;
+            } else if (end_date == '') {
+                $('#end_date').focus();
+                return false;
+            } else {
+                var filter = {
+                    start_date: start_date,
+                    end_date: end_date,
+                    theme: theme,
+                };
+                createScatterNi(filter);
+                createScatterCo(filter);
+                createScatterFe(filter);
+                createScatterMgo(filter);
+                createScatterSiO2(filter);
+            }
+
+        });
+
+    });
+
+    // for plotly
+    function createScatterNi(filter) {
+        // var theme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'scatter-duplicate-roa-ni' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_ni').html(data.plot_div);
+                } else {
+                    // $('#scatter_ni').html('<p>Error loading plot. Please try again.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+                // $('#scatter_ni').html('<p>Error loading plot. Please try again.</p>');
+            }
+        });
+    }
+
+    function createScatterCo(filter) {
+        // var theme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'scatter-duplicate-roa-co' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_co').html(data.plot_div);
+                } else {
+                    // $('#scatter_co').html('<p>Error loading plot. Please try again.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+                // $('#scatter_co').html('<p>Error loading plot. Please try again.</p>');
+            }
+        });
+    }
+
+    function createScatterFe(filter) {
+        // var theme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'scatter-duplicate-roa-fe' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_fe').html(data.plot_div);
+                } else {
+                    // $('#scatter_fe').html('<p>Error loading plot. Please try again.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+                // $('#scatter_fe').html('<p>Error loading plot. Please try again.</p>');
+            }
+        });
+    }
+
+    function createScatterMgo(filter) {
+        // var theme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'scatter-duplicate-roa-mgo' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_mgo').html(data.plot_div);
+                } else {
+                    // $('#scatter_mgo').html('<p>Error loading plot. Please try again.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+                // $('#scatter_mgo').html('<p>Error loading plot. Please try again.</p>');
+            }
+        });
+    }
+
+    function createScatterSiO2(filter) {
+        // var theme = $('body').hasClass('dark-mode') ? 'dark' : 'light';
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'scatter-duplicate-roa-sio2' %}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_sio2').html(data.plot_div);
+                } else {
+                    // $('#scatter_sio2').html('<p>Error loading plot. Please try again.</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+                // $('#scatter_sio2').html('<p>Error loading plot. Please try again.</p>');
+            }
+        });
+    }
+
+
+</script>
+
+</body>
+
+</html>

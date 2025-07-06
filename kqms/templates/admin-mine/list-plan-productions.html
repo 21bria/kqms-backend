@@ -1,0 +1,655 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Productions Plan</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Production
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Plan Production</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="exportFilter" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                    <tr>
+                                        <th class="bg-soft-secondary" width="4%">No</th>
+                                        <th class="bg-soft-secondary">Date</th>
+                                        <th class="bg-soft-secondary" width="5%">Category</th>
+                                        <th class="bg-soft-secondary">Sources</th>
+                                        <th class="bg-soft-secondary">Vendors</th>
+                                        <th class="bg-soft-secondary">Soils</th>
+                                        <th class="bg-soft-secondary">OB</th>
+                                        <th class="bg-soft-secondary">LGLO</th>
+                                        <th class="bg-soft-secondary">MGLO</th>
+                                        <th class="bg-soft-secondary">HGLO</th>
+                                        <th class="bg-soft-secondary">Waste</th>
+                                        <th class="bg-soft-secondary">MWS</th>
+                                        <th class="bg-soft-secondary">LGSO</th>
+                                        <th class="bg-soft-secondary">MGSO</th>
+                                        <th class="bg-soft-secondary">HGSO</th>
+                                        <th class="bg-soft-secondary">Quarry</th>
+                                        <th class="bg-soft-secondary">Ballast</th>
+                                        <th class="bg-soft-secondary">Biomass</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    <div class="ti-modal-body px-4 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4 ">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Start date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}"
+                                    id="startDate" name="startDate">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">End date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}"
+                                    id="endDate" name="endDate">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="batch_status">Batch Status</label> -->
+                                <select id="batch_status" name="batch_status" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Incomplete">Incomplete</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="material_filter">Materials</label> -->
+                                <select id="material_filter" name="material_filter"
+                                    class="form-control  w-full !rounded-md ">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="source_filter">Source</label> -->
+                                <select id="source_filter" name="source_filter" class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="area_filter">Stockpile</label> -->
+                                <select id="area_filter" name="area_filter" class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="point_filter">Dome</label> -->
+                                <select id="point_filter" name="point_filter" class="form-control  w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
+                            id="exportButton"> Export
+                        </button>
+                        <button type="button" id="applyFilterBtn"
+                            class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*-- Pass Header Token ---*/
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $(".form-select").select2({
+                width: '100%', // Sesuaikan lebar dengan kontainer
+            });
+            table = $('#data_table').DataTable().clear().destroy();
+            /*-- Render DataTable --*/
+            let data_url = '{% url "mine-production-plan-list" %}';
+            var table = $('#data_table').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'responsive': true,
+                'autoWidth': true,language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+                "ajax": {
+                    "url": data_url,
+                    "type": "POST",
+                    dataType: 'json',
+                    "data": function (data) {
+                        data.startDate = $('#startDate').val();
+                        data.endDate = $('#endDate').val();
+                        data.sources = $('#sources').val();
+                        data.vendors = $('#vendors').val();
+                        data.category = $('#category').val();
+                        return data;
+                    },
+                },
+                columns: [
+                    {
+                        data: null,
+                        searchable: false,
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, // Kolom nomor otomatis
+                    {
+                        data: 'date_plan',
+                        name: 'date_plan'
+                    },
+                    {
+                        data: 'category',
+                        name: 'category'
+                    },
+                    {
+                        data: 'sources',
+                        name: 'sources',
+                        searchable: true
+                    },
+                    {
+                        data: 'vendors',
+                        name: 'vendors',
+                        searchable: true
+                    },
+                    {
+                        data: 'TopSoil',
+                        name: 'TopSoil',
+                        searchable: false,
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'OB',
+                        name: 'OB',
+                        searchable: false,
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'LGLO',
+                        name: 'LGLO',
+                        searchable: false,
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'MGLO',
+                        name: 'MGLO',
+                        searchable: false,
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+
+                    {
+                        data: 'HGLO',
+                        name: 'HGLO',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'Waste',
+                        name: 'Waste',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'MWS',
+                        name: 'MWS',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+
+
+                    {
+                        data: 'LGSO',
+                        name: 'LGSO',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'MGSO',
+                        name: 'MGSO',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'HGSO',
+                        name: 'HGSO',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'Quarry',
+                        name: 'Quarry',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'Ballast',
+                        name: 'Ballast',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'Biomass',
+                        name: 'Biomass',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+
+
+                ],
+                // Mengatur default sort pada kolom secara desc
+                order: [
+                    [1, 'desc']
+                ],
+                // Menambahkan opsi footerCallback
+
+            });
+
+            /*--Filter Modal and Apply Filter---*/
+            $('#applyFilterBtn').click(function () {
+                table.ajax.reload();
+            });
+
+            /*  Reset */
+            $('#reload').on('click', function () {
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#sources').val('').trigger('change');
+                $('#vendors').val('').trigger('change');
+                $('#category').val('').trigger('change');
+                table.ajax.reload(); //just reload table
+            });
+
+            /* Update*/
+            $('#updateButton').click(function () {
+                var id = $('#id').val();
+                var tgl_production = $('#tgl_production').val().trim();
+                var shift = $('#shift').val().trim();
+                var id_prospect_area = $('#id_prospect_area').val();
+                var id_block = $('#id_block').val();
+                var from_rl = $('#from_rl').val().trim();
+                var to_rl = $('#to_rl').val().trim();
+                var id_material = $('#id_material').val();
+                var id_stockpile = $('#id_stockpile').val();
+                var id_pile = $('#id_pile').val();
+                var grade_expect = $('#grade_expect').val();
+                var grade_control = $('#grade_control').val().trim();
+                var unit_truck = $('#unit_truck').val().trim();
+                var batch_code = $('#batch_code').val().trim();
+                var increment = $('#increment').val();
+                var batch_status = $('#batch_status_edit').val().trim();
+                var pile_status = $('#pile_status').val().trim();
+                var ore_class = $('#ore_class').val().trim();
+                var ritase = $('#ritase').val();
+                var tonnage = $('#tonnage').val();
+                var truck_factor = $('#truck_factor').val().trim();
+                var no_production = $('#no_production_edit').val().trim();
+                var sale_adjust = $('#sale_adjust').val().trim();
+                var remarks = $('#remarks').val();
+
+                var updatedData = {
+                    tgl_production: tgl_production,
+                    shift: shift,
+                    id_prospect_area: id_prospect_area,
+                    id_block: id_block,
+                    from_rl: from_rl,
+                    to_rl: to_rl,
+                    id_material: id_material,
+                    id_stockpile: id_stockpile,
+                    id_pile: id_pile,
+                    grade_expect: grade_expect,
+                    grade_control: grade_control,
+                    unit_truck: unit_truck,
+                    batch_code: batch_code,
+                    increment: increment,
+                    batch_status: batch_status,
+                    pile_status: pile_status,
+                    ore_class: ore_class,
+                    ritase: ritase,
+                    tonnage: tonnage,
+                    truck_factor: truck_factor,
+                    no_production: no_production,
+                    remarks: remarks,
+                    sale_adjust: sale_adjust
+                };
+
+                var url = '/sqms_apps/ore/update/' + id + '/';
+                $.ajax({
+                    url: url,
+                    type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
+                    data: updatedData,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#id').val('');
+                            $('#tgl_production').val('');
+                            $('#shift').val('').trigger('change');
+                            $('#id_prospect_area').trigger('change');
+                            $('#id_block').trigger('change');
+                            $('#from_rl').val('');
+                            $('#to_rl').val('');
+                            $('#id_material').val('').trigger('change');
+                            $('#id_stockpile').val('').trigger('change');
+                            $('#id_pile').val('').trigger('change');
+                            $('#grade_expect').val('');
+                            $('#grade_control').val('').trigger('change');
+                            $('#unit_truck').val('')
+                            $('#batch_code').val()
+                            $('#increment').val('');
+                            $('#batch_status_edit').val('').trigger('change');
+                            $('#pile_status').val('').trigger('change');
+                            $('#ore_class').val('').trigger('change');
+                            $('#ritase').val('');
+                            $('#tonnage').val('');
+                            $('#truck_factor').val('');
+                            $('#no_production_edit').val('');
+                            $('#remarks').val('');
+                            $('#sale_adjust').val('');
+                            toggleModal('editModal');
+
+                            // Tampilkan notifikasi sukses
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                html: response.message,
+                                padding: '2em',
+                            });
+
+                            // Kirim permintaan AJAX ke server
+                            $('#data_table').DataTable().clear().draw();
+                        } else {
+                            // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
+                            alert('Terjadi kesalahan: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, textStatus, status, errorThrown, error) {
+                        if (xhr.status === 422) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+
+                        if (xhr.status === 400) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.error,
+                                padding: '2em',
+                            });
+                        }
+                        else {
+                            // alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+                    }
+
+                });
+            });
+
+            /*--- Delete ---*/
+            $('#data_table').on('click', '.deleteData', function () {
+                var id = $(this).data('id');
+                var url = '{% url "delete-data-ore" %}?id=' + id;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                    // width: 320,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            dataType: 'json',
+                            data: {
+                                id: id,
+                            },
+                            success: function (data) {
+                                table.draw();
+
+                            },
+                            error: function (data) {
+                                console.log('Error:', data);
+                            }
+                        });
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Your file has been deleted.',
+                            icon: 'success',
+                            // width: 320,
+                        })
+                    }
+                })
+            });
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#openFilter').click(function () {
+                window.HSOverlay.open('#search-modal');
+                $('#exportButton').hide();
+                $('#applyFilterBtn').show();
+            });
+
+            // Ambil data dropdwon
+            $.ajax({
+                url: "{% url 'get-mine-source-all' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    $.each(data.results, function (index, value) {
+                        options += '<option value="' + value.text + '">' + value.text + '</option>';
+                    });
+                    $('#sources').append(options);
+                }
+            });
+            $.ajax({
+                url: "{% url 'get-mine-category' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    $.each(data.results, function (index, value) {
+                        options += '<option value="' + value.id + '">' + value.text + '</option>';
+                    });
+                    // Set opsi dalam elemen Select2
+                    $('#category').append(options);
+
+                }
+            });
+
+            $.ajax({
+                url: "{% url 'get-mine-vendors' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    
+                    var options = '';
+
+                    
+                    $.each(data.list, function (key, value) {
+                        options += '<option value="' + value.code + '">' + value.vendor_name + '</option>';
+                    });
+
+                    // Set opsi dalam elemen Select2
+                    $('#vendors').append(options);
+
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

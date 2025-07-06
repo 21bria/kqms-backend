@@ -1,0 +1,1735 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Productions</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Ore
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Ore Production</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="exportFilter" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <div class="flex flex-wrap justify-between items-start">
+                                    <!-- Kiri -->
+                                    <div class="flex items-center">
+                                        <div class="me-2">
+                                            <span class="avatar !rounded-full bg-primary/10 !text-primary">
+                                                <i class="ri-bar-chart-fill text-[1rem]"></i>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="totel_ore">
+                                                0.00</p>
+                                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Total
+                                                Ore</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Kanan -->
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center">
+                                            <div class="me-2">
+                                                <span class="avatar !rounded-full bg-success/10 !text-success">
+                                                    <i class="ri-bar-chart-fill text-[1rem]"></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p class="text-[1.125rem] mb-0 text-success font-semibold"
+                                                    id="details_mral">0.00</p>
+                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Details
+                                                    mral</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="me-2">
+                                                <span class="avatar !rounded-full bg-secondary/10 !text-secondary">
+                                                    <i class="ri-bar-chart-horizontal-fill text-[1rem]"></i>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p class="text-[1.125rem] mb-0 text-secondary font-semibold"
+                                                    id="details_roa">0.00</p>
+                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Details
+                                                    roa</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- <div id="basic-table" class="ti-custom-table ti-striped-table ti-custom-table-hover"></div> -->
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th>Date</th>
+                                            <th width="5%">Category</th>
+                                            <th width="5%">Shift</th>
+                                            <th>Source</th>
+                                            <th>Block</th>
+                                            <th>RL</th>
+                                            <!-- <th>To</th> -->
+                                            <th>Material</th>
+                                            <th>Class</th>
+                                            <th>Expect.</th>
+                                            <th>GC</th>
+                                            <th>Units</th>
+                                            <th>Stockpile</th>
+                                            <th>Dome</th>
+                                            <th>Batch</th>
+                                            <th>Incr.</th>
+                                            <th>Ritase</th>
+                                            <th>Tonnage</th>
+                                            <th>Status</th>
+                                            <th>Pile Status</th>
+                                            <th>Sample Id</th>
+                                            <th>Remarks</th>
+                                            <!-- <th>TF</th> -->
+                                            <th>Users</th>
+                                            <th width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tfoot class="th_hide" style='display:none;'>
+                                        <tr>
+                                            <th width="5%"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th width="5%"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th width="7%"></th>
+                                        </tr>
+                                    </tfoot>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    <div class="ti-modal-body !overflow-visible">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Start date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="startDate" name="startDate"
+                                        placeholder="Choose date" value="{{start_date}}">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">End date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="endDate" name="endDate"
+                                        placeholder="Choose date" value="{{end_date}}">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="batch_status">Batch Status</label> -->
+                                <select id="batch_status" name="batch_status"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">-- Select --</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Incomplete">Incomplete</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="material_filter">Materials</label> -->
+                                <select id="material_filter" name="material_filter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="source_filter">Source</label> -->
+                                <select id="source_filter" name="source_filter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="area_filter">Stockpile</label> -->
+                                <select id="area_filter" name="area_filter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <!-- <label for="point_filter">Dome</label> -->
+                                <select id="point_filter" name="point_filter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
+                            id="exportButton"> Export
+                        </button>
+                        <button type="button" id="applyFilterBtn"
+                            class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <!-- <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 max-w-7xl w-full ease-out"> -->
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 !max-w-full !w-full !m-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Ore Production
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form class="min-w-0">
+
+                        <input type="hidden" name="id" id="id">
+                        <div class="grid grid-cols-12 gap-4">
+                            <!-- Date -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Date</label>
+                                <input id="tgl_production" type="date" name="tgl_production"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Category -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Category</label>
+                                <select id="category" name="category" class="form-control w-full !rounded-md">
+                                    <option value="">Select</option>
+                                    <option value="Mining">Mining</option>
+                                    <option value="Project">Project</option>
+                                </select>
+                            </div>
+
+                            <!-- Shift -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Shift</label>
+                                <select id="shift" name="shift" class="form-control w-full !rounded-md">
+                                    <option value="">Select</option>
+                                    <option value="D">D</option>
+                                    <option value="N">N</option>
+                                </select>
+                            </div>
+
+                            <!-- Source -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Source</label>
+                                <select id="id_prospect_area" name="id_prospect_area"
+                                    class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                            <!-- Block -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Block</label>
+                                <select id="id_block" name="id_block" class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                            <!-- From RL -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">From (RL)</label>
+                                <input type="number" id="from_rl" name="from_rl" class="form-control w-full !rounded-md"
+                                    placeholder="From RL">
+                            </div>
+
+                            <!-- To RL -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">To (RL)</label>
+                                <input type="number" id="to_rl" name="to_rl" class="form-control w-full !rounded-md"
+                                    placeholder="To RL">
+                            </div>
+
+                            <!-- Layer -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Layer</label>
+                                <select id="id_material" name="id_material" class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                            <!-- Dome -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Dome</label>
+                                <select id="id_pile" name="id_pile" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+
+                            <!-- Expect Ni -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Expect. Ni</label>
+                                <input type="text" id="grade_expect" name="grade_expect"
+                                    class="form-control w-full !rounded-md" placeholder="Expectation">
+                            </div>
+
+                            <!-- Mine Geology -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Mine Geology</label>
+                                <select id="grade_control" name="grade_control"
+                                    class="form-control w-full !rounded-md"></select>
+                            </div>
+
+                            <!-- Batch Code -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Batch Code</label>
+                                <input type="text" id="batch_code" name="batch_code"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Increment -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Increment</label>
+                                <input type="number" id="increment" name="increment"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Batch Status -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Batch Status</label>
+                                <select id="batch_status_edit" name="batch_status_edit"
+                                    class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                    <option value="Complete">Complete</option>
+                                    <option value="Incomplete">Incomplete</option>
+                                </select>
+                            </div>
+
+                            <!-- Pile Status -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Pile Status</label>
+                                <select id="pile_status" name="pile_status" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                    <option value="Continue">Continue</option>
+                                    <option value="Close">Close</option>
+                                </select>
+                            </div>
+
+                            <!-- Ritase -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Ritase</label>
+                                <input type="number" id="ritase" name="ritase" class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Tonnage -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input readonly type="text" id="tonnage" name="tonnage"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Truck -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Truck</label>
+                                <input type="text" id="unit_truck" name="unit_truck"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+
+                            <!-- Calculate -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Calculate</label>
+                                <select id="calculate" name="calculate"
+                                    class="form-control w-full !rounded-md"></select>
+                            </div>
+
+                            <!-- Ore Class -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Ore Class</label>
+                                <select id="ore_class" name="ore_class"
+                                    class="form-control w-full !rounded-md"></select>
+                            </div>
+
+                            <!-- No Production -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">No. Production</label>
+                                <input type="text" id="no_production_edit" name="no_production_edit"
+                                    class="form-control w-full !rounded-md" disabled>
+                            </div>
+
+                            <!-- Sale Adjust -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Sale Adjust</label>
+                                <input type="text" id="sale_adjust" name="sale_adjust"
+                                    class="form-control w-full !rounded-md" disabled>
+                            </div>
+
+                            <!-- Truck Factor -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Truck Factor</label>
+                                <input type="text" id="truck_factor" name="truck_factor"
+                                    class="form-control w-full !rounded-md" disabled>
+                            </div>
+
+                            <!-- Stockpile -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Stockpile</label>
+                                <input type="text" id="id_stockpile" name="id_stockpile"
+                                    class="form-control w-full !rounded-md" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="remarks" name="remarks" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#edit-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="updateButton"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script>
+    $(document).ready(function () {
+        // Inisialisasi flatpickr (opsional)
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+        flatpickr("#tgl_production", { dateFormat: "Y-m-d" });
+
+        // Flag untuk hindari double init
+        let isSelect2Init = false;
+
+        // Saat buka modal
+        $('#openFilter').on('click', function () {
+            window.HSOverlay.open('#search-modal');
+            $('#exportButton').hide();
+            $('#applyFilterBtn').show();
+
+            setTimeout(function () {
+                // Hanya inisialisasi sekali
+                if (!isSelect2Init) {
+                    $('#search-modal select').each(function () {
+                        const $el = $(this);
+                        if (!$el.hasClass('select2-hidden-accessible')) {
+                            $el.select2({
+                                placeholder: 'Select an option',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#search-modal .ti-modal-body')
+                            });
+                        }
+                    });
+                    isSelect2Init = true;
+                }
+            }, 300); // delay agar modal sudah muncul
+        });
+    });
+
+</script>
+
+
+<!-- Get List Data & Submit Data -->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "ore-productions-list" %}';
+        // var material_filter = 'LIM';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.startDate = $('#startDate').val();
+                    data.endDate = $('#endDate').val();
+                    data.material_filter = $('#material_filter').val();
+                    data.point_filter = $('#point_filter').val();
+                    data.area_filter = $('#area_filter').val();
+                    data.source_filter = $('#source_filter').val();
+                    data.batch_status = $('#batch_status').val();
+                    return data;
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'tgl_production',
+                    name: 'tgl_production'
+                },
+                {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
+                    data: 'shift',
+                    name: 'shift'
+                },
+                {
+                    data: 'prospect_area',
+                    name: 'prospect_area',
+                    searchable: true
+                },
+                {
+                    data: 'mine_block',
+                    name: 'mine_block',
+                    searchable: true
+                },
+
+                {
+                    data: 'rl',
+                    name: 'rl'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material',
+                    searchable: true
+                },
+                {
+                    data: 'ore_class',
+                    name: 'ore_class'
+                },
+                {
+                    data: 'ni_grade',
+                    name: 'ni_grade',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'grade_control',
+                    name: 'grade_control'
+                },
+                {
+                    data: 'unit_truck',
+                    name: 'unit_truck'
+                },
+                {
+                    data: 'stockpile',
+                    name: 'stockpile',
+                    searchable: true
+                },
+                {
+                    data: 'pile_id',
+                    name: 'pile_id',
+                    searchable: true
+                },
+                {
+                    data: 'batch_code',
+                    name: 'batch_code'
+                },
+                {
+                    data: 'increment',
+                    name: 'increment'
+                },
+                {
+                    data: 'ritase',
+                    name: 'ritase'
+                },
+                {
+                    data: 'tonnage',
+                    name: 'tonnage'
+                },
+                {
+                    data: 'pile_status',
+                    name: 'pile_status'
+                },
+                {
+                    data: 'batch_status',
+                    name: 'batch_status'
+                },
+
+                {
+                    data: 'sample_number',
+                    name: 'sample_number'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
+                },
+
+                // {
+                //     data: 'truck_factor',
+                //     name: 'truck_factor'
+                // },
+                {
+                    data: 'username',
+                    name: 'username'
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                     <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                    }
+                },
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+            // Menambahkan opsi footerCallback
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+                // converting to interger to find total
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // computing column Total the complete result 
+                var col_16 = api
+                    .column(16)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                var col_17 = api
+                    .column(17)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                col_16 = col_16.toFixed(2);
+                col_17 = col_17.toFixed(2);
+
+
+                // Update footer by showing the total with the reference of the column index   
+                $(api.column(16).footer()).html(col_16.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $(api.column(17).footer()).html(col_17.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+
+            },
+        });
+        $('.th_hide').show();
+        /*--Filter Modal and Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+            table.ajax.reload();
+            call_TotaOre();
+            call_DetailAssay();
+        });
+
+        /*  Reset */
+        $('#reload').on('click', function () {
+            // Reset tanggal ke default, jika ada nilai default di context Python
+            $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
+            $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
+            $('#batch_status').val('').trigger('change');
+            $('#source_filter').val('').trigger('change');
+            $('#area_filter').val('').trigger('change');
+            $('#point_filter').val('').trigger('change');
+            $('#material_filter').val('').trigger('change');
+            table.ajax.reload(); //just reload table
+            call_TotaOre();
+            call_DetailAssay();
+        });
+
+        /* Update*/
+        $('#updateButton').click(function () {
+            var id = $('#id').val();
+            var tgl_production = $('#tgl_production').val();
+            var category = $('#category').val();
+            var shift = $('#shift').val();
+            var id_prospect_area = $('#id_prospect_area').val();
+            var id_block = $('#id_block').val();
+            var from_rl = $('#from_rl').val();
+            var to_rl = $('#to_rl').val();
+            var id_material = $('#id_material').val();
+            var id_stockpile = $('#id_stockpile').val();
+            var id_pile = $('#id_pile').val();
+            var grade_expect = $('#grade_expect').val();
+            var grade_control = $('#grade_control').val();
+            var unit_truck = $('#unit_truck').val();
+            var batch_code = $('#batch_code').val();
+            var increment = $('#increment').val();
+            var batch_status = $('#batch_status_edit').val();
+            var pile_status = $('#pile_status').val();
+            var ore_class = $('#ore_class').val();
+            var ritase = $('#ritase').val();
+            var tonnage = $('#tonnage').val();
+            var truck_factor = $('#truck_factor').val();
+            var no_production = $('#no_production_edit').val();
+            var sale_adjust = $('#sale_adjust').val();
+            var remarks = $('#remarks').val();
+
+            var updatedData = {
+                tgl_production: tgl_production,
+                category: category,
+                shift: shift,
+                id_prospect_area: id_prospect_area,
+                id_block: id_block,
+                from_rl: from_rl,
+                to_rl: to_rl,
+                id_material: id_material,
+                id_stockpile: id_stockpile,
+                id_pile: id_pile,
+                grade_expect: grade_expect,
+                grade_control: grade_control,
+                unit_truck: unit_truck,
+                batch_code: batch_code,
+                increment: increment,
+                batch_status: batch_status,
+                pile_status: pile_status,
+                ore_class: ore_class,
+                ritase: ritase,
+                tonnage: tonnage,
+                truck_factor: truck_factor,
+                no_production: no_production,
+                remarks: remarks,
+                sale_adjust: sale_adjust
+            };
+
+            var url = '/kqms/geology/ore/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id').val('');
+                        $('#tgl_production').val('');
+                        $('#category').val('').trigger('change');
+                        $('#shift').val('').trigger('change');
+                        $('#id_prospect_area').trigger('change');
+                        $('#id_block').trigger('change');
+                        $('#from_rl').val('');
+                        $('#to_rl').val('');
+                        $('#id_material').val('').trigger('change');
+                        $('#id_stockpile').val('').trigger('change');
+                        $('#id_pile').val('').trigger('change');
+                        $('#grade_expect').val('');
+                        $('#grade_control').val('').trigger('change');
+                        $('#unit_truck').val('')
+                        $('#batch_code').val()
+                        $('#increment').val('');
+                        $('#batch_status_edit').val('').trigger('change');
+                        $('#pile_status').val('').trigger('change');
+                        $('#ore_class').val('').trigger('change');
+                        $('#ritase').val('');
+                        $('#tonnage').val('');
+                        $('#truck_factor').val('');
+                        $('#no_production_edit').val('');
+                        $('#remarks').val('');
+                        $('#sale_adjust').val('');
+
+
+                        // Tampilkan notifikasi sukses
+
+                        // Tutup modal (gunakan HSOverlay jika pakai Tailwind UI HS)
+                        window.HSOverlay.close('#edit-data');
+
+                        //  Tampilkan SweetAlert
+
+                        Swal.fire({
+                            title: response.message,
+                            icon: "success",
+                            timer: 3000,
+                            // showConfirmButton: false,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK',
+                        });
+
+                        // Kirim permintaan AJAX ke server
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status === 422) {
+                        showToast(xhr.responseJSON.message, 'danger');
+                    } else if (xhr.status === 400) {
+                        showToast(xhr.responseJSON.error, 'danger');
+                    } else {
+                        showToast('Terjadi kesalahan server', 'danger');
+                    }
+
+                }
+
+
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-data-ore" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: { id: id },
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted!',
+                                data.message,
+                                'success'
+                            );
+                            // Refresh table or remove row
+                            table.draw();
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                Swal.fire(
+                                    'Access Denied!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else if (xhr.status === 404) {
+                                Swal.fire(
+                                    'Not Found!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+        call_TotaOre();
+        call_DetailAssay();
+
+    });
+</script>
+
+<script>
+    function formatAngka(jumlah) {
+        if (jumlah >= 1_000_000_000) {
+            return (jumlah / 1_000_000_000).toFixed(3) + ' B';
+        } else if (jumlah >= 1_000_000) {
+            return (jumlah / 1_000_000).toFixed(3) + ' M';
+        } else if (jumlah >= 1_000) {
+            return (jumlah / 1_000).toFixed(3) + ' K';
+        } else {
+            return jumlah.toString();
+        }
+    }
+
+    function call_TotaOre() {
+        let url = '{% url "ore-totals" %}';
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var material_filter = $('#material_filter').val();
+        var point_filter = $('#point_filter').val();
+        var area_filter = $('#area_filter').val();
+        var source_filter = $('#source_filter').val();
+        var batch_status = $('#batch_status').val();
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                material_filter: material_filter,
+                point_filter: point_filter,
+                area_filter: area_filter,
+                source_filter: source_filter,
+                batch_status: batch_status,
+            },
+            success: function (data) {
+                // Data berhasil diterima dari server
+                totalOre = parseFloat(data.Tonnage); // Simpan nilai totalYtd
+                // var formattedTotal = totalOre.toLocaleString('en-US', {
+                //     maximumFractionDigits: 2
+                // });
+                // $("#totel_ore").html(formattedTotal);
+
+                $("#totel_ore").html(formatAngka(totalOre));
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+        });
+    }
+
+    function call_DetailAssay() {
+        let url = '{% url "details-mral-totals" %}';
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var material_filter = $('#material_filter').val();
+        var point_filter = $('#point_filter').val();
+        var area_filter = $('#area_filter').val();
+        var source_filter = $('#source_filter').val();
+        var batch_status = $('#batch_status').val();
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                material_filter: material_filter,
+                point_filter: point_filter,
+                area_filter: area_filter,
+                source_filter: source_filter,
+                batch_status: batch_status
+            },
+            success: function (data) {
+                // Data berhasil diterima dari server
+                totalOre = parseFloat(data.Tonnage); // Simpan nilai totalYtd
+                var formattedTotal = totalOre.toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                });
+                // $("#details_mral").html(formattedTotal);
+                $("#details_mral").html(formatAngka(totalOre));
+
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+
+        });
+
+        let url_roa = '{% url "details-roa-totals" %}';
+        $.ajax({
+            type: 'GET',
+            url: url_roa,
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                material_filter: material_filter,
+                point_filter: point_filter,
+                area_filter: area_filter,
+                source_filter: source_filter,
+                batch_status: batch_status
+            },
+            success: function (data) {
+                // Data berhasil diterima dari server
+
+                totalOre = parseFloat(data.Tonnage); // Simpan nilai totalYtd
+                var formattedTotal = totalOre.toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                });
+                // $("#details_roa").html(formattedTotal);
+                $("#details_roa").html(formatAngka(totalOre));
+
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+
+        });
+    }
+
+    function showToast(message, type = 'primary') {
+        const container = document.getElementById('toast-container');
+        if (!container) {
+            console.warn('Toast container not found');
+            return;
+        }
+
+        const toast = document.createElement('div');
+        //   toast.className = `ti-toast bg-${type}/10 text-sm text-${type} shadow-lg rounded-md transition-all`;
+        toast.className = `flex items-center justify-between bg-red-100 text-red-700 border border-red-300  rounded shadow-md`;
+        toast.setAttribute('role', 'alert');
+
+        toast.innerHTML = `
+                <div class="flex p-4 items-start justify-between gap-4">
+                ${message}
+                <button onclick="this.parentElement.parentElement.remove()" class="text-${type} hover:opacity-70">
+                    ✕
+                </button>
+                </div>
+            `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('opacity-0');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.parentElement.removeChild(toast);
+                }
+            }, 300);
+        }, 5000);
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+
+        $(".ti-form-select").select2({
+            width: '100%',
+            // dropdownParent: $('#search-modal'),
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+
+        //opsi Select2
+        $.ajax({
+            url: "{% url 'material-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>'; // Tambah opsi default di awal
+
+                // Loop data material
+                $.each(data.materials, function (key, value) {
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+                });
+
+                // Isi ke select + inisialisasi select2
+                $('#material_filter').html(options).select2({
+                    width: '100%',
+                    // dropdownParent: $('#search-modal'),
+                    dropdownParent: $('#search-modal .ti-modal-body')
+                })
+
+            }
+        });
+
+        $('#source_filter').select2({
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-mine-loading-point' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,  // Mengirimkan data pencarian ke server
+                        page: params.page || 1  // Pagination halaman
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,  // Menggunakan teks sebagai ID
+                                text: item.text  // Teks sebagai label
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more  
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,  
+            placeholder: 'Select source',  // Placeholder di dropdown
+            allowClear: true,  
+        });
+
+        $('#area_filter').select2({
+            width: '100%',
+            // // 
+            dropdownParent: $('#search-modal .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-mine-dumping-point' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select stockpile',
+            allowClear: true,
+        });
+
+        $('#point_filter').select2({
+            width: '100%',
+            // //
+            dropdownParent: $('#search-modal .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select dome',
+            allowClear: true,
+        });
+
+    });
+</script>
+
+<!-- Exports to Excel -->
+<script>
+    $(document).ready(function () {
+        let isSelect2Init = false;
+        $('#exportFilter').click(function () {
+            window.HSOverlay.open('#search-modal');
+            $('#exportButton').show();
+            $('#applyFilterBtn').hide();
+            setTimeout(function () {
+                if (!isSelect2Init) {
+                }
+            }, 300);
+        });
+
+        $('#exportButton').click(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var source_filter = $('#source_filter').val();
+            var area_filter = $('#area_filter').val();
+            var point_filter = $('#point_filter').val();
+            var material_filter = $('#material_filter').val();
+            var batch_status = $('#batch_status').val();
+
+            // Membuat URL untuk permintaan ekspor Excel
+            var exportUrl = "{% url 'export-ore-data' %}?startDate=" + startDate + "&endDate=" +
+                endDate + "&batch_status=" + batch_status + "&material_filter=" + material_filter +
+                "&source_filter=" + source_filter + "&area_filter=" + area_filter + "&point_filter=" +
+                point_filter;
+
+            // Redirect browser ke URL ekspor
+            window.location.href = exportUrl;
+        });
+    });
+</script>
+
+<!-- Call dropdown for Line Ore  -->
+<script>
+    $(document).ready(function () {
+        $('#category').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+
+            });
+            $('#shift').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+
+            });
+            $('#batch_status_edit').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+            $('#pile_status').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+            $('#ore_class').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
+
+        $.ajax({
+            url: "{% url 'mine-geos-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                
+                $.each(data.list_data, function (key, value) {
+                    options += '<option value="' + value.mg_code + '">' + value.mg_code + '</option>';
+                });
+                // Set options in the Select2 element
+                // $('#grade_control').append(options);
+                $('#grade_control').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                });
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'material-id-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value
+                        .nama_material +
+                        '</option>';
+                });
+                // Set options in the Select2 element
+                // $('#id_material').append(options);
+                $('#id_material').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                });
+            }
+        });
+
+        $('#id_prospect_area').select2({
+            placeholder: 'Select ',
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-mine-loading-point'%}",
+                dataType: 'json',
+                delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                data: function (params) {
+                    return {
+                        q: params.term,  // Term dari input pencarian
+                        page: params.page || 1  // Pagination halaman
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more  
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,  // Jumlah karakter sebelum memulai pencarian
+            placeholder: 'Select data',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            allowClear: true
+        });
+
+        $('#id_block').select2({
+            placeholder: 'Select',
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-block-mine' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select block',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            allowClear: true
+        });
+
+        $('#id_pile').select2({
+            placeholder: 'Select',
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select data',
+            dropdownParent: $('#edit-data .ti-modal-body'),
+            allowClear: true
+        });
+    });
+    /*--- Click to Edit Button ---*/
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '/kqms/geology/ore-productions/get-id/' + id + '/';
+
+        /* Hide */
+        $('#batchcodeError').hide();
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                if (response) {
+                    // Mengisi formulir dengan data yang diterima
+                    window.HSOverlay.open('#edit-data');
+                    // document.getElementById('edit-data').classList.remove('hidden')
+                    $('#saveBtn').html('Update Data');
+                    $('#id').val(response.id);
+                    $('#tgl_production').val(response.tgl_production);
+                    $('#category').val(response.category).trigger('change');
+                    $('#shift').val(response.shift).trigger('change');
+                    $('#from_rl').val(response.from_rl);
+                    $('#to_rl').val(response.to_rl);
+                    $('#id_material').val(response.id_material).trigger('change');
+                    var grade_expect = parseFloat(response.grade_expect).toFixed(2); // Format desimal
+                    $('#grade_expect').val(grade_expect);
+                    // $('#grade_control').val(response.grade_control.trim()).trigger('change');
+                    $('#unit_truck').val(response.unit_truck);
+                    $('#batch_code').val(response.batch_code);
+                    $('#increment').val(response.increment);
+                    $('#batch_status_edit').val(response.batch_status).trigger('change');
+                    $('#pile_status').val(response.pile_status).trigger('change');
+                    $('#ore_class').val(response.ore_class).trigger('change');
+                    $('#ritase').val(response.ritase);
+                    $('#tonnage').val(response.tonnage);
+                    $('#no_production_edit').val(response.no_production);
+                    $('#truck_factor').val(response.truck_factor);
+                    $('#calculate').val(response.ore_class).trigger('change');
+                    $('#remarks').val(response.remarks);
+                    $('#id_stockpile').val(response.id_stockpile);
+                    // Memuat class ore setelah material dipilih
+                    loadClassOre(response.id_material, response.ore_class);
+
+                    // Setelah mendapatkan data, tambahkan sebagai option ke select2
+                    $('#id_block').val(response.id_block).trigger('change');
+                    // Tambahkan opsi baru ke Select2
+                    var newOption = new Option(response.block_name, response.id_block, true, true);
+                    $('#id_block').append(newOption).trigger('change');
+
+                    $('#id_prospect_area').val(response.id_prospect_area).trigger('change');
+                    // Tambahkan opsi baru ke Select2
+                    var newSource = new Option(response.loading_point, response.id_prospect_area, true, true);
+                    $('#id_prospect_area').append(newSource).trigger('change');
+
+                    $('#id_pile').val(response.id_pile).trigger('change');
+                    // Tambahkan opsi baru ke Select2
+                    var newDome = new Option(response.dome_point, response.id_pile, true, true);
+                    $('#id_pile').append(newDome).trigger('change');
+
+                    $('#grade_control').val(response.grade_control).trigger('change');
+                    // Tambahkan opsi baru ke Select2
+                    var newGc = new Option(response.grade_control, response.grade_control, true, true);
+                    $('#grade_control').append(newGc).trigger('change');
+
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    );
+                }
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 403) {
+                    Swal.fire({
+                        icon: 'error',
+                        html: 'You do not have permission',
+                        padding: '2em',
+                    });
+                } else {
+                    alert('Terjadi kesalahan: ' + error);
+                }
+            }
+        });
+
+        // Tambahkan event listener untuk perubahan pada dropdown material
+        $('#id_material').change(function () {
+            var materialId = $(this).val();
+            var materialText = $('#id_material option:selected').text().trim();
+            var ritase = $('#ritase').val();
+            var tf = $('#calculate').val();
+            var adjust = $('#sale_adjust').val()
+            console.log("Selected material ID: " + materialId);
+            console.log("Selected material text (trimmed): " + materialText);
+
+            // Pastikan materialId tidak kosong 
+            if (materialId) {
+                loadClassOre(materialId, null);
+            } else {
+                $('#ore_class').empty().append('<option value="">----</option>');
+            }
+
+            // Cek nilai dari materialText dan ubah nilai #sale_adjust sesuai dengan kondisinya
+            if (materialText === 'LIM') {
+                $('#sale_adjust').val('HPAL');
+            } else if (materialText === 'SAP') {
+                $('#sale_adjust').val('RKEF');
+            } else {
+                $('#sale_adjust').val('');
+            }
+
+            $.ajax({
+                url: '{% url "get-ore-factors" %}',
+                method: 'GET',
+                data: { material_id: materialId },
+                dataType: 'json',
+                success: function (data) {
+                    $('#calculate').empty().append('<option value="">----</option>');
+                    
+                    $.each(data, function (key, value) {
+                        $('#calculate').append('<option value="' + value.type_tf + '">' + value.type_tf + '</option>');
+                    });
+
+                    // Set nilai awal jika ada
+                    if (materialId) {
+                        $('#calculate').val(materialId).trigger('change');
+                    }
+                    $('#calculate').select2({
+                        width: '100%',
+                        dropdownParent: $('#edit-data .ti-modal-body')
+                    });
+
+                },
+                error: function () {
+                    console.error('Failed to load ore classes');
+                }
+            });
+
+        });
+        // Function to load class based on materials selected
+
+        function loadClassOre(materialId, selectedClassOre) {
+            console.log("Loading ore class for material ID: " + materialId); // Debugging
+
+            $.ajax({
+                url: '{% url "get-ore-classes" %}', // Pastikan URL ini benar
+                data: {
+                    'material_id': materialId
+                },
+                success: function (data) {
+                    console.log("Ore Class loaded: ", data); // Debugging
+                    var oreClassDropdown = $('#ore_class');
+                    oreClassDropdown.empty();
+                    oreClassDropdown.append('<option value="">-----</option>');
+
+                    // Tambahkan Class Ore ke dropdown
+                    data.forEach(function (ore_class) {
+                        oreClassDropdown.append(
+                            $('<option></option>').attr('value', ore_class.ore_class).text(ore_class.ore_class)
+                        );
+                    });
+
+                    // Set ore_class jika ada
+                    if (selectedClassOre) {
+                        oreClassDropdown.val(selectedClassOre);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading cities: ', error); // Tangani kesalahan AJAX
+                }
+            });
+        }
+
+        $("#calculate").change(function (e) {
+            var selectedVal = $(this).val();
+            var ritase = $('#ritase').val();
+            var material = $('#id_material').val();
+
+            console.log('ini calculate ' + selectedVal + ' Mat ' + material);
+            // Mendapatkan nilai 
+            // var selectedText = selectedVal + material;
+            var selectedText = (selectedVal + material).trim().replace(/\s+/g, '');
+
+            if (selectedVal) {
+                // Menghilangkan akhir "-"
+                // var trimmedText = selectedVal.replace(/-\w+$/i, '');
+                // Menghapus nilai di belakang tanda minus (-)
+                var trimmedText = selectedVal.replace(/-\w+(\s.*)?$/, '');
+            } else {
+                console.error("selectedVal is null or undefined");
+                var trimmedText = ""; // Atau nilai default lainnya yang sesuai
+            }
+            // Debug log
+            console.log('Selected Text:', selectedText);
+            console.log('Trimmed Text:', trimmedText);
+
+            var url = '/kqms/dropdown/ore-ton/get-id/' + selectedText + '/';  // Construct the URL
+            $.ajax({
+                url: url,
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    // Kosongkan opsi yang ada sebelumnya
+                    $('#tonnage').val('');
+                    $('#truck_factor').val('');
+                    $('#unit_truck').val('');
+                    var jumlah = data.ton;
+                    // var type = data.type_tf
+                    var total = ritase * jumlah;
+                    $('#tonnage').val(total);
+                    $('#truck_factor').val(trimmedText);
+                    $('#unit_truck').val(trimmedText);
+
+                }
+            });
+
+            $("#ritase").keyup(function (e) {
+                $('#tonnage').val('');
+            });
+
+        });
+
+    });
+</script>
+
+</body>
+
+</html>
+
+<style>
+    .select-wrapper {
+        position: relative;
+    }
+
+    .select2-container,
+    .select2-dropdown {
+        z-index: 9999 !important;
+    }
+
+    .select2-container--open {
+        z-index: 9999 !important;
+    }
+
+    .ti-modal-body {
+        position: relative;
+        z-index: 9999;
+        overflow: visible;
+    }
+</style>

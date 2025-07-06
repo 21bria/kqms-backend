@@ -1,0 +1,395 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="grid grid-cols-1 gap-2 xl:grid-cols-2 ">
+                <div class="grid grid-cols-5 gap-2 xl:grid-cols-5 px-2">
+                    <div class="mb-3">
+                        <select class="form-select" name="filter_year" id="filter_year">
+                            <option value="">--- Year --- </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <select id="filter_month" name="filter_month" class="form-select">
+                            <option value="">-- Month --</option>
+                            <option value=" 1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6 mt-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_year" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_month" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_orders_year" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_five_weeks" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Data Wet analyse by Range Date
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-12 gap-6 mt-4 px-4">
+                            <div class="xl:col-span-4 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="startDate" value="{{start_date}}"
+                                        name="startDate" placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="endDate" value="{{end_date}}"
+                                        name="endDate" placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-2 col-span-12">
+                                <button type="button" id="applyFilter"
+                                    class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">#</th>
+                                            <th class="bg-soft-secondary">Date</th>
+                                            <th class="bg-soft-secondary">CKS</th>
+                                            <th class="bg-soft-secondary">SPC</th>
+                                            <th class="bg-soft-secondary">PDS</th>
+                                            <th class="bg-soft-secondary">QAQC</th>
+                                            <th class="bg-soft-secondary">SPC(QA)</th>
+                                            <th class="bg-soft-secondary">HOS</th>
+                                            <th class="bg-soft-secondary">ROS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th>Grand Total</th>
+                                            <th id="grand-total-gc-cks">-</th>
+                                            <th id="grand-total-gc-spc">-</th>
+                                            <th id="grand-total-qa-pds">-</th>
+                                            <th id="grand-total-qa-qaqc">-</th>
+                                            <th id="grand-total-qa-spc">-</th>
+                                            <th id="grand-total-hos">-</th>
+                                            <th id="grand-total-ros">-</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_gc" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_qa" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_sale" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+    // 🔁 Fungsi umum AJAX Chart
+    function loadChart(url, targetId, filters = {}) {
+        filters.theme = getTheme();
+        console.log(`Loading chart ${targetId} with theme: ${filters.theme}`);
+        $.ajax({
+            type: 'GET',
+            url,
+            data: filters,
+            dataType: 'json',
+            success: data => {
+                if (data.plot_div) $(targetId).html(data.plot_div);
+            },
+            error: (xhr, status, error) => {
+                console.error(`AJAX Error [${url}]`, status, error);
+            }
+        });
+    }
+
+    // 🎯 Endpoint chart tahunan & bulanan
+    const chartEndpoints = {
+        '#chart_by_year': "{% url 'sample-analyse-type-year' %}",
+        '#chart_orders_year': "{% url 'sample-analyse-orders-year' %}",
+        '#chart_by_month': "{% url 'sample-analyse-type-month' %}",
+        '#chart_five_weeks': "{% url 'sample-analyse-orders-five-week' %}"
+    };
+
+    // 🎯 Endpoint chart range (mingguan)
+    const rangeChartEndpoints = {
+        '#chart_order_weeks': "{% url 'sample-analyse-chart-range' %}",
+        '#donut_order_weeks': "{% url 'sample-analyse-donut-range' %}",
+        '#chart_by_gc': "{% url 'sample-analyse-chart-range-gc' %}",
+        '#chart_by_qa': "{% url 'sample-analyse-chart-range-qa' %}",
+        '#chart_by_sale': "{% url 'sample-analyse-chart-range-sale' %}"
+    };
+
+    function refreshAllCharts(filters = {}) {
+        for (const [target, url] of Object.entries(chartEndpoints)) {
+            loadChart(url, target, filters);
+        }
+    }
+
+    function refreshRangeCharts(filter = {}) {
+        for (const [target, url] of Object.entries(rangeChartEndpoints)) {
+            loadChart(url, target, filter);
+        }
+    }
+
+    $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+        $(".form-select").select2({ width: '100%' });
+
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        // 📅 Load filter tahun dari server
+        $.getJSON("{% url 'get-year-sample' %}", function (data) {
+            const options = data.tahun_sample.map(v => `<option value="${v.tahun}">${v.tahun}</option>`);
+            $('#filter_year').append(options.join(''));
+        });
+
+        $('#filter_year').change(function () {
+            refreshAllCharts({ filter_year: $(this).val() });
+        });
+
+        $('#filter_month').change(function () {
+            const filters = {
+                filter_year: $('#filter_year').val(),
+                filter_month: $(this).val()
+            };
+            loadChart(chartEndpoints['#chart_by_month'], '#chart_by_month', filters);
+        });
+
+        // 📈 Load awal semua chart
+        refreshAllCharts();
+        refreshRangeCharts();
+
+        // 🎨 Theme change observer
+        const observer = new MutationObserver(() => {
+            refreshAllCharts();
+            refreshRangeCharts();
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    });
+</script>
+
+
+<!-- For Range Table Data  -->
+<script>
+    $('#applyFilter').click(function () {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        const filter = { startDate, endDate };
+        const table = $("#list-table").find("tbody");
+        table.empty();
+
+        // Reset grand total
+        const grandTotals = {
+            CKS: 0, SPC: 0, PDS: 0, QAQC: 0, SPC_QA: 0, HOS: 0, ROS: 0
+        };
+        const grandSelectors = {
+            CKS: "#grand-total-gc-cks",
+            SPC: "#grand-total-gc-spc",
+            PDS: "#grand-total-qa-pds",
+            QAQC: "#grand-total-qa-qaqc",
+            SPC_QA: "#grand-total-qa-spc",
+            HOS: "#grand-total-hos",
+            ROS: "#grand-total-ros"
+        };
+
+        // Kosongkan tampilan total
+        Object.values(grandSelectors).forEach(sel => $(sel).text('-'));
+
+        function appendDataToTable(data) {
+            table.empty();
+            $.each(data, function (index, row) {
+                const newRow = $("<tr>");
+                newRow.append(`<td>${index + 1}</td>`);
+                newRow.append(`<td>${row.tgl_produksi}</td>`);
+
+                ['CKS', 'SPC', 'PDS', 'QAQC', 'SPC_QA', 'HOS', 'ROS'].forEach(key => {
+                    const value = parseFloat(row[key]) || 0;
+                    grandTotals[key] += value;
+                    newRow.append(`<td>${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>`);
+                });
+
+                table.append(newRow);
+            });
+
+            // Set grand total
+            Object.entries(grandTotals).forEach(([key, value]) => {
+                $(grandSelectors[key]).text(value.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-analyse-orders-range' %}",
+            data: filter,
+            success: function (response) {
+                appendDataToTable(response.data);
+                refreshRangeCharts(filter);  // ⬅ Re-render chart sesuai filter
+            },
+            error: function () {
+                console.log("Gagal mengambil data dari server.");
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

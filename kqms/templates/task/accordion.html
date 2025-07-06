@@ -1,0 +1,52 @@
+<div class="accordion customized-accordion accordions-items-seperate mb-4" id="customizedAccordion">
+    <div class="hs-accordion-group">
+        <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+            <div class="hs-accordion-group">
+                <div class="hs-accordion  accordion-item custom-accordion-primary" id="hs-basic-heading31">
+                    <button
+                        class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                        aria-controls="hs-basic-collapse31" type="button">
+                        KQMS Info#
+                        <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                            width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                            width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                    </button>
+                    <div id="hs-basic-collapse11"
+                        class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                        aria-labelledby="hs-basic-heading11">
+                        <div class="accordion-body">
+
+                            Berisi path Python lengkap menuju fungsi Celery yang
+                            akan dijalankan untuk task tersebut.<br><br>
+                            Harus dalam format:
+                            <code>package.module.function_name</code><br><br>
+                            Path ini akan divalidasi otomatis:<br>
+                            - Cek apakah path bisa di-import dengan
+                            <code>import_string()</code><br>
+                            - Cek apakah fungsi tersebut memang ada di dalam
+                            modul<br><br>
+
+                            Jika salah, akan muncul pesan error seperti:<br>
+                            <code>
+                             "Task path tidak valid: Module 'kqms.task' does not define a 'import_assay_mral' attribute"
+                             </code><br><br>
+
+                            <strong>Contoh Penulisan yang Benar:</strong><br>
+                            <code>kqms.task.import_assay_mral.import_assay_mral</code>
+                            atau <code> kqms.task.file_path.class</code><br>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>

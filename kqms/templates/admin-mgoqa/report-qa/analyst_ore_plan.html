@@ -1,0 +1,357 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 13rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-4 mb-5">
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50">
+                            <i class="ri-calendar-line"></i>
+                        </div>
+                        <input type="text" class="form-control" id="startDate" name="startDate" value="{{start_date}}"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="input-group">
+                        <div class="input-group-text text-[#8c9097] dark:text-white/50">
+                            <i class="ri-calendar-line"></i>
+                        </div>
+                        <input type="text" class="form-control" id="endDate" name="endDate" value="{{end_date}}"
+                            placeholder="Choose date">
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <button type="button" id="applyFilter"
+                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="box">
+                <div class="box-header justify-between">
+                    <div class="box-title">
+                        <div class="grid grid-cols-1 gap-2 xl:grid-cols-2">
+                            <div class="grid grid-cols-4 gap-2 xl:grid-cols-4">
+                                <div class="mb-0">
+                                    <select class="form-select" name="filter_dome" id="filter_dome">
+                                        <option value="">--- Dome --- </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="prism-toggle">
+                        <button type="button"
+                            class="ti-btn !py-1 !px-2 ti-btn-primary !text-[0.75rem] !font-medium">Histograms<i
+                                class="ri-code-line ms-2 inline-block align-middle"></i></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 mt-4">
+                    <div class="xl:col-span-6 col-span-12">
+                        <div id="scatter_ni"
+                            class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                            <div class="ti-spinner m-[3rem] !animate-ping !border-transparent bg-gray-400" role="status"
+                                aria-label="loading">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xl:col-span-6 col-span-12">
+                        <div id="scatter_co"
+                            class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                            <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                role="status" aria-label="loading">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mt-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+
+                        <div class="box-body">
+                            <div id="scatter_fe"
+                                class="rounded-lg relative flex items-center justify-center h-64  bg-white dark:bg-black overflow-hidden">
+                                <div class="ti-spinner m-[3rem] !animate-ping !border-transparent  bg-gray-400"
+                                    role="status" aria-label="loading">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script>
+    $(document).ready(function () {
+        flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+        });
+        // Ambil tema dari class <html> atau <body>
+        const getTheme = () => {
+            return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        };
+
+        const updateCharts = () => {
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+            const theme = getTheme();
+
+            const filter = {
+                startDate: startDate,
+                endDate: endDate,
+                theme: theme,
+            };
+
+            mralHistogramsAnalyst(filter);
+            roaHistogramsAnalyst(filter);
+            oreDateHistogramsAnalyst(filter);
+            oreDomeHistogramsAnalyst(filter);
+        };
+
+        // Panggilan awal
+        updateCharts();
+
+        // Optional: jika kamu masih ingin chart berubah saat tema berubah,
+        // kamu bisa gunakan MutationObserver
+        const observer = new MutationObserver(() => {
+            updateCharts();
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    });
+
+
+
+    $(".form-select").select2({
+        width: '100%',
+    });
+
+    $('#filter_dome').change(function () {
+        var dome = $(this).val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        const theme = getTheme();
+        var filter = {
+            startDate: startDate,
+            endDate: endDate,
+            dome: dome,
+            theme: theme
+        };
+
+        mralHistogramsAnalyst(filter);
+        roaHistogramsAnalyst(filter);
+
+    });
+
+
+    $('#applyFilter').click(function () {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        const theme = getTheme();
+
+        $.ajax({
+            url: "{% url 'get-dome-pds-active' %}",
+            method: "GET",
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                theme: theme
+            },
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                // Hapus semua opsi kecuali opsi default
+                $('#filter_dome').empty().append('<option value="">--- Dome ---</option>');
+                
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.dome + '">' + value.dome + '</option>';
+                });
+                $('#filter_dome').append(options);
+                // Anda mungkin perlu memanggil Select2 untuk memproses opsi baru
+                $('#filter_dome').trigger('change');
+            }
+        });
+
+        var filter = {
+            startDate: startDate,
+            endDate: endDate,
+            theme: theme // Masukkan theme ke dalam filter
+        };
+
+        mralHistogramsAnalyst(filter);
+        roaHistogramsAnalyst(filter);
+        oreDateHistogramsAnalyst(filter);
+        oreDomeHistogramsAnalyst(filter);
+
+    })
+
+
+    function mralHistogramsAnalyst(filter) {
+        $.ajax({
+            url: "{% url 'get-ore-mral-histograms-analyst'%}",
+            method: "GET",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_html) {
+                    $('#mral_histograms').html(data.plot_html);
+                } else {
+                    console.warn("No plot_html in response.");
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log("Error:", errmsg);
+            },
+        });
+
+    }
+
+    function roaHistogramsAnalyst(filter) {
+        $.ajax({
+            url: "{% url 'get-ore-roa-histograms-analyst'%}",
+            method: "GET",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_html) {
+                    $('#roa_histograms').html(data.plot_html);
+                } else {
+                    console.warn("No plot_html in response.");
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log("Error:", errmsg);
+            },
+        });
+
+    }
+
+    function oreDateHistogramsAnalyst(filter) {
+        $.ajax({
+            url: "{% url 'get-ore-date-histograms-analyst'%}",
+            method: "GET",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_html) {
+                    $('#date_ore_histograms').html(data.plot_html);
+                } else {
+                    console.warn("No plot_html in response.");
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log("Error:", errmsg);
+            },
+        });
+    }
+
+    function oreDomeHistogramsAnalyst(filter) {
+        $.ajax({
+            url: "{% url 'get-ore-dome-histograms-analyst'%}",
+            method: "GET",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_html) {
+                    $('#dome_ore_histograms').html(data.plot_html);
+                } else {
+                    console.warn("No plot_html in response.");
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                console.log("Error:", errmsg);
+            },
+        });
+
+    }
+
+
+</script>
+
+</body>
+
+</html>

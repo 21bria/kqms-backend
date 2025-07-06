@@ -1,0 +1,530 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Original vs Duplicated (by roa)</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 gap-4 mb-5">
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{start_date}}"
+                                            name="startDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{end_date}}"
+                                            name="endDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="button" id="applyFilter"
+                                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary">Sampling Date</th>
+                                            <th class="bg-soft-secondary">Waybill</th>
+                                            <th class="bg-soft-secondary">Sample Id</th>
+                                            <th class="bg-soft-secondary">Release</th>
+                                            <!-- Ni Data -->
+                                            <th class="bg-soft-secondary">Ni [Mral]</th>
+                                            <th class="bg-soft-secondary">Ni [Roa]</th>
+                                            <th class="bg-soft-secondary">Ni [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Abs]</th>
+                                            <th class="bg-soft-secondary">Ni [Check]</th>
+                                            <!-- Co Data -->
+                                            <th class="bg-soft-secondary">Co [Mral]</th>
+                                            <th class="bg-soft-secondary">Co [Roa]</th>
+                                            <th class="bg-soft-secondary">Co [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Abs]</th>
+                                            <th class="bg-soft-secondary">Co [Check]</th>
+                                            <!-- Fe Data -->
+                                            <th class="bg-soft-secondary">Fe [Mral]</th>
+                                            <th class="bg-soft-secondary">Fe [Roa]</th>
+                                            <th class="bg-soft-secondary">Fe [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Abs]</th>
+                                            <th class="bg-soft-secondary">Fe [Check]</th>
+                                            <!-- Mgo Data -->
+                                            <th class="bg-soft-secondary">Mgo [Mral]</th>
+                                            <th class="bg-soft-secondary">Mgo [Roa]</th>
+                                            <th class="bg-soft-secondary">Mgo [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Abs]</th>
+                                            <th class="bg-soft-secondary">Mgo [Check]</th>
+                                            <!-- SiO2 Data -->
+                                            <th class="bg-soft-secondary">SiO2 [Mral]</th>
+                                            <th class="bg-soft-secondary">SiO2 [Roa]</th>
+                                            <th class="bg-soft-secondary">SiO2 [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Diff]</th>
+                                            <th class="bg-soft-secondary">Rel [Abs]</th>
+                                            <th class="bg-soft-secondary">SiO2 [Check]</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        /*  Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "{% url 'get-crm' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.data_crm, function (key, value) {
+                    options += '<option value="' + value.oreas_name + '">' + value.oreas_name + '</option>';
+                });
+                $('#filterTypeCrm').append(options);
+            }
+        });
+        /*-- Render DataTable --*/
+        table = $('#data_table').DataTable().clear().destroy();
+        let data_url = '{% url "analyse-mral-roa-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.from_date = $('#from_date').val();
+                    data.to_date = $('#to_date').val();
+                    return data;
+                },
+            },
+
+            columns: [{
+                data: null,
+                searchable: false,
+                orderable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            }, // Kolom nomor otomatis
+            {
+                data: 'tgl_deliver',
+                name: 'tgl_deliver',
+                searchable: true
+            },
+            {
+                data: 'waybill_number',
+                name: 'waybill_number',
+                searchable: true
+            },
+
+            {
+                data: 'sample_id',
+                name: 'sample_id',
+                searchable: true
+            },
+            {
+                data: 'release_date',
+                name: 'release_date',
+                searchable: true
+            },
+
+            {
+                data: 'ni_mral',
+                name: 'ni_mral',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+
+            {
+                data: 'ni_roa',
+                name: 'ni_roa',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'ni_diff',
+                name: 'ni_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'ni_rel_diff',
+                name: 'ni_rel_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'ni_rel_abs',
+                name: 'ni_rel_abs',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'ni_error',
+                name: 'ni_error',
+                searchable: true,
+                render: function (data) {
+                    if (data == 0) {
+                        return '<div class="font-size-12 text-warning"> Error</div>';
+                    } else {
+                        return '<div class="font-size-12 text-success"> Good</div>';
+                    }
+                }
+            },
+            {
+                data: 'co_mral',
+                name: 'co_mral',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+
+            },
+            {
+                data: 'co_roa',
+                name: 'co_roa',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'co_diff',
+                name: 'co_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'co_rel_diff',
+                name: 'co_rel_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'co_rel_abs',
+                name: 'co_rel_abs',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'co_error',
+                name: 'co_error',
+                searchable: true,
+                render: function (data) {
+                    if (data == 0) {
+                        return '<div class="font-size-12 text-warning"> Error</div>';
+                    } else {
+                        return '<div class="font-size-12 text-success"> Good</div>';
+                    }
+                }
+            },
+            /* Fe Data*/
+            {
+                data: 'fe_mral',
+                name: 'fe_mral',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+
+            },
+            {
+                data: 'fe_roa',
+                name: 'fe_roa',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'fe_diff',
+                name: 'fe_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'fe_rel_diff',
+                name: 'fe_rel_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'fe_rel_abs',
+                name: 'fe_rel_abs',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'fe_error',
+                name: 'fe_error',
+                searchable: true,
+                render: function (data) {
+                    if (data == 0) {
+                        return '<div class="font-size-12 text-warning"> Error</div>';
+                    } else {
+                        return '<div class="font-size-12 text-success"> Good</div>';
+                    }
+                }
+            },
+            /* Mgo Data*/
+            {
+                data: 'mgo_mral',
+                name: 'mgo_mral',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+
+            },
+            {
+                data: 'mgo_roa',
+                name: 'mgo_roa',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'mgo_diff',
+                name: 'mgo_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'mgo_rel_diff',
+                name: 'mgo_rel_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'mgo_rel_abs',
+                name: 'mgo_rel_abs',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'mgo_error',
+                name: 'mgo_error',
+                searchable: true,
+                render: function (data) {
+                    if (data == 0) {
+                        return '<div class="font-size-12 text-warning"> Error</div>';
+                    } else {
+                        return '<div class="font-size-12 text-success"> Good</div>';
+                    }
+                }
+            },
+            /* sio2 Data*/
+            {
+                data: 'sio2_mral',
+                name: 'sio2_mral',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+
+            },
+            {
+                data: 'sio2_roa',
+                name: 'sio2_roa',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'sio2_diff',
+                name: 'sio2_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'sio2_rel_diff',
+                name: 'sio2_rel_diff',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'sio2_rel_abs',
+                name: 'sio2_rel_abs',
+                searchable: true,
+                render: function (data) {
+                    return parseFloat(data).toFixed(3);
+                }
+            },
+            {
+                data: 'sio2_error',
+                name: 'sio2_error',
+                searchable: true,
+                render: function (data) {
+                    if (data == 0) {
+                        return '<div class="font-size-12 text-warning"> Error</div>';
+                    } else {
+                        return '<div class="font-size-12 text-success"> Good</div>';
+                    }
+                }
+            },
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [10, 'desc']
+            ]
+        });
+
+        /*--Apply Filter---*/
+        $('#applyFilter').click(function () {
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+
+            // Kirim permintaan AJAX ke server dengan filter
+            table.ajax.reload();
+        });
+        // Tombol Reset
+        $('#reload').on('click', function () {
+            // function resetFilter() {
+            $('#from_date').val('');
+            $('#to_date').val('');
+            table.ajax.reload(); //just reload table;
+            // };
+        });
+    });
+</script>
+</body>
+
+</html>

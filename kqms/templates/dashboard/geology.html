@@ -1,0 +1,1670 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+    <!-- Start::content  -->
+    <div class="content">
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Analytics</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Dashboards
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Analytics
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="flex justify-end mb-2">
+                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                    <button id="openFilter" type="button"
+                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                    <a id="reload" href="#" class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-x-6">
+                <div class="xl:col-span-7 col-span-12">
+                    <div class="grid grid-cols-12 gap-x-6">
+                        <!-- Card -->
+                        {% include 'dashboard/static/card.html' %}
+
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-header justify-between">
+                                    <div class="box-title">
+                                        Ore Productions
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div id="oreProductions"></div>
+                                    {% include 'dashboard/static/list-grade.html' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xxl:col-span-12 xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-header justify-between">
+                                    <div class="box-title">
+                                        Selling Chart
+                                    </div>
+                                    <div class="hs-dropdown ti-dropdown">
+                                        <a href="javascript:void(0);"
+                                            class="px-2 font-normal text-[0.75rem] text-[#8c9097] dark:text-white/50"
+                                            aria-expanded="false">
+                                            View All<i class="ri-arrow-down-s-line align-middle ms-1 inline-block"></i>
+                                        </a>
+                                        <ul class="hs-dropdown-menu ti-dropdown-menu hidden" role="menu">
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">Today</a></li>
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">This Week</a></li>
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">Last Week</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div id="selling-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-5 col-span-12">
+                    <div class="grid grid-cols-12 gap-x-6">
+                        <div class="xxl:col-span-5 cxl:ol-span-12 col-span-12">
+                            <div class="box custom-card upgrade-card text-white">
+                                <div class="box-body text-white">
+                                    <span class="avatar avatar-xxl !border-0">
+                                        <img src="{% static 'assets/images/media/media-84.png' %}" alt="">
+                                    </span>
+                                    <div class="upgrade-card-content">
+                                        <span class="opacity-[0.7] font-normal mb-1 !text-white">Selling update
+                                            !</span>
+                                        <span
+                                            class="text-[1.5625rem] font-semibold block mb-[1.5rem] upgrade-text !text-white"
+                                            id="total-selling">0</span>
+                                        <button type="button"
+                                            class="ti-btn !py-1 !px-2 bg-light text-defaulttextcolor !text-[0.75rem] font-medium ti-btn-wave">View
+                                            all</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-body !p-1">
+                                    <div class="flex items-center flex-wrap">
+                                        <div id="analytics-rkef"></div>
+                                        <div class="ms-1">
+                                            <p class="mb-1 text-[#8c9097] dark:text-white/50">Saprolite</p>
+                                            <h5 class="font-semibold mb-0 text-[1.25rem]" id="total-rkef">0</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box">
+                                <div class="box-body !p-1">
+                                    <div class="flex items-center flex-wrap">
+                                        <div id="analytics-hpal"></div>
+                                        <div class="ms-1">
+                                            <p class="mb-1 text-[#8c9097] dark:text-white/50">Limonite</p>
+                                            <h5 class="font-semibold mb-0 text-[1.25rem]" id="total-hpal">0</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xxl:col-span-7 xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-header justify-between">
+                                    <div class="box-title">
+                                        Materials By Class
+                                    </div>
+                                    <div>
+                                        <button type="button"
+                                            class="ti-btn ti-btn-primary 1 !text-[0.85rem] !m-0 !font-medium">View
+                                            All</button>
+                                    </div>
+                                </div>
+                                <div class="box-body !my-2 !py-6 !px-2">
+                                    <div id="classOre"></div>
+                                </div>
+                                <div class="box-footer !p-0">
+                                    <div id="ore-percentage-display" class="grid grid-cols-12 justify-center"></div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-header justify-between">
+                                    <div class="box-title">Invertory Stockpiles</div>
+                                    <div class="hs-dropdown ti-dropdown">
+                                        <a href="javascript:void(0);"
+                                            class="px-2 font-normal text-[0.75rem] text-[#8c9097] dark:text-white/50"
+                                            aria-expanded="false">
+                                            View All<i class="ri-arrow-down-s-line align-middle ms-1 inline-block"></i>
+                                        </a>
+                                        <ul class="hs-dropdown-menu ti-dropdown-menu hidden" role="menu">
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">Today</a></li>
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">This Week</a></li>
+                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
+                                                    href="javascript:void(0);">Last Week</a></li>
+                                        </ul>
+                                    </div>
+
+                                </div>
+                                <div class="box-body">
+                                    {% include 'dashboard/static/card_inventory.html' %}
+                                    <div id="iventory-charts"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-6">
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Stockpile
+                            </div>
+
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive">
+                                {% include 'dashboard/static/table-stock.html' %}
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <div class="sm:flex items-center">
+                                <div class="dark:text-defaulttextcolor/70">
+                                    Showing Entries <i class="bi bi-arrow-right ms-2 font-semibold"></i>
+                                </div>
+                                <div class="ms-auto">
+                                    <nav aria-label="Page navigation" class="pagination-style-4">
+                                        <ul class="ti-pagination mb-0">
+                                            <li class="page-item">
+                                                <a href="javascript:void(0);" class="text-primary">View Details <i
+                                                        class="ti ti-external-link"></i></a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-3 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Ore By Dome
+                            </div>
+                            <div class="hs-dropdown ti-dropdown">
+                                <a href="javascript:void(0);" class="text-primary">View Details <i
+                                        class="ti ti-external-link"></i></a>
+                            </div>
+                        </div>
+                        {% include 'dashboard/static/table-dome.html' %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- End::content  -->
+
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    {% include 'dashboard/accordion.html' %}
+                    <div class="ti-modal-body px-4 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4">
+                            <div class="xl:col-span-12 col-span-12" id="form-pilih">
+                                <label class="form-label">Filter category</label>
+                                <select name="filter" class="ti-form-select rounded-sm !py-2 !px-3t" id="filter">
+                                    <option value="">---- Please select ----</option>
+                                    <option value="range">By Range</option>
+                                    <option value="weekly">By Week</option>
+                                    <option value="monthly">By Month</option>
+                                    <option value="yearly">By Year</option>
+                                    <option value="all">Get All</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12" id="form-tanggal-awal">
+                                <label class="form-label">Start date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}"
+                                    id="startDate" name="startDate">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12" id="form-tanggal-akhir">
+                                <label class="form-label">End date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}"
+                                    id="endDate" name="endDate">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12" id="form-tahun">
+                                <label class="form-label">Year</label>
+                                <select id="tahunFilter" name="tahunFilter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">Select Year</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12" id="form-bulan">
+                                <label class="form-label">Month</label>
+                                <select id="bulanFilter" name="bulanFilter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                </select>
+                            </div>
+
+                            <div class="xl:col-span-12 col-span-12" id="form-minggu">
+                                <label class="form-label">Week</label>
+                                <select id="mingguFilter" name="mingguFilter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3t">
+                                    <option value="">Select Week</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" id="applyFilterBtn"
+                            class="ti-btn bg-primary text-white !font-medium">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- ========== END Search Modal ========== -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+{% include 'layout/js.html' %}
+
+
+<script>
+    /*---  Filter Modal and Apply Filter  ----*/
+    $('#openFilter').click(function () {
+        window.HSOverlay.open('#search-modal');
+        $("#filter,#materialFilter,#tahunFilter,#bulanFilter,#mingguFilter").select2({
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+
+    });
+    $(document).ready(function () {
+        $('#form-tanggal-awal,#form-tanggal-akhir,#form-minggu,#form-bulan, #form-tahun').hide();
+        $('#filter').trigger('change');
+
+        $('#filter').change(function () {
+            if ($(this).val() == 'range') { // Jika filter nya 1 (per range)
+                $('#form-bulan, #form-tahun, #form-minggu').hide();
+                $('#form-tanggal-awal, #form-tanggal-akhir').show();
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#mingguFilter').val('').trigger('change');
+            } else if ($(this).val() == 'weekly') { // Jika filter nya 2 (per bulan)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#mingguFilter').val('').trigger('change');
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-tanggal-cut').hide();
+                $('#form-minggu,#form-bulan, #form-tahun').show();
+                $('#form-tahun').removeClass('xl:col-span-12').addClass('xl:col-span-6');
+            } else if ($(this).val() == 'monthly') { // Jika filter nya 2 (per bulan)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-minggu').hide();
+                $('#form-bulan, #form-tahun').show();
+                $('#form-tahun').removeClass('xl:col-span-12').addClass('xl:col-span-6');
+            } else if ($(this).val() == 'yearly') {
+                // Jika filternya 3 (Year)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-minggu').hide();
+                $('#form-tahun').show();
+                $('#form-tahun').removeClass('xl:col-span-6').addClass('xl:col-span-12');
+            } else { // Jika filternya 5 (Get ALl)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-minggu').hide();
+                // Reset layout semua ke full
+            }
+        })
+
+
+    });
+
+    /* =========================  Tahun ========================= */
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // 1‑12
+
+    // isi tahun (3 th terakhir) & pilih default = th sekarang
+    for (let i = 0; i < 3; i++) {
+        const y = currentYear - i;
+        $('#tahunFilter').append(`<option value="${y}">${y}</option>`);
+    }
+    $('#tahunFilter').val(currentYear);
+
+    /* =========================  Bulan ========================= */
+    function fillMonthOptions() {
+        const ySelected = parseInt($('#tahunFilter').val(), 10);
+        const lastMonth = (ySelected === currentYear) ? currentMonth : 12;
+
+        $('#bulanFilter').empty()
+            .append('<option value="">-- Select Month --</option>');
+
+        for (let m = 1; m <= lastMonth; m++) {
+            // nama bulan lokal: ganti 'id' ke 'en' kalau mau English
+            const monthName = new Date(ySelected, m - 1).toLocaleString('en', { month: 'long' });
+            $('#bulanFilter').append(`<option value="${m}">${monthName}</option>`);
+        }
+
+        // Auto‑pilih bulan sekarang jika tahun = tahun sekarang
+        if (ySelected === currentYear) {
+            $('#bulanFilter').val(currentMonth);
+        }
+        // Trigger penghitungan minggu ulang setiap kali bulan di‑refresh
+        updateMingguOptions();
+    }
+
+    /* =========================  Minggu (ISO Format) ========================= */
+    function getISOWeekString(date) {
+        const tempDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        const dayNum = tempDate.getUTCDay() || 7;
+        tempDate.setUTCDate(tempDate.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+        const weekNum = Math.ceil((((tempDate - yearStart) / 86400000) + 1) / 7);
+        return `${tempDate.getUTCFullYear()}-${String(weekNum).padStart(2, '0')}`;
+    }
+
+    function getWeeksInMonthISO(year, month) {
+        const weeks = [];
+        const firstDate = new Date(year, month - 1, 1);
+        const lastDate = new Date(year, month, 0);
+
+        let current = new Date(firstDate);
+
+        while (current <= lastDate) {
+            const start = new Date(current);
+            const end = new Date(start);
+            end.setDate(start.getDate() + 6);
+
+            if (end > lastDate) end.setDate(lastDate.getDate());
+
+            const isoWeek = getISOWeekString(start);
+
+            weeks.push({
+                label: `Week ${isoWeek.split('-')[1]}: ${start.getDate()}–${end.getDate()}`,
+                value: isoWeek
+            });
+
+            current.setDate(current.getDate() + 7);
+        }
+
+        return weeks;
+    }
+
+    function updateMingguOptions() {
+        const y = parseInt($('#tahunFilter').val(), 10);
+        const m = parseInt($('#bulanFilter').val(), 10);
+        $('#mingguFilter').empty();
+
+        if (!y || !m) return;
+        console.log("List minggu (ISO):");
+        getWeeksInMonthISO(y, m).forEach(w => {
+            console.log(w.value, w.label);
+            $('#mingguFilter').append(
+                `<option value="${w.value}">${w.label}</option>`
+            );
+        });
+    }
+
+    /* =========================  Event listeners ========================= */
+    $(document).ready(function () {
+        fillMonthOptions();               // isi bulan awal
+    });
+
+    $('#tahunFilter').on('change', () => fillMonthOptions());
+    $('#bulanFilter').on('change', () => updateMingguOptions());
+
+    $('#mingguFilter').on('change', function () {
+        const selectedWeek = $(this).val();
+        console.log('Minggu ISO yang dipilih:', selectedWeek);
+    });
+
+    function formatNumberShort(value) {
+        if (value >= 1_000_000_000) {
+            return (value / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+        } else if (value >= 1_000_000) {
+            return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+        } else if (value >= 1_000) {
+            return (value / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+        } else {
+            return value.toString();
+        }
+    }
+
+</script>
+
+
+<!-- Get Data -->
+<script>
+
+    /* Total Users Chart */
+    var spark1 = {
+        chart: {
+            type: 'line',
+            height: 40,
+            width: 120,
+            sparkline: {
+                enabled: true
+            },
+            dropShadow: {
+                enabled: true,
+                enabledOnSeries: undefined,
+                top: 0,
+                left: 0,
+                blur: 3,
+                color: '#000',
+                opacity: 0.1
+            }
+        },
+        grid: {
+            show: false,
+            xaxis: {
+                lines: {
+                    show: false
+                }
+            },
+            yaxis: {
+                lines: {
+                    show: false
+                }
+            },
+        },
+        stroke: {
+            show: true,
+            curve: 'straight',
+            lineCap: 'butt',
+            colors: undefined,
+            width: 1.5,
+            dashArray: 0,
+        },
+        fill: {
+            gradient: {
+                enabled: false
+            }
+        },
+        series: [{
+            name: 'Value',
+            data: [0, 21, 54, 38, 56, 24, 65]
+        }],
+        yaxis: {
+            min: 0,
+            show: false
+        },
+        xaxis: {
+            show: false,
+            axisTicks: {
+                show: false
+            },
+            axisBorder: {
+                show: false
+            }
+        },
+        yaxis: {
+            axisBorder: {
+                show: false
+            },
+        },
+        colors: ['#23b7e5'],
+
+    }
+    document.getElementById('analytics-users').innerHTML = '';
+    var spark1 = new ApexCharts(document.querySelector("#analytics-users"), spark1);
+    spark1.render();
+    /* Total Users Chart */
+
+    // Apply filters
+    $('#applyFilterBtn').click(function () {
+        var filter = $('#filter').val();
+
+        // Validasi form
+        if (filter == '') {
+            $('#filter').select2('open');
+            return false;
+        } else if (filter == 'range' && $('#startDate').val() == '') {
+            $('#startDate').focus();
+            return false;
+        } else if (filter == 'range' && $('#endDate').val() == '') {
+            $('#endDate').focus();
+            return false;
+        } else if (filter == 'weekly' && $('#bulanFilter').val() == '') {
+            $('#bulanFilter').select2('open');
+            return false;
+        } else if (filter == 'weekly' && $('#tahunFilter').val() == '') {
+            $('#tahunFilter').select2('open');
+            return false;
+        } else if (filter == 'monthly' && $('#tahunFilter').val() == '') {
+            $('#tahunFilter').select2('open');
+            return false;
+        } else if (filter == 'yearly' && $('#tahunFilter').val() == '') {
+            ('#tahunFilter').select2('open');
+            return false;
+        }
+
+        // Ambil parameter sesuai tipe filter
+        let year = $('#tahunFilter').val();
+        let month = $('#bulanFilter').val();
+        let week = $('#mingguFilter').val();
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+
+        // ⬇Tampilkan Swal sekali, auto-close 2 detik
+        Swal.fire({
+            title: 'Loading data...',
+            html: 'Please wait a moment ⏳',
+            timer: 1000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        window.HSOverlay.close('#search-modal');
+
+        // Panggil fungsi dengan parameter dinamis
+        loadOreSummary(filter, year, month, week, startDate, endDate);
+        loadOreChart(filter, year, month, week, startDate, endDate);
+        loadOreClassChart(filter, year, month, week, startDate, endDate);
+        loadSaleSummary(filter, year, month, week, startDate, endDate);
+        loadSellingChart(filter, year, month, week, startDate, endDate);
+        loadInventorySummary(filter, year, month, week, startDate, endDate);
+        loadInventoryChart(filter, year, month, week, startDate, endDate);
+        loadStockpileRoa(filter, year, month, week, startDate, endDate);
+        loadDomeRoa(filter, year, month, week, startDate, endDate);
+        loadGradeOre(filter, year, month, week, startDate, endDate);
+    });
+    // Reset
+    $('#reload').click(function () {
+        // Ambil bulan & tahun sekarang
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // bulan dimulai dari 0
+        const currentYear = today.getFullYear();
+        // Panggil data & chart pertama kali dengan tipe monthly ('3')
+        loadOreSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadOreChart('monthly', currentYear, currentMonth, '', '', '');
+        loadOreClassChart('monthly', currentYear, currentMonth, '', '', '');
+        loadSaleSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadSellingChart('monthly', currentYear, currentMonth, '', '', '');
+        loadInventorySummary('monthly', currentYear, currentMonth, '', '', '');
+        loadInventoryChart('monthly', currentYear, currentMonth, '', '', '');
+        loadStockpileRoa('monthly', currentYear, currentMonth, '', '', '');
+        loadDomeRoa('monthly', currentYear, currentMonth, '', '', '');
+        loadGradeOre('monthly', currentYear, currentMonth, '', '', '');
+
+
+    });
+    function loadOreSummary(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/ore-summary/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const totalOre = data.total_ore || 0;
+                const totalLim = data.total_lim || 0;
+                const totalSap = data.total_sap || 0;
+
+                // Hitung persentase
+                const limPercent = totalOre ? ((totalLim / totalOre) * 100).toFixed(1) : 0;
+                const sapPercent = totalOre ? ((totalSap / totalOre) * 100).toFixed(1) : 0;
+
+                document.getElementById("total-ore").innerText = formatNumberShort(data.total_ore);
+                document.getElementById("total-lim").innerText = formatNumberShort(data.total_lim);
+                document.getElementById("total-sap").innerText = formatNumberShort(data.total_sap);
+
+                document.getElementById("persen-lim").innerText = `${limPercent}%`;
+                document.getElementById("persen-sap").innerText = `${sapPercent}%`;
+            })
+            .catch(error => {
+                console.error("Error fetching ore summary:", error);
+            });
+    }
+
+    /* Ore Productions Chart */
+    function loadOreChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/ore-chart/", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const isMonthly = filterType === 'monthly';
+                const chartType = isMonthly ? 'area' : 'bar';
+                const seriesType = isMonthly ? 'area' : 'bar';
+
+                // 👇 Debug log
+                chart2.updateOptions({
+                    chart: { type: chartType },
+                    stroke: {
+                        width: [0, 1.1],
+                        curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: "50%",
+                            borderRadius: 2
+                        }
+                    },
+                    // fill: {
+                    //     type: isMonthly ? 'gradient' : 'solid'
+                    // },
+                    labels: data.x_data
+                });
+
+                chart2.updateSeries([
+                    {
+                        name: 'Limonite',
+                        type: seriesType,
+                        data: data.y_data_lim
+                    },
+                    {
+                        name: 'Saprolite',
+                        type: seriesType,
+                        data: data.y_data_sap
+                    }
+                ]);
+            })
+            .catch(error => {
+                console.error("Error fetching ore chart:", error);
+            });
+    }
+
+    var options = {
+        series: [],
+        chart: {
+            toolbar: {
+                show: false
+            },
+            type: 'line',
+            height: 250,
+            fontFamily: 'Nunito, sans-serif',
+        },
+        grid: {
+            borderColor: '#f1f1f1',
+            // strokeDashArray: 3
+        },
+        labels: [],
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            width: [0, 1.1],
+            // curve: ['straight', 'smooth'],
+            curve: ['smooth', 'smooth'],
+        },
+        dropShadow: {
+            enabled: false,
+            opacity: 0.2,
+            blur: 5,
+            left: -7,
+            top: 22,
+        },
+        legend: {
+            show: true,
+            position: 'top',
+        },
+        xaxis: {
+            axisBorder: {
+                color: '#e9e9e9',
+            },
+
+        },
+        yaxis: {
+            min: 0,
+            // tickAmount: 5,
+            labels: {
+                formatter: (value) => {
+                    return value / 1000 + 'K';
+                },
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+
+                },
+            },
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: "50%",
+                borderRadius: 2
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                type: "vertical",
+                shadeIntensity: 0.1,
+                inverseColors: false,
+                opacityFrom: 0.7,
+                opacityTo: 0.5,
+                stops: [0, 100, 90]
+            }
+        },
+        tooltip: {
+            marker: {
+                show: true,
+            },
+            x: {
+                show: true,
+            },
+        },
+        noData: {
+            text: "No data...",
+        },
+        animations: {
+            enabled: true,
+            easing: "easeinout",
+            speed: 2000,
+            animateGradually: {
+                enabled: true,
+                delay: 250,
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 1000,
+            },
+        }
+
+        // colors: ["rgba(132, 90, 223, 1)", '#23b7e5'],
+    };
+
+    document.querySelector("#oreProductions").innerHTML = ""
+    var chart2 = new ApexCharts(document.querySelector("#oreProductions"), options);
+    chart2.render();
+
+    /* Ore Productions Chart */
+
+    /* Ore Class Chart */
+    function loadOreClassChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/ore-class-chart/", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                console.log("Ore Class Chart Response:", data);
+
+                const labels = data.labels || [];
+                const rawValues = data.y_data || [];
+
+
+                const series = rawValues.map(val => {
+                    const num = parseFloat(val);
+                    return isNaN(num) || num < 0 ? 0 : num;
+                });
+
+                // Validasi data
+                if (series.length !== labels.length) {
+                    console.warn("Jumlah data series dan label tidak sama!");
+                    console.log("Series:", series.length, "Labels:", labels.length);
+                    return;
+                }
+
+                if (series.length === 0) {
+                    console.warn("Tidak ada data untuk ditampilkan");
+                    return;
+                }
+
+                const total = series.reduce((a, b) => a + b, 0);
+
+                chartClassOre.updateOptions({
+                    series: series,
+                    labels: labels,
+                    // colors: dynamicColors,
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                labels: {
+                                    total: {
+                                        show: true,
+                                        showAlways: true,
+                                        label: 'Total',
+                                        fontSize: '19px',
+                                        fontWeight: 600,
+                                        color: '#495057',
+                                        formatter: function () {
+                                            return formatNumberShort(total);
+                                            // total.toFixed(2).toLocaleString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Tambahkan/Update persen di HTML
+                const htmlOutput = labels.map((label, i) => {
+                    const percent = ((series[i] / total) * 100).toFixed(0);
+                    return `
+                    <div class="col-span-${12 / labels.length} px-0 text-center">
+                        <div class="sm:p-4 p-2">
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.6875rem]">${label}</span>
+                            <span class="block text-[0.8rem] font-semibold">${percent}%</span>
+                        </div>
+                    </div>
+                `;
+                }).join("");
+
+                // Render ke DOM (pastikan id #ore-percentage-display ada)
+                const displayEl = document.getElementById("ore-percentage-display");
+                if (displayEl) displayEl.innerHTML = htmlOutput;
+
+            })
+            .catch(error => {
+                console.error("Error fetching ore class chart:", error);
+                Swal.fire("Error", "Gagal mengambil data chart", "error");
+            });
+    }
+
+    var options = {
+        series: [],
+        chart: {
+            height: 257,
+            type: 'donut',
+        },
+        dataLabels: {
+            enabled: false,
+        },
+        legend: {
+            show: false,
+        },
+
+        plotOptions: {
+            pie: {
+                expandOnClick: false,
+                donut: {
+                    size: '75%',
+                    background: 'transparent',
+                    labels: {
+                        show: true,
+                        name: {
+                            show: true,
+                            fontSize: '20px',
+                            color: '#495057',
+                            offsetY: -4
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '18px',
+                            color: undefined,
+                            offsetY: 8,
+                            formatter: function (val) {
+                                return val + "%"
+                            }
+                        },
+                        total: {
+                            show: true,
+                            showAlways: true,
+                            label: 'Total',
+                            fontSize: '22px',
+                            fontWeight: 600,
+                            color: '#495057',
+                        }
+
+                    }
+                }
+            }
+        },
+        colors: [
+            "rgba(132, 90, 223, 1)",   // LGLO
+            "rgba(35, 183, 229, 1)",   // MGLO
+            "rgba(38, 191, 148, 1)",   // HGLO
+            "rgba(245, 184, 73, 1)",   // LGSO
+            "rgba(255, 99, 132, 1)",   // MGSO
+            "rgba(54, 162, 235, 1)",   // HGSO
+        ],
+
+    };
+
+    document.querySelector("#classOre").innerHTML = " ";
+    var chartClassOre = new ApexCharts(document.querySelector("#classOre"), options);
+    chartClassOre.render();
+    /* Ore Class Chart */
+
+    /* Selling Summary Card */
+    function loadSaleSummary(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/selling-summary/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const totalOre = data.total_ore || 0;
+                const totalLim = data.total_lim || 0;
+                const totalSap = data.total_sap || 0;
+
+                // Hitung persentase
+                const limPercent = totalOre ? ((totalLim / totalOre) * 100).toFixed(0) : 0;
+                const sapPercent = totalOre ? ((totalSap / totalOre) * 100).toFixed(0) : 0;
+
+                document.getElementById("total-selling").innerText = formatNumberShort(data.total_ore);
+                document.getElementById("total-hpal").innerText = formatNumberShort(data.total_lim);
+                document.getElementById("total-rkef").innerText = formatNumberShort(data.total_sap);
+                chart5.updateOptions({
+                    series: [limPercent],
+                    colors: ["#23b7e5"],
+                });
+                chart6.updateOptions({
+                    series: [sapPercent],
+                    colors: ["#f7b731"],
+                });
+
+            })
+            .catch(error => {
+                console.error("Error fetching selling summary:", error);
+            });
+    }
+    /* Selling Summary Card */
+
+    /* Selling vs Plan Chart */
+    const today = new Date();
+    const dummySale = generateDummySaleData(currentMonth, currentYear);
+    function generateDummySaleData(month, year) {
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const labels = [];
+        const targetData = [];
+        const saleData = [];
+        for (let day = 1; day <= daysInMonth; day++) {
+            labels.push(day); // hanya angka hari
+            targetData.push(Math.floor(Math.random() * 1000) + 500); // 500–1500
+            saleData.push(Math.floor(Math.random() * 800) + 400);  // 400–1200
+        }
+        return {
+            x_data: labels,
+            y_data_target: targetData,
+            y_data_sale: saleData     // ✅ fix di sini
+        };
+    }
+
+    function loadSellingChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/selling-chart/", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const isMonthly = filterType === 'monthly';
+                const chartType = isMonthly ? 'line' : 'line';
+                const seriesActual = isMonthly ? 'area' : 'column';
+                const seriesTarget = isMonthly ? 'line' : 'line';
+
+
+                //     chartSelling.updateOptions({
+                //         chart: { type: chartType },
+                //         stroke: {
+                //             width: [0, 3],
+                //             curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
+                //         },
+                //         plotOptions: {
+                //             bar: {
+                //                 columnWidth: "50%",
+                //                 borderRadius: 2
+                //             }
+                //         },
+                //         labels: data.x_data,
+
+                //     });
+
+                //     chartSelling.updateSeries([
+
+                //         {
+                //             name: 'Actual',
+                //             type: seriesActual,
+                //             data: data.y_data_actual
+                //         },
+                //         {
+                //             name: 'Target',
+                //             type: seriesTarget,
+                //             data: data.y_data_plan
+                //         },
+                //     ]);
+            })
+            .catch(error => {
+                console.error("Error fetching ore chart:", error);
+            });
+    }
+
+    var options = {
+        series: [
+            //     {
+            //   name: 'TEAM A',
+            //   type: 'column',
+            //   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
+            // },
+            {
+                name: 'Actual',
+                type: 'area',
+                data: dummySale.y_data_sale
+            }, {
+                name: 'Target',
+                type: 'area',
+                data: dummySale.y_data_target
+            }],
+        chart: {
+            height: 350,
+            type: 'area',
+            stacked: false,
+            zoom: {
+                enabled: false
+            },
+        },
+        stroke: {
+            width: [0, 2],
+            curve: 'smooth'
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: '50%'
+            }
+        },
+
+        fill: {
+            opacity: [0.85, 0.25, 1],
+            gradient: {
+                inverseColors: false,
+                shade: 'light',
+                type: "vertical",
+                opacityFrom: 0.85,
+                opacityTo: 0.55,
+                stops: [0, 100, 100, 100]
+            }
+        },
+        labels: dummySale.x_data,
+        markers: {
+            size: 0
+        },
+        legend: {
+            show: true,
+            position: 'top',
+        },
+        xaxis: {
+            axisBorder: {
+                color: '#e9e9e9',
+            },
+
+        },
+        yaxis: {
+            title: {
+                text: 'Ton',
+            },
+            // min: 0,
+            // tickAmount: 5,
+            labels: {
+                formatter: (value) => {
+                    return value / 1000 + 'K';
+                },
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+
+                },
+            },
+        },
+        dataLabels: {
+            enabled: false,
+            show: true,
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: function (y) {
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(0) + " points";
+                    }
+                    return y;
+
+                }
+            }
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                type: "vertical", // ini yang penting agar gradient dari atas ke bawah
+                shadeIntensity: 0.1,
+                inverseColors: false,
+                opacityFrom: 0.7,
+                opacityTo: 0.3,
+                stops: [0, 100, 50]
+            }
+        },
+
+    };
+    document.getElementById('selling-chart').innerHTML = '';
+    var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), options);
+    chartSelling.render();
+    /* Selling vs Plan Chart Chart */
+
+    /* Inventory Summary Card */
+    function loadInventorySummary(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/inventory-summary/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const lim_in = data.lim_in || 0;
+                const lim_out = data.lim_out || 0;
+                const lim_stock = data.lim_stock || 0;
+
+                const sap_in = data.sap_in || 0;
+                const sap_out = data.sap_out || 0;
+                const sap_stock = data.sap_stock || 0;
+
+                const total_in = data.total_in || 0;
+                const total_out = data.total_out || 0;
+                const total_stock = data.total_stock || 0;
+
+                // Hitung persentase out terhadap in (misal: sudah dijual berapa persen dari yang masuk)
+                const limPercent = lim_in ? ((lim_out / lim_in) * 100).toFixed(0) : 0;
+                const sapPercent = sap_in ? ((sap_out / sap_in) * 100).toFixed(0) : 0;
+                const outPercent = total_in ? ((total_out / total_in) * 100).toFixed(0) : 0;
+
+                document.getElementById("lim_stock").innerText = formatNumberShort(lim_stock);
+                document.getElementById("sap_stock").innerText = formatNumberShort(sap_stock);
+                document.getElementById("total_out").innerText = formatNumberShort(total_out);
+                document.getElementById("total_stock").innerText = formatNumberShort(total_stock);
+
+                // Tampilkan persentase (misal pakai % di belakang)
+                document.getElementById("lim_stock_percent").innerText = `${limPercent}%`;
+                document.getElementById("sap_stock_percent").innerText = `${sapPercent}%`;
+                document.getElementById("total_out_percent").innerText = `${outPercent}%`;
+
+            })
+            .catch(error => {
+                console.error("Error fetching inventory summary:", error);
+            });
+    }
+    /* Inventory Summary Card */
+
+    /* Inventory Stock Chart */
+    function loadInventoryChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/inventory-chart/", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const isMonthly = filterType === 'monthly';
+                const chartType = isMonthly ? 'line' : 'line';
+                const seriesType = isMonthly ? 'area' : 'line';
+
+                chart4.updateOptions({
+                    chart: { type: chartType },
+                    // stroke: {
+                    //     width: [0, 1.1],
+                    //     curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
+                    // },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: "50%",
+                            borderRadius: 2
+                        }
+                    },
+                    labels: data.x_data
+                });
+
+                chart4.updateSeries([
+                    {
+                        name: 'Mining',
+                        // type: seriesType,
+                        type: 'area',
+                        data: data.y_data_stock
+                    },
+
+                    {
+                        name: 'Seling',
+                        // type: seriesType,
+                        type: 'line',
+                        data: data.y_data_out
+                    },
+                    {
+                        name: 'Balance',
+                        // type: seriesType,
+                        type: 'line',
+                        data: data.y_data_balance
+                    },
+                ]);
+            })
+            .catch(error => {
+                console.error("Error fetching ore chart:", error);
+            });
+    }
+
+    var options2 = {
+        series: [],
+        chart: {
+            height: 350,
+            type: 'line',
+            toolbar: {
+                show: false
+            },
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [0, 3, 3],
+            dashArray: [0, 0, 5]
+        },
+        fill: {
+            //   opacity: [0.35, 0.45, 1],
+            opacity: [0.35, 0.75, 1],
+            gradient: {
+                inverseColors: false,
+                shade: 'light',
+                type: "vertical",
+                opacityFrom: 0.65,
+                opacityTo: 0.35,
+                stops: [0, 100, 100, 50]
+            }
+        },
+        colors: ['#845ade', '#e6533c', '#23b7e5', '#23b7e5'],
+        labels: [],
+        markers: {
+            size: 0
+        },
+        yaxis: [
+
+            {
+                // title: {
+                //   text: 'Mining',
+                // },
+                show: true,
+                labels: {
+                    formatter: (value) => {
+                        return value / 1000 + 'K';
+                    },
+                    offsetY: 0,
+                    style: {
+                        fontSize: '10px',
+
+                    },
+                },
+            },
+            {
+                show: false,
+                opposite: true,
+                title: {
+                    text: 'Seling',
+                },
+            },
+            {
+                show: false,
+                opposite: true,
+                title: {
+                    text: 'Balance',
+                },
+                labels: {
+                    formatter: (value) => {
+                        return value / 1000 + 'K';
+                    },
+                    offsetY: 0,
+                    style: {
+                        fontSize: '12px',
+
+                    },
+                },
+            },
+        ],
+        tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: function (y) {
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(0) + " Ton";
+                    }
+                    return y;
+                }
+            }
+        }
+    };
+    document.getElementById('iventory-charts').innerHTML = ''
+    var chart4 = new ApexCharts(document.querySelector("#iventory-charts"), options2);
+    chart4.render();
+
+    /* Inventory Stockpile Chart */
+
+    /* sale percentage Chart */
+    var options = {
+        chart: {
+            height: 120,
+            width: 100,
+            type: "radialBar",
+        },
+
+        series: [],
+        colors: ["#23b7e5"],
+        plotOptions: {
+            radialBar: {
+                hollow: {
+                    margin: 0,
+                    size: "50%",
+                    background: "#fff"
+                },
+                dataLabels: {
+                    name: {
+                        offsetY: -10,
+                        color: "#23b7e5",
+                        fontSize: "10px",
+                        show: false
+                    },
+                    value: {
+                        offsetY: 5,
+                        color: "#23b7e5",
+                        fontSize: "12px",
+                        show: true,
+                        fontWeight: 800
+                    }
+                }
+            }
+        },
+        stroke: {
+            lineCap: "round"
+        },
+        labels: [""]
+    };
+    document.querySelector("#analytics-rkef").innerHTML = ""
+    var chart5 = new ApexCharts(document.querySelector("#analytics-rkef"), options);
+    chart5.render();
+
+    document.querySelector("#analytics-hpal").innerHTML = ""
+    var chart6 = new ApexCharts(document.querySelector("#analytics-hpal"), options);
+    chart6.render();
+    /* sale percentage Chart */
+
+    function loadGradeOre(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/ore-grade/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector("#list-grade tbody");
+                tbody.innerHTML = "";
+
+                data.data.forEach(row => {
+                    tbody.innerHTML += `
+                    <tr  class="border-y border-inherit border-solid dark:border-defaultborder/10">
+                        <td>${row.nama_material || '-'}</td>
+                        <td>${parseFloat(row.ni || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.fe || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.mgo || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.sio2 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.sm || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.mc || 0).toFixed(2)}</td>
+                       <td>${row.grade}</td>
+                    </tr>
+                `;
+                });
+                // Set summary (footer)
+                ;
+
+            })
+            .catch(error => {
+                console.error("Error loading ROA summary:", error);
+            });
+    }
+
+    function loadStockpileRoa(filterType, year, month, week, dateStart, dateEnd, material, page = 1, per_page = 10) {
+        const url = new URL("/kqms/dashboard/api/stock-grade/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+        if (material) url.searchParams.append("material", material);
+        url.searchParams.append("page", page);
+        url.searchParams.append("per_page", per_page);
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector("#list-table tbody");
+                tbody.innerHTML = "";
+
+                let no = 1;
+                let total_ore = 0, total_released = 0;
+                let sum = {
+                    ni: 0, co: 0, al2o3: 0, cao: 0, cr2o3: 0,
+                    fe: 0, mgo: 0, sio2: 0, sm: 0, mc: 0
+                };
+                let count = 0;
+
+                data.data.forEach(row => {
+                    tbody.innerHTML += `
+                    <tr>
+                        <td>${no++}</td>
+                        <td>${row.stockpile || '-'}</td>
+                        <td>${row.nama_material || '-'}</td>
+                        <td>${parseFloat(row.total_ore || 0).toFixed(1)}</td>
+                        <td>${parseFloat(row.released || 0).toFixed(1)}</td>
+                        <td>${parseFloat(row.ni || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.fe || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.mgo || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.sio2 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.sm || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.mc || 0).toFixed(2)}</td>
+                       <td>${row.grade}</td>
+                    </tr>
+                `;
+                    count += 1;
+                });
+                ;
+            })
+            .catch(error => {
+                console.error("Error loading ROA summary:", error);
+            });
+    }
+
+    function loadDomeRoa(filterType, year, month, week, dateStart, dateEnd, material, page = 1, per_page = 6) {
+        const url = new URL("/kqms/dashboard/api/dome-grade/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+        if (material) url.searchParams.append("material", material);
+
+        url.searchParams.append("page", page);
+        url.searchParams.append("per_page", per_page);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const domeList = document.querySelector(".analytics-visitors-countries");
+                domeList.innerHTML = ""; // kosongkan dulu
+
+                data.data.forEach(row => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="leading-none">
+                            <span class="avatar avatar-md !text-indigomain border bg-light dark:border-defaultborder/10 !rounded-full">
+                                <i class="ti ti-view-360 text-[1.1rem]"></i>
+                            </span>
+                        </div>
+                        <div class="ms-4 flex-grow leading-none">
+                            <span class="text-[0.75rem]">${row.pile_id || '-'}</span>
+                        </div>
+                        <div>
+                            <span class="text-default badge bg-light font-semibold mt-1">${formatNumberShort(row.total_ore)}</span>
+                        </div>
+                        <div class="ms-2">
+                            <span class="text-default badge bg-light font-semibold mt-1">${parseFloat(row.ni).toFixed(1)}%</span>
+                        </div>
+                        <div class="ms-2">
+                            <span class="text-default badge bg-light font-semibold mt-1">${row.grade || '-'}</span>
+                        </div>
+                    </div>
+                `;
+                    domeList.appendChild(li);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching dome ROA:", error);
+            });
+    }
+
+    /* Load Data Ready */
+    $(document).ready(function () {
+        // Ambil bulan & tahun sekarang
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // bulan dimulai dari 0
+        const currentYear = today.getFullYear();
+        // Panggil data & chart pertama kali dengan tipe monthly ('3')
+
+        loadOreSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadOreChart('monthly', currentYear, currentMonth, '', '', '');
+        loadOreClassChart('monthly', currentYear, currentMonth, '', '', '');
+
+        loadSaleSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadSellingChart('monthly', currentYear, currentMonth, '', '', '');
+
+        loadInventorySummary('monthly', currentYear, currentMonth, '', '', '');
+        loadInventoryChart('monthly', currentYear, currentMonth, '', '', '');
+        loadStockpileRoa('monthly', currentYear, currentMonth, '', '', '');
+        loadDomeRoa('monthly', currentYear, currentMonth, '', '', '');
+        loadGradeOre('monthly', currentYear, currentMonth, '', '', '');
+    });
+
+</script>
+
+</body>
+
+</html>

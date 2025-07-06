@@ -1,0 +1,881 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality Assurance</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        QAQC
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="grid grid-cols-1 gap-2 xl:grid-cols-2 ">
+                <div class="grid grid-cols-5 gap-2 xl:grid-cols-5 px-2">
+                    <div class="mb-3">
+                        <select class="form-select" name="filter_year" id="filter_year">
+                            <option value="">--- Year --- </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <select id="filter_month" name="filter_month" class="form-select">
+                            <option value="">-- Month --</option>
+                            <option value=" 1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6 mt-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_year"
+                            class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_month"
+                            class="rounded-lg relative  bg-white dark:bg-black overflow-hidden">
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+            <div class="grid grid-cols-12  gap-6">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Table Wet duplicated by Year
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-year') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-year"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">Description</th>
+                                            <th class="bg-soft-secondary">Ni</th>
+                                            <th class="bg-soft-secondary">Co</th>
+                                            <th class="bg-soft-secondary">Fe</th>
+                                            <th class="bg-soft-secondary">Mgo</th>
+                                            <th class="bg-soft-secondary">SiO2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Table Wet duplicated by Month
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table-month') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table-month"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">Description</th>
+                                            <th class="bg-soft-secondary">Ni</th>
+                                            <th class="bg-soft-secondary">Co</th>
+                                            <th class="bg-soft-secondary">Fe</th>
+                                            <th class="bg-soft-secondary">Mgo</th>
+                                            <th class="bg-soft-secondary">SiO2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Table by Range Date
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 gap-4 mb-5">
+                                <div class="xl:col-span-4 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{start_date}}"
+                                            name="startDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-4 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="date" value="{{end_date}}"
+                                            name="endDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="button" id="applyFilter"
+                                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                                </div>
+                            </div>
+                            <div class="table-responsive table-scrollable">
+                                <table id="list-table"
+                                    class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover table-sm">
+                                    <thead>
+                                        <tr class="border-b border-defaultborder">
+                                            <th class="bg-soft-secondary">Description</th>
+                                            <th class="bg-soft-secondary">Ni</th>
+                                            <th class="bg-soft-secondary">Co</th>
+                                            <th class="bg-soft-secondary">Fe</th>
+                                            <th class="bg-soft-secondary">Mgo</th>
+                                            <th class="bg-soft-secondary">SiO2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-defaultborder">
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_week"
+                            class="rounded-lg bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    $('#filter_year').change(function () {
+        var filter_year = $(this).val();
+        createChartByYear();
+        createChartByMonth();
+        /* Table */
+        createTableByYear();
+        createTableByMonth();
+    });
+
+    $('#filter_month').change(function () {
+        var bulan = $(this).val();
+        createChartByMonth();
+        createTableByMonth();
+    });
+</script>
+<script>
+     
+    $(document).ready(function () {
+      
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+        });
+
+        $.ajax({
+            url: "{% url 'get-year-sample' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.tahun_sample, function (key, value) {
+                    options += '<option value="' + value.tahun + '">' + value.tahun + '</option>';
+                });
+                $('#filter_year').append(options);
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+     const getTheme = () => {
+            return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        };
+    function createChartByYear() {
+        const filter_year = $("#filter_year").val();
+        const theme = getTheme();  // ← Tambahkan ini
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'plotly-sample-wet-year-roa' %}",
+            dataType: "json",
+            data: {
+                filter_year: filter_year,
+                theme: theme,  // ← Kirim ke backend
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#chart_by_year').html(data.plot_div);
+                } else {
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    function createChartByMonth() {
+        const filter_year = $("#filter_year").val();
+        const filter_month = $("#filter_month").val();
+        const theme = getTheme();  // ← Tambahkan ini
+
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'plotly-sample-wet-month-roa' %}",
+            dataType: "json",
+            data: {
+                filter_year: filter_year,
+                filter_month: filter_month,
+                theme: theme,  // ← Kirim ke backend
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#chart_by_month').html(data.plot_div);
+                } else {
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    function createChartByWeek() {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        const theme = getTheme();  // ← Tambahkan ini
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'plotly-sample-wet-week-roa' %}",
+            dataType: "json",
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+                theme: theme,  // ← Kirim ke backend
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#chart_by_week').html(data.plot_div);
+                } else {
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    // Panggil API untuk mendapatkan data yang difilter dari controller
+    $(document).ready(function () {
+        createChartByYear();
+        createChartByMonth();
+        // Update chart jika tema berubah
+        const observer = new MutationObserver(() => {
+            createChartByYear();
+            createChartByMonth();
+            createChartByWeek();
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+
+    });
+</script>
+
+
+<!-- For Range Table Data  -->
+<script>
+    $('#applyFilter').click(function () {
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var table = $("#list-table").find("tbody");
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+        // Kirim permintaan AJAX ke server dengan filter
+        function appendDataToTable(data) {
+            console.log("Data received by Week:", data); // Tambahkan ini untuk debugging
+            // Tambahkan baris Total Sample ke tabel
+            var totalSampleRow = $("<tr>");
+            totalSampleRow.append("<td>Total Sample</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(totalSampleRow);
+
+            // Tambahkan baris Acceptable Samples ke tabel
+            var acceptableSamplesRow = $("<tr>");
+            acceptableSamplesRow.append("<td>Acceptable samples</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(acceptableSamplesRow);
+
+            // Tambahkan baris Acceptable Samples (%) ke tabel
+            var acceptableSamplesPercentRow = $("<tr>");
+            acceptableSamplesPercentRow.append("<td>Acceptable samples(%)</td>");
+
+            // Periksa setiap nilai sebelum menghitung dan tambahkan ke tabel
+            var acceptableSamplesPercentages = [
+                { value: data.jlm_ni, good: data.good_ni },
+                { value: data.jlm_co, good: data.good_co },
+                { value: data.jlm_fe, good: data.good_fe },
+                { value: data.jlm_mgo, good: data.good_mgo },
+                { value: data.jlm_sio2, good: data.good_sio2 }
+            ];
+
+            acceptableSamplesPercentages.forEach(function (item) {
+                if (item.value > 0) {
+                    acceptableSamplesPercentRow.append("<td>" + ((item.good / item.value) * 100).toFixed(0) + '%</td>');
+                } else {
+                    acceptableSamplesPercentRow.append("<td>0%</td>");
+                }
+            });
+            table.append(acceptableSamplesPercentRow);
+
+            // Tambahkan baris Error Samples ke tabel
+            var errorSamplesRow = $("<tr>");
+            errorSamplesRow.append("<td>Error samples</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(errorSamplesRow);
+
+            // Tambahkan baris Error Samples (%) ke tabel
+            var errorSamplesPercentRow = $("<tr>");
+            errorSamplesPercentRow.append("<td>Error samples(%)</td>");
+
+            // Periksa setiap nilai sebelum menghitung dan tambahkan ke tabel
+            var errorSamples = [
+                { value: data.jlm_ni, error: data.error_ni },
+                { value: data.jlm_co, error: data.good_co },
+                { value: data.jlm_fe, error: data.error_fe },
+                { value: data.jlm_mgo, error: data.error_mgo },
+                { value: data.jlm_sio2, error: data.error_sio2 }
+            ];
+
+            errorSamples.forEach(function (item) {
+                if (item.value > 0) {
+                    errorSamplesPercentRow.append("<td>" + ((item.error / item.value) * 100).toFixed(0) + '%</td>');
+                } else {
+                    errorSamplesPercentRow.append("<td>0%</td>");
+                }
+            });
+
+            table.append(errorSamplesPercentRow);
+
+            // Tambahkan baris Average Different ke tabel
+            var averageSamplesRow = $("<tr>");
+            averageSamplesRow.append("<td>Average Different</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(averageSamplesRow);
+        }
+
+        // Lakukan permintaan Ajax ke endpoint view Anda
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-wet-week-roa' %}",
+            data: {
+                startDate: startDate,
+                endDate: endDate,
+            },
+            success: function (response) {
+
+                console.log("Response from server (week):", response); // Tambahkan ini untuk debugging
+                var sqlData = response;
+
+                // Data berhasil diterima dari server
+                appendDataToTable(sqlData);
+                // Call Chart 
+                createChartByWeek();
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log("Gagal mengambil data dari server.");
+            },
+        });
+
+    });
+</script>
+
+<!-- For Year Table Data  -->
+<script>
+    function createTableByYear() {
+        var filter_year = $("#filter_year").val();
+        var table = $("#list-table-year").find("tbody");
+
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+
+        function appendDataToTableYear(data) {
+            console.log("Data received by Year:", data); // Tambahkan ini untuk debugging
+            $.each(data, function (index, row) {
+
+            });
+            // Tambahkan baris Total Sample ke tabel
+            var totalSampleRow = $("<tr>");
+            totalSampleRow.append("<td>Total Sample</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(totalSampleRow);
+
+            // Tambahkan baris Acceptable Samples ke tabel
+            var acceptableSamplesRow = $("<tr>");
+            acceptableSamplesRow.append("<td>Acceptable samples</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(acceptableSamplesRow);
+
+            // Tambahkan baris Acceptable Samples (%) ke tabel
+            var acceptableSamplesPercentRow = $("<tr>");
+            acceptableSamplesPercentRow.append("<td>Acceptable samples(%)</td>");
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_ni / data.jlm_ni) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_co / data.jlm_co) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_fe / data.jlm_fe) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_mgo / data.jlm_mgo) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_sio2 / data.jlm_sio2) * 100).toFixed(0) + '%</td>');
+            table.append(acceptableSamplesPercentRow);
+
+            // Tambahkan baris Error Samples ke tabel
+            var errorSamplesRow = $("<tr>");
+            errorSamplesRow.append("<td>Error samples</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(errorSamplesRow);
+
+            // Tambahkan baris Error Samples (%) ke tabel
+            var errorSamplesPercentRow = $("<tr>");
+            errorSamplesPercentRow.append("<td>Error samples(%)</td>");
+            errorSamplesPercentRow.append("<td>" + ((data.error_ni / data.jlm_ni) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_co / data.jlm_co) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_fe / data.jlm_fe) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_mgo / data.jlm_mgo) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_sio2 / data.jlm_sio2) * 100).toFixed(0) + '%</td>');
+            table.append(errorSamplesPercentRow);
+
+            // Tambahkan baris Average Different ke tabel
+            var averageSamplesRow = $("<tr>");
+            averageSamplesRow.append("<td>Average Different</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(averageSamplesRow);
+        }
+
+        // Lakukan permintaan Ajax ke endpoint controller Anda
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-wet-year-roa' %}",
+            dataType: "json",
+            data: {
+                filter_year: filter_year
+            },
+            success: function (response) {
+                console.log("Response from server (year):", response); // Tambahkan ini untuk debugging
+                var sqlData = response;
+                // Data berhasil diterima dari server
+                appendDataToTableYear(sqlData);
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log("Gagal mengambil data dari server.");
+            },
+        });
+    }
+    // Panggil API untuk mendapatkan data yang difilter dari controller
+    $(document).ready(function () {
+        createTableByYear();
+    });
+</script>
+
+<!-- For Month Table Data  -->
+<script>
+    function createTableByMonth() {
+        var filter_year = $("#filter_year").val();
+        var filter_month = $("#filter_month").val();
+        var table = $("#list-table-month").find("tbody");
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+        // Kirim permintaan AJAX ke server dengan filter
+        function appendDataToTableMonth(data) {
+            console.log("Data received by Year:", data); // Tambahkan ini untuk debugging
+            $.each(data, function (index, row) {
+
+            });
+            // Tambahkan baris Total Sample ke tabel
+            var totalSampleRow = $("<tr>");
+            totalSampleRow.append("<td>Total Sample</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            totalSampleRow.append("<td>" + parseFloat(data.jlm_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(totalSampleRow);
+
+            // Tambahkan baris Acceptable Samples ke tabel
+            var acceptableSamplesRow = $("<tr>");
+            acceptableSamplesRow.append("<td>Acceptable samples</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            acceptableSamplesRow.append("<td>" + parseFloat(data.good_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(acceptableSamplesRow);
+
+            // Tambahkan baris Acceptable Samples (%) ke tabel
+            var acceptableSamplesPercentRow = $("<tr>");
+            acceptableSamplesPercentRow.append("<td>Acceptable samples(%)</td>");
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_ni / data.jlm_ni) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_co / data.jlm_co) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_fe / data.jlm_fe) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_mgo / data.jlm_mgo) * 100).toFixed(0) + '%</td>');
+            acceptableSamplesPercentRow.append("<td>" + ((data.good_sio2 / data.jlm_sio2) * 100).toFixed(0) + '%</td>');
+            table.append(acceptableSamplesPercentRow);
+
+            // Tambahkan baris Error Samples ke tabel
+            var errorSamplesRow = $("<tr>");
+            errorSamplesRow.append("<td>Error samples</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            errorSamplesRow.append("<td>" + parseFloat(data.error_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(errorSamplesRow);
+
+            // Tambahkan baris Error Samples (%) ke tabel
+            var errorSamplesPercentRow = $("<tr>");
+            errorSamplesPercentRow.append("<td>Error samples(%)</td>");
+            errorSamplesPercentRow.append("<td>" + ((data.error_ni / data.jlm_ni) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_co / data.jlm_co) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_fe / data.jlm_fe) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_mgo / data.jlm_mgo) * 100).toFixed(0) + '%</td>');
+            errorSamplesPercentRow.append("<td>" + ((data.error_sio2 / data.jlm_sio2) * 100).toFixed(0) + '%</td>');
+            table.append(errorSamplesPercentRow);
+
+            // Tambahkan baris Average Different ke tabel
+            var averageSamplesRow = $("<tr>");
+            averageSamplesRow.append("<td>Average Different</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_ni).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_co).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_fe).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_mgo).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            averageSamplesRow.append("<td>" + parseFloat(data.avg_sio2).toLocaleString('en-US', {
+                maximumFractionDigits: 2
+            }) + "</td>");
+            table.append(averageSamplesRow);
+        }
+
+        // Lakukan permintaan Ajax ke endpoint controller Anda
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sample-wet-month-roa' %}",
+            data: {
+                filter_year: filter_year,
+                filter_month: filter_month
+
+            },
+            success: function (response) {
+                console.log("Response from server (month):", response); // Tambahkan ini untuk debugging
+                var sqlData = response;
+                // Data berhasil diterima dari server
+                appendDataToTableMonth(sqlData);
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log("Gagal mengambil data dari server.");
+            },
+        });
+
+    }
+    // Panggil API untuk mendapatkan data yang difilter dari controller
+    $(document).ready(function () {
+        creatTableByMonth();
+    });
+</script>
+
+</body>
+
+</html>

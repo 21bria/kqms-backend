@@ -1,0 +1,717 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Mining</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Truck factors
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">List truck factors</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="addNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Add New</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="3%">No</th>
+                                            <th>Type Truck</th>
+                                            <th>Material</th>
+                                            <th>Bcm</th>
+                                            <th>Tonnage</th>
+                                            <th>Remarks</th>
+                                            <th width="5%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal"tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Create Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <div class="table-responsive">
+                        <form id="multiRowForm" name="multiRowForm">
+                            <table id="factorsTable"
+                                class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="2%">#</th>
+                                        <th scope="col" width="10%" class="text-danger">Type Truck</th>
+                                        <th scope="col" width="10%" class="text-danger">Material</th>
+                                        <th scope="col" width="10%" class="text-danger">Bcm</th>
+                                        <th scope="col" width="10%" class="text-danger">Tonnage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <!-- button -->
+                            <div class="mb-2 mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
+                                <a href="javascript:void(0)" id="addRow"
+                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm"> Add item
+                                </a>
+                                <button type="submit" id="save"
+                                    class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave btn-sm">Save data
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <div class="table-responsive">
+                        <form>
+                            <table id="editfactorsTable" class="table table-nowrap table-sm" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" width="20%" class="text-danger">Type Truck</th>
+                                        <th scope="col" width="11%" class="text-danger">Material</th>
+                                        <th scope="col" width="15%" class="text-danger">Bcm</th>
+                                        <th scope="col" width="10%" class="text-danger">Tonnagge</th>
+                                        <th scope="col" width="17%" class="text-danger">Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <input type="hidden" name="id" id="id">
+                                        <td>
+                                            <div>
+                                                <input type="text" name="type_truck" id="type_truck"
+                                                    class="form-control text-black" data-row="0">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <select name="material" id="material" class="form-select">
+                                                    <option value="">-- Select -- </option>
+                                                </select>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <input type="number" name="tf_bcm" id="tf_bcm" class="form-control",placeholder="0">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <input type="text" name="tf_ton" id="tf_ton" class="form-control"placeholder="0.0">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <input type="text" name="remarks" id="remarks" class="form-control">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- button -->
+                            <div class="mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
+                                <a href="javascript:void(0)" id="updateButton"
+                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Update
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+        });
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "mine-production-truck-factor-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'type_truck',
+                    name: 'type_truck',
+                },
+
+                {
+                    data: 'material',
+                    name: 'material'
+                },
+
+                {
+                    data: 'tf_bcm',
+                    name: 'tf_bcm',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    },
+                    searchable: false,
+                    orderable: false,
+                },
+                {
+                    data: 'tf_ton',
+                    name: 'tf_ton',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    },
+                    searchable: false,
+                    orderable: false,
+                },
+
+                {
+                    data: 'remarks',
+                    name: 'remarks',
+                    searchable: true
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                <div  class="flex gap-2 items-center" >
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                        </a>
+                                        <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                            </svg>
+                                        </a>
+                                </div>
+                                `;
+                    }
+                }
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'asc']
+            ],
+
+        });
+
+
+        /*  Reset */
+        $('#reload').on('click', function () {
+            $('#startDate').val('');
+            $('#endDate').val('');
+            $('#oreFilter').val('').trigger('change');
+            table.ajax.reload();
+        });
+
+        /* Update Data*/
+        $('#updateButton').click(function () {
+            var id = $('#id').val();
+            var type_truck = $('#type_truck').val();
+            var material = $('#material').val();
+            var tf_bcm = $('#tf_bcm').val();
+            var tf_ton = $('#tf_ton').val();
+            var remarks = $('#remarks').val();
+
+            var updatedData = {
+                type_truck: type_truck,
+                material: material,
+                tf_bcm: tf_bcm,
+                tf_ton: tf_ton,
+                remarks: remarks
+            };
+            var url = '/kqms/mining/mine-production/truck-factors/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id').val('');
+                        $('#type_truck').val('');
+                        $('#material').val('').trigger('change');
+                        $('#tf_bcm').val('');
+                        $('#tf_ton').val('');
+                        $('#remarks').val('');
+                        window.HSOverlay.close('#edit-data');
+                        // Tampilkan notifikasi sukses
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            html: response.message,
+                            padding: '2em',
+                        });
+                        table.clear().draw();
+
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, status, errorThrown, error) {
+                    if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+
+            });
+        });
+
+        /* Insert Data */
+        $('#multiRowForm').submit(function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'mine-production-truck-factor-create' %}",
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        $("[name='type_truck[]']").val('');
+                        $("[name='material[]']").val('').trigger('change');
+                        $("[name='tf_bcm[]']").val('');
+                        $("[name='tf_ton[]']").val('');
+                        $('#factorsTable tbody tr:last').remove();
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "mine-production-truck-factor-delete" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete',
+                width: 380,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: {
+                            id: id,
+                        },
+                        success: function (data) {
+                            table.draw();
+
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        icon: 'success',
+                        width: 380,
+                    })
+                }
+            })
+        });
+    });
+</script>
+
+<!-- Get Data for Edit -->
+<script>
+    $.ajax({
+        url: "{% url 'get-materials-factors' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.list, function (key, value) {
+                options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+            });
+            $('#material').append(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                });
+        }
+    });
+
+    /* Button Edit Click */
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '{% url "mine-production-truck-factor-get" %}';
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                id: id,
+            },
+            success: function (response) {
+                if (response) {
+                    window.HSOverlay.open('#edit-data');
+                    // Mengisi formulir dengan data yang diterima
+                    $('#id').val(response.id);
+                    $('#type_truck').val(response.type_truck);
+                    $('#material').val(response.material).trigger('change');
+                    $('#tf_bcm').val(parseFloat(response.tf_bcm).toFixed(2));
+                    $('#tf_ton').val(parseFloat(response.tf_ton).toFixed(2));
+                    // $('#check_duplicated').val(response.check_duplicated);
+                    $('#remarks').val(response.remarks);
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    ); 
+                }
+            },
+            error: function (xhr, status, error) {
+                const toast = window.Swal.mixin({
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    padding: '2em',
+                });
+                toast.fire({
+                    icon: 'error',
+                    html: 'Oppss!! : ' + error,
+                    padding: '2em',
+                });
+
+            }
+        });
+    });
+</script>
+
+<!-- for focus tab -->
+<script type="text/javascript">
+    $(document).on("focus", ".select2", function (e) {
+        if (e.originalEvent) {
+            var s2element = $(this).siblings("select:enabled");
+            s2element.select2("open");
+            s2element.on("select2:closing", function () {
+                if (s2element.val()) s2element.select2("focus");
+            });
+        }
+    });
+</script>
+
+<!-- Create new Data -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#addNew').click(function () {
+            window.HSOverlay.open('#add-data');
+        });
+
+        $('#addRow').on('click', function () {
+            initializeSelect2($('#factorsTable tbody tr:first'));
+            var newRow = '<tr>' +
+                '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
+                '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                '</i></button></td></div>' +
+                '<td><input type="text" name="type_truck[]" value="" class="form-control w-full !rounded-md"></td>' +
+                '<td>' +
+                '<select name="material[]" class="form-select" style="width: 100%;">' +
+                '<option value="">-- Select --</option>' +
+                '</select>' +
+                '</td>' +
+                '<td><input type="number" class="form-control w-full !rounded-md" name="tf_bcm[]"></td>' +
+                '<td><input type="number" class="form-control w-full !rounded-md" name="tf_ton[]"></td>' +
+                '</tr>';
+
+            $('#factorsTable tbody').append(newRow);
+            var newRowElement = $('#factorsTable tbody tr:last');
+
+            initializeSelect2(newRowElement);
+
+            $('#factorsTable').on('click', '.removeRow', function () {
+                $(this).closest('tr').remove();
+            });
+
+            function initializeSelect2(element) {
+                element.find('select').select2({
+                    width: '100%',
+                    dropdownParent: $('#add-data .ti-modal-body')
+                });
+                $.ajax({
+                    url: "{% url 'get-materials-factors' %}",
+                    method: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        var options = '';
+                        $.each(data.list, function (index, value) {
+                            options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+                        });
+                        element.find('select[name="material[]"]').append(options);
+                    }
+                });
+            }
+
+        });
+    });
+</script>
+</body>
+
+</html>

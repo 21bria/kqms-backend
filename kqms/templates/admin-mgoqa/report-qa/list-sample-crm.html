@@ -1,0 +1,474 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Sample CRM</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Crm Certificate
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">CRM Certificate</h5>
+                        </div>
+                        <div class="box-body">
+                            <!-- <div class="flex justify-end">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="createNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
+
+                                </div>
+                            </div> -->
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table whitespace-nowrap ti-striped-table table-hover min-w-full ti-custom-table-hover"
+                                    style="width: 100%">
+                                    <thead>
+                                         <tr>
+                                            <th>No</th>
+                                            <th>Oreas Name</th>
+                                            <th>Ni</th>
+                                            <th>CO</th>
+                                            <th>Al2O3</th>
+                                            <th>CaO</th>
+                                            <th>Cr2O3</th>
+                                            <th>Fe2O3</th>
+                                            <th>Fe</th>
+                                            <th>K2O</th>
+                                            <th>MgO</th>
+                                            <th>MnO</th>
+                                            <th>Na2O</th>
+                                            <th>P2O5</th>
+                                            <th>P</th>
+                                            <th>SiO2</th>
+                                            <th>TiO2</th>
+                                            <th>S</th>
+                                            <th>Cu</th>
+                                            <th>Zn</th>
+                                            <th>CI</th>
+                                            <th>SO3</th>
+                                            <th>LOI</th>
+                                            <th>SM</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+
+        /*-- Render DataTable --*/
+        let data_url = '{% url "samples-crm-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                url: data_url,
+                type: "POST",
+                dataType: 'json',
+            },
+            columns: [
+
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'oreas_name',
+                    name: 'oreas_name'
+                },
+                {
+                    data: 'ni',
+                    name: 'ni',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'co',
+                    name: 'co',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'al203',
+                    name: 'al203',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'cao',
+                    name: 'cao',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'cr2o3',
+                    name: 'cr2o3',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'fe2o3',
+                    name: 'fe2o3',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'fe',
+                    name: 'fe',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'k2o',
+                    name: 'k2o',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'mgo',
+                    name: 'mgo',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'mno',
+                    name: 'mno',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    }
+                },
+                {
+                    data: 'na2o',
+                    name: 'na2o',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'p2o5',
+                    name: 'p2o5',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'p',
+                    name: 'p',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'sio2',
+                    name: 'sio2',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'tio2',
+                    name: 'tio2',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+
+                {
+                    data: 's',
+                    name: 's',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'cu',
+                    name: 'cu',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'zn',
+                    name: 'zn',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'ci',
+                    name: 'ci',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'so3',
+                    name: 'so3',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'loi',
+                    name: 'loi',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+                {
+                    data: 'sm',
+                    name: 'sm',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+
+    });
+</script>
+
+
+</body>
+
+</html>
+
+<style>
+    .select2.select2-container {
+        width: 100% !important;
+    }
+
+    .select2.select2-container .select2-selection {
+        border: 1px solid #ccc;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        height: 34px;
+        margin-bottom: 15px;
+        outline: none !important;
+        transition: all .15s ease-in-out;
+    }
+
+    .select2.select2-container .select2-selection .select2-selection__rendered {
+        color: #333;
+        line-height: 32px;
+        padding-right: 33px;
+    }
+
+    .select2.select2-container .select2-selection .select2-selection__arrow {
+        background: #f8f8f8;
+        border-left: 1px solid #ccc;
+        -webkit-border-radius: 0 3px 3px 0;
+        -moz-border-radius: 0 3px 3px 0;
+        border-radius: 0 3px 3px 0;
+        height: 32px;
+        width: 33px;
+    }
+
+    .select2.select2-container.select2-container--open .select2-selection.select2-selection--single {
+        background: #f8f8f8;
+    }
+
+    .select2.select2-container.select2-container--open .select2-selection.select2-selection--single .select2-selection__arrow {
+        -webkit-border-radius: 0 3px 0 0;
+        -moz-border-radius: 0 3px 0 0;
+        border-radius: 0 3px 0 0;
+    }
+
+    .select2.select2-container.select2-container--open .select2-selection.select2-selection--multiple {
+        border: 1px solid #34495e;
+    }
+
+    .select2.select2-container .select2-selection--multiple {
+        height: auto;
+        min-height: 34px;
+    }
+
+    .select2.select2-container .select2-selection--multiple .select2-search--inline .select2-search__field {
+        margin-top: 0;
+        height: 32px;
+    }
+
+    .select2.select2-container .select2-selection--multiple .select2-selection__rendered {
+        display: block;
+        padding: 0 4px;
+        line-height: 29px;
+    }
+
+    .select2.select2-container .select2-selection--multiple .select2-selection__choice {
+        background-color: #f8f8f8;
+        border: 1px solid #ccc;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        margin: 4px 4px 0 0;
+        padding: 0 6px 0 22px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 12px;
+        position: relative;
+    }
+
+    .select2.select2-container .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 22px;
+        width: 22px;
+        margin: 0;
+        text-align: center;
+        color: #e74c3c;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .select2-container .select2-dropdown {
+        background: transparent;
+        border: none;
+        margin-top: -5px;
+    }
+
+    .select2-container .select2-dropdown .select2-search {
+        padding: 0;
+    }
+
+    .select2-container .select2-dropdown .select2-search input {
+        outline: none !important;
+        /* border: 1px solid #34495e !important; */
+        border-bottom: none !important;
+        padding: 4px 6px !important;
+    }
+
+    .select2-container .select2-dropdown .select2-results {
+        padding: 0;
+    }
+
+    .select2-container .select2-dropdown .select2-results ul {
+        background: #fff;
+        border: 1px solid #95999c8a;
+    }
+
+    .select2-container .select2-dropdown .select2-results ul .select2-results__option--highlighted[aria-selected] {
+        background-color: #888c8f;
+    }
+
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+</style>

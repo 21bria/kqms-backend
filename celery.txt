@@ -1,0 +1,7 @@
+celery -A core worker -l info
+celery -A core worker --pool=solo --loglevel=info
+
+====
+celery -A core flower
+=====
+python manage.py migrate django_celery_beat

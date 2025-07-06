@@ -1,0 +1,311 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Data Assay</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        assay mral
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">List mral</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 gap-4 mb-5">
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="startDate" value="{{start_date}}"
+                                            name="startDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="endDate" value="{{end_date}}"
+                                            name="endDate" placeholder="Choose date">
+                                    </div>
+                                </div>
+                            
+                                <div class="hs-dropdown ti-dropdown [--placement:right-top] ">
+                                    <button type="button"
+                                        class="hs-dropdown-toggle relative ti-btn ti-btn-secondary-full  !py-2 !rounded-e-none ti-dropdown-toggle !me-0">
+                                        Actions
+                                    </button>
+                                    <div class="hs-dropdown ti-dropdown [--placement:right-top]">
+                                        <button id="hs-split-dropright" type="button"
+                                            class="hs-dropdown-toggle relative  ti-dropdown-toggle !opacity-[0.85] rounded-none  ti-btn ti-btn-secondary-full !rounded-s-none">
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                            <svg class="w-auto h-2.5 ti-dropdown-caret !text-white" width="16"
+                                                height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M5 1L10.6869 7.16086C10.8637 7.35239 10.8637 7.64761 10.6869 7.83914L5 14"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+
+                                        <div class="hs-dropdown-menu ti-dropdown-menu transition-none hidden"
+                                            aria-labelledby="hs-split-dropright">
+                                            <a class="ti-dropdown-item" href="javascript:void(0);" id="applyFilterBtn">
+                                                Filter
+                                            </a>
+                                            <a class="ti-dropdown-item" href="javascript:void(0);" id="reload">
+                                                Reload
+                                            </a>
+                                            <a class="ti-dropdown-item" href="javascript:void(0);" id="exportButton">
+                                                Export
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="overflow-auto">
+
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="4%">No</th>
+                                        <th class="bg-soft-secondary" width="11%">Release Date</th>
+                                        <th class="bg-soft-secondary" width="10%">Job Number</th>
+                                        <th class="bg-soft-secondary">Sample Id</th>
+                                        <th class="bg-soft-secondary">Ni</th>
+                                        <th class="bg-soft-secondary">Co</th>
+                                        <th class="bg-soft-secondary">Fe2O3</th>
+                                        <th class="bg-soft-secondary">Fe</th>
+                                        <th class="bg-soft-secondary">Mgo</th>
+                                        <th class="bg-soft-secondary">SiO2</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+               flatpickr("#startDate", {
+            dateFormat: "Y-m-d",
+        });
+
+        flatpickr("#endDate", {
+            dateFormat: "Y-m-d",
+        });
+            /*-- Pass Header Token ---*/
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+            table = $('#data_table').DataTable().clear().destroy();
+            /*-- Render DataTable --*/
+            let data_url = '{% url "assay-mral-list" %}';
+            // var material_filter = 'LIM';
+            var table = $('#data_table').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'responsive': true,
+                'autoWidth': true,
+                // 'select': true,
+                "ajax": {
+                    "url": data_url,
+                    "type": "POST",
+                    dataType: 'json',
+                    "data": function (data) {
+                        data.startDate = $('#startDate').val();
+                        data.endDate = $('#endDate').val();
+                        return data;
+                    },
+                },
+                columns: [
+                    {
+                        data: null,
+                        searchable: false,
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, // Kolom nomor otomatis
+                    {
+                        data: 'release_mral',
+                        name: 'release_mral'
+                    },
+
+                    {
+                        data: 'job_number',
+                        name: 'job_number'
+                    },
+                    {
+                        data: 'sample_id',
+                        name: 'sample_id'
+                    },
+                    {
+                        data: 'ni',
+                        name: 'ni',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'co',
+                        name: 'co',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(3);
+                        }
+                    },
+                    {
+                        data: 'fe2o3',
+                        name: 'fe2o3',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'fe',
+                        name: 'fe',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'mgo',
+                        name: 'mgo',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+                    {
+                        data: 'sio2',
+                        name: 'sio2',
+                        render: function (data) {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    },
+
+                ],
+                // Mengatur default sort pada kolom secara desc
+                order: [
+                    [1, 'desc']
+                ],
+
+            });
+            /*--Filter Modal and Apply Filter---*/
+            $('#applyFilterBtn').click(function () {
+                table.ajax.reload();
+
+            });
+
+            /*  Reset */
+            $('#reload').on('click', function () {
+                // Reset tanggal ke default, jika ada nilai default di context Python
+                $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
+                $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
+                table.ajax.reload(); //just reload table
+            });
+
+        });
+    </script>
+
+
+    <!-- Exports to Excel -->
+    <script>
+        $(document).ready(function () {
+            $('#exportButton').click(function () {
+                // Dapatkan nilai dari filter tanggal
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+                // Membuat URL untuk permintaan ekspor Excel
+                if ($('#startDate').val().trim() === '') {
+                    $('#startDate').focus();
+                    return;
+                }
+                if ($('#endDate').val().trim() === '') {
+                    $('#endDate').focus();
+                    return;
+                }
+
+                var exportUrl = "{% url 'export-assay-mral' %}?startDate=" + startDate + "&endDate=" +
+                    endDate;
+                // Redirect ke URL eksport dengan filter
+                window.location.href = exportUrl;
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

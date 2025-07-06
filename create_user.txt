@@ -1,0 +1,6 @@
+python manage.py createsuperuser
+Username: admin
+Email address: admin@example.com /admin@karyawijaya.com
+Password:
+Password (again):
+Superuser created successfully

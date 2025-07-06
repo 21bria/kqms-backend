@@ -1,0 +1,723 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Master Data</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Mine Units
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Mine Units</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="createNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
+                                </div>
+                            </div>
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                                <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="10%">Unit Code</th>
+                                            <th>Unit Model</th>
+                                            <th width="7%">Unit Type</th>
+                                            <th width="7%">Support</th>
+                                            <th width="7%">Category</th>
+                                            <th width="7%">Vendor</th>
+                                            <th width="7%">Active</th>
+                                            <th width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Create Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form id="entryForm" name="entryForm">
+                        <div class="grid grid-cols-12 gap-4">
+                            <!-- Date -->
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Code</label>
+                                <input type="text" id="unit_code" name="unit_code"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Model</label>
+                                <input type="text" id="unit_model" name="unit_model"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Type</label>
+                                <input type="text" id="unit_type" name="unit_type"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Category</label>
+                                <select class="form-control w-full !rounded-md" id="category" name="category">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Vendors</label>
+                                <select class="form-control w-full !rounded-md" id="vendor" name="vendor">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Support</label>
+                                <select class="form-control w-full !rounded-md" id="supports" name="supports">
+                                    <option value="">Select</option>
+                                    <option value="General">General</option>
+                                    <option value="Selling">Selling</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="description" name="description" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="saveBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <form>
+                        <div class="grid grid-cols-12 gap-4">
+                            <input type="hidden" name="id" id="id">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Code</label>
+                                <input type="text" id="unit_code_edit" name="unit_code_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Model</label>
+                                <input type="text" id="unit_model_edit" name="unit_model_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Type</label>
+                                <input type="text" id="unit_type_edit" name="unit_type_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Units Category</label>
+                                <select class="form-control w-full !rounded-md" id="category_edit" name="category_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Vendors</label>
+                                <select class="form-control w-full !rounded-md" id="vendor_edit" name="vendor_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Support</label>
+                                <select class="form-control w-full !rounded-md" id="supports_edit" name="supports_edit">
+                                    <option value="">Select</option>
+                                    <option value="General">General</option>
+                                    <option value="Selling">Selling</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="description_edit" name="description_edit" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-6 flex justify-end gap-2">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#edit-data">
+                                Cancel
+                            </button>
+                            <button type="button" value="edit" id="updateBtn"
+                                class="ti-btn bg-primary text-white">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%', // Sesuaikan lebar dengan kontainer
+            // dropdownParent: document.getElementById("filterModal")
+        });
+
+        $.ajax({
+            url: "{% url 'get-units-categories'%}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                
+                var options = '';
+                
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.category + '</option>';
+                });
+
+                // Set opsi dalam elemen Select2
+                $('#category').append(options);
+                $('#category_edit').append(options);
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-units-vendor' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.vendor_name +
+                        '</option>';
+                });
+                $('#vendor').append(options);
+                $('#vendor_edit').append(options);
+            }
+        });
+
+        /*-- Render DataTable --*/
+        let url = '{% url "mine-units-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'unit_code',
+                    name: 'unit_code'
+                },
+                {
+                    data: 'unit_model',
+                    name: 'unit_model'
+                },
+                {
+                    data: 'unit_type',
+                    name: 'unit_type'
+                },
+                {
+                    data: 'supports',
+                    name: 'supports'
+                },
+                {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
+                    data: 'vendor_name',
+                    name: 'vendor_name'
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                    render: function (data, type, row) {
+                        // Ubah nilai status menjadi elemen HTML berdasarkan nilai
+                        return data == 1 ?
+                            '<span class="badge bg-success/10 text-success">Yes</span>' :
+                            '<span class="badge whitespace-nowrap badge-outline-warning" : class="badge-outline-primary">No</span>';
+                    }
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                    <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                    }
+                }
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            // order: [
+            //     [1, 'desc']
+            // ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#createNew').click(function () {
+            $('#id').val('');
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
+            $.ajax({
+                url: "{% url 'insert-mine-units' %}",
+                method: 'POST',
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#unit_code').val('');
+                        $('#unit_model').val('');
+                        $('#unit_type').val('');
+                        $('#category').val('').trigger('change');
+                        $('#vendor').val('').trigger('change');
+                        $('#supports').val('').trigger('change');
+                        $('#description').val('');
+                        window.HSOverlay.close('#add-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Update---*/
+        $('#updateBtn').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/master/mine-units/update/' + id + '/';
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    unit_code: $('#unit_code_edit').val(),
+                    unit_model: $('#unit_model_edit').val(),
+                    unit_type: $('#unit_type_edit').val(),
+                    category: $('#category_edit').val(),
+                    vendor: $('#vendor_edit').val(),
+                    supports: $('#supports_edit').val(),
+                    description: $('#description_edit').val(),
+                },
+
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#unit_code_edit').val('');
+                        $('#unit_model_edit').val('');
+                        $('#unit_type_edit').val('');
+                        $('#category_edit').val('').trigger('change');
+                        $('#vendor_edit').val('').trigger('change');
+                        $('#supports_edit').val('').trigger('change');
+                        $('#description_edit').val('');
+                        window.HSOverlay.close('#edit-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-mine-units" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted!',
+                                data.message,
+                                'success'
+                            );
+                            // Refresh table or remove row
+                            table.draw();
+
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                Swal.fire(
+                                    'Access Denied!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else if (xhr.status === 404) {
+                                Swal.fire(
+                                    'Not Found!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+    });
+</script>
+
+<!-- Call for Edit Data  -->
+<script>
+    /*--- Click to Edit Button ---*/
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '/kqms/master/mine-units/get-id/' + id + '/';
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                if (response) {
+                    // Mengisi formulir dengan data yang diterima
+                    window.HSOverlay.open('#edit-data');
+                    $('#id').val(response.id);
+                    $('#unit_code_edit').val(response.unit_code);
+                    $('#unit_model_edit').val(response.unit_model);
+                    $('#unit_type_edit').val(response.unit_type);
+                    $('#category_edit').val(response.id_category).trigger('change');
+                    $('#vendor_edit').val(response.id_vendor).trigger('change');
+                    $('#supports_edit').val(response.supports.trim()).trigger('change');
+                    $('#description_edit').val(response.description);
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    ); // Atau tindakan lain jika data tidak ditemukan
+                }
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 403) {
+                    const toast = window.Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        padding: '2em',
+                    });
+                    toast.fire({
+                        icon: 'error',
+                        html: 'You do not have permission',
+                        padding: '2em',
+                    });
+                } else {
+                    alert('Terjadi kesalahan: ' + error); // Handle kesalahan AJAX
+                }
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

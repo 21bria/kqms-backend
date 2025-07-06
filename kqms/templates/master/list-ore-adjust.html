@@ -1,0 +1,838 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quality</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Volume adjustment
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Data volume adjustment</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="addNew" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Add New</button>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary" width="7%">Date Start</th>
+                                            <th class="bg-soft-secondary" width="7%">Date End</th>
+                                            <th class="bg-soft-secondary" width="10%">Category</th>
+                                            <th class="bg-soft-secondary">Vendor</th>
+                                            <th class="bg-soft-secondary">Source</th>
+                                            <th class="bg-soft-secondary">Loading Point</th>
+                                            <th class="bg-soft-secondary">Type truck</th>
+                                            <th class="bg-soft-secondary">Material</th>
+                                            <th class="bg-soft-secondary" width="7%">Bcm Ori</th>
+                                            <th class="bg-soft-secondary" width="7%">Ton Ori</th>
+                                            <th class="bg-soft-secondary" width="7%">Bcm Update</th>
+                                            <th class="bg-soft-secondary" width="7%">Ton Update</th>
+                                            <th class="bg-soft-secondary" width="7%">Status</th>
+                                            <th class="bg-soft-secondary" width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Volume ajustment
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                        <div class="hs-accordion-group">
+                            <div class="accordion customized-accordion accordions-items-seperate"
+                                id="customizedAccordion">
+                                <div class="hs-accordion-group">
+                                    <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                        id="hs-basic-heading31">
+                                        <button
+                                            class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                            aria-controls="hs-basic-collapse31" type="button">
+                                            KQMS Info#
+                                            <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                            <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+                                        <div id="hs-basic-collapse11"
+                                            class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                            aria-labelledby="hs-basic-heading11">
+                                            <div class="accordion-body">
+                                                <strong>Note :</strong>
+                                                Pilih Truck dan materials, input tanggal start dan
+                                                tanggal end lalu input nilai tonnage/ritasenya
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <form id="entryForm" name="entryForm">
+                        <div class="grid grid-cols-12 gap-4 mt-3">
+                            <div class="xl:col-span-6 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="start_date" name="start_date"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="end_date" name="end_date"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Sorces</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources" name="sources">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Materials</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="material" name="material">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Truck</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="unit_truck"
+                                    name="unit_truck">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="number" class="form-control" id="ton" name="ton" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" id="saveBtn"
+                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Volume ajustment
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                        <div class="hs-accordion-group">
+                            <div class="accordion customized-accordion accordions-items-seperate"
+                                id="customizedAccordion">
+                                <div class="hs-accordion-group">
+                                    <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                        id="hs-basic-heading31">
+                                        <button
+                                            class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                            aria-controls="hs-basic-collapse31" type="button">
+                                            KQMS Info#
+                                            <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                            <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+                                        <div id="hs-basic-collapse11"
+                                            class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                            aria-labelledby="hs-basic-heading11">
+                                            <div class="accordion-body">
+                                                <strong>Note :</strong>
+                                                Untuk melakukan restore data silahkan input kembali nilai tonnage awal!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form>
+                        <div class="grid grid-cols-12 gap-4 mt-3">
+                              <input type="hidden" name="id" id="id">
+                            <div class="xl:col-span-6 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="date_start_edit" name="date_start_edit"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="date_end_edit" name="date_end_edit"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Sorces</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources_edit"
+                                    name="sources_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Materials</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="material_edit"
+                                    name="material_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Truck</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="unit_truck_edit"
+                                    name="unit_truck_edit">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="number" class="form-control" id="ton_edit" name="ton_edit" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" id="saveBtn"
+                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        flatpickr("#start_date", { dateFormat: "Y-m-d" });
+        flatpickr("#end_date", { dateFormat: "Y-m-d" });
+        flatpickr("#date_start_edit", { dateFormat: "Y-m-d" });
+        flatpickr("#date_end_edit", { dateFormat: "Y-m-d" });
+        $(".ti-form-select").select2({
+            width: '100%',
+            dropdownParent: $('#add-data .ti-modal-body')
+        });
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'material-id-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                });
+                // Set options in the Select2 element
+                $('#material').append(options);
+                $('#material_edit').append(options);
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-details-source' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.details_source, function (key, value) {
+                    options += '<option value="' + value.id_prospect_area + '">' + value.loading_point + '</option>';
+                });
+                // Set options in the Select2 element
+                $('#sources').append(options);
+                $('#sources_edit').append(options);
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-details-truck' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.unit_truck + '">' + value.unit_truck + '</option>';
+                });
+                // Set options in the Select2 element
+                $('#unit_truck').append(options);
+                $('#unit_truck_edit').append(options);
+            }
+        });
+
+        /*-- Render DataTable --*/
+        let url = '{% url "ore-adjustment-factor-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'unit_truck',
+                    name: 'unit_truck'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material'
+                },
+                {
+                    data: 'prospect_area',
+                    name: 'prospect_area'
+                },
+                {
+                    data: 'date_start',
+                    name: 'date_start'
+                },
+                {
+                    data: 'date_end',
+                    name: 'date_end'
+                },
+                {
+                    data: 'ton',
+                    name: 'ton'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
+
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                    <div  class="flex gap-2 items-center" >
+                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                            </a>
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                    }
+                }
+
+            ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#addNew').click(function () {
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
+            $.ajax({
+                url: "{% url 'insert-ore-adjustment' %}",
+                method: 'POST',
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#date_start').val('');
+                        $('#date_end').val('');
+                        $('#ton').val('');
+                        $('#sources').val('').trigger('change');
+                        $('#unit_truck').val('').trigger('change');
+                        $('#material').val('').trigger('change');
+                        toggleModal('createModal');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Update---*/
+        $('#updateBtn').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/config/ore-adjustment-factor/update/' + id + '/';
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    sources: $('#sources_edit').val(),
+                    material: $('#material_edit').val(),
+                    date_start: $('#date_start_edit').val(),
+                    date_end: $('#date_end_edit').val(),
+                    unit_truck: $('#unit_truck_edit').val(),
+                    ton: $('#ton_edit').val(),
+                },
+
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#sources_edit').val('').trigger('change');
+                        $('#material_edit').val('').trigger('change');
+                        $('#unit_truck_edit').val('').trigger('change');
+                        $('#date_start_edit').val('');
+                        $('#date_end_edit').val('');
+                        $('#ton_edit').val('');
+                        toggleModal('editModal');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-ore-adjustment" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your file has been deleted.',
+                                icon: 'success',
+                            })
+                            // Refresh table or remove row
+                            table.draw();
+
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                Swal.fire(
+                                    'Access Denied!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else if (xhr.status === 404) {
+                                Swal.fire(
+                                    'Not Found!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+    });
+</script>
+
+
+<!-- Call for Edit Data  -->
+<script>
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '/kqms/config/ore-adjustment-factor/get-id/' + id + '/';
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                if (response) {
+                    // Mengisi formulir dengan data yang diterima
+                    window.HSOverlay.open('#edit-data');
+                    $('#id').val(response.id);
+                    $('#sources_edit').val(response.sources).trigger('change');
+                    $('#material_edit').val(response.material).trigger('change');
+                    $('#date_start_edit').val(response.date_start);
+                    $('#date_end_edit').val(response.date_end);
+                    $('#unit_truck_edit').val(response.unit_truck).trigger('change');
+                    $('#ton_edit').val(response.ton);
+
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    ); // Atau tindakan lain jika data tidak ditemukan
+                }
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 403) {
+                    const toast = window.Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        padding: '2em',
+                    });
+                    toast.fire({
+                        icon: 'error',
+                        html: 'You do not have permission',
+                        padding: '2em',
+                    });
+                } else {
+                    alert('Terjadi kesalahan: ' + error);
+                }
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

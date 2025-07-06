@@ -1,0 +1,468 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <!-- <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Grade Control</h3> -->
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Grade Control
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="grid grid-cols-12 gap-4 mb-5">
+                <div class="xl:col-span-2 col-span-12">
+                    <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}" id="startDate"
+                        name="startDate">
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}" id="endDate"
+                        name="endDate">
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <select id="material" name="material" class="form-control w-full !rounded-md">
+                        <option value="">--- Select ---</option>
+                    </select>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <button type="button" id="applyFilter"
+                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-12 gap-2 mb-5">
+                <div class="xl:col-span-6 col-span-12">
+                    <select id="source" name="source" class="form-control w-full !rounded-md" multiple="multiple">
+                    </select>
+                </div>
+            </div>
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6 mt-4">
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Scatter</div>
+                        </div>
+                        <div class="box-body">
+                            <div id="scatter_samples"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-8 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Line Sample</div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_sample"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Line Date</div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_date"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Line Geos</div>
+                        </div>
+                        <div class="box-body ">
+                            <div id="line_geos"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-2 mb-5 px-2">
+                <div class="xl:col-span-2 col-span-12">
+                    <select id="gradeControl" name="gradeControl" class="form-control w-full !rounded-md">
+                        <option value="">--- Select ---</option>
+                    </select>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <button type="button" id="applyFilterGeos"
+                        class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                </div>
+
+            </div>
+            <div class="grid grid-cols-12 gap-6">
+
+                <div class="xl:col-span-4 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Scatter</div>
+                        </div>
+                        <div class="box-body">
+                            <div id="scatter_samples_geos"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-8 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-header">
+                            <div class="box-title">Line Sample</div>
+                        </div>
+                        <div class="box-body">
+                            <div id="line_sample_geos"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'material-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.materials, function (key, value) {
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+                });
+                $('#material').append(options).select2({
+                    width: '100%',
+                    
+                });
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'get-details-source' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.details_source, function (key, value) {
+                    options += '<option value="' + value.loading_point + '">' + value.loading_point + '</option>';
+                });
+                $('#source').append(options).select2({
+                    width: '100%',
+                    
+                });
+
+            }
+        });
+
+        // Panggil fetchData saat halaman dimuat untuk pertama kalinya
+        var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
+        var material = $("#material").val();
+        var source = $("#source").val();
+        var filter = {
+            startDate: startDate,
+            endDate: endDate,
+            material: material,
+            source: JSON.stringify(source)
+        };
+
+        createScatterPlot(filter);
+        createChartSample(filter);
+        createChartGeos(filter);
+        createChartDate(filter);
+
+        // filter 
+        $("#applyFilter").on("click", function () {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+            var material = $("#material").val();
+            var source = $("#source").val();
+            if (startDate == '') {
+                $('#startDate').focus();
+                return false;
+            } else if (endDate == '') {
+                $('#endDate').focus();
+                return false;
+            } else if (material == '') {
+                $('#material').select2('open');
+                return false;
+            } else {
+                // $(this).attr("disabled", "disabled");
+                var filter = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    material: material,
+                    source: JSON.stringify(source)
+                };
+                createChartSample(filter);
+                createScatterPlot(filter);
+                createChartGeos(filter);
+                createChartDate(filter);
+            }
+
+        });
+
+    });
+
+    // For Chart
+    function createScatterPlot(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-scatter-mral' %}",
+            data: filter,  // Send parameters directly
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_samples').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    function createChartSample(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-sample-mral'%}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#line_sample').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    function createChartDate(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-date-mral'%}",
+            data: filter,
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#line_date').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+        });
+    }
+
+    function createChartGeos(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-geos-mral'%}",
+            data: filter,
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#line_geos').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+        });
+    }
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "{% url 'mine-geos-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.list_data, function (key, value) {
+                    options += '<option value="' + value.mg_code + '">' + value.mg_code + '</option>';
+                });
+                $('#gradeControl').append(options).select2({
+                    width: '100%',
+                    
+                });
+            }
+        });
+
+
+        // Panggil fetchData saat halaman dimuat untuk pertama kalinya
+        var startDate = $("#startDate").val();
+        var endDate = $("#endDate").val();
+        var material = $("#material").val();
+        var gradeControl = $("#gradeControl").val();
+        var filter = {
+            startDate: startDate,
+            endDate: endDate,
+            material: material,
+            gradeControl: gradeControl
+
+        };
+        createScatterGeosPlot(filter);
+        createChartMineGeos(filter);
+
+        // filter 
+        $("#applyFilterGeos").on("click", function () {
+            var startDate = $("#startDate").val();
+            var endDate = $("#endDate").val();
+            var material = $("#material").val();
+            var gradeControl = $("#gradeControl").val();
+            if (startDate == '') {
+                $('#startDate').focus();
+                return false;
+            } else if (endDate == '') {
+                $('#endDate').focus();
+                return false;
+            } else if (material == '') {
+                $('#material').select2('open');
+                return false;
+            } else if (gradeControl == '') {
+                $('#gradeControl').select2('open');
+                return false;
+            } else {
+                // $(this).attr("disabled", "disabled");
+                var filter = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    material: material,
+                    gradeControl: gradeControl
+                };
+                createScatterGeosPlot(filter);
+                createChartMineGeos(filter);
+            }
+
+        });
+
+    });
+
+    // For Chart
+    function createScatterGeosPlot(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-geos-scatter-mral' %}",
+            data: filter,  // Send parameters directly
+            dataType: "json",
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#scatter_samples_geos').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", status, error);
+            }
+        });
+    }
+
+    function createChartMineGeos(filter) {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'grade-expect-geos-group-mral'%}",
+            data: filter,
+            success: function (data) {
+                if (data.plot_div) {
+                    $('#line_sample_geos').html(data.plot_div);
+                } else {
+                    console.warn("No plot_div in response.");
+                }
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log('Gagal mengambil data dari server.');
+            },
+        });
+    }
+
+
+</script>
+
+</body>
+
+</html>

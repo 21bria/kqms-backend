@@ -1,0 +1,227 @@
+{% load static %}
+
+<script src="{% static 'assets/libs/choices.js/public/assets/scripts/choices.min.js' %}"></script>
+<script src="{% static 'assets/libs/@popperjs/core/umd/popper.min.js' %}"></script>
+<script src="{% static 'assets/libs/tippy.js/tippy-bundle.umd.min.js' %}"></script>
+<script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
+<script src="{% static 'assets/libs/prismjs/prism.js' %}"></script>
+<script src="{% static 'assets/libs/lucide/umd/lucide.js' %}"></script>
+<script src="{% static 'assets/js/starcode.bundle.js' %}"></script>
+
+<!-- Jquery -->
+<script src="{% static 'assets/js/datatables/jquery-3.7.0.js' %}"></script>
+<!-- dataTables -->
+<script src="{% static 'assets/js/datatables/data-tables.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/data-tables.tailwindcss.min.js' %}"></script>
+<!--buttons dataTables-->
+<script src="{% static 'assets/js/datatables/datatables.buttons.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/jszip.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/pdfmake.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/buttons.html5.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/buttons.print.min.js' %}"></script>
+<script src="{% static 'assets/js/datatables/datatables.init.js' %}"></script>
+
+
+<!-- Sweet Alerts js -->
+<script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js'%}"></script>
+
+<!-- App js -->
+{% block scripts %}
+    <script src="{% static 'assets/js/app.js' %}" defer></script>
+{% endblock %}
+
+
+<script>
+(function () {
+    ("use strict");
+    
+    function loadScriptIfElementsExist(selector, scriptSrc) {
+        var elements = document.querySelectorAll(selector);
+        if (elements.length > 0) {
+          var scriptElement = document.createElement('script');
+          scriptElement.src = scriptSrc;
+          document.head.appendChild(scriptElement);
+        }
+    }
+    loadScriptIfElementsExist("[data-toast]", "{% static 'assets/libs/toastify-js/src/toastify.js' %}");
+    loadScriptIfElementsExist("[data-provider]", "{% static 'assets/libs/flatpickr/flatpickr.min.js' %}");
+
+    function pluginData() {
+
+        // flatpickr
+        var flatpickrExamples = document.querySelectorAll("[data-provider]");
+        Array.from(flatpickrExamples).forEach(function (item) {
+            if (item.getAttribute("data-provider") == "flatpickr") {
+                var dateData = {};
+                var isFlatpickerVal = item.attributes;
+                if (isFlatpickerVal["data-date-format"])
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                if (isFlatpickerVal["data-enable-time"]) {
+                    (dateData.enableTime = true),
+                        (dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString() + " H:i");
+                }
+                if (isFlatpickerVal["data-altFormat"]) {
+                    (dateData.altInput = true),
+                        (dateData.altFormat = isFlatpickerVal["data-altFormat"].value.toString());
+                }
+                if (isFlatpickerVal["data-minDate"]) {
+                    dateData.minDate = isFlatpickerVal["data-minDate"].value.toString();
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-maxDate"]) {
+                    dateData.maxDate = isFlatpickerVal["data-maxDate"].value.toString();
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-default-date"]) {
+                    dateData.defaultDate = isFlatpickerVal["data-default-date"].value.toString();
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-multiple-date"]) {
+                    dateData.mode = "multiple";
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-range-date"]) {
+                    dateData.mode = "range";
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-inline-date"]) {
+                    (dateData.inline = true),
+                        (dateData.defaultDate = isFlatpickerVal["data-default-date"].value.toString());
+                    dateData.dateFormat = isFlatpickerVal["data-date-format"].value.toString();
+                }
+                if (isFlatpickerVal["data-disable-date"]) {
+                    var dates = [];
+                    dates.push(isFlatpickerVal["data-disable-date"].value);
+                    dateData.disable = dates.toString().split(",");
+                }
+                if (isFlatpickerVal["data-week-number"]) {
+                    var dates = [];
+                    dates.push(isFlatpickerVal["data-week-number"].value);
+                    dateData.weekNumbers = true
+                }
+                document.addEventListener('DOMContentLoaded', function () {
+                    flatpickr(item, dateData);
+                });
+            } else if (item.getAttribute("data-provider") == "timepickr") {
+                var timeData = {};
+                var isTimepickerVal = item.attributes;
+                if (isTimepickerVal["data-time-basic"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.dateFormat = "H:i");
+                }
+                if (isTimepickerVal["data-time-hrs"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.dateFormat = "H:i"),
+                        (timeData.time_24hr = true);
+                }
+                if (isTimepickerVal["data-min-time"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.dateFormat = "H:i"),
+                        (timeData.minTime = isTimepickerVal["data-min-time"].value.toString());
+                }
+                if (isTimepickerVal["data-max-time"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.dateFormat = "H:i"),
+                        (timeData.minTime = isTimepickerVal["data-max-time"].value.toString());
+                }
+                if (isTimepickerVal["data-default-time"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.dateFormat = "H:i"),
+                        (timeData.defaultDate = isTimepickerVal["data-default-time"].value.toString());
+                }
+                if (isTimepickerVal["data-time-inline"]) {
+                    (timeData.enableTime = true),
+                        (timeData.noCalendar = true),
+                        (timeData.defaultDate = isTimepickerVal["data-time-inline"].value.toString());
+                    timeData.inline = true;
+                }
+                setTimeout(() => {
+                    flatpickr(item, timeData);
+                }, 750);
+            }
+        });
+    }
+
+
+    function init() {
+        pluginData();
+    }
+    init();
+
+})();
+
+</script>
+
+<script>
+    $(function () {
+        // Toggle dark mode
+        document.getElementById('light-dark-mode').addEventListener('click', () => {
+            localStorage.theme = localStorage.theme === 'dark' ? 'light' : 'dark';
+            // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+            document.documentElement.classList.toggle(
+                'dark',
+                localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            );
+            reinitializeSelect2();   
+            console.log(localStorage.theme);
+        });
+    });
+
+
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Ambil semua tombol dropdown (untuk parent menu)
+    const dropdownButtons = document.querySelectorAll('.dropdown-button');
+    
+    dropdownButtons.forEach(button => {
+        const dropdownContent = button.nextElementSibling; // Dropdown content (submenu)
+        
+        button.addEventListener('click', function(event) {
+            // Prevent default behavior
+            event.preventDefault();
+            
+            // Toggle kelas 'show' untuk menampilkan/menyembunyikan dropdown
+            dropdownContent.classList.toggle('show');
+            dropdownContent.classList.toggle('opacity-100');  // Menambahkan atau menghapus kelas opacity-100
+            
+            // Menambahkan kelas 'active' pada menu yang sedang diklik (button dropdown)
+            button.classList.toggle('active');
+
+            // Cek jika submenu ada dan buka dropdown jika belum terbuka
+            if (!dropdownContent.classList.contains('show')) {
+                dropdownContent.classList.add('show');
+                dropdownContent.classList.add('opacity-100');
+            }
+        });
+    });
+
+    // Tangani klik pada item anak dalam dropdown (submenu links)
+    const submenuLinks = document.querySelectorAll('.dropdown-content a');
+    
+    submenuLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            // Menambahkan kelas 'active' pada link yang diklik
+            link.classList.add('active');
+            
+            // Mengaktifkan parent menu jika item anak diklik
+            const parentDropdown = link.closest('.dropdown-button');
+            if (parentDropdown) {
+                parentDropdown.classList.add('active');
+            }
+        });
+    });
+});
+
+
+
+
+
+</script>
+
+
