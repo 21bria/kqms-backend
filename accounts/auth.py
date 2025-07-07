@@ -31,6 +31,6 @@ class EmailTokenObtainPairView(TokenObtainPairView):
 
 def logout_view(request):
     logout(request)
-    response = HttpResponseRedirect("http://localhost:3000/auth")
+    response = HttpResponseRedirect("http://103.125.181.233/auth")
     response.delete_cookie('sessionid')  # atau yang sesuai
     return response
