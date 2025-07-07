@@ -1,7 +1,6 @@
 
 from pathlib import Path
 import os
-from django.templatetags.static import static
 from tzlocal import get_localzone_name
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -61,7 +60,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'kqms.context_processors.sidebar_menu', #untuk menu dinamis
+                # 'kqms.context_processors.sidebar_menu', #untuk menu dinamis
             ],
         },
     },
@@ -77,8 +76,8 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.contrib.gis.db.backends.postgis',  # ← HARUS INI
-        # 'NAME': 'main_db',
-        'NAME': 'kqms_db',
+        'NAME': 'main_db',
+        # 'NAME': 'kqms_db',
         'USER': 'postgres',
         'PASSWORD': '211989',
         'HOST': 'localhost',
@@ -126,13 +125,14 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+ENABLE_OIDC = False  # ubah ke True nanti kalau mau aktifkan lagi
 AUTHENTICATION_BACKENDS = [
-    'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
-    'accounts.auth_backends.MyOIDCBackend',
-    'accounts.auth_backends.GoogleOIDCBackend',
-    'accounts.auth_backends.MicrosoftOIDCBackend',
-     'kqms.authentication.EmailBackend',                  # Ganti sesuai app kamu
+    # 'mozilla_django_oidc.auth.OIDCAuthenticationBackend',
+    # 'accounts.auth_backends.MyOIDCBackend',
+    # 'accounts.auth_backends.GoogleOIDCBackend',
+    # 'accounts.auth_backends.MicrosoftOIDCBackend',
+    'accounts.auth_backends.EmailBackend',
+    'kqms.authentication.EmailBackend',# Ganti sesuai app kamu
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -147,6 +147,7 @@ CORS_ALLOW_HEADERS = ['*']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Nuxt dev server
+    # "http://127.0.0.1:3000",
 ]
 
 REST_FRAMEWORK = {
@@ -154,6 +155,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+# disini OIDC Google,Microsoft / Outlook
+
 
 
 LOGIN_URL = '/oidc/authenticate/'

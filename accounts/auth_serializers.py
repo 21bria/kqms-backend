@@ -34,7 +34,8 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             print("❌ Email tidak ditemukan di database")
             raise serializers.ValidationError({"email": "Email not registered."})
 
-        user = authenticate(username=user.username, password=password)
+        # user = authenticate(username=user.username, password=password)
+        user = authenticate(email=email, password=password)
 
         if user is None:
             print("❌ Auth gagal")

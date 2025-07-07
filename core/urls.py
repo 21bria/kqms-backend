@@ -16,7 +16,7 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login token
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refresh token
 
-     #  Login Google / Microsoft
+    #  Login Google / Microsoft
     # path('oidc/google/', GoogleLoginView.as_view(), name='google_login'),
     # path('oidc/microsoft/', MicrosoftLoginView.as_view(), name='microsoft_login'),
      path("kqms/", include("kqms.urls")),
