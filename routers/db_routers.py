@@ -1,8 +1,6 @@
 # db_routers.py
-
 class KQMSRouter:
-     # App yang harus masuk ke kqms_db
-    route_apps = {'kqms', 'auth', 'contenttypes', 'admin', 'sessions'}
+    route_apps = {'kqms'}
 
     def db_for_read(self, model, **hints):
         if model._meta.app_label in self.route_apps:
@@ -17,7 +15,7 @@ class KQMSRouter:
     def allow_migrate(self, db, app_label, model_name=None, **hints):
         if app_label in self.route_apps:
             return db == 'kqms_db'
-        return db == 'default'
+        return None  # pastikan app lain tidak bermigrasi ke kqms_db
 
 class KSafeRouter:
     """
@@ -43,22 +41,19 @@ class KSafeRouter:
             return db == 'ksafe_db'
         return None
 
-
 class AuthRouter:
-    """
-    Router untuk app 'auth' → database 'default'
-    """
     def db_for_read(self, model, **hints):
-        if model._meta.app_label == 'auth':
+        if model._meta.app_label in ['auth', 'admin', 'contenttypes', 'sessions']:
             return 'default'
         return None
 
     def db_for_write(self, model, **hints):
-        if model._meta.app_label == 'auth':
+        if model._meta.app_label in ['auth', 'admin', 'contenttypes', 'sessions']:
             return 'default'
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
-        if app_label == 'auth':
+        if app_label in ['auth', 'admin', 'contenttypes', 'sessions']:
             return db == 'default'
         return None
+
