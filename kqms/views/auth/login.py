@@ -35,8 +35,8 @@ def custom_logout(request):
 def redirect_by_role(request):
     user = request.user
     if user.groups.filter(name='AdminGelology').exists():
-        return redirect('gelogy_dashboard')
+        return redirect('home-geology')
     elif user.groups.filter(name='AdminMining').exists():
-        return redirect('mining_dashboard')
+        return redirect('home-geology')
     else:
         return redirect('home-geology')  # default
