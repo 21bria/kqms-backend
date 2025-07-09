@@ -197,7 +197,6 @@
                 </div>
 
             </div>
-
             <div class="grid grid-cols-12 gap-x-6">
                 <div class="xl:col-span-9 col-span-12">
                     <div class="box">
@@ -332,7 +331,6 @@
 </div>
 
 <div id="responsive-overlay"></div>
-
 {% include 'layout/js.html' %}
 
 
@@ -486,7 +484,7 @@
 
     /* =========================  Event listeners ========================= */
     $(document).ready(function () {
-        fillMonthOptions();               // isi bulan awal
+        fillMonthOptions();// isi bulan awal
     });
 
     $('#tahunFilter').on('change', () => fillMonthOptions());
@@ -1058,25 +1056,6 @@
     /* Selling Summary Card */
 
     /* Selling vs Plan Chart */
-    const today = new Date();
-    const dummySale = generateDummySaleData(currentMonth, currentYear);
-    function generateDummySaleData(month, year) {
-        const daysInMonth = new Date(year, month, 0).getDate();
-        const labels = [];
-        const targetData = [];
-        const saleData = [];
-        for (let day = 1; day <= daysInMonth; day++) {
-            labels.push(day); // hanya angka hari
-            targetData.push(Math.floor(Math.random() * 1000) + 500); // 500–1500
-            saleData.push(Math.floor(Math.random() * 800) + 400);  // 400–1200
-        }
-        return {
-            x_data: labels,
-            y_data_target: targetData,
-            y_data_sale: saleData     // ✅ fix di sini
-        };
-    }
-
     function loadSellingChart(filterType, year, month, week, dateStart, dateEnd) {
         const url = new URL("kqms/dashboard/api/selling-chart/", window.location.origin);
         if (filterType) url.searchParams.append("filter_type", filterType);
@@ -1090,94 +1069,78 @@
             .then(response => response.json())
             .then(data => {
                 const isMonthly = filterType === 'monthly';
-                const chartType = isMonthly ? 'line' : 'line';
-                const seriesActual = isMonthly ? 'area' : 'column';
-                const seriesTarget = isMonthly ? 'line' : 'line';
+                // const chartType = isMonthly ? 'line' : 'line';
+                const chartType = isMonthly ? 'area' : 'bar';
+                const seriesActual = isMonthly ? 'area' : 'bar';
+                const seriesTarget = isMonthly ? 'area' : 'bar';
 
+                // const chartType = isMonthly ? 'area' : 'bar';
+                // const seriesType = isMonthly ? 'area' : 'bar';
 
-                //     chartSelling.updateOptions({
-                //         chart: { type: chartType },
-                //         stroke: {
-                //             width: [0, 3],
-                //             curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
-                //         },
-                //         plotOptions: {
-                //             bar: {
-                //                 columnWidth: "50%",
-                //                 borderRadius: 2
-                //             }
-                //         },
-                //         labels: data.x_data,
+                    chartSelling.updateOptions({
+                        chart: { type: chartType },
+                        stroke: {
+                            width: [0, 3],
+                            curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
+                        },
+                        plotOptions: {
+                            bar: {
+                                columnWidth: "50%",
+                                borderRadius: 2
+                            }
+                        },
+                        labels: data.x_data,
 
-                //     });
+                    });
 
-                //     chartSelling.updateSeries([
+                    chartSelling.updateSeries([
 
-                //         {
-                //             name: 'Actual',
-                //             type: seriesActual,
-                //             data: data.y_data_actual
-                //         },
-                //         {
-                //             name: 'Target',
-                //             type: seriesTarget,
-                //             data: data.y_data_plan
-                //         },
-                //     ]);
+                        {
+                            name: 'Actual',
+                            type: seriesActual,
+                            data: data.y_data_actual
+                        },
+                        {
+                            name: 'Target',
+                            type: seriesTarget,
+                            data: data.y_data_plan
+                        },
+                    ]);
             })
             .catch(error => {
                 console.error("Error fetching ore chart:", error);
             });
     }
 
-    var options = {
-        series: [
-            //     {
-            //   name: 'TEAM A',
-            //   type: 'column',
-            //   data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30]
-            // },
-            {
-                name: 'Actual',
-                type: 'area',
-                data: dummySale.y_data_sale
-            }, {
-                name: 'Target',
-                type: 'area',
-                data: dummySale.y_data_target
-            }],
+    var optionsSelling = {
+       series: [],
         chart: {
-            height: 350,
-            type: 'area',
-            stacked: false,
-            zoom: {
-                enabled: false
+            toolbar: {
+                show: false
             },
+            type: 'line',
+            height: 250,
+            fontFamily: 'Nunito, sans-serif',
+        },
+        grid: {
+            borderColor: '#f1f1f1',
+            // strokeDashArray: 3
+        },
+        labels: [],
+        dataLabels: {
+            enabled: false
         },
         stroke: {
-            width: [0, 2],
-            curve: 'smooth'
+            width: [0, 0.6],
+            // curve: ['straight', 'smooth'],
+            curve: ['smooth', 'smooth'],
         },
-        plotOptions: {
-            bar: {
-                columnWidth: '50%'
-            }
-        },
-
-        fill: {
-            opacity: [0.85, 0.25, 1],
-            gradient: {
-                inverseColors: false,
-                shade: 'light',
-                type: "vertical",
-                opacityFrom: 0.85,
-                opacityTo: 0.55,
-                stops: [0, 100, 100, 100]
-            }
-        },
-        labels: dummySale.x_data,
-        markers: {
-            size: 0
+        dropShadow: {
+            enabled: false,
+            opacity: 0.2,
+            blur: 5,
+            left: -7,
+            top: 22,
         },
         legend: {
             show: true,
@@ -1190,10 +1153,7 @@
 
         },
         yaxis: {
-            title: {
-                text: 'Ton',
-            },
-            // min: 0,
+            min: 0,
             // tickAmount: 5,
             labels: {
                 formatter: (value) => {
@@ -1206,39 +1166,53 @@
                 },
             },
         },
-        dataLabels: {
-            enabled: false,
-            show: true,
-        },
-        tooltip: {
-            shared: true,
-            intersect: false,
-            y: {
-                formatter: function (y) {
-                    if (typeof y !== "undefined") {
-                        return y.toFixed(0) + " points";
-                    }
-                    return y;
-
-                }
+        plotOptions: {
+            bar: {
+                columnWidth: "50%",
+                borderRadius: 2
             }
         },
         fill: {
             type: 'gradient',
             gradient: {
                 shade: 'light',
-                type: "vertical", // ini yang penting agar gradient dari atas ke bawah
+                type: "vertical",
                 shadeIntensity: 0.1,
                 inverseColors: false,
                 opacityFrom: 0.7,
-                opacityTo: 0.3,
-                stops: [0, 100, 50]
+                opacityTo: 0.5,
+                stops: [0, 100, 90]
             }
         },
+        tooltip: {
+            marker: {
+                show: true,
+            },
+            x: {
+                show: true,
+            },
+        },
+        noData: {
+            text: "No data...",
+        },
+        animations: {
+            enabled: true,
+            easing: "easeinout",
+            speed: 2000,
+            animateGradually: {
+                enabled: true,
+                delay: 250,
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 1000,
+            },
+        }
 
+        // colors: ["rgba(132, 90, 223, 1)", '#23b7e5'],
     };
     document.getElementById('selling-chart').innerHTML = '';
-    var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), options);
+    var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), optionsSelling);
     chartSelling.render();
     /* Selling vs Plan Chart Chart */
 

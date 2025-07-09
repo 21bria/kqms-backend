@@ -10,10 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> KQMS </title>
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <meta name="description"
-        content="A Tailwind CSS admin template is a pre-designed web page for an admin dashboard. Optimizing it for SEO includes using meta descriptions and ensuring it's responsive and fast-loading.">
+    <meta name="description" content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
     <meta name="keywords"
-        content="html dashboard,tailwind css,tailwind admin dashboard,template dashboard,html and css template,tailwind dashboard,tailwind css templates,admin dashboard html template,tailwind admin,html panel,template tailwind,html admin template,admin panel html">
+        content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company">
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{% static 'assets/images/brand-logos/colorful.png' %}">
@@ -39,21 +38,14 @@
     <!-- Choices Css -->
     <link rel="stylesheet" href="{% static 'assets/libs/choices.js/public/assets/styles/choices.min.css' %}">
 
-
-    <link href="https://cdn.datatables.net/2.3.2/css/dataTables.tailwindcss.css" rel="stylesheet" type="text/css" />
-
+    <!-- dataTables -->
+    <link href="{% static 'assets/libs/datatables/dataTables.tailwindcss.css'%}" rel="stylesheet">
     <link href="{% static 'assets/libs/datatables/datatables.min.css'%}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" />
-
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="{% static 'assets/libs/datatables/responsive.dataTables.min.css'%}" rel="stylesheet">
 
     <!-- Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
-    <!-- Latest -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/erimicel/select2-tailwindcss-theme/dist/select2-tailwindcss-theme-plain.min.css">
+    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2.min.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
 
     <!-- CSS SweetAlert2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">

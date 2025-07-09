@@ -898,37 +898,43 @@ def get_dome_pds_active(request):
 def get_task_import(request):
     if request.method == 'GET':
         try:
-            user_groups = list(request.user.groups.values_list('id', flat=True))
+            # Ambil nama grup user (bukan ID lagi)
+            user_group_names = list(request.user.groups.values_list('name', flat=True))
 
-            # Cek jika superadmin
-            if 'superadmin' in request.user.groups.values_list('name', flat=True):
-                group_filter = ""
-            elif user_groups:
-                group_filter = f" AND tga.group_id IN ({','.join(map(str, user_groups))})"
+            if request.user.is_staff or request.user.groups.filter(name='superadmin').exists():
+                sql_query = """
+                    SELECT t.id, t.type_table
+                    FROM task_table_list t
+                    WHERE t.status = 1
+                    ORDER BY t.type_table ASC;
+                """
+                params = []
+            elif user_group_names:
+                sql_query = """
+                    SELECT t.id, t.type_table
+                    FROM task_table_list t
+                    WHERE t.status = 1
+                    AND EXISTS (
+                        SELECT 1 FROM jsonb_array_elements_text(t.allowed_group_names) AS g
+                        WHERE g = ANY(%s)
+                    )
+                    ORDER BY t.type_table ASC;
+                """
+                params = [tuple(user_group_names)]  # 🔧 ini penting!
             else:
                 return JsonResponse({'list': []})
 
-            sql_query = f"""
-                SELECT t.id, t.type_table
-                FROM task_table_list t
-                INNER JOIN task_table_list_allowed_groups tga
-                    ON t.id = tga.tasklist_id
-                WHERE t.status = 1
-                {group_filter}
-                ORDER BY t.type_table ASC;
-            """
+            print(user_group_names)
+            print(sql_query)
 
+            # Eksekusi
             with connections['kqms_db'].cursor() as cursor:
-                cursor.execute(sql_query)
+                cursor.execute(sql_query, params)
                 result = cursor.fetchall()
 
-            data_list = sorted(
-                list({(row[0], row[1]) for row in result}),
-                key=lambda x: x[1]
-            )
-            data_list = [{'id': item[0], 'type_table': item[1]} for item in data_list]
-
+            data_list = [{'id': row[0], 'type_table': row[1]} for row in result]
             return JsonResponse({'list': data_list})
+
 
         except Exception as e:
             return JsonResponse({'error': f'Error: {str(e)}'}, status=500)

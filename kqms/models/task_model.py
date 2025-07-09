@@ -29,7 +29,8 @@ class TaskList(models.Model):
     created_at     = models.DateTimeField(auto_now_add=True)
 
     # Relasi ke Group
-    allowed_groups = models.ManyToManyField(Group, related_name="allowed_tasks", blank=True)
+    # allowed_groups = models.ManyToManyField(Group, related_name="allowed_tasks", blank=True)
+    allowed_group_names = models.JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.type_table

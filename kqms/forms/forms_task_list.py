@@ -5,8 +5,8 @@ from django.utils.module_loading import import_string
 from ..models import TaskList
 
 class TaskListForm(forms.ModelForm):
-    allowed_groups = forms.ModelMultipleChoiceField(
-        queryset=Group.objects.all(),
+    allowed_group_names_field = forms.MultipleChoiceField(
+        choices=[(g.name, g.name) for g in Group.objects.all()],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-checkbox'}),
         required=False,
         label="Allowed Groups"
@@ -14,7 +14,7 @@ class TaskListForm(forms.ModelForm):
 
     class Meta:
         model = TaskList
-        fields = ['type_table', 'task_path', 'status', 'allowed_groups']
+        fields = ['type_table', 'task_path', 'status']  # tidak masukkan allowed_group_names langsung
         widgets = {
             'type_table': forms.TextInput(attrs={
                 'class': 'form-control flex-1',
@@ -27,6 +27,18 @@ class TaskListForm(forms.ModelForm):
                 'required': True
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.allowed_group_names:
+            self.fields['allowed_group_names_field'].initial = self.instance.allowed_group_names
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.allowed_group_names = self.cleaned_data.get('allowed_group_names_field', [])
+        if commit:
+            instance.save()
+        return instance
 
     def clean_task_path(self):
         task_path = self.cleaned_data.get('task_path')
@@ -44,17 +56,15 @@ class TaskListForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         type_table = cleaned_data.get('type_table')
-        task_path  = cleaned_data.get('task_path')
+        task_path = cleaned_data.get('task_path')
 
         if not type_table:
             self.add_error('type_table', "Type Table tidak boleh kosong.")
 
-        # Validasi duplikat type_table
         existing_type = TaskList.objects.filter(type_table=type_table).exclude(id=self.instance.id).first()
         if existing_type:
             self.add_error('type_table', "Type Table sudah ada.")
 
-        # Validasi duplikat task_path
         if task_path:
             existing_path = TaskList.objects.filter(task_path=task_path).exclude(id=self.instance.id).first()
             if existing_path:

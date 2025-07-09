@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path, include
 from .views.auth.login import *
 from .views.generate_dummy import *
+from .views.devtools import init_menu_view
+
 
 urlpatterns = [
     path('', login_view, name='login'),
@@ -31,6 +33,9 @@ urlpatterns = [
     path('generate-dummy-mine-pds/', generate_dummy_mine_productions, name='generate_dummy_mine_productions'),
     path('generate-dummy-plan-mine/', generate_dummy_plan_productions, name='generate_dummy_plan_productions'),
 
+    # Generate Menu
+    path('init-menu/', init_menu_view, name='init-menu'),
+   
 
     
 ]

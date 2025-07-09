@@ -1,0 +1,30 @@
+{% load menu_tags %}
+
+{% if menu_item.menu.is_category %}
+<li class="slide__category">
+    <span class="category-name">{{ menu_item.menu.category_title }}</span>
+</li>
+{% else %}
+<li class="slide {% if menu_item|has_children %}has-sub{% endif %}">
+    <a href="{{ menu_item|get_url }}" class="side-menu__item">
+        {% if menu_item.menu.icon %}
+        <i class="{{ menu_item.menu.icon }} side-menu__icon"></i>
+        {% endif %}
+        <span class="side-menu__label">{{ menu_item.menu.title }}</span>
+        {% if menu_item|has_children %}
+        <i class="fe fe-chevron-right side-menu__angle"></i>
+        {% endif %}
+    </a>
+
+    {% if menu_item|has_children %}
+    <ul class="slide-menu child1">
+        <li class="slide side-menu__label1">
+            <a href="javascript:void(0)">{{ menu_item.menu.title }}</a>
+        </li>
+        {% for child in menu_item.children %}
+        {% render_menu_item child %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+{% endif %}

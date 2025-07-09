@@ -112,7 +112,7 @@
                                     <div class="mt-4 mb-4">
                                         <label class="form-label mb-4 ltr:mr-2 rtl:ml-2">Groups</label>
                                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
-                                            {% for group in form.allowed_groups %}
+                                            {% for group in form.allowed_group_names_field %}
                                             <div class="flex items-center">
                                                 {{ group }}
                                                 <span class="text-white-dark">{{ group.label }}</span>

@@ -1,0 +1,8 @@
+
+{% load menu_tags %}
+
+<ul class="main-menu">
+    {% for menu_item in dynamic_menu %}
+        {% render_menu_item menu_item %}
+    {% endfor %}
+</ul>

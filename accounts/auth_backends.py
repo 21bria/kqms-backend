@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
 class MyOIDCBackend(OIDCAuthenticationBackend):
     def authenticate(self, request, **kwargs):
         if not getattr(settings, 'ENABLE_OIDC', False):
