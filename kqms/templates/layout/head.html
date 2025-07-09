@@ -11,8 +11,7 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="description"
         content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
-    <meta name="keywords"
-        content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company,
+    <meta name="keywords" content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company,
          indonesia, sulawesi, morowali,maluku, halmahera, konawe,battery">
 
     <!-- Favicon -->
@@ -43,14 +42,20 @@
     <link rel="stylesheet" href="{% static 'assets/libs/flatpickr/flatpickr.min.css'%}">
 
     <!-- dataTables -->
-    <link href="{% static 'assets/libs/datatables/dataTables.tailwindcss.css'%}" rel="stylesheet">
+    <!-- <link href="{% static 'assets/libs/datatables/dataTables.tailwindcss.css'%}" rel="stylesheet"> -->
     <link href="{% static 'assets/libs/datatables/datatables.min.css'%}" rel="stylesheet">
-    <link href="{% static 'assets/libs/datatables/responsive.dataTables.min.css'%}" rel="stylesheet">
+    <!-- <link href="{% static 'assets/libs/datatables/responsive.dataTables.min.css'%}" rel="stylesheet"> -->
+
+    <!-- ✅ Ganti dengan versi 2.x dari CDN sebagai alternatif -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.tailwindcss.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.dataTables.min.css">
+
 
     <!-- Select2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/select2/css/select2.min.css'%}">
     <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2.min.css'%}">
-    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
+    <link rel="stylesheet"
+        href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
 
     <!-- CSS SweetAlert2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">
