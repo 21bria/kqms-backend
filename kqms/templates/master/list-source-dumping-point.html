@@ -59,8 +59,11 @@
                                 <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
                                     <button id="createNew" type="button"
                                         class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
-
                                 </div>
+
+                            </div>
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                                <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
                             </div>
                             <div class="overflow-auto">
                                 <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
@@ -276,7 +279,7 @@
                     render: function (data, type, row) {
                         // Ubah nilai status menjadi elemen HTML berdasarkan nilai
                         return data == 1 ?
-                            '<span class="badge whitespace-nowrap badge-outline-secondary">Yes</span>' :
+                            '<span class="badge bg-success/10 text-success">Yes</span>' :
                             '<span class="badge whitespace-nowrap badge-outline-warning" : class="badge-outline-primary">No</span>';
                         '<span class="badge whitespace-nowrap badge-outline-warning" : class="badge-outline-primary">No</span>';
                     }
@@ -353,14 +356,10 @@
                         $('#success-entry').find('span').text('Data saved successfully.');
                         $('#success-entry').show();
                         // Sembunyikan notifikasi setelah beberapa detik
+                        setTimeout(function () {
+                            $('#success-entry').hide();
+                        }, 2500); // 2500 milidetik = 2.5 detik
                         window.HSOverlay.close('#add-data');
-                        Swal.fire({
-                            title: 'Data successfully created',
-                            icon: "success",
-                            timer: 3000,
-                            showConfirmButton: false,
-                            confirmButtonText: 'OK',
-                        });
                     } else {
                         alert('Error: ' + data.message);
                         // Handle error, jika perlu
@@ -472,13 +471,9 @@
                         $('#success-entry').find('strong').text('Success!');
                         $('#success-entry').find('span').text('Data update successfully.');
                         $('#success-entry').show();
-                        Swal.fire({
-                            title: 'Data successfully updated',
-                            icon: "success",
-                            timer: 3000,
-                            showConfirmButton: false,
-                            confirmButtonText: 'OK',
-                        });
+                        setTimeout(function () {
+                            $('#success-entry').hide();
+                        }, 2500); // 2500 milidetik = 2.5 detik
                     } else {
                         alert('Gagal memperbarui data');
                     }

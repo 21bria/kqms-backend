@@ -38,6 +38,16 @@ class mineProductions(models.Model):
     class Meta:
         db_table   = 'productions_mines'
         app_label  = 'kqms'
+        indexes = [
+        models.Index(
+            fields=[
+                'date_production', 'hauler', 'time_loading',
+                'id_material', 'dome_id', 'sources_area',
+                'loading_point', 'dumping_point'
+            ],
+            name='idx_mineprod_dedupe'
+        )
+    ]
 
 
 # Mine Productions Quick

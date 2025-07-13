@@ -77,9 +77,11 @@
                                             </span>
                                         </div>
                                         <div>
-                                            <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="total_materials">
+                                            <p class="text-[1.125rem] mb-0 text-primary font-semibold"
+                                                id="total_materials">
                                                 0.00</p>
-                                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">TMM (bcm)</span>
+                                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">TMM
+                                                (bcm)</span>
                                         </div>
                                     </div>
 
@@ -94,7 +96,8 @@
                                             <div>
                                                 <p class="text-[1.125rem] mb-0 text-success font-semibold"
                                                     id="totals_mining">0.00</p>
-                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Mining (Bcm)</span>
+                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Mining
+                                                    (Bcm)</span>
                                             </div>
                                         </div>
                                         <div class="flex items-center">
@@ -106,7 +109,8 @@
                                             <div>
                                                 <p class="text-[1.125rem] mb-0 text-secondary font-semibold"
                                                     id="totals_project">0.00</p>
-                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Project (Bcm)</span>
+                                                <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Project
+                                                    (Bcm)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -192,44 +196,51 @@
                         <div class="grid grid-cols-12 gap-6 px-4 ">
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Start date</label>
-                                <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}"
-                                    id="startDate" name="startDate">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="startDate" name="startDate"
+                                        placeholder="Choose date" value="{{start_date}}">
+                                </div>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">End date</label>
-                                <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}"
-                                    id="endDate" name="endDate">
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="endDate" name="endDate"
+                                        placeholder="Choose date" value="{{end_date}}">
+                                </div>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="batch_status">Batch Status</label> -->
-                                <select id="batch_status" name="batch_status" class="form-control w-full !rounded-md">
+                                <select id="category" name="category" class="ti-form-select w-full !rounded-md">
                                     <option value="">-- Select --</option>
-                                    <option value="Complete">Complete</option>
-                                    <option value="Incomplete">Incomplete</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="material_filter">Materials</label> -->
                                 <select id="material_filter" name="material_filter"
-                                    class="form-control  w-full !rounded-md ">
+                                    class="ti-form-select  w-full !rounded-md ">
                                     <option value="">Select</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="source_filter">Source</label> -->
-                                <select id="source_filter" name="source_filter" class="form-control w-full !rounded-md">
+                                <select id="sources_area" name="sources_area" class="ti-form-select w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="area_filter">Stockpile</label> -->
-                                <select id="area_filter" name="area_filter" class="form-control w-full !rounded-md">
+                                <select id="loadingPoint" name="loadingPoint" class="ti-form-select w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="point_filter">Dome</label> -->
-                                <select id="point_filter" name="point_filter" class="form-control  w-full !rounded-md">
+                                <select id="dumpingPoint" name="dumpingPoint"
+                                    class="ti-form-select  w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
@@ -502,17 +513,21 @@
 
 <!-- get list data -->
 <script type="text/javascript">
+
     $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+
+        $(".ti-form-select").select2({
+            width: '100%',
+            // dropdownParent: $('#search-modal'),
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
         /*-- Pass Header Token ---*/
         $.ajaxSetup({
             headers: {
                 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
             }
-        });
-
-        $(".form-select").select2({
-            width: '100%', // Sesuaikan lebar dengan kontainer
-            // dropdownParent: document.getElementById("filterModal")
         });
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
@@ -705,6 +720,7 @@
         $('.th_hide').show();
         /*--Filter Modal and Apply Filter---*/
         $('#applyFilterBtn').click(function () {
+            window.HSOverlay.close('#search-modal');
             table.ajax.reload();
             call_TotalPDS();
         });
@@ -724,175 +740,6 @@
             table.ajax.reload(); //just reload table
             call_TotalPDS();
 
-        });
-
-        /* Update*/
-        $('#updateButton').click(function () {
-            var id = $('#id').val();
-            var date_production = $('#date_production').val().trim();
-            var shift = $('#shift').val().trim();
-            var digger = $('#digger').val();
-            var hauler = $('#hauler').val();
-            var sources = $('#sources').val();
-            var loading_point = $('#loading_point').val();
-            var dumping_point = $('#dumping_point').val();
-            var dome_id = $('#dome_id').val();
-            var category_mine = $('#category_mine').val();
-            var id_material = $('#id_material').val();
-            var time_loading = $('#time_loading').val().trim();
-            var time_dumping = $('#time_dumping').val().trim();
-            var ritase = $('#ritase').val();
-            var block_id = $('#block_id').val();
-            var from_rl = $('#from_rl').val();
-            var to_rl = $('#to_rl').val();
-            var area = $('#area').val();
-            var vendors = $('#vendorsEdit').val();
-            var remarks = $('#remarks').val();
-
-            var updatedData = {
-                date_production: date_production,
-                shift: shift,
-                digger: digger,
-                hauler: hauler,
-                sources: sources,
-                loading_point: loading_point,
-                dumping_point: dumping_point,
-                dome_id: dome_id,
-                category_mine: category_mine,
-                id_material: id_material,
-                time_loading: time_loading,
-                time_dumping: time_dumping,
-                ritase: ritase,
-                block_id: block_id,
-                from_rl: from_rl,
-                to_rl: to_rl,
-                area: area,
-                vendors: vendors,
-                remarks: remarks
-            };
-            var url = '/sqms_apps/mining/mine-production/update/' + id + '/';
-
-            $.ajax({
-                url: url,
-                type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
-                data: updatedData,
-                success: function (response) {
-                    if (response.success) {
-                        toggleModal('editModal');
-                        // Tampilkan notifikasi sukses
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'success',
-                            // title: 'Update successfully',
-                            html: response.message,
-                            padding: '2em',
-                        });
-
-                        // Kirim permintaan AJAX ke server dengan filter
-                        $('#data_table').DataTable().clear().draw();
-                        // load_data()
-                    } else {
-                        // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
-                        alert('Terjadi kesalahan: ' + response.message);
-                    }
-                },
-                error: function (xhr, textStatus, status, errorThrown, error) {
-                    if (xhr.status === 422) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            // title: 'Update successfully',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-
-                    if (xhr.status === 400) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            // title: 'Update successfully',
-                            html: xhr.responseJSON.error,
-                            padding: '2em',
-                        });
-                    }
-                    else {
-                        // alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            // title: 'Update successfully',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-                }
-
-            });
-        });
-
-        /*--- Delete ---*/
-        $('#data_table').on('click', '.deleteData', function () {
-            var id = $(this).data('id');
-            var url = '{% url "mine-production-delete" %}?id=' + id;
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: 'btn btn-success',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Delete',
-                width: 380,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: "DELETE",
-                        dataType: 'json',
-                        data: {
-                            id: id,
-                        },
-                        success: function (data) {
-                            table.draw();
-
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
-                    });
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Your file has been deleted.',
-                        icon: 'success',
-                        width: 380,
-                    })
-                }
-            })
         });
 
         call_TotalPDS();
@@ -1004,7 +851,7 @@
 <script>
     $(document).ready(function () {
         $('#openFilter').click(function () {
-             window.HSOverlay.open('#search-modal');
+            window.HSOverlay.open('#search-modal');
             $('#exportButton').hide();
             $('#applyFilterBtn').show();
         });
@@ -1154,332 +1001,7 @@
     });
 </script>
 
-<!-- For Edit Row--->
-<script>
-    $(document).ready(function () {
-        var loader_get = 'Digger'
-        var hauler_get = 'Hauler'
 
-        $('#digger').select2({
-            ajax: {
-                url: "{% url 'get-mine-units-entry'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        category: loader_get,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#hauler').select2({
-            ajax: {
-                url: "{% url 'get-mine-units-entry'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        category: hauler_get,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#sources').select2({
-            ajax: {
-                url: "{% url 'get-mine-source'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#loading_point').select2({
-            ajax: {
-                url: "{% url 'get-mine-loading-point'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#dumping_point').select2({
-            ajax: {
-                url: "{% url 'get-mine-dumping-point'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#dome_id').select2({
-            ajax: {
-                url: "{% url 'get-mine-dome'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $.ajax({
-            url: "{% url 'get-materials-mine' %}",
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                var options = '';
-                // Loop melalui data.results untuk menambahkan opsi Select2
-                $.each(data.results, function (index, value) {
-                    options += '<option value="' + value.id + '">' + value.text + '</option>';
-                });
-                $('#id_material').append(options);
-                $('#id_material').trigger('change'); // Trigger agar Select2 membaca opsi baru
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX Error: ", error);
-            }
-        });
-
-        $.ajax({
-            url: "{% url 'get-mine-category' %}",
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                var options = '';
-                // Loop melalui data.results untuk menambahkan opsi Select2
-                $.each(data.results, function (index, value) {
-                    options += '<option value="' + value.id + '">' + value.text + '</option>';
-                });
-                $('#category_mine').append(options);
-                $('#category_mine').trigger('change'); // Trigger agar Select2 membaca opsi baru
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX Error: ", error);
-            }
-        });
-
-        // Inisialisasi event handler change untuk elemen shift
-        $('#shift').change(function (e) {
-            var selectedShift = $(this).val();
-            var timeLoadingSelect = $('#time_loading');
-
-            // Kosongkan opsi sebelumnya
-            timeLoadingSelect.empty();
-
-            console.log('Get Time :', selectedShift);
-
-            if (selectedShift === 'D') {
-                // Tambahkan opsi waktu untuk Shift D (07-18)
-                timeLoadingSelect.append('<option value="">---</option>');
-                for (var i = 7; i <= 18; i++) {
-                    var value = i < 10 ? '0' + i : i; // Tambahkan angka nol di depan jika angka kurang dari 10
-                    timeLoadingSelect.append('<option value="' + value + '">' + value + '</option>');
-                }
-            } else if (selectedShift === 'N') {
-                // Tambahkan opsi waktu untuk Shift N (19-06)
-                timeLoadingSelect.append('<option value="">---</option>');
-                for (var i = 19; i <= 23; i++) {
-                    timeLoadingSelect.append('<option value="' + i + '">' + i + '</option>');
-                }
-                for (var j = 0; j <= 6; j++) {
-                    var value = j < 10 ? '0' + j : j;
-                    timeLoadingSelect.append('<option value="' + value + '">' + value + '</option>');
-                }
-            } else {
-                // Jika tidak ada shift yang dipilih, kembalikan opsi kosong
-                timeLoadingSelect.append('<option value="">---</option>');
-            }
-        });
-
-        $('#sources').change(function (e) {
-            var selectedSource = $(this);
-            var inputArea = $('#area');
-            var selectedText = selectedSource.find(':selected').text();
-            inputArea.val(selectedText);
-        });
-
-    });
-
-    /*--- Click to Edit Button ---*/
-    $('body').on('click', '.editData', function () {
-        var id = $(this).data('id');
-        var url = '{% url "mine-production-get" %}';
-        $.ajax({
-            url: url,
-            type: "GET",
-            data: {
-                id: id,
-            },
-            dataType: "json",
-            success: function (response) {
-                if (response) {
-                    const modal = document.getElementById('editModal');
-                    modal.classList.remove('hidden');
-                    // Mengisi formulir dengan data yang diterima
-                    $('#id').val(response.id);
-                    $('#date_production').val(response.date_production);
-                    $('#shift').val(response.shift).trigger('change');
-
-                    // $('#hauler').val(response.hauler).trigger('change');
-                    $('#category_mine').val(response.category_mine).trigger('change');
-                    $('#id_material').val(response.id_material).trigger('change');
-                    $('#time_loading').val(response.time_loading);
-                    $('#time_dumping').val(response.time_dumping);
-                    $('#vendorsEdit').val(response.vendors);
-                    $('#ritase').val(response.ritase);
-                    $('#block_id').val(response.block_id);
-                    $('#from_rl').val(response.from_rl);
-                    $('#to_rl').val(response.to_rl);
-                    $('#remarks').val(response.remarks);
-
-
-                    // Pastikan Select2 di-clear terlebih dahulu
-                    $('#digger').empty().trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newDigger = new Option(response.diggerName, response.loader, true, true);
-                    $('#digger').append(newDigger).trigger('change');
-
-                    $('#hauler').empty().trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newHauler = new Option(response.haulerName, response.hauler, true, true);
-                    $('#hauler').append(newHauler).trigger('change');
-
-
-                    $('#sources').val(response.sources).trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newSource = new Option(response.sources_area, response.sources, true, true);
-                    $('#sources').append(newSource).trigger('change');
-
-                    $('#loading_point').val(response.loading_point).trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newStokpile = new Option(response.loadingPoint, response.loading_point, true, true);
-                    $('#loading_point').append(newStokpile).trigger('change');
-
-                    $('#dumping_point').val(response.dumping_point).trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newDumping = new Option(response.dumpingPoint, response.dumping_point, true, true);
-                    $('#dumping_point').append(newDumping).trigger('change');
-
-                    $('#dome_id').val(response.dome_id).trigger('change');
-                    // Tambahkan opsi baru ke Select2
-                    var newDome = new Option(response.domePoint, response.dome_id, true, true);
-                    $('#dome_id').append(newDome).trigger('change');
-
-                } else {
-                    alert(
-                        'Data tidak ditemukan'
-                    ); // Atau tindakan lain jika data tidak ditemukan
-                }
-            },
-            error: function (xhr, status, error) {
-                alert('Terjadi kesalahan: ' + error); // Handle kesalahan AJAX
-            }
-        });
-    });
-
-</script>
 
 </body>
 

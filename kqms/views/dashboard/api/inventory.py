@@ -1318,27 +1318,27 @@ def get_chart_inventory(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 # Ach. Ore Production
-def get_grade_class(ni, mgo):
-    if ni is None or mgo is None:
+def get_grade_class(ni, mgo, fe):
+    if ni is None or mgo is None or fe is None:
         return "NULL"
-    if ni < 0.7 and mgo < 5.01:
+    
+    if ni >= 1.6 and mgo >= 7.0 and fe <= 27.0:
+        return "HGS"
+    elif 1.2 <= ni < 1.6 and mgo >= 7.0 and fe <= 27.0:
+        return "MGS"
+    elif ni < 1.2 and 7.0 <= mgo <= 20.0 and fe <= 27.0:
+        return "LGS"
+    elif ni >= 1.1 and mgo < 7.0 and fe >= 27.0:
+        return "HGL"
+    elif ni < 1.1 and mgo < 7.0 and fe >= 27.0:
+        return "LGL"
+    elif ni < 0.9 and mgo < 7.0 and fe < 27.0:
+        return "OB"
+    elif ni < 1.2 and mgo > 20.0 and fe >= 27.0:
         return "WASTE"
-    elif ni < 1.2 and mgo < 5.01:
-        return "LGLO"
-    elif ni < 1.45 and mgo < 5.01:
-        return "MGLO"
-    elif ni >= 1.45 and mgo < 6.00:
-        return "HGLO"
-    elif ni < 1.2 and mgo > 5:
-        return "WASTE"
-    elif ni < 1.4 and mgo > 5:
-        return "LGSO"
-    elif ni < 1.7 and mgo > 5:
-        return "MGSO"
-    elif ni >= 1.7 and mgo > 5:
-        return "HGSO"
     else:
-        return "NULL"
+        return "Waiting Assays"
+
     
 def get_grade_roa(request):
     try:
@@ -1438,7 +1438,7 @@ def get_grade_roa(request):
             row['sio2']      = round(float(row['sio2']), 2)
             row['mc']        = round(float(row['mc']), 2)
             row['sm']        = round(float(row['sm']), 2)
-            row['grade']     = get_grade_class(row['ni'], row['mgo'])
+            row['grade']     = get_grade_class(row['ni'], row['mgo'], row['fe'])
 
         return JsonResponse({
             'data': result,
@@ -1575,7 +1575,7 @@ def get_stockpile_roa(request):
                 data_SiO2.append(row['released'] * float(row['sio2']))
                 data_MC.append(row['released'] * float(row['mc']))
                 data_SM.append(row['released'] * float(row['sm']))
-                row['grade'] = get_grade_class(float(row['ni']), float(row['mgo']))
+                row['grade'] = get_grade_class(float(row['ni']), float(row['mgo']), float(row['fe']))
 
         return JsonResponse({
             'data': result,
@@ -1660,7 +1660,7 @@ def get_dome_roa(request):
             row['released']  = round(float(row['released']), 1)
             row['ni']        = round(float(row['ni']), 2)
             row['mgo']       = round(float(row['mgo']), 2)
-            row['grade']     = get_grade_class(row['ni'], row['mgo'])
+            row['grade']     = get_grade_class(row['ni'], row['mgo'], row['fe'])
 
         return JsonResponse({
             'data': result,

@@ -288,7 +288,7 @@ class Command(BaseCommand):
             title="Selling Data",
             icon="bx bx-grid-alt",
             order=13,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -339,7 +339,7 @@ class Command(BaseCommand):
             title="Analytics",
             icon="bx bx-layer",
             order=14,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
         Menu.objects.create(
             title="Daily Grade",
@@ -373,7 +373,7 @@ class Command(BaseCommand):
             title="Achievements",
             icon="bx bx-table",
             order=16,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -460,7 +460,7 @@ class Command(BaseCommand):
             title="Inventory stock",
             icon="bx bx-chart",
             order=17,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
         Menu.objects.create(
             title="Data All",
@@ -510,7 +510,7 @@ class Command(BaseCommand):
             title="Geology",
             icon="bx bx-map",
             order=18,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
         Menu.objects.create(
             title="Data Samples",
@@ -558,7 +558,7 @@ class Command(BaseCommand):
             title="Quality Assurance",
             icon="bx bx-bar-chart-square",
             order=19,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
        
         sample_dup_roa = Menu.objects.create(
@@ -700,7 +700,7 @@ class Command(BaseCommand):
             title="Users",
             icon="bx bx-fingerprint",
             order=21,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -726,7 +726,7 @@ class Command(BaseCommand):
             title="Master",
             icon="bx bx-store-alt",
             order=22,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -784,16 +784,10 @@ class Command(BaseCommand):
             order=9
         )
         Menu.objects.create(
-            title="Sample type",
-            url="sample-type-page",
+            title="Mine geology",
+            url="mine-geologies-page",
             parent=master,
             order=10
-        )
-        Menu.objects.create(
-            title="Mine geology",
-            url="mine-geologies-pagee",
-            parent=master,
-            order=11
         )
 
         #  Configuration
@@ -801,7 +795,7 @@ class Command(BaseCommand):
             title="Configuration",
             icon="bx bx-cog",
             order=23,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -852,7 +846,7 @@ class Command(BaseCommand):
             title="Remove data",
             icon="bx bx-bell",
             order=24,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(
@@ -878,7 +872,7 @@ class Command(BaseCommand):
             title="Task",
             icon="bx bx-task",
             order=25,
-            allowed_group_names=["superadmin", "admin-selling"]
+            allowed_group_names=["superadmin", "admin-geology"]
         )
 
         Menu.objects.create(

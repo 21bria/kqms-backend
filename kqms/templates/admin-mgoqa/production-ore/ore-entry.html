@@ -2216,11 +2216,11 @@
                     $('#ore_class').empty().append('<option value="">----</option>');
                 }
 
-                // Cek nilai dari materialText dan ubah nilai #sale_adjust sesuai dengan kondisinya
+                // Cek nilai dari materialText dan ubah nilai #sale_adjust sesuai dengan kondisinya (HPAL & RKEF)
                 if (materialText === 'LIM') {
-                    $('#sale_adjust').val('HPAL');
+                    $('#sale_adjust').val('LIM');
                 } else if (materialText === 'SAP') {
-                    $('#sale_adjust').val('RKEF');
+                    $('#sale_adjust').val('SAP');
                 } else {
                     $('#sale_adjust').val('');
                 }

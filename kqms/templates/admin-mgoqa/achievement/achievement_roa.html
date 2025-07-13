@@ -136,7 +136,7 @@
     </div>
 
     <!-- ========== Search Modal ========== -->
- <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
@@ -354,24 +354,26 @@
                 newRow.append("<td>" + row.mc + "</td>")
 
                 // Kolom "grade" berdasarkan kondisi Ni dan Mgo
-                var grade = "NULL"; // Default
-                if (row.ni < 0.7 && row.mgo < 5.01) {
-                    grade = "WASTE";
-                } else if (row.ni < 1.2 && row.mgo < 5.01) {
-                    grade = "LGLO";
-                } else if (row.ni < 1.45 && row.mgo < 5.01) {
-                    grade = "MGLO";
-                } else if (row.ni >= 1.45 && row.mgo < 6.00) {
-                    grade = "HGLO";
-                } else if (row.ni < 1.2 && row.mgo > 5) {
-                    grade = "WASTE";
-                } else if (row.ni < 1.4 && row.mgo > 5) {
-                    grade = "LGSO";
-                } else if (row.ni < 1.7 && row.mgo > 5) {
-                    grade = "MGSO";
-                } else if (row.ni >= 1.7 && row.mgo > 5) {
-                    grade = "HGSO";
+                var grade = "NULL";
+
+                if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "HGS";
+                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "MGS";
+                } else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
+                    grade = "LGS";
+                } else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "HGL";
+                } else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "LGL";
+                } else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
+                    grade = "OB";
+                } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
+                    grade = "Waste";
+                } else {
+                    grade = "Waiting Assay";
                 }
+
 
                 // Tambahkan elemen <td> dengan kelas CSS yang sesuai
                 newRow.append("<td>" + grade + "</td>");
@@ -692,9 +694,9 @@
 <!-- Change filters -->
 <script>
     $(document).ready(function () {
-      $('#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide(); 
+        $('#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide();
         $('#filter').trigger('change'); // Langsung jalankan logika filter saat halaman load
-        
+
         $('#filter').change(function () { // Ketika user memilih filter
             if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
                 $('#form-bulan, #form-tahun, #form-tanggal-cut').hide(); // Sembunyikan lainnya
@@ -724,7 +726,7 @@
                 $('#pointFilter').val('').trigger('change');
                 $('#form-tanggal-awal,#form-tanggal-akhir,#form-tanggal-cut').hide();
                 $('#form-bulan, #form-tahun').show();
-                 $('#form-material').removeClass('xl:col-span-6').addClass('xl:col-span-12');
+                $('#form-material').removeClass('xl:col-span-6').addClass('xl:col-span-12');
                 $('#form-tanggal-cut').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-stockpile').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-dome').removeClass('xl:col-span-12').addClass('xl:col-span-6');
@@ -741,7 +743,7 @@
                 $('#pointFilter').val('').trigger('change');
                 $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide();
                 $('#form-tahun').show();
-                 $('#form-material').removeClass('xl:col-span-12').addClass('xl:col-span-6');
+                $('#form-material').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-tanggal-cut').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-stockpile').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-dome').removeClass('xl:col-span-12').addClass('xl:col-span-6');
@@ -798,7 +800,7 @@
                 var options = '';
 
                 $.each(data.materials, function (key, value) {
-                    options += '<option value="' + value.nama_material + '">' + value .nama_material +'</option>';
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
                 });
                 $('#materialFilter').append(options);
             }
@@ -812,7 +814,7 @@
                 var options = '';
 
                 $.each(data.tahun_pds, function (key, value) {
-                    options += '<option value="' + value.tahun + '">' + value.tahun +'</option>';
+                    options += '<option value="' + value.tahun + '">' + value.tahun + '</option>';
                 });
                 $('#tahunFilter').append(options);
             }
@@ -953,7 +955,7 @@
         padding: 0.25rem;
     }
 
-    
+
     th {
         /* background: rgb(246 248 250); */
         position: sticky;
