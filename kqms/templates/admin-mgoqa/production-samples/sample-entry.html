@@ -10,9 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> KQMS </title>
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <meta name="description" content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
-    <meta name="keywords"
-        content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company,
+    <meta name="description"
+        content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
+    <meta name="keywords" content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company,
          Sulawesi,Morowali">
 
     <!-- Favicon -->
@@ -47,7 +47,8 @@
     <!-- Select2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/select2/css/select2.min.css'%}">
     <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2.min.css'%}">
-    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
+    <link rel="stylesheet"
+        href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
 
     <!-- CSS SweetAlert2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">
@@ -741,25 +742,26 @@
                                 <h5 class="box-title">Entry Sample</h5>
                             </div>
                             <div class="box-body">
-                                <div class="flex justify-start">
-                                    <div class="w-64">
-                                        <label for="hs-trailing-button-add-on-with-icon" class="sr-only">Label</label>
-                                        <div class="flex rounded-sm">
-                                            <input type="text" id="code" name='code' value="{{ sample_entry }}"
-                                                class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
-                                            <button aria-label="button" type="button" id="applyFilterBtn"
-                                                class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
-                                                <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
-                                                    height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                                                </svg>
-                                            </button>
+                                <form id="multiRowForm" class="mt-5">
+                                    <div class="flex justify-start">
+                                        <div class="w-64">
+                                            <label for="hs-trailing-button-add-on-with-icon"
+                                                class="sr-only">Label</label>
+                                            <div class="flex rounded-sm">
+                                                <input type="text" id="code" name='code' value="{{ sample_entry }}"
+                                                    class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
+                                                <button aria-label="button" type="button" id="applyFilterBtn"
+                                                    class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                    <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <form id="multiRowForm" class="mt-5">
                                     {% include 'admin-mgoqa/production-samples/add/table-from.html' %}
                                     <!-- button -->
                                     <div
@@ -974,11 +976,11 @@
                                         class="form-control w-full !rounded-md" placeholder="From RL">
                                 </div>
 
-                                <div class="xl:col-span-4 col-span-12">
+                                <!-- <div class="xl:col-span-4 col-span-12">
                                     <label class="form-label">Sent to ITS<span class="text-danger">*</span></label>
                                     <input type="text" id="to_its" name="to_its" class="form-control w-full !rounded-md"
                                         placeholder="Sent to ITS">
-                                </div>
+                                </div> -->
 
                                 <div class="xl:col-span-4 col-span-12">
                                     <label>-<span class="text-danger"></span></label>
@@ -986,7 +988,6 @@
                                         class="form-control w-full !rounded-md disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed"
                                         disabled />
                                 </div>
-
 
                                 <div class="xl:col-span-4 col-span-12">
                                     <label>-<span class="text-danger"></span></label>
@@ -1097,7 +1098,7 @@
                     '<td><input type="text" class="form-control w-full !rounded-md" name="sample_number[]"></td>' +
                     '<td><input type="text" class="form-control w-full !rounded-md" name="primer_raw[]"></td>' +
                     '<td><input type="text" class="form-control w-full !rounded-md" name="duplicate_raw[]"></td>' +
-                    '<td><input type="text" class="form-control w-full !rounded-md" name="to_its[]"></td>' +
+                    // '<td><input type="text" class="form-control w-full !rounded-md" name="to_its[]"></td>' +
                     '<td><input type="hidden" class="fform-control w-full !rounded-md" readonly name="type_pds[]" id="type_pds"></td>' +
                     '<td><input type="hidden" readonly class="fform-control w-full !rounded-md" name="unit_truck[]"></td>' +
                     '</tr>';
@@ -1412,10 +1413,10 @@
                             }
                         }
                     },
-                    {
-                        data: 'to_its',
-                        name: 'to_its'
-                    },
+                    // {
+                    //     data: 'to_its',
+                    //     name: 'to_its'
+                    // },
                     { 'data': 'sampling_deskripsi', 'name': 'sampling_deskripsi', 'searchable': true },
                     {
                         data: 'remark',
@@ -1478,7 +1479,7 @@
                 var sample_number = $('#sample_number').val();
                 var primer_raw = $('#primer_raw').val();
                 var duplicate_raw = $('#duplicate_raw').val();
-                var to_its = $('#to_its').val();
+                // var to_its = $('#to_its').val();
                 var gc_expect = $('#gc_expect').val();
                 var unit_truck = $('#unit_truck').val();
                 var type = $('#type').val();
@@ -1499,7 +1500,7 @@
                     sample_number: sample_number,
                     primer_raw: primer_raw,
                     duplicate_raw: duplicate_raw,
-                    to_its: to_its,
+                    // to_its: to_its,
                     gc_expect: gc_expect,
                     unit_truck: unit_truck,
                     type: type,
@@ -1515,11 +1516,17 @@
                         if (response.success) {
                             window.HSOverlay.close('#edit-data');
                             // Tampilkan notifikasi sukses
-                            Swal.fire({
-                                icon: 'success',
-                                title: response.message,
+                             const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
                                 showConfirmButton: false,
-                                timer: 3000,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                html: response.message,
+                                padding: '2em',
                             });
                             // Kirim permintaan AJAX ke server dengan filter
                             $('#data_table').DataTable().clear().draw();
@@ -1553,11 +1560,17 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                            Swal.fire({
-                                title: response.message,
-                                icon: "success",
-                                timer: 3000,
+                           const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
                                 showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                html: response.message,
+                                padding: '2em',
                             });
                             // Membersihkan formulir setelah sukses input
                             $("[name='tgl_sample[]']").val('');
@@ -1807,9 +1820,9 @@
                         $('#sample_number').val(response.sample_number);
                         $('#primer_raw').val(parseFloat(response.primer_raw).toFixed(1));
                         $('#duplicate_raw').val(parseFloat(response.duplicate_raw).toFixed(1));
-                        var responseToIts = response.to_its;
-                        var jam = responseToIts.substring(0, 8);
-                        $('#to_its').val(jam);
+                        // var responseToIts = response.to_its;
+                        // var jam = responseToIts.substring(0, 8);
+                        // $('#to_its').val(jam);
                         $('#gc_expect').val(response.gc_expect).trigger('change');
                         $('#unit_truck').val(response.unit_truck);
                         $('#type').val(response.type);

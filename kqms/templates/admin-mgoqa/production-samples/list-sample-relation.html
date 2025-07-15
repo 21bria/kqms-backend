@@ -1,0 +1,477 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Samples data</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Samples
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Sample Production</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="exportFilter" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table" class="table ti-custom-table-hover table-striped nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <th width="4%">No</th>
+                                        <th>Date</th>
+                                        <th>Shift</th>
+                                        <th>Type</th>
+                                        <th>Method</th>
+                                        <th>Materials</th>
+                                        <th>Sampling Area</th>
+                                        <th>Sampling Point</th>
+                                        <th>Batch.Code</th>
+                                        <th>Increment</th>
+                                        <th>Weight(Kg)</th>
+                                        <th>Sample Number</th>
+                                        <th>Remarks</th>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    <div class="ti-modal-body !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Start date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{start_date}}"
+                                    id="from_date" name="from_date">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">End date</label>
+                                <input type="date" class="form-control w-full !rounded-md" value="{{end_date}}"
+                                    id="to_date" name="to_date">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label>Layer</label> -->
+                                <select id="materialFilter" name="materialFilter"
+                                    class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label>Sampling Type</label> -->
+                                <select id="typeFilter" name="typeFilter" class="form-control  w-full !rounded-md ">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label>Sampling Area</label> -->
+                                <select id="areaFilter" name="areaFilter" class="form-control w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="point_filter">Sampling Point</label> -->
+                                <select id="pointFilter" name="pointFilter" class="form-control  w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
+                            id="exportButton"> Export
+                        </button>
+                        <button type="button" id="applyFilterBtn"
+                            class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    $(document).ready(function () {
+        let isSelect2Init = false;
+        $('#openFilter').on('click', function () {
+            window.HSOverlay.open('#search-modal');
+            $('#exportButton').hide();
+            $('#applyFilterBtn').show();
+            setTimeout(function () {
+                // Hanya inisialisasi sekali
+                if (!isSelect2Init) {
+                    $('#search-modal select').each(function () {
+                        const $el = $(this);
+                        if (!$el.hasClass('select2-hidden-accessible')) {
+                            $el.select2({
+                                placeholder: 'Select an option',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#search-modal .ti-modal-body')
+                            });
+                        }
+                    });
+                    isSelect2Init = true;
+                }
+            }, 300); // delay agar modal sudah muncul
+        });
+    });
+</script>
+
+<!-- Get List Data & Submit Data -->
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "samples-relation-list" %}';
+        // var material_filter = 'LIM';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                },
+                searchPlaceholder: 'Search...'
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.from_date = $('#from_date').val();
+                    data.to_date = $('#to_date').val();
+                    data.typeFilter = $('#typeFilter').val();
+                    data.materialFilter = $('#materialFilter').val();
+                    data.areaFilter = $('#areaFilter').val();
+                    data.pointFilter = $('#pointFilter').val();
+                    return data;
+                },
+            },
+
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomo
+                { 'data': 'tgl_sample', 'name': 'tgl_sample', 'searchable': true },
+                { 'data': 'shift', 'name': 'shift', 'searchable': true },
+                { 'data': 'type_sample', 'name': 'type_sample', 'searchable': false },
+                { 'data': 'units', 'name': 'units', 'searchable': false },
+                { 'data': 'nama_material', 'name': 'nama_material', 'searchable': true },
+                { 'data': 'sampling_area', 'name': 'sampling_area', 'searchable': true },
+                { 'data': 'sampling_point', 'name': 'sampling_point', 'searchable': true },
+                { 'data': 'batch_code', 'name': 'batch_code', 'searchable': true },
+                { 'data': 'increments', 'name': 'increments', 'searchable': false },
+
+                {
+                    data: 'sample_weight',
+                    name: 'sample_weight',
+                    searchable: false,
+                    render: function (data) {
+                        if (data === null) {
+                            return 0;
+                        } else {
+                            return parseFloat(data).toFixed(2);
+                        }
+                    }
+                },
+                { 'data': 'sample_number', 'name': 'sample_number', 'searchable': true },
+                {
+                    data: 'remark',
+                    name: 'remark'
+                },
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+        });
+        /*--Filter Modal and Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var materialFilter = $('#materialFilter').val();
+            var typeFilter = $('#typeFilter').val();
+            var areaFilter = $('#areaFilter').val();
+            var pointFilter = $('#pointFilter').val();
+            table.ajax.reload();
+        });
+
+        /*  Reset */
+        $('#reload').on('click', function () {
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var materialFilter = $('#materialFilter').val();
+            var typeFilter = $('#typeFilter').val();
+            var areaFilter = $('#areaFilter').val();
+            var pointFilter = $('#pointFilter').val();
+            table.ajax.reload(); //just reload table
+
+        });
+
+    });
+</script>
+
+
+<!-- Filter Data -->
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "{% url 'samples-material' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>';
+                $.each(data.details_materials, function (key, value) {
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+                });
+
+                $('#materialFilter').html(options).select2({
+                    placeholder: 'Layer',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#search-modal .ti-modal-body')
+                });
+            }
+        });
+
+        $.ajax({
+            url: "{% url 'samples-type' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>';
+                $.each(data.type, function (key, value) {
+                    options += '<option value="' + value.type_sample + '">' + value.type_sample +'</option>';
+                });
+                $('#typeFilter').html(options).select2({
+                    placeholder: 'Sampling type',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#search-modal .ti-modal-body')
+                });
+            }
+        });
+        $('#areaFilter').select2({
+            ajax: {
+                url: "{% url 'get-mine-dumping-point' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,  // Menggunakan teks sebagai ID
+                                text: item.text  // Teks sebagai label
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Sampling area',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+
+        $('#pointFilter').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Sampling point',
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+
+    });
+</script>
+
+<!-- Exports to Excel -->
+<script>
+    $(document).ready(function () {
+        let isSelect2Init = false;
+        $('#exportFilter').click(function () {
+            window.HSOverlay.open('#search-modal');
+            $('#exportButton').show();
+            $('#applyFilterBtn').hide();
+            $('#no-sample').hide();
+            $('#factory').hide();
+            $('#product').hide();
+            $('#area').hide();
+            $('#point').hide();
+            setTimeout(function () {
+                if (!isSelect2Init) {
+                }
+            }, 300);
+        });
+
+        $('#exportButton').click(function () {
+            // Dapatkan nilai dari filter tanggal
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var typeFilter = $('#typeFilter').val();
+            var materialFilter = $('#materialFilter').val();
+            // Buat URL dengan filter
+            var exportUrl = "{% url 'export-samples-data' %}?from_date=" + from_date + "&to_date=" +
+                to_date + "&typeFilter=" + typeFilter + "&materialFilter=" + materialFilter
+
+            // Redirect ke URL eksport dengan filter
+            window.location.href = exportUrl;
+        });
+    });
+</script>
+
+</body>
+
+</html>

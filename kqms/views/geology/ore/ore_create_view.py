@@ -12,7 +12,8 @@ from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
-from django.db.models import F, Func, Value
+from django.db.models import F, Func
+from uuid import UUID
 from ....models.ore_productions import OreProductions
 from ....models.ore_truck_factor import OreTruckFactor
 from ....models.ore_production_view import OreProductionsView
@@ -127,7 +128,8 @@ class orePdsCreate(View):
                 "increment"     : item.increment,
                 "batch_status"  : item.batch_status,
                 "ritase"        : item.ritase,
-                "tonnage"       : item.tonnage,
+                # "tonnage"       : item.tonnage,
+                "tonnage"      : round(item.tonnage, 2),
                 "pile_status"   : item.pile_status,
                 "truck_factor"  : item.truck_factor,
                 "remarks"       : item.remarks,
@@ -152,12 +154,12 @@ class orePdsCreate(View):
 @login_required
 @csrf_exempt
 def create_ore(request):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     
     if request.method == 'POST':
         try:
@@ -332,12 +334,12 @@ def create_ore(request):
 @login_required
 @require_http_methods(["POST"])
 def update_ore(request, id):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     try:
         # Aturan validasi
         rules = {
@@ -491,17 +493,23 @@ def delete_ore_temp(request):
             status=403
     )
 
+    
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = OreProductions.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID format
+            data = OreProductions.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except OreProductions.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @login_required
 def getOreTonnage(request, id):

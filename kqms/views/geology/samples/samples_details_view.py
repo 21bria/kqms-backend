@@ -12,12 +12,14 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 from openpyxl.worksheet.worksheet import Worksheet
 from datetime import datetime, timedelta
+from uuid import UUID
 from ....models.sample_production import SampleProductions
 from ....models.samples_data_view import SamplesView
 from ....models.sample_method_details import SampleMethodDetail
 from ....models.materials import Material
 from ....models.source_model import SourceMinesDumping,SourceMinesDome
 from ....models.selling_code import SellingCode
+
 
 from ....utils.utils import clean_string
 
@@ -153,12 +155,12 @@ class SamplesDetails(View):
 
 @login_required
 def getIdSample(request, id):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             items = SampleProductions.objects.get(id=id)
@@ -250,18 +252,24 @@ def deleteSample(request):
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
             status=403
-    )
+        )
+
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = SampleProductions.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+        
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID
+            data = SampleProductions.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except SampleProductions.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @login_required
 def deleteSampleCreate(request):
@@ -273,15 +281,21 @@ def deleteSampleCreate(request):
     )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = SampleProductions.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+        
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID
+            data = SampleProductions.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except SampleProductions.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
     
 @login_required
 def samples_data_page(request):

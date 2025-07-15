@@ -41,6 +41,7 @@ def import_ore_productions(file_path, original_file_name):
             for index, row in df.iterrows():
                 date_pds        = row['Date_Production']
                 shift           = row['Shift']
+                category        = row['Category']
                 source          = row['Prospect_Area']
                 block           = row['Mine_Block']
                 rl_from         = row['From']
@@ -60,7 +61,12 @@ def import_ore_productions(file_path, original_file_name):
                 remarks         = row['Remarks']
                 class_ore       = row['Ore_Class']
 
-                remarks = None if pd.isna(remarks) else remarks
+                 # Berikan nilai default untuk NaN (misalnya None atau 0)
+                grade       = 0 if pd.isna(grade) else grade
+                category   = None if pd.isna(category) else category
+                rl_from     = None if pd.isna(rl_from) else rl_from
+                rl_to       = None if pd.isna(rl_to) else rl_to
+                remarks     = None if pd.isna(remarks) else remarks
                 
                 # Cari ID dari Model berdasarkan nama
                 id_source         = source_dict.get(source, None)  
@@ -70,7 +76,15 @@ def import_ore_productions(file_path, original_file_name):
                 id_stockpile      = stockpile_dict.get(stockpile, None)  
                
                 # Gabungkan Kode
-                kode_batch   = 'PDS' + str(id_material) + truck + str(id_stockpile) + str(id_pile) + batch
+                # kode_batch   = 'PDS' + str(id_material) + truck + str(id_stockpile) + str(id_pile) + batch
+                kode_batch = (
+                            'PDS' +
+                            str(id_material or '') +
+                            str(truck or '') +
+                            str(id_stockpile or '') +
+                            str(id_pile or '') +
+                            str(batch or '')
+                            )
                 status_dome  = 'Continue'
 
                 if date_pds:  # Pastikan tanggal bukan None
@@ -92,6 +106,7 @@ def import_ore_productions(file_path, original_file_name):
                     data = OreProductions(
                         tgl_production=date_pds,
                         shift=shift,
+                        category=category,
                         id_prospect_area=id_source,
                         id_block=id_block,
                         from_rl =rl_from,

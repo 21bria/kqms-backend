@@ -44,6 +44,16 @@ class CustomGroupForm(forms.ModelForm):
         required = False,
         label    = "Permissions"
     )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Cegah error INSERT dengan ID duplikat
+        if not self.instance.pk and 'id' in self.data:
+            self.instance.pk = None  # Abaikan id jika sedang create
+
+        return cleaned_data
+
     
     class Meta:
         model   = Group

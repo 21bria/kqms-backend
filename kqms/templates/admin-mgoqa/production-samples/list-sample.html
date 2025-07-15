@@ -136,14 +136,14 @@
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label>Layer</label> -->
-                                <select id="materialFilter" name="materialFilter" class="form-control w-full !rounded-md">
+                                <select id="materialFilter" name="materialFilter"
+                                    class="form-control w-full !rounded-md">
                                     <option value="">-- Select --</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label>Sampling Type</label> -->
-                                <select id="typeFilter" name="typeFilter"
-                                    class="form-control  w-full !rounded-md ">
+                                <select id="typeFilter" name="typeFilter" class="form-control  w-full !rounded-md ">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -162,13 +162,15 @@
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="point_filter">Discharge</label> -->
-                                <select id="factoriesFilter" name="factoriesFilter" class="form-control  w-full !rounded-md">
+                                <select id="factoriesFilter" name="factoriesFilter"
+                                    class="form-control  w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="point_filter">Product Code</label> -->
-                                <select id="productFilter" name="productFilter" class="form-control  w-full !rounded-md">
+                                <select id="productFilter" name="productFilter"
+                                    class="form-control  w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
@@ -563,9 +565,15 @@
         });
         /*--Filter Modal and Apply Filter---*/
         $('#applyFilterBtn').click(function () {
+            var from_date = $('#from_date').val();
+            var to_date = $('#to_date').val();
+            var materialFilter = $('#materialFilter').val();
+            var typeFilter = $('#typeFilter').val();
+            var factoriesFilter = $('#factoriesFilter').val();
+            var areaFilter = $('#areaFilter').val();
+            var pointFilter = $('#pointFilter').val();
+            var productFilter = $('#productFilter').val();
             table.ajax.reload();
-            call_TotaOre();
-            call_DetailAssay();
         });
 
         /*  Reset */
@@ -779,7 +787,7 @@
             method: "GET",
             dataType: "json",
             success: function (data) {
-              var options = '<option value="">-- Select --</option>';
+                var options = '<option value="">-- Select --</option>';
                 $.each(data.details_materials, function (key, value) {
                     options += '<option value="' + value.nama_material + '">' + value
                         .nama_material +
@@ -788,7 +796,7 @@
 
                 $('#materialFilter').html(options).select2({
                     placeholder: 'Layer',
-                    allowClear: true,  
+                    allowClear: true,
                     width: '100%',
                     dropdownParent: $('#search-modal .ti-modal-body')
                 });
@@ -800,7 +808,7 @@
             method: "GET",
             dataType: "json",
             success: function (data) {
-               var options = '<option value="">-- Select --</option>';
+                var options = '<option value="">-- Select --</option>';
                 $.each(data.type, function (key, value) {
                     options += '<option value="' + value.type_sample + '">' + value
                         .type_sample +
@@ -808,7 +816,7 @@
                 });
                 $('#typeFilter').html(options).select2({
                     placeholder: 'Sampling type',
-                    allowClear: true,  
+                    allowClear: true,
                     width: '100%',
                     dropdownParent: $('#search-modal .ti-modal-body')
                 });
@@ -821,8 +829,8 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        q: params.term,  
-                        page: params.page || 1 
+                        q: params.term,
+                        page: params.page || 1
                     };
                 },
                 processResults: function (data, params) {
@@ -835,15 +843,15 @@
                             };
                         }),
                         pagination: {
-                            more: data.pagination.more  
+                            more: data.pagination.more
                         }
                     };
                 },
                 cache: true
             },
-            minimumInputLength: 2,  
+            minimumInputLength: 2,
             placeholder: 'Sampling area',
-            allowClear: true,  
+            allowClear: true,
             width: '100%',
             dropdownParent: $('#search-modal .ti-modal-body')
         });
@@ -855,8 +863,8 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        q: params.term,  
-                        page: params.page || 1 
+                        q: params.term,
+                        page: params.page || 1
                     };
                 },
                 processResults: function (data, params) {
@@ -890,8 +898,8 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        q: params.term,  
-                        page: params.page || 1 
+                        q: params.term,
+                        page: params.page || 1
                     };
                 },
                 processResults: function (data, params) {
@@ -922,9 +930,9 @@
             method: "GET",
             dataType: "json",
             success: function (data) {
-                
+
                 var options = '';
-                
+
                 $.each(data.details_discharge, function (key, value) {
                     options += '<option value="' + value.factory_stock + '">' + value
                         .factory_stock +
@@ -1102,9 +1110,9 @@
             method: "GET",
             dataType: "json",
             success: function (data) {
-                
+
                 var options = '';
-                
+
                 $.each(data.list, function (key, value) {
                     options += '<option value="' + value.id + '">' + value
                         .factory_stock +
@@ -1130,8 +1138,8 @@
                 delay: 250,
                 data: function (params) {
                     return {
-                        q: params.term,  
-                        page: params.page || 1 
+                        q: params.term,
+                        page: params.page || 1
                     };
                 },
                 processResults: function (data, params) {
@@ -1144,13 +1152,13 @@
                             };
                         }),
                         pagination: {
-                            more: data.pagination.more  
+                            more: data.pagination.more
                         }
                     };
                 },
                 cache: true
             },
-            minimumInputLength: 2,  
+            minimumInputLength: 2,
             placeholder: 'Select data',
             width: '100%',
             dropdownParent: $('#edit-data .ti-modal-body'),

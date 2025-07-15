@@ -124,12 +124,12 @@ class SamplesCreate(View):
 @login_required
 @csrf_exempt
 def create_sample(request):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     
     if request.method == 'POST':
         try:
@@ -263,12 +263,12 @@ def create_sample(request):
 @login_required
 @require_http_methods(["POST"])
 def update_sample(request, id):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     try:
         # Aturan validasi
         rules = {

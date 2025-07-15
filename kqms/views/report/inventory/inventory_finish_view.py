@@ -97,7 +97,7 @@ def getInventoryFinished(request):
             LEFT JOIN selling_by_dome AS t2 
                 ON t2.sampling_area = t1.stockpile 
                 AND t2.sampling_point = t1.pile_id
-            WHERE t1.status_dome != 'Finished'
+            WHERE t1.status_dome = 'Finished'
         """
     else:
         raise ValueError("Unsupported database vendor.")

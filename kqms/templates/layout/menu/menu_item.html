@@ -6,7 +6,10 @@
 </li>
 {% else %}
 <li class="slide {% if menu_item|has_children %}has-sub{% endif %}">
-    <a href="{{ menu_item|get_url }}" class="side-menu__item">
+    <!-- <a href="{{ menu_item|get_url }}" class="side-menu__item"> -->
+    <a href="{{ menu_item|get_url }}" class="side-menu__item" {% if menu_item.menu.open_new_tab %} target="_blank"
+        rel="noopener noreferrer" {% endif %}>
+
         {% if menu_item.menu.icon %}
         <i class="{{ menu_item.menu.icon }} side-menu__icon"></i>
         {% endif %}

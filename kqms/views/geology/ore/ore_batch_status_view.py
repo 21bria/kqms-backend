@@ -13,13 +13,9 @@ from django.http import JsonResponse
 import json
 from django.views import View
 
-
-
 def ore_batch_status_page(request):
     # Cek permission
-
     return render(request, 'admin-mgoqa/production-ore/list-ore-batch.html')
-
 
 class OrePdsBatch(View):
 

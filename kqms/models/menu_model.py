@@ -14,6 +14,7 @@ class Menu(models.Model):
     # Tambahan untuk kategori (seperti <li class="slide__category">)
     is_category = models.BooleanField(default=False)
     category_title = models.CharField(max_length=100, null=True, blank=True)
+    open_new_tab = models.BooleanField(default=False)
 
     class Meta:
         ordering  = ['order']

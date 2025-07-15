@@ -7,9 +7,9 @@ from ..views.geology.ore.ore_batch_status_view import *
 
 from ..views.geology.samples.samples_details_view import *
 from ..views.geology.samples.samples_create_view import *
-# from ..views.mgoqa.samples.samples_create_sale import *
-# from ..views.mgoqa.samples.samples_pending_view import*
-# from ..views.mgoqa.samples.samples_relation_view import*
+# from ..views.geology.samples.samples_create_sale import *
+# from ..views.geology.samples.samples_pending_view import*
+from ..views.geology.samples.samples_relation_view import*
 
 # Waybill
 from ..views.geology.waybills.waybill_view import *
@@ -68,14 +68,19 @@ urlpatterns = [
     path('sample/update/<uuid:id>/', update_sample, name='update-samples'),
     path('method/id-get/', get_methodSample, name='get-method-id'),
 
+    #Sample relation pds - na
+    path('samples-relation/', samples_relation_page, name='samples-relation-page'), 
+    path('samples-relation/list/', samplesRelation.as_view(), name='samples-relation-list'),
+    path('export-samples-relation/',export_samples_relation, name='export-samples-relation'),
+
 
       # Table Waybills
-    path('waybill-page/', waybill_page, name='waybill-page'), 
+    path('waybill-list-page/', waybill_page, name='waybill-list-page'), 
     path('waybill-list/', Waybill_data.as_view(), name='waybill-list'), 
     path('export-waybill-data/',export_data_waybill, name='export-waybill-data'),
-    path('waybill/get-id/<int:id>/', getIdWaybill, name='get-id-waybill'), 
+    path('waybill/get-id/<uuid:id>/', getIdWaybill, name='get-id-waybill'), 
     path('waybill/delete/', delete_waybill, name='delete-data-waybill'),
-    path('waybill/update/<int:id>/', update_waybill, name='update-waybill'),
+    path('waybill/update/<uuid:id>/', update_waybill, name='update-waybill'),
 
     path('generate-number/<str:team>/', get_waybill_number, name='generate_waybill_number'),
     path('waybill-create/', waybill_entry_page, name='waybill-create-page'), 
@@ -87,9 +92,9 @@ urlpatterns = [
     path('waybill/delete-temporary', deleteTmpWaybill, name='delete-temporary'), 
 
     # Over release Assay
-    path('waybill-page/over-mral', mral_over_page, name='over-mral-page'), 
+    path('waybill/page/over-mral', mral_over_page, name='over-mral-page'), 
     path('waybill/over-mral', mralOverData.as_view(), name='list-release-mral'), 
-    path('waybill-page/over-roa', roa_over_page, name='over-roa-page'), 
+    path('waybill/page/over-roa', roa_over_page, name='over-roa-page'), 
     path('waybill/over-roa', roaOverData.as_view(), name='list-release-roa'), 
 
     # Table Assay 

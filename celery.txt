@@ -5,3 +5,14 @@ celery -A core worker --pool=solo --loglevel=info
 celery -A core flower
 =====
 python manage.py migrate django_celery_beat
+
+python manage.py makemigrations kqms
+python manage.py migrate --database=kqms_db
+
+====
+# make changes to a repo and git add
+git add .
+git commit "update Inventory"
+# update the existing commit message
+git push origin main
+git push --force origin main

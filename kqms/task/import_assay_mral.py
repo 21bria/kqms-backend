@@ -58,7 +58,7 @@ def import_assay_mral(file_path, original_file_name):
        
 
         # Bersihkan semua kolom numerik di DataFrame
-        numeric_columns = ['Ni-mral', 'Co-mral', 'Fe2O3-mral', 'Fe-mral', 'Mgo-mral', 'SiO2-mral']
+        numeric_columns = ['Ni-mral','Fe-mral', 'Co-mral','SiO2-mral', 'Mgo-mral' ]
         for col in numeric_columns:
             df[col] = df[col].apply(clean_numeric)
 
@@ -72,7 +72,6 @@ def import_assay_mral(file_path, original_file_name):
                 sample_id = row['Samples Id']
                 ni = row['Ni-mral']
                 co = row['Co-mral']
-                fe2o3 = row['Fe2O3-mral']
                 fe = row['Fe-mral']
                 mgo = row['Mgo-mral']
                 sio2 = row['SiO2-mral']
@@ -94,7 +93,6 @@ def import_assay_mral(file_path, original_file_name):
                         sample_id=sample_id,
                         ni=ni,
                         co=co,
-                        fe2o3=fe2o3,
                         fe=fe,
                         mgo=mgo,
                         sio2=sio2

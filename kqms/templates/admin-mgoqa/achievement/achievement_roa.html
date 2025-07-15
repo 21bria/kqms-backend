@@ -355,7 +355,6 @@
 
                 // Kolom "grade" berdasarkan kondisi Ni dan Mgo
                 var grade = "NULL";
-
                 if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                     grade = "HGS";
                 } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
@@ -371,7 +370,7 @@
                 } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
                     grade = "Waste";
                 } else {
-                    grade = "Waiting Assay";
+                    grade = "???";
                 }
 
 

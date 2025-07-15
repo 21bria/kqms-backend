@@ -10,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> KQMS </title>
     <meta name="csrf-token" content="{{ csrf_token }}">
-    <meta name="description" content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
+    <meta name="description"
+        content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
     <meta name="keywords"
         content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company">
 
@@ -45,7 +46,8 @@
 
     <!-- Select2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2.min.css'%}">
-    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
+    <link rel="stylesheet"
+        href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
 
     <!-- CSS SweetAlert2 -->
     <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">
@@ -721,26 +723,26 @@
                                 <h5 class="box-title">Entry Ore</h5>
                             </div>
                             <div class="box-body">
-                                <div class="flex justify-start">
-                                    <div class="w-64">
-                                        <label for="hs-trailing-button-add-on-with-icon" class="sr-only">Label</label>
-                                        <div class="flex rounded-sm">
-                                            <input type="text" id="no_production" name='no_production'
-                                                value="{{ ore_entry }}"
-                                                class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
-                                            <button aria-label="button" type="button" id="applyFilterBtn"
-                                                class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
-                                                <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
-                                                    height="16" fill="currentColor" viewBox="0 0 16 16">
-                                                    <path
-                                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
-                                                </svg>
-                                            </button>
+                                <form id="multiRowForm" class="mt-5">
+                                    <div class="flex justify-start">
+                                        <div class="w-64">
+                                            <label for="hs-trailing-button-add-on-with-icon"
+                                                class="sr-only">Label</label>
+                                            <div class="flex rounded-sm">
+                                                <input type="text" id="no_production" name='no_production'
+                                                    value="{{ ore_entry }}"
+                                                    class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full">
+                                                <button aria-label="button" type="button" id="applyFilterBtn"
+                                                    class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                    <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <form id="multiRowForm" class="mt-5">
                                     {% include 'admin-mgoqa/production-ore/add/table-from.html' %}
                                     <!-- button -->
                                     <div
@@ -1332,7 +1334,7 @@
                             return {
                                 results: data.results,
                                 pagination: {
-                                    more: data.pagination.more  
+                                    more: data.pagination.more
                                 }
                             };
                         },
@@ -1361,7 +1363,7 @@
                             return {
                                 results: data.results,
                                 pagination: {
-                                    more: data.pagination.more  
+                                    more: data.pagination.more
                                 }
                             };
                         },
@@ -1390,7 +1392,7 @@
                             return {
                                 results: data.results,
                                 pagination: {
-                                    more: data.pagination.more  
+                                    more: data.pagination.more
                                 }
                             };
                         },
@@ -1420,7 +1422,7 @@
                             return {
                                 results: data.results,
                                 pagination: {
-                                    more: data.pagination.more  
+                                    more: data.pagination.more
                                 }
                             };
                         },
@@ -1704,7 +1706,7 @@
                 var unit_truck = $('#unit_truck').val();
                 var batch_code = $('#batch_code').val();
                 var increment = $('#increment').val();
-                var batch_status = $('#batch_status').val();
+                var batch_status = $('#batch_status_edit').val();
                 var pile_status = $('#pile_status').val();
                 var ore_class = $('#ore_class').val();
                 var ritase = $('#ritase').val();
@@ -1776,12 +1778,17 @@
                             window.HSOverlay.close('#edit-data');
 
                             // Tampilkan notifikasi sukses
-                            Swal.fire({
-                                title: response.message,
-                                icon: "success",
-                                timer: 3000,
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
                                 showConfirmButton: false,
-                                confirmButtonText: 'OK',
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                html: response.message,
+                                padding: '2em',
                             });
 
                             // Kirim permintaan AJAX ke server
@@ -1815,12 +1822,17 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                // title: 'Insert successfully',
-                                title: response.message,
-                                howConfirmButton: false,
+                             // Tampilkan notifikasi sukses
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
                                 timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                html: response.message,
                                 padding: '2em',
                             });
 
@@ -2026,7 +2038,7 @@
                 dataType: "json",
                 success: function (data) {
                     var options = '';
-                    
+
                     $.each(data.list, function (key, value) {
                         options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
                     });
@@ -2054,7 +2066,7 @@
                         return {
                             results: data.results,
                             pagination: {
-                                more: data.pagination.more  
+                                more: data.pagination.more
                             }
                         };
                     },
@@ -2154,7 +2166,7 @@
                         $('#unit_truck').val(response.unit_truck);
                         $('#batch_code').val(response.batch_code);
                         $('#increment').val(response.increment);
-                        $('#batch_status').val(response.batch_status).trigger('change');
+                        $('#batch_status_edit').val(response.batch_status).trigger('change');
                         $('#pile_status').val(response.pile_status).trigger('change');
                         $('#ore_class').val(response.ore_class).trigger('change');
                         $('#ritase').val(response.ritase);
@@ -2218,9 +2230,9 @@
 
                 // Cek nilai dari materialText dan ubah nilai #sale_adjust sesuai dengan kondisinya (HPAL & RKEF)
                 if (materialText === 'LIM') {
-                    $('#sale_adjust').val('LIM');
+                    $('#sale_adjust').val('HPAL');
                 } else if (materialText === 'SAP') {
-                    $('#sale_adjust').val('SAP');
+                    $('#sale_adjust').val('RKEF');
                 } else {
                     $('#sale_adjust').val('');
                 }
@@ -2232,7 +2244,7 @@
                     dataType: 'json',
                     success: function (data) {
                         $('#calculate').empty().append('<option value="">----</option>');
-                        
+
                         $.each(data, function (key, value) {
                             $('#calculate').append('<option value="' + value.type_tf + '">' + value.type_tf + '</option>');
                         });

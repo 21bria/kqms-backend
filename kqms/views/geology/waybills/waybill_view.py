@@ -15,6 +15,7 @@ from openpyxl.styles import Font
 from openpyxl.worksheet.worksheet import Worksheet
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from uuid import UUID
 from ....utils.utils import clean_string
 from ....models.waybill_model import Waybills
 from ....models.waybill_view import listWaybills
@@ -127,12 +128,12 @@ class Waybill_data(View):
 
 @login_required
 def getIdWaybill(request, id):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             items = Waybills.objects.get(id=id)
@@ -155,12 +156,12 @@ def getIdWaybill(request, id):
 
 @login_required
 def update_waybill(request, id):
-    # allowed_groups = ['superadmin', 'data-control', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    #     )
+    allowed_groups = ['superadmin', 'data-control', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'POST':
         try:
             job = Waybills.objects.get(id=id)
@@ -215,24 +216,31 @@ def update_waybill(request, id):
 
 @login_required
 def delete_waybill(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
+
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = Waybills.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+
+        try:
+            job_uuid = UUID(job_id)  # Validasi UUID format
+            data = Waybills.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except Waybills.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
     
+
 @csrf_exempt
 def export_data_waybill(request):
     start_date  = request.GET.get('startDate')

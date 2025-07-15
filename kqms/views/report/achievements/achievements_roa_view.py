@@ -48,7 +48,7 @@ def achievement_roa(request):
     cutDate        = sanitize_input(request.GET.get('cutDate'))
     bulanFilter    = sanitize_input(request.GET.get('bulanFilter'))
     tahunFilter    = sanitize_input(request.GET.get('tahunFilter'))
-    sourceFilter = json.loads(request.GET.get('sourceFilter', '[]'))
+    sourceFilter  = json.loads(request.GET.get('sourceFilter', '[]'))
     areaFilter     = sanitize_input(request.GET.get('areaFilter'))
     pointFilter    = sanitize_input(request.GET.get('pointFilter'))
 
@@ -104,7 +104,7 @@ def achievement_roa(request):
                 pile_id,
                 nama_material,
                 SUM(tonnage) AS total_ore,
-                SUM(CASE WHEN batch_status = 'Incomplete' AND sample_number ='Unprepared' THEN tonnage ELSE 0 END) AS incomplete,
+                SUM(CASE WHEN batch_status = 'Incomplete' AND sample_number = 'Unprepared' THEN tonnage ELSE 0 END) AS incomplete,
                 SUM(CASE WHEN batch_status = 'Complete' AND sample_number ='Unprepared' THEN tonnage ELSE 0 END) AS unprepared,
                 SUM(CASE WHEN ROA_Ni IS NULL AND sample_number  <> 'Unprepared' THEN tonnage ELSE 0 END) AS unreleased,
                 SUM(CASE WHEN ROA_Ni  IS NOT NULL AND sample_number  <> 'Unprepared' THEN tonnage ELSE 0 END) AS released,
@@ -351,12 +351,11 @@ def stockpile_roa(request):
             count_query += f" AND EXTRACT(MONTH FROM tgl_production) = {bulanFilter} AND EXTRACT(YEAR FROM tgl_production) = {tahunFilter}"
         else:  # SQL Server
             count_query += f" AND MONTH(tgl_production) = {bulanFilter} AND YEAR(tgl_production) = {tahunFilter}"
-
     if tahunFilter:
         if db_vendor == 'postgresql':
             count_query += f" AND EXTRACT(YEAR FROM tgl_production) = {tahunFilter}"
-    else:
-        count_query += f" AND YEAR(tgl_production) = {tahunFilter}"
+        else:
+            count_query += f" AND YEAR(tgl_production) = {tahunFilter}"
 
     if sourceFilter:
         count_query += f" AND prospect_area IN ({', '.join(f'\'{source}\'' for source in sourceFilter)})"
@@ -463,13 +462,11 @@ def stockpile_roa(request):
             sql_query += f" AND EXTRACT(MONTH FROM tgl_production) = {bulanFilter} AND EXTRACT(YEAR FROM tgl_production) = {tahunFilter}"
         else:
             sql_query += f" AND MONTH(tgl_production) = {bulanFilter} AND YEAR(tgl_production) = {tahunFilter}"
-
     if tahunFilter:
         if db_vendor == 'postgresql':
             sql_query += f" AND EXTRACT(YEAR FROM tgl_production) = {tahunFilter}"
-    else:
-        sql_query += f" AND YEAR(tgl_production) = {tahunFilter}"
-
+        else:
+            sql_query += f" AND YEAR(tgl_production) = {tahunFilter}"
     if sourceFilter:
         sql_query += f" AND prospect_area IN ({', '.join(f'\'{source}\'' for source in sourceFilter)})"
     if areaFilter:

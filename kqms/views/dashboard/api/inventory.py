@@ -1321,7 +1321,6 @@ def get_chart_inventory(request):
 def get_grade_class(ni, mgo, fe):
     if ni is None or mgo is None or fe is None:
         return "NULL"
-    
     if ni >= 1.6 and mgo >= 7.0 and fe <= 27.0:
         return "HGS"
     elif 1.2 <= ni < 1.6 and mgo >= 7.0 and fe <= 27.0:
@@ -1337,7 +1336,7 @@ def get_grade_class(ni, mgo, fe):
     elif ni < 1.2 and mgo > 20.0 and fe >= 27.0:
         return "WASTE"
     else:
-        return "Waiting Assays"
+        return "???"
 
     
 def get_grade_roa(request):

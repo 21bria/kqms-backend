@@ -1,11 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from ....models.ore_productions import OreProductions
-from ....models.ore_production_view import OreProductionsView
-from ....models.details_mral_view import DetailsMral
-from ....models.details_roa_view import DetailsRoa
-from ....models.block_model import Block
-from ....models.source_model import SourceMinesLoading,SourceMinesDumping,SourceMinesDome
 from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
@@ -15,8 +9,15 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.views import View
+from uuid import UUID
 from ....utils.utils import clean_string
 from ....models.materials import Material
+from ....models.ore_productions import OreProductions
+from ....models.ore_production_view import OreProductionsView
+from ....models.details_mral_view import DetailsMral
+from ....models.details_roa_view import DetailsRoa
+from ....models.block_model import Block
+from ....models.source_model import SourceMinesLoading,SourceMinesDumping,SourceMinesDome
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
@@ -164,7 +165,8 @@ class OreProduction(View):
                 "increment"     : item.increment,
                 "batch_status"  : item.batch_status,
                 "ritase"        : item.ritase,
-                "tonnage"       : item.tonnage,
+                # "tonnage"       : item.tonnage,
+                "tonnage"       : round(item.tonnage, 2),
                 "pile_status"   : item.pile_status,
                 "truck_factor"  : item.truck_factor,
                 "remarks"       : item.remarks,
@@ -381,12 +383,12 @@ def total_details_roa(request):
 
 @login_required
 def getIdOre(request, id):
-    # allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             items = OreProductions.objects.get(id=id)
@@ -450,22 +452,26 @@ def getIdOre(request, id):
 
 @login_required
 def delete_ore(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
 
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = OreProductions.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID format
+            data = OreProductions.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except OreProductions.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-    
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
