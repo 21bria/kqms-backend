@@ -123,8 +123,8 @@ def import_sample_GcQa(file_path, original_file_name):
                     data = SampleProductions(
                         tgl_sample=date_pds,
                         shift=shift,
-                        id_type_sample=id_method,
-                        id_method=id_type,
+                        id_type_sample=id_type,
+                        id_method=id_method,
                         id_material=id_material,
                         sampling_area=sampling_area,
                         sampling_point=sampling_point,

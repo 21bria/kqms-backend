@@ -58,7 +58,7 @@ def import_assay_mral(file_path, original_file_name):
        
 
         # Bersihkan semua kolom numerik di DataFrame
-        numeric_columns = ['Ni-mral','Fe-mral', 'Co-mral','SiO2-mral', 'Mgo-mral' ]
+        numeric_columns = ['ni-mral','fe-mral', 'co-mral','mgo-mral','sio2-mral', 'fe2o3-mral']
         for col in numeric_columns:
             df[col] = df[col].apply(clean_numeric)
 
@@ -68,13 +68,16 @@ def import_assay_mral(file_path, original_file_name):
                 release_date = row['Release Date']
                 release_time = row['Release Time']
                 release_mral = row['release_mral']
-                job_number = row['Job Number']
-                sample_id = row['Samples Id']
-                ni = row['Ni-mral']
-                co = row['Co-mral']
-                fe = row['Fe-mral']
-                mgo = row['Mgo-mral']
-                sio2 = row['SiO2-mral']
+                job_number   = row['Job Number']
+                sample_id    = row['Samples Id']
+                ni           = row['ni-mral']
+                co           = row['co-mral']
+                fe           = row['fe-mral']
+                mgo          = row['mgo-mral']
+                sio2         = row['sio2-mral']
+                fe2o3        = row['fe2o3-mral']
+
+                job_number    = None if pd.isna(job_number) else job_number
 
                 # Cek duplikat berdasarkan kriteria
                 if AssayMral.objects.filter(sample_id=sample_id).exists():
@@ -95,7 +98,8 @@ def import_assay_mral(file_path, original_file_name):
                         co=co,
                         fe=fe,
                         mgo=mgo,
-                        sio2=sio2
+                        sio2=sio2,
+                        fe2o3=fe2o3
                     )
                     list_objects.append(data)
                     successful_imports += 1

@@ -69,13 +69,7 @@ def import_assay_roa(file_path, original_file_name):
                 release_roa  = row['release_roa']
                 job_number   = row['job_number']
                 sample_id    = row['sample_id']
-
                 # Ambil data numerik yang telah dibersihkan
-                release_date = row['release_date']
-                release_time = row['release_time']
-                release_roa  = row['release_roa']
-                job_number   = row['job_number']
-                sample_id    = row['sample_id']
                 ni           = row.get('ni', 0) 
                 fe           = row.get('fe', 0)
                 al2o3        = row.get('al2o3', 0)
@@ -85,7 +79,10 @@ def import_assay_roa(file_path, original_file_name):
                 cao          = row.get('cao', 0)
                 mno          = row.get('mno', 0)
                 cr2o3        = row.get('cr2o3', 0)
+                fe2o3        = row.get('fe2o3', 0)
                 mc           = row.get('mc', 0)
+
+                job_number    = None if pd.isna(job_number) else job_number
 
                 # Cek duplikat berdasarkan sample_id
                 if AssayRoa.objects.filter(sample_id=sample_id).exists():
@@ -110,6 +107,7 @@ def import_assay_roa(file_path, original_file_name):
                         sio2=sio2,
                         cao=cao,
                         cr2o3=cr2o3,
+                        fe2o3=fe2o3,
                         mc=mc
                     )
                     list_objects.append(data)

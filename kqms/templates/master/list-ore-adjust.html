@@ -69,21 +69,15 @@
                                     style="width: 100%">
                                     <thead>
                                         <tr>
-                                            <th class="bg-soft-secondary" width="5%">No</th>
-                                            <th class="bg-soft-secondary" width="7%">Date Start</th>
-                                            <th class="bg-soft-secondary" width="7%">Date End</th>
-                                            <th class="bg-soft-secondary" width="10%">Category</th>
-                                            <th class="bg-soft-secondary">Vendor</th>
-                                            <th class="bg-soft-secondary">Source</th>
-                                            <th class="bg-soft-secondary">Loading Point</th>
-                                            <th class="bg-soft-secondary">Type truck</th>
-                                            <th class="bg-soft-secondary">Material</th>
-                                            <th class="bg-soft-secondary" width="7%">Bcm Ori</th>
-                                            <th class="bg-soft-secondary" width="7%">Ton Ori</th>
-                                            <th class="bg-soft-secondary" width="7%">Bcm Update</th>
-                                            <th class="bg-soft-secondary" width="7%">Ton Update</th>
-                                            <th class="bg-soft-secondary" width="7%">Status</th>
-                                            <th class="bg-soft-secondary" width="7%">Action</th>
+                                            <th width="5%">No</th>
+                                            <th width="10%">Truck</th>
+                                            <th>Material</th>
+                                            <th>Source</th>
+                                            <th width="7%">Date Start</th>
+                                            <th width="7%">Date End</th>
+                                            <th width="7%">Ton</th>
+                                            <th width="7%">Status</th>
+                                            <th width="7%">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -95,144 +89,142 @@
                 </div>
             </div>
             <!-- End::row-1 -->
-
-
         </div>
         <!-- Start::main-content -->
-
     </div>
 
-    <!-- Start::add modal -->
-    <div id="add-data" class="hs-overlay hidden ti-modal" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Volume ajustment
-                    </h6>
-                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
-                        data-hs-overlay="#add-data">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
-                        <div class="hs-accordion-group">
-                            <div class="accordion customized-accordion accordions-items-seperate"
-                                id="customizedAccordion">
-                                <div class="hs-accordion-group">
-                                    <div class="hs-accordion  accordion-item custom-accordion-primary"
-                                        id="hs-basic-heading31">
-                                        <button
-                                            class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
-                                            aria-controls="hs-basic-collapse31" type="button">
-                                            KQMS Info#
-                                            <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
-                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                                            </svg>
-                                            <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
-                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
-                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                                            </svg>
-                                        </button>
-                                        <div id="hs-basic-collapse11"
-                                            class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
-                                            aria-labelledby="hs-basic-heading11">
-                                            <div class="accordion-body">
-                                                <strong>Note :</strong>
-                                                Pilih Truck dan materials, input tanggal start dan
-                                                tanggal end lalu input nilai tonnage/ritasenya
-                                            </div>
+</div>
+
+
+<!-- Start::add modal -->
+<div id="add-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+    <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+        <div class="ti-modal-content">
+            <div class="ti-modal-header">
+                <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                    Volume ajustment
+                </h6>
+                <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold" data-hs-overlay="#add-data">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+            <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                    <div class="hs-accordion-group">
+                        <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                            <div class="hs-accordion-group">
+                                <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                    id="hs-basic-heading31">
+                                    <button
+                                        class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                        aria-controls="hs-basic-collapse31" type="button">
+                                        KQMS Info#
+                                        <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                        <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                    <div id="hs-basic-collapse11"
+                                        class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                        aria-labelledby="hs-basic-heading11">
+                                        <div class="accordion-body">
+                                            <strong>Note :</strong>
+                                            Pilih Truck dan materials, input tanggal start dan
+                                            tanggal end lalu input nilai tonnage/ritasenya
                                         </div>
                                     </div>
-
                                 </div>
-                            </div>
 
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <form id="entryForm" name="entryForm">
+                    <div class="grid grid-cols-12 gap-4 mt-3">
+                        <div class="xl:col-span-6 col-span-12">
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control" id="date_start" name="date_start"
+                                    placeholder="Choose date">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control" id="date_end" name="date_end"
+                                    placeholder="Choose date">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="form-label">Sorces</label>
+                            <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources" name="sources">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="form-label">Materials</label>
+                            <select class="ti-form-select rounded-sm !py-2 !px-3t" id="material" name="material">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="form-label">Truck</label>
+                            <select class="ti-form-select rounded-sm !py-2 !px-3t" id="unit_truck" name="unit_truck">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="form-label">Tonnage</label>
+                            <input type="number" class="form-control" id="ton" name="ton" placeholder="0">
                         </div>
                     </div>
 
-                    <form id="entryForm" name="entryForm">
-                        <div class="grid grid-cols-12 gap-4 mt-3">
-                            <div class="xl:col-span-6 col-span-12">
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="start_date" name="start_date"
-                                        placeholder="Choose date">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="end_date" name="end_date"
-                                        placeholder="Choose date">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Sorces</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources" name="sources">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Materials</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="material" name="material">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Truck</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="unit_truck"
-                                    name="unit_truck">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Tonnage</label>
-                                <input type="number" class="form-control" id="ton" name="ton" placeholder="0">
-                            </div>
-                        </div>
-
-                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
-                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
-                                data-hs-overlay="#add-data">
-                                Cancel
-                            </button>
-                            <button type="button" id="saveBtn"
-                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                            data-hs-overlay="#add-data">
+                            Cancel
+                        </button>
+                        <button type="button" id="saveBtn"
+                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Start::edit modal -->
-    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Volume ajustment
-                    </h6>
-                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
-                        data-hs-overlay="#add-data">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+
+<!-- Start::edit modal -->
+<div id="edit-data" class="hs-overlay hidden ti-modal">
+    <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
+        <div class="ti-modal-content">
+            <div class="ti-modal-header">
+                <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                    Edit Data
+                </h6>
+                <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold" data-hs-overlay="#edit-data">
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+            <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                   <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
                         <div class="hs-accordion-group">
                             <div class="accordion customized-accordion accordions-items-seperate"
                                 id="customizedAccordion">
@@ -271,11 +263,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <form>
-                        <div class="grid grid-cols-12 gap-4 mt-3">
-                              <input type="hidden" name="id" id="id">
-                            <div class="xl:col-span-6 col-span-12">
+                <form>
+                   <div class="grid grid-cols-12 gap-4 mt-3">
+                        <input type="hidden" name="id" id="id">
+                          <div class="xl:col-span-6 col-span-12">
                                 <div class="input-group">
                                     <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
                                             class="ri-calendar-line"></i> </div>
@@ -291,7 +282,7 @@
                                         placeholder="Choose date">
                                 </div>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
+                        <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Sorces</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources_edit"
                                     name="sources_edit">
@@ -316,24 +307,22 @@
                                 <label class="form-label">Tonnage</label>
                                 <input type="number" class="form-control" id="ton_edit" name="ton_edit" placeholder="0">
                             </div>
-                        </div>
-
-                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
-                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
-                                data-hs-overlay="#add-data">
-                                Cancel
-                            </button>
-                            <button type="button" id="saveBtn"
-                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    </div>
+                    <!-- Actions -->
+                    <div class="mt-6 flex justify-end gap-2">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                            data-hs-overlay="#edit-data">
+                            Cancel
+                        </button>
+                        <button type="button" value="edit" id="updateBtn"
+                            class="ti-btn bg-primary text-white">Submit</button>
+                    </div>
+                </form>
             </div>
+
         </div>
     </div>
 </div>
-
 
 <!-- End::add task modal -->
 <!-- Footer Start -->
@@ -354,10 +343,8 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        flatpickr("#start_date", { dateFormat: "Y-m-d" });
-        flatpickr("#end_date", { dateFormat: "Y-m-d" });
-        flatpickr("#date_start_edit", { dateFormat: "Y-m-d" });
-        flatpickr("#date_end_edit", { dateFormat: "Y-m-d" });
+        flatpickr("#date_start", { dateFormat: "Y-m-d" });
+        flatpickr("#date_end", { dateFormat: "Y-m-d" });
         $(".ti-form-select").select2({
             width: '100%',
             dropdownParent: $('#add-data .ti-modal-body')
@@ -658,7 +645,7 @@
                         $('#date_start_edit').val('');
                         $('#date_end_edit').val('');
                         $('#ton_edit').val('');
-                        toggleModal('editModal');
+                        window.HSOverlay.close('#edit-data');
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
                     } else {
@@ -786,6 +773,7 @@
 <!-- Call for Edit Data  -->
 <script>
     $('body').on('click', '.editData', function () {
+
         var id = $(this).data('id');
         var url = '/kqms/config/ore-adjustment-factor/get-id/' + id + '/';
         $.ajax({
@@ -795,6 +783,7 @@
             success: function (response) {
                 if (response) {
                     // Mengisi formulir dengan data yang diterima
+                    // alert('Edit....')
                     window.HSOverlay.open('#edit-data');
                     $('#id').val(response.id);
                     $('#sources_edit').val(response.sources).trigger('change');

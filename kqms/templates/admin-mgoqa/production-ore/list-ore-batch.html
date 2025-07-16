@@ -173,6 +173,10 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="px-1 py-1 border-t border-dashed dark:border-defaultborder/10 sm:flex justify-start">
+                                <button id="updateMulti" type="button" class="ti-btn ti-btn-primary !font-medium m-1">Complete</i></button>
+                                <button id="updateTimeBased" type="button" class="ti-btn ti-btn-success !font-medium m-1">Set > 3 Days</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -218,15 +222,6 @@
                                 </div>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="batch_status">Batch Status</label> -->
-                                <select id="batch_status" name="batch_status"
-                                    class="ti-form-select rounded-sm !py-2 !px-3t">
-                                    <option value="">-- Select --</option>
-                                    <option value="Complete">Complete</option>
-                                    <option value="Incomplete">Incomplete</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="material_filter">Materials</label> -->
                                 <select id="material_filter" name="material_filter"
                                     class="ti-form-select rounded-sm !py-2 !px-3t">
@@ -247,7 +242,7 @@
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-12 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="point_filter">Dome</label> -->
                                 <select id="point_filter" name="point_filter"
                                     class="ti-form-select rounded-sm !py-2 !px-3t">
@@ -343,7 +338,7 @@
 
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
-        let data_url = '{% url "ore-productions-list" %}';
+          let data_url = '{% url "ore-pds-batch-list" %}';
         // var material_filter = 'LIM';
         var table = $('#data_table').DataTable({
             'processing': true,

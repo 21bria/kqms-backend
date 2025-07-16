@@ -540,24 +540,24 @@ def get_chart_ore_class(request):
         if db_vendor == 'postgresql':
             query = f"""
                 SELECT
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGSO
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGL' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGL' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGL' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGS' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGSO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGS' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGSO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGS' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGSO
                 FROM ore_productions
                 {filter_sql}
             """
         elif db_vendor in ['mysql', 'mssql', 'microsoft']:
             query = f"""
                 SELECT
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGLO' THEN tonnage ELSE 0 END), 2), 0) AS LGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGLO' THEN tonnage ELSE 0 END), 2), 0) AS MGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGLO' THEN tonnage ELSE 0 END), 2), 0) AS HGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGSO' THEN tonnage ELSE 0 END), 2), 0) AS LGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGSO' THEN tonnage ELSE 0 END), 2), 0) AS MGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGSO' THEN tonnage ELSE 0 END), 2), 0) AS HGSO
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGL' THEN tonnage ELSE 0 END), 2), 0) AS LGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGL' THEN tonnage ELSE 0 END), 2), 0) AS MGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGL' THEN tonnage ELSE 0 END), 2), 0) AS HGLO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGS' THEN tonnage ELSE 0 END), 2), 0) AS LGSO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGS' THEN tonnage ELSE 0 END), 2), 0) AS MGSO,
+                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGS' THEN tonnage ELSE 0 END), 2), 0) AS HGSO
                 FROM ore_productions
                 {filter_sql}
             """

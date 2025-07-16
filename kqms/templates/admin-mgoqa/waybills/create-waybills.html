@@ -50,7 +50,7 @@
                     <div class="box">
                         <div class="box-header xxl:!flex !block">
                             <div class="h5 mb-0 sm:flex block items-center">
-                            
+
                                 <div class="sm:ms-0 ms-0 sm:mt-0 mt-2">
                                     <form id="add_item">
                                         <div class="flex rounded-sm">
@@ -622,7 +622,7 @@
                     loadRowColor();
                     $("#sample_from").val('');
                     $("#sample_to").val('');
-                    toggleModal('findModal');
+                    window.HSOverlay.close('#search-modal');
                     Toast.fire({
                         icon: 'success',
                         text: response.message + " : " + response.insert_count + ", Duplicate : " + response.duplicate,
@@ -706,6 +706,7 @@
 
 <!-- Save Data -->
 <script>
+
     $('#save').click(function () {
         const Toast = Swal.mixin({
             toast: true,
@@ -778,24 +779,35 @@
                     remarks: remarks
                 },
                 success: function (insertResponse) {
-                    if (insertResponse.success) {
+                    console.log("Insert response:", insertResponse);
+
+                    const isSuccess = insertResponse.success === true || insertResponse.success === "true";
+
+                    if (isSuccess) {
                         Swal.fire({
                             icon: 'success',
                             title: 'Success!',
                             text: insertResponse.message,
                             width: 380,
+                        }).then(() => {
+                            // Kosongkan form
+                            $('#delivery_time, #numb_sample, #waybill_number, #remarks').val('');
+                            $('#tgl_deliver').val('');
+                            $('#mral_order, #roa_order').val('').trigger('change');
+                            // Hapus temporary
+                            $.ajax({
+                                url: "{% url 'delete-temporary' %}",
+                                type: "DELETE",
+                                success: function () {
+                                    console.log("Temporary data cleared.");
+                                    const table = $('#data_table').DataTable();
+                                    table.ajax.reload(function (json) {
+                                        console.log("🔥 Reload berhasil dari fungsi reloadDataTable", json);
+                                    }, false);
+                                    loadRowColor();
+                                }
+                            });
                         });
-                        // Lakukan reload atau tindakan lainnya setelah sukses
-                        $('#delivery_time, #numb_sample, #waybill_number, #remarks').val('');
-                        $('#tgl_deliver').val('');
-                        $('#mral_order, #roa_order').val('').trigger('change');
-                        $("#data_table").DataTable().ajax.reload();
-                        loadRowColor();
-                        // Clear Temporary
-                        $.ajax({
-                            url: "{%url 'delete-temporary'%}",
-                            type: "DELETE"
-                        })
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -806,7 +818,7 @@
                     }
                 },
                 error: function (insertXhr, insertStatus, insertError) {
-                    console.error(insertXhr.responseText);
+                    console.error("Insert error response:", insertXhr.responseText);
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
@@ -814,8 +826,10 @@
                         width: 380,
                     });
                 }
+
             });
         }
+
     });
 </script>
 

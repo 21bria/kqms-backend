@@ -152,6 +152,96 @@
             <!-- End::row-1 -->
         </div>
         <!-- Start::main-content -->
+
+
+        <!-- Start::edit modal -->
+        <div id="edit-data" class="hs-overlay hidden ti-modal">
+            <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+                <div class="ti-modal-content">
+                    <div class="ti-modal-header">
+                        <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                            Edit Data
+                        </h6>
+                        <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                            data-hs-overlay="#edit-data">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                    <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                        <form>
+                            <input type="hidden" name="id" id="id">
+                            <div class="grid grid-cols-12 gap-4">
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Date Deliver</label>
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                                class="ri-calendar-line"></i> </div>
+                                        <input type="text" class="form-control" id="tgl_deliver" name="tgl_deliver"
+                                            placeholder="Choose date">
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Time Deliver</label>
+                                    <input type="text" class="form-control" id="delivery_time" name="delivery_time"
+                                        placeholder="hh:mm">
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Waybill number</label>
+                                    <input type="tetx" class="form-control" id="waybill_number" name="waybill_number">
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">SampleID</label>
+                                    <input type="text" class="form-control" id="sample_id" name="sample_id">
+                                </div>
+                                <div class="xl:col-span-4 col-span-12">
+                                    <label class="form-label">Qty</label>
+                                    <input type="number" class="form-control" id="numb_sample" name="numb_sample"
+                                        placeholder="0">
+                                </div>
+                                <div class="xl:col-span-4 col-span-12">
+                                    <label class="form-label">mral order</label>
+                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="mral_order"
+                                        name="mral_order">
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-4 col-span-12">
+                                    <label class="form-label">roa order</label>
+                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="roa_order"
+                                        name="roa_order">
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Description -->
+                            <div class="mt-4">
+                                <label class="form-label">Remarks </label>
+                                <textarea id="remarks" name="remarks" rows="3"
+                                    class="form-control w-full !rounded-md resize-none"
+                                    placeholder="Enter Description"></textarea>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-6 flex justify-end gap-2">
+                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                    data-hs-overlay="#edit-data">
+                                    Cancel
+                                </button>
+                                <button type="button" value="edit" id="updateButton"
+                                    class="ti-btn bg-primary text-white">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- Footer Start -->
@@ -185,10 +275,10 @@
             }
         });
 
-        $(".form-select").select2({
-            width: '100%',
-            
-        });
+        // $(".form-select").select2({
+        //     width: '100%',
+
+        // });
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
         let data_url = '{% url "waybill-list" %}';
@@ -341,15 +431,15 @@
                         dataType: 'json',
                         data: { id: id },
                         success: function (data) {
-                            if (data.status === 'success') {
-                                Swal.fire(
-                                    'Deleted!',
-                                    data.message,
-                                    'success'
-                                );
-                                // Refresh table or remove row
-                                table.draw();
-                            }
+                            // if (data.status === 'success') {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your file has been deleted.',
+                                icon: 'success',
+                            })
+                            // Refresh table or remove row
+                            table.draw();
+                            // }
                         },
                         error: function (xhr) {
                             if (xhr.status === 403) {
@@ -381,7 +471,7 @@
         $('#updateButton').click(function (e) {
             e.preventDefault();
             var id = $('#id').val();
-            var url = '/sqms_apps/mgoqa/waybill/update/' + id + '/';
+            var url = '/kqms/geology/waybill/update/' + id + '/';
             var tgl_deliver = $('#tgl_deliver').val();
             var delivery_time = $('#delivery_time').val();
             var waybill_number = $('#waybill_number').val();
@@ -421,7 +511,7 @@
                         $('#mral_order').val('').trigger('change');
                         $('#roa_order').val('').trigger('change');;
                         $('#remarks').val('');
-                        toggleModal('editModal');
+                        window.HSOverlay.close('#edit-data');
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -506,7 +596,7 @@
     /*--- Click to Edit Button ---*/
     $('body').on('click', '.editData', function () {
         var id = $(this).data('id');
-        var url = '/sqms_apps/mgoqa/waybill/get-id/' + id + '/';
+        var url = '/kqms/geology/waybill/get-id/' + id + '/';
 
         /* Hide */
         $('#batchcodeError').hide();
@@ -517,8 +607,7 @@
             success: function (response) {
                 if (response) {
                     // Mengisi formulir dengan data yang diterima
-                    const modal = document.getElementById('editModal');
-                    modal.classList.remove('hidden');
+                    window.HSOverlay.open('#edit-data');
 
                     $('#saveBtn').html('Update Data');
                     $('#id').val(response.id);

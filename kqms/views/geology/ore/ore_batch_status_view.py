@@ -126,7 +126,7 @@ class OrePdsBatch(View):
                 "increment"     : item.increment,
                 "batch_status"  : item.batch_status,
                 "ritase"        : item.ritase,
-                "tonnage"       : item.tonnage,
+                "tonnage"       : round(item.tonnage, 2),
                 "sample_number" : item.sample_number,
                 "ni"            : item.ni,
                 "limits"        : item.limits
