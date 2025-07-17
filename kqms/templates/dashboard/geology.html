@@ -717,6 +717,7 @@
                 const isMonthly = filterType === 'monthly';
                 const chartType = isMonthly ? 'area' : 'bar';
                 const seriesType = isMonthly ? 'area' : 'bar';
+                const enableDataLabels = ['weekly', 'range'].includes(filterType);
 
                 // 👇 Debug log
                 chart2.updateOptions({
@@ -729,6 +730,15 @@
                         bar: {
                             columnWidth: "50%",
                             borderRadius: 2
+                        }
+                    },
+                    dataLabels: {
+                        enabled: enableDataLabels,
+                        formatter: function (val) {
+                            return val.toFixed(1);
+                        },
+                        style: {
+                            fontSize: '10px'
                         }
                     },
                     // fill: {
@@ -773,6 +783,16 @@
         dataLabels: {
             enabled: false
         },
+        // dataLabels: {
+        //     enabled: enableDataLabels,
+        //     formatter: function (val) {
+        //         return val.toFixed(1); // atau sesuai format yang kamu inginkan
+        //     },
+        //     style: {
+        //         fontSize: '10px',
+        //         colors: ['#111']
+        //     }
+        // },
         stroke: {
             width: [0, 1.1],
             // curve: ['straight', 'smooth'],
@@ -809,9 +829,26 @@
                 },
             },
         },
+        tooltip: {
+            marker: {
+                show: true,
+            },
+            x: {
+                show: true,
+            },
+            y: {
+                formatter: function (value) {
+                    return value.toLocaleString(undefined, {
+                        // return value.toLocaleString('id-ID', {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1
+                    });
+                }
+            }
+        },
         plotOptions: {
             bar: {
-                columnWidth: "50%",
+                columnWidth: "60%",
                 borderRadius: 2
             }
         },
@@ -827,14 +864,7 @@
                 stops: [0, 100, 90]
             }
         },
-        tooltip: {
-            marker: {
-                show: true,
-            },
-            x: {
-                show: true,
-            },
-        },
+
         noData: {
             text: "No data...",
         },
@@ -1077,35 +1107,35 @@
                 // const chartType = isMonthly ? 'area' : 'bar';
                 // const seriesType = isMonthly ? 'area' : 'bar';
 
-                    chartSelling.updateOptions({
-                        chart: { type: chartType },
-                        stroke: {
-                            width: [0, 3],
-                            curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
-                        },
-                        plotOptions: {
-                            bar: {
-                                columnWidth: "50%",
-                                borderRadius: 2
-                            }
-                        },
-                        labels: data.x_data,
+                chartSelling.updateOptions({
+                    chart: { type: chartType },
+                    stroke: {
+                        width: [0, 3],
+                        curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: "50%",
+                            borderRadius: 2
+                        }
+                    },
+                    labels: data.x_data,
 
-                    });
+                });
 
-                    chartSelling.updateSeries([
+                chartSelling.updateSeries([
 
-                        {
-                            name: 'Actual',
-                            type: seriesActual,
-                            data: data.y_data_actual
-                        },
-                        {
-                            name: 'Target',
-                            type: seriesTarget,
-                            data: data.y_data_plan
-                        },
-                    ]);
+                    {
+                        name: 'Actual',
+                        type: seriesActual,
+                        data: data.y_data_actual
+                    },
+                    {
+                        name: 'Target',
+                        type: seriesTarget,
+                        data: data.y_data_plan
+                    },
+                ]);
             })
             .catch(error => {
                 console.error("Error fetching ore chart:", error);
@@ -1113,7 +1143,7 @@
     }
 
     var optionsSelling = {
-       series: [],
+        series: [],
         chart: {
             toolbar: {
                 show: false

@@ -442,8 +442,8 @@ def get_chart_ore(request):
 
         for row in results:
             x_labels.append(str(row[0]))
-            data_lim.append(float(row[1]))
-            data_sap.append(float(row[2]))
+            data_lim.append(round(float(row[1]), 2))
+            data_sap.append(round(float(row[2]), 2))
 
         return JsonResponse({
             'x_data': x_labels,
