@@ -1635,6 +1635,9 @@ def get_dome_roa(request):
                             COALESCE(ROUND((
                                 SUM(tonnage * ROA_Ni) / NULLIF(SUM(CASE WHEN sample_number <> 'Unprepared' AND ROA_Ni IS NOT NULL THEN tonnage ELSE 0 END), 0)
                             )::numeric, 2), 0) as ni,
+                             COALESCE(ROUND((
+                                SUM(tonnage * ROA_Fe) / NULLIF(SUM(CASE WHEN sample_number <> 'Unprepared' AND ROA_Ni IS NOT NULL THEN tonnage ELSE 0 END), 0)
+                            )::numeric, 2), 0) as fe,
                             COALESCE(ROUND((
                                 SUM(tonnage * ROA_MgO) / NULLIF(SUM(CASE WHEN sample_number <> 'Unprepared' AND ROA_Ni IS NOT NULL THEN tonnage ELSE 0 END), 0)
                             )::numeric, 2), 0) as mgo
