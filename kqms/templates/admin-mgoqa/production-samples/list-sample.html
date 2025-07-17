@@ -86,7 +86,7 @@
                                         <th>Weight(Kg)</th>
                                         <th>Primer Raw(Kg)</th>
                                         <th>Dup Raw(Kg)</th>
-                                        <th>Remarks</th>
+                                        <th>remark</th>
                                         <th>Users</th>
                                         <th width="15%">Action</th>
                                         </tr>
@@ -350,7 +350,7 @@
                         <!-- Description -->
                         <div class="mt-4">
                             <label class="form-label">Description</label>
-                            <textarea id="remarks" name="remarks" rows="3"
+                            <textarea id="remark" name="remark" rows="3"
                                 class="form-control w-full !rounded-md resize-none"
                                 placeholder="Enter Description"></textarea>
                         </div>
@@ -654,13 +654,16 @@
                         // Tutup modal (gunakan HSOverlay jika pakai Tailwind UI HS)
                         window.HSOverlay.close('#edit-data');
                         //  Tampilkan SweetAlert
+                       
                         Swal.fire({
                             title: response.message,
                             icon: "success",
                             timer: 3000,
-                            showConfirmButton: false,
+                            // showConfirmButton: false,
+                            showConfirmButton: true,
                             confirmButtonText: 'OK',
                         });
+
 
                         $('#id_type_sample').val('').trigger('change');
                         $('#id_method').val('').trigger('change');
@@ -1223,8 +1226,9 @@
                     $('#to_its').val(jam);
 
                     $('#sampling_deskripsi').val(response.sampling_deskripsi);
-                    $('#gc_expect').val(response.gc_expect).trigger('change');
                     $('#remark').val(response.remark);
+                    // $('#gc_expect').val(response.gc_expect).trigger('change');
+                   
 
                     $('#sampling_area').val(response.sampling_area).trigger('change');
                     // Tambahkan opsi baru ke Select2

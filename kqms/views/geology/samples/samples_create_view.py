@@ -410,7 +410,7 @@ def update_sample(request, id):
         sample.save()
 
         # Kembalikan respons JSON sukses
-        return JsonResponse({'success': True, 'message': 'Data berhasil diupdate.'})
+        return JsonResponse({'success': True, 'message': 'Data successfully updated.'})
 
     except SampleProductions.DoesNotExist:
         return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
