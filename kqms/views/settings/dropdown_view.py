@@ -911,16 +911,18 @@ def get_task_import(request):
                 params = []
             elif user_group_names:
                 sql_query = """
-                    SELECT t.id, t.type_table
+                 SELECT t.id, t.type_table
                     FROM task_table_list t
                     WHERE t.status = 1
                     AND EXISTS (
                         SELECT 1 FROM jsonb_array_elements_text(t.allowed_group_names) AS g
                         WHERE g = ANY(%s)
                     )
-                    ORDER BY t.type_table ASC;
+                ORDER BY t.type_table ASC;
+
                 """
-                params = [tuple(user_group_names)]  # 🔧 ini penting!
+                # params = [tuple(user_group_names)]  # ini penting!
+                params = [user_group_names]
             else:
                 return JsonResponse({'list': []})
 
