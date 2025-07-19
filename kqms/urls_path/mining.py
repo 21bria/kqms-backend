@@ -27,7 +27,7 @@ urlpatterns = [
     path('mine-production/create/', create_production, name='mine-production-create'),
     path('mine-production/delete/', delete_mine_production, name='mine-production-delete'),
     path('mine-production/get/', getIdProduction, name='mine-production-get'),
-    path('mine-production/update/<int:id>/', update_Production, name='mine-production-update'),
+    path('mine-production/update/<uuid:id>/', update_Production, name='mine-production-update'),
 
     path('mine-production-quick/page/', mine_production_quick_page, name='mine-production-quick-page'), 
     path('mine-production-quick/list/', viewMineProductionQuick.as_view(), name='mine-production-quick-list'),
@@ -38,7 +38,7 @@ urlpatterns = [
     path('mine-production/quick/create/', create_quick_production, name='mine-quick-production-create'),
     path('mine-production/quick/delete/', delete_quick_production, name='mine-quick-production-delete'),
     path('mine-production/quick/get/', getIdQuickProduction, name='mine-quick-production-get'),
-    path('mine-production/quick/update/<int:id>/', update_quickProduction, name='mine-quick-production-update'),
+    path('mine-production/quick/update/<uuid:id>/', update_quickProduction, name='mine-quick-production-update'),
 
     path('mine-totals-quick/', total_mine_quick, name='mine-totals-quick'),
     path('mine-totals-quick/mining/', total_mining_quick, name='mine-totals-quick-mining'),

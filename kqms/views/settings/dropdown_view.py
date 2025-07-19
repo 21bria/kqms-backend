@@ -43,7 +43,7 @@ def method_dropdown(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -53,7 +53,7 @@ def method_detail(request, id):
             methods = SampleMethodDetail.objects.filter(type_id=id)
             # Check if no methods were found
             if not methods.exists():
-                return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+                return JsonResponse({'error': 'Data not found'}, status=404)
             
             data_list = [{
                 'id'           : method.id,
@@ -69,7 +69,7 @@ def method_detail(request, id):
             
             return JsonResponse(data)
         except SampleMethodDetail.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -85,7 +85,7 @@ def method_detail(request, id):
 #             rows = cursor.fetchall()
 
 #         if not rows:
-#             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+#             return JsonResponse({'error': 'Data not found'}, status=404)
 
 #         # Buat list dict dari hasil query
 #         data_list = [{
@@ -120,7 +120,7 @@ def sample_type_dropdown(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -145,7 +145,7 @@ def sampleTypeId(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -170,7 +170,7 @@ def sampleTypeSaleId(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -194,7 +194,7 @@ def material_sale(request):
             
             return JsonResponse(data)
         except Material.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -208,7 +208,7 @@ def sampleAreaId(request):
             }
             return JsonResponse(data)
         except SourceMinesDumping.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def samplePointId(request):
@@ -221,7 +221,7 @@ def samplePointId(request):
             }
             return JsonResponse(data)
         except SourceMinesDome.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def sampleMaterialId(request):
@@ -234,7 +234,7 @@ def sampleMaterialId(request):
             }
             return JsonResponse(data)
         except Material.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def codeProductId(request):
@@ -247,7 +247,7 @@ def codeProductId(request):
             }
             return JsonResponse(data)
         except SellingCode.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def stockFactoryId(request):
@@ -260,7 +260,7 @@ def stockFactoryId(request):
             }
             return JsonResponse(data)
         except StockFactories.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def material_dropdown(request):
@@ -276,7 +276,7 @@ def material_dropdown(request):
             }
             return JsonResponse(data)
         except Material.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
@@ -306,7 +306,7 @@ def get_details_point(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -338,7 +338,7 @@ def get_details_sources(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -367,7 +367,7 @@ def get_details_truck(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -408,7 +408,7 @@ def get_year_ore(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -437,7 +437,7 @@ def get_year_sale(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -476,7 +476,7 @@ def get_year_sample(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -491,7 +491,7 @@ def dropdownBlockId(request):
             }
             return JsonResponse(data)
         except Block.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def dropdownMaterialId(request):
@@ -512,7 +512,7 @@ def dropdownMaterialId(request):
             }
             return JsonResponse(data)
         except Material.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def dropdownStockpileId(request):
@@ -525,7 +525,7 @@ def dropdownStockpileId(request):
             }
             return JsonResponse(data)
         except SourceMinesDumping.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def dropdownDomeId(request):
@@ -538,7 +538,7 @@ def dropdownDomeId(request):
             }
             return JsonResponse(data)
         except SourceMinesDome.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def dropdownMineGoes(request):
@@ -551,7 +551,7 @@ def dropdownMineGoes(request):
             }
             return JsonResponse(data)
         except MineGeologies.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def dropdownOreClass(request,id):
@@ -574,7 +574,7 @@ def dropdownOreClass(request,id):
             
             return JsonResponse(data)
         except OreClass.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -598,7 +598,7 @@ def dropdownOreClassGet(request):
             
             return JsonResponse(data)
         except OreClass.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -629,7 +629,7 @@ def get_sale_stockpile(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -659,7 +659,7 @@ def get_sale_dome(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -689,7 +689,7 @@ def get_sale_discharge(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -718,7 +718,7 @@ def get_sale_product(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -748,7 +748,7 @@ def get_discharge(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -782,7 +782,7 @@ def get_product_code(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -811,7 +811,7 @@ def get_sample_material(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -825,7 +825,7 @@ def saleSurveyor(request):
             }
             return JsonResponse(data)
         except SellingSurveyor.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_sample_crm(request):
@@ -852,7 +852,7 @@ def get_sample_crm(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -890,7 +890,7 @@ def get_dome_pds_active(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -937,7 +937,6 @@ def get_task_import(request):
             data_list = [{'id': row[0], 'type_table': row[1]} for row in result]
             return JsonResponse({'list': data_list})
 
-
         except Exception as e:
             return JsonResponse({'error': f'Error: {str(e)}'}, status=500)
 
@@ -966,7 +965,7 @@ def get_units_categories(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -993,7 +992,7 @@ def get_units_vendors(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1025,7 +1024,7 @@ def get_merge_dome(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1058,7 +1057,7 @@ def get_merge_stockpile(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1074,7 +1073,7 @@ def get_mine_vendors(request):
             }
             return JsonResponse(data)
         except Vendors.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_mine_materials(request):
@@ -1105,7 +1104,7 @@ def get_mine_materials(request):
 
             return JsonResponse(response_data)
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1314,7 +1313,7 @@ def get_mineMaterials(request):
 
             return JsonResponse({'results': data})  # Menggunakan key 'results' sesuai dengan format Select2
         except Material.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1469,7 +1468,7 @@ def get_mine_category(request):
 
             return JsonResponse({'results': data})  # Menggunakan key 'results' sesuai dengan format Select2
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1481,7 +1480,7 @@ def get_sources_mine(request):
             return JsonResponse({'results': data})  
         
         except OreProductions.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
@@ -1506,6 +1505,72 @@ def getMaterialsFactors(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+            return JsonResponse({'error': 'Data not found'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def get_haluer_class(request):
+    if request.method == 'GET':
+        try:
+            # Buat SQL raw query dengan LEFT JOIN
+            sql_query = """
+                SELECT DISTINCT type_truck
+                FROM mine_addition_factor
+                ORDER BY type_truck ASC;
+            """
+
+             # Eksekusi query
+            with connections['kqms_db'].cursor() as cursor:
+                cursor.execute(sql_query)
+                result = cursor.fetchall()
+
+            # Ubah hasil query menjadi list of dictionaries
+            data = [{'type_truck': row[0]} for row in result]
+
+            # Buat respons JSON dengan list data
+            response_data = {
+                'list': data,
+            }
+
+            return JsonResponse(response_data)
+        except OreProductions.DoesNotExist:
+            return JsonResponse({'error': 'Data not found'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def get_factors(request):
+    material = request.GET.get('material')
+    hauler = request.GET.get('hauler_class')
+
+    if request.method == 'GET':
+        if not material or not hauler:
+            return JsonResponse({'error': 'Parameter material dan hauler wajib diisi'}, status=400)
+
+        try:
+            sql_query = """
+                SELECT DISTINCT tf_bcm, tf_ton, type_truck
+                FROM mine_addition_factor
+                WHERE type_truck = %s AND material = %s
+            """
+            params = [hauler, material]
+
+            with connections['kqms_db'].cursor() as cursor:
+                cursor.execute(sql_query, params)
+                result = cursor.fetchall()
+
+            # Format hasil
+            data = []
+            for row in result:
+                data.append({
+                    'tf_bcm': row[0],
+                    'tf_ton': row[1],
+                    'type_truck': row[2],
+                })
+
+            return JsonResponse({'list': data}, status=200)
+
+        except Exception as e:
+            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)

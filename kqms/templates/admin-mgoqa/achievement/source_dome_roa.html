@@ -82,15 +82,15 @@
                                                 <th scope="col">UnRelease</th>
                                                 <th scope="col">Release</th>
                                                 <th scope="col">Ni</th>
-                                                <th scope="col">Co</th>
-                                                <th scope="col">Al2O3</th>
-                                                <th scope="col">CaO</th>
-                                                <th scope="col">Cr2O3</th>
                                                 <th scope="col">Fe</th>
+                                                <th scope="col">Al2O3</th>
+                                                <th scope="col">Co</th>
                                                 <th scope="col">MgO</th>
                                                 <th scope="col">SiO2</th>
-                                                <th scope="col">Sm</th>
-                                                <th scope="col">Mc</th>
+                                                <th scope="col">CaO</th>
+                                                <th scope="col">Cr2O3</th>
+                                                <th scope="col">SM</th>
+                                                <th scope="col">MC</th>
                                                 <th scope="col">Class</th>
                                             </tr>
                                         </thead>
@@ -108,13 +108,13 @@
                                                 <th id="grand-total-unreleased">-</th>
                                                 <th id="grand-total-released">-</th>
                                                 <th id="grand-sum-ni">-</th>
-                                                <th id="grand-sum-co">-</th>
-                                                <th id="grand-sum-al2o3">-</th>
-                                                <th id="grand-sum-cao">-</th>
-                                                <th id="grand-sum-cr2o3">-</th>
                                                 <th id="grand-sum-fe">-</th>
+                                                <th id="grand-sum-al2o3">-</th>
+                                                <th id="grand-sum-co">-</th>
                                                 <th id="grand-sum-mgo">-</th>
                                                 <th id="grand-sum-sio2">-</th>
+                                                <th id="grand-sum-cao">-</th>
+                                                <th id="grand-sum-cr2o3">-</th>
                                                 <th id="grand-sum-sm">-</th>
                                                 <th id="grand-sum-mc">-</th>
                                                 <th id="">-</th>
@@ -135,7 +135,7 @@
 
     </div>
     <!-- ========== Search Modal ========== -->
-     <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
@@ -342,36 +342,36 @@
                 newRow.append("<td>" + parseFloat(row.unreleased).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.released).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + row.ni + "</td>");
-                newRow.append("<td>" + row.co + "</td>");
-                newRow.append("<td>" + row.al2o3 + "</td>")
-                newRow.append("<td>" + row.cao + "</td>")
-                newRow.append("<td>" + row.cr2o3 + "</td>")
                 newRow.append("<td>" + row.fe + "</td>")
+                newRow.append("<td>" + row.al2o3 + "</td>")
+                newRow.append("<td>" + row.co + "</td>");
                 newRow.append("<td>" + row.mgo + "</td>")
                 newRow.append("<td>" + row.sio2 + "</td>")
+                newRow.append("<td>" + row.cao + "</td>")
+                newRow.append("<td>" + row.cr2o3 + "</td>")
                 newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + row.mc + "</td>")
 
                 // Kolom "grade" berdasarkan kondisi Ni dan Mgo
-               var grade = "NULL";
+                var grade = "NULL";
 
-if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
-    grade = "HGS";
-} else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
-    grade = "MGS";
-} else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
-    grade = "LGS";
-} else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
-    grade = "HGL";
-} else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
-    grade = "LGL";
-} else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
-    grade = "OB";
-} else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
-    grade = "Waste";
-} else {
-    grade = "???";
-}
+                if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "HGS";
+                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "MGS";
+                } else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
+                    grade = "LGS";
+                } else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "HGL";
+                } else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "LGL";
+                } else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
+                    grade = "OB";
+                } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
+                    grade = "Waste";
+                } else {
+                    grade = "???";
+                }
 
 
                 // Tambahkan elemen <td> dengan kelas CSS yang sesuai
@@ -602,7 +602,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
 
                 fetchData(filter_data)
 
-                 window.HSOverlay.close('#search-modal'); // Menampilkan modal jika diperlukan
+                window.HSOverlay.close('#search-modal'); // Menampilkan modal jika diperlukan
             }
         });
 
@@ -691,9 +691,9 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
 <!-- filter change -->
 <script>
     $(document).ready(function () {
-        $('#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide(); 
+        $('#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide();
         $('#filter').trigger('change'); // Langsung jalankan logika filter saat halaman load
-        
+
         $('#filter').change(function () { // Ketika user memilih filter
             if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
                 $('#form-bulan, #form-tahun, #form-tanggal-cut').hide(); // Sembunyikan lainnya
@@ -723,7 +723,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#pointFilter').val('').trigger('change');
                 $('#form-tanggal-awal,#form-tanggal-akhir,#form-tanggal-cut').hide();
                 $('#form-bulan, #form-tahun').show();
-                 $('#form-material').removeClass('xl:col-span-6').addClass('xl:col-span-12');
+                $('#form-material').removeClass('xl:col-span-6').addClass('xl:col-span-12');
                 $('#form-tanggal-cut').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-stockpile').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-dome').removeClass('xl:col-span-12').addClass('xl:col-span-6');
@@ -740,7 +740,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#pointFilter').val('').trigger('change');
                 $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide();
                 $('#form-tahun').show();
-                 $('#form-material').removeClass('xl:col-span-12').addClass('xl:col-span-6');
+                $('#form-material').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-tanggal-cut').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-stockpile').removeClass('xl:col-span-12').addClass('xl:col-span-6');
                 $('#form-dome').removeClass('xl:col-span-12').addClass('xl:col-span-6');
@@ -784,7 +784,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
 
         /*---  Filter Modal and Apply Filter  ----*/
         $('#openFilter').click(function () {
-             window.HSOverlay.open('#search-modal');
+            window.HSOverlay.open('#search-modal');
             $("#filter,#materialFilter,#tahunFilter,#bulanFilter").select2({
                 width: '100%',
             });
@@ -799,7 +799,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
             dataType: "json",
             success: function (data) {
                 var options = '';
-                
+
                 $.each(data.tahun_pds, function (key, value) {
                     options += '<option value="' + value.tahun + '">' + value
                         .tahun +
@@ -964,7 +964,8 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
         top: 0;
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     }
-  /* Mode gelap */
+
+    /* Mode gelap */
     .dark th {
         background: #1f2937;
         /* abu-abu gelap */
@@ -973,6 +974,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
         color: #f9fafb;
         /* teks jadi terang */
     }
+
     /* 
     .fixed_header td {
         padding: 5px;

@@ -81,7 +81,7 @@
                                                 id="total_materials">
                                                 0.00</p>
                                             <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">TMM
-                                                (bcm)</span>
+                                            </span>
                                         </div>
                                     </div>
 
@@ -97,7 +97,7 @@
                                                 <p class="text-[1.125rem] mb-0 text-success font-semibold"
                                                     id="totals_mining">0.00</p>
                                                 <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Mining
-                                                    (Bcm)</span>
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="flex items-center">
@@ -110,7 +110,7 @@
                                                 <p class="text-[1.125rem] mb-0 text-secondary font-semibold"
                                                     id="totals_project">0.00</p>
                                                 <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Project
-                                                    (Bcm)</span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -123,21 +123,19 @@
                                     <thead>
                                         <tr>
                                             <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary">Category</th>
                                             <th class="bg-soft-secondary">Date</th>
-                                            <th class="bg-soft-secondary">Time</th>
                                             <th class="bg-soft-secondary" width="5%">Shift</th>
+                                            <th class="bg-soft-secondary">Time</th>
                                             <th class="bg-soft-secondary">Loader</th>
                                             <th class="bg-soft-secondary">Hauler</th>
-                                            <th class="bg-soft-secondary">Sources</th>
                                             <th class="bg-soft-secondary">Loading Point</th>
                                             <th class="bg-soft-secondary">Dumping Point</th>
                                             <th class="bg-soft-secondary">Dome Id</th>
-                                            <th class="bg-soft-secondary">Category</th>
                                             <th class="bg-soft-secondary">Material</th>
                                             <th class="bg-soft-secondary">Ritase</th>
-                                            <th class="bg-soft-secondary">Bcm</th>
                                             <th class="bg-soft-secondary">Tonnage</th>
-                                            <th class="bg-soft-secondary">Vendor</th>
+                                            <th class="bg-soft-secondary">Remark</th>
                                             <th class="bg-soft-secondary" width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -148,8 +146,6 @@
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary" width="5%"></th>
-                                            <th class="bg-soft-secondary"></th>
-                                            <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
@@ -217,6 +213,9 @@
                                 <select id="category" name="category" class="ti-form-select w-full !rounded-md">
                                     <option value="">-- Select --</option>
                                 </select>
+                                 <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Category
+                                    filter</label>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="material_filter">Materials</label> -->
@@ -224,18 +223,19 @@
                                     class="ti-form-select  w-full !rounded-md ">
                                     <option value="">Select</option>
                                 </select>
+                                 <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Material
+                                    filter</label>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="source_filter">Source</label> -->
-                                <select id="sources_area" name="sources_area" class="ti-form-select w-full !rounded-md">
-                                    <option value="">--- Select ---</option>
-                                </select>
-                            </div>
+                    
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="area_filter">Stockpile</label> -->
                                 <select id="loadingPoint" name="loadingPoint" class="ti-form-select w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
+                                   <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Loading point
+                                    filter</label>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <!-- <label for="point_filter">Dome</label> -->
@@ -243,8 +243,10 @@
                                     class="ti-form-select  w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
+                                   <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Dumping point
+                                    filter</label>
                             </div>
-
                         </div>
                     </div>
                     <div class="ti-modal-footer">
@@ -266,7 +268,7 @@
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
                     <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Edit Ore Production
+                        Edit Production
                     </h6>
                     <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
                         data-hs-overlay="#edit-data">
@@ -282,186 +284,106 @@
                             <!-- Date -->
                             <div class="xl:col-span-2 col-span-12">
                                 <label class="form-label">Date</label>
-                                <input id="tgl_production" type="date" name="tgl_production"
+                                <input type="date" id="date_production" name="date_production"
                                     class="form-control w-full !rounded-md">
                             </div>
 
                             <!-- Category -->
                             <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Category</label>
-                                <select id="category" name="category" class="form-control w-full !rounded-md">
-                                    <option value="">Select</option>
-                                    <option value="Mining">Mining</option>
-                                    <option value="Project">Project</option>
-                                </select>
-                            </div>
-
-                            <!-- Shift -->
-                            <div class="xl:col-span-2 col-span-12">
                                 <label class="form-label">Shift</label>
                                 <select id="shift" name="shift" class="form-control w-full !rounded-md">
-                                    <option value="">Select</option>
+                                    <option value="">-- Select --</option>
                                     <option value="D">D</option>
                                     <option value="N">N</option>
                                 </select>
                             </div>
-
-                            <!-- Source -->
                             <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Source</label>
-                                <select id="id_prospect_area" name="id_prospect_area"
-                                    class="form-control w-full !rounded-md">
-                                    <option value="">--- Select ---</option>
+                                <label class="form-label">Times</label>
+                                <select id="time_loading" name="time_loading" class="form-control w-full !rounded-md">
+                                    '<option value="07">07</option>'
+                                    '<option value="08">08</option>'
+                                    '<option value="09">09</option>'
+                                    '<option value="10">10</option>'
+                                    '<option value="11">11</option>'
+                                    '<option value="12">12</option>'
+                                    '<option value="13">13</option>'
+                                    '<option value="14">14</option>'
+                                    '<option value="15">15</option>'
+                                    '<option value="16">16</option>'
+                                    '<option value="17">17</option>'
+                                    '<option value="18">18</option>'
+                                    '<option value="19">19</option>'
+                                    '<option value="20">20</option>'
+                                    '<option value="22">22</option>'
+                                    '<option value="23">23</option>'
+                                    '<option value="00">00</option>'
+                                    '<option value="01">01</option>'
+                                    '<option value="02">02</option>'
+                                    '<option value="03">03</option>'
+                                    '<option value="04">04</option>'
+                                    '<option value="05">05</option>'
+                                    '<option value="06">06</option>'
                                 </select>
                             </div>
 
-                            <!-- Block -->
                             <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Block</label>
-                                <select id="id_block" name="id_block" class="form-control w-full !rounded-md">
-                                    <option value="">--- Select ---</option>
+                                <label class="form-label">Category</label>
+                                <select id="category_mine" name="category_mine" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
                                 </select>
                             </div>
-
-                            <!-- From RL -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">From (RL)</label>
-                                <input type="number" id="from_rl" name="from_rl" class="form-control w-full !rounded-md"
-                                    placeholder="From RL">
-                            </div>
-
-                            <!-- To RL -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">To (RL)</label>
-                                <input type="number" id="to_rl" name="to_rl" class="form-control w-full !rounded-md"
-                                    placeholder="To RL">
-                            </div>
-
                             <!-- Layer -->
                             <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Layer</label>
+                                <label class="form-label">Material</label>
                                 <select id="id_material" name="id_material" class="form-control w-full !rounded-md">
-                                    <option value="">--- Select ---</option>
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Loader</label>
+                                <select id="digger" name="digger" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Hauler Class</label>
+                                <select id="hauler_class" name="hauler_class" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Loading point</label>
+                                <select id="loading_point" name="loading_point" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
                                 </select>
                             </div>
 
-                            <!-- Dome -->
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Dumping point</label>
+                                <select id="dumping_point" name="dumping_point" class="form-control w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                                <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Dumping
+                                    for non ore / Stockpile for Ore</label>
+                            </div>
                             <div class="xl:col-span-2 col-span-12">
                                 <label class="form-label">Dome</label>
-                                <select id="id_pile" name="id_pile" class="form-control w-full !rounded-md">
+                                <select id="dome_id" name="dome_id" class="form-control w-full !rounded-md">
                                     <option value="">-- Select --</option>
                                 </select>
+                                <label
+                                    class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Dome
+                                    for Ore</label>
                             </div>
-
-                            <!-- Expect Ni -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Expect. Ni</label>
-                                <input type="text" id="grade_expect" name="grade_expect"
-                                    class="form-control w-full !rounded-md" placeholder="Expectation">
-                            </div>
-
-                            <!-- Mine Geology -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Mine Geology</label>
-                                <select id="grade_control" name="grade_control"
-                                    class="form-control w-full !rounded-md"></select>
-                            </div>
-
-                            <!-- Batch Code -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Batch Code</label>
-                                <input type="text" id="batch_code" name="batch_code"
-                                    class="form-control w-full !rounded-md">
-                            </div>
-
-                            <!-- Increment -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Increment</label>
-                                <input type="number" id="increment" name="increment"
-                                    class="form-control w-full !rounded-md">
-                            </div>
-
-                            <!-- Batch Status -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Batch Status</label>
-                                <select id="batch_status_edit" name="batch_status_edit"
-                                    class="form-control w-full !rounded-md">
-                                    <option value="">-- Select --</option>
-                                    <option value="Complete">Complete</option>
-                                    <option value="Incomplete">Incomplete</option>
-                                </select>
-                            </div>
-
-                            <!-- Pile Status -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Pile Status</label>
-                                <select id="pile_status" name="pile_status" class="form-control w-full !rounded-md">
-                                    <option value="">-- Select --</option>
-                                    <option value="Continue">Continue</option>
-                                    <option value="Close">Close</option>
-                                </select>
-                            </div>
-
-                            <!-- Ritase -->
                             <div class="xl:col-span-2 col-span-12">
                                 <label class="form-label">Ritase</label>
-                                <input type="number" id="ritase" name="ritase" class="form-control w-full !rounded-md">
+                                <input type="number" class="form-control w-full !rounded-md" id="ritase" name="ritase">
                             </div>
-
-                            <!-- Tonnage -->
                             <div class="xl:col-span-2 col-span-12">
                                 <label class="form-label">Tonnage</label>
-                                <input readonly type="text" id="tonnage" name="tonnage"
-                                    class="form-control w-full !rounded-md">
-                            </div>
-
-                            <!-- Truck -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Truck</label>
-                                <input type="text" id="unit_truck" name="unit_truck"
-                                    class="form-control w-full !rounded-md">
-                            </div>
-
-                            <!-- Calculate -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Calculate</label>
-                                <select id="calculate" name="calculate"
-                                    class="form-control w-full !rounded-md"></select>
-                            </div>
-
-                            <!-- Ore Class -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Ore Class</label>
-                                <select id="ore_class" name="ore_class"
-                                    class="form-control w-full !rounded-md"></select>
-                            </div>
-
-                            <!-- No Production -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">No. Production</label>
-                                <input type="text" id="no_production_edit" name="no_production_edit"
-                                    class="form-control w-full !rounded-md" disabled>
-                            </div>
-
-                            <!-- Sale Adjust -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Sale Adjust</label>
-                                <input type="text" id="sale_adjust" name="sale_adjust"
-                                    class="form-control w-full !rounded-md" disabled>
-                            </div>
-
-                            <!-- Truck Factor -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Truck Factor</label>
-                                <input type="text" id="truck_factor" name="truck_factor"
-                                    class="form-control w-full !rounded-md" disabled>
-                            </div>
-
-                            <!-- Stockpile -->
-                            <div class="xl:col-span-2 col-span-12">
-                                <label class="form-label">Stockpile</label>
-                                <input type="text" id="id_stockpile" name="id_stockpile"
-                                    class="form-control w-full !rounded-md" disabled>
+                                <input type="number" class="form-control w-full !rounded-md" id="tonnage" name="tonnage"
+                                    readonly>
                             </div>
                         </div>
 
@@ -511,13 +433,36 @@
 {% include 'layout/js.html' %}
 
 <script type="text/javascript">
-    function toggleModal(modalID) {
-        document.getElementById(modalID).classList.toggle("hidden");
-    }
-</script>
-
-<script type="text/javascript">
     $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+        // Flag untuk hindari double init
+        let isSelect2Init = false;
+
+        // Saat buka modal
+        $('#openFilter').on('click', function () {
+            window.HSOverlay.open('#search-modal');
+            $('#exportButton').hide();
+            $('#applyFilterBtn').show();
+
+            setTimeout(function () {
+                // Hanya inisialisasi sekali
+                if (!isSelect2Init) {
+                    $('#search-modal select').each(function () {
+                        const $el = $(this);
+                        if (!$el.hasClass('select2-hidden-accessible')) {
+                            $el.select2({
+                                placeholder: 'Select an option',
+                                allowClear: true,
+                                width: '100%',
+                                dropdownParent: $('#search-modal .ti-modal-body')
+                            });
+                        }
+                    });
+                    isSelect2Init = true;
+                }
+            }, 300); // delay agar modal sudah muncul
+        });
         /*-- Pass Header Token ---*/
         $.ajaxSetup({
             headers: {
@@ -525,10 +470,10 @@
             }
         });
 
-        $(".form-select").select2({
-            width: '100%', // Sesuaikan lebar dengan kontainer
-            // dropdownParent: document.getElementById("filterModal")
-        });
+        // $(".form-select").select2({
+        //     width: '100%', // Sesuaikan lebar dengan kontainer
+        //     // dropdownParent: document.getElementById("filterModal")
+        // });
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
         let data_url = '{% url "mine-production-quick-list" %}';
@@ -538,7 +483,12 @@
             'serverSide': true,
             'responsive': true,
             'autoWidth': true,
-            // 'select': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
             "ajax": {
                 "url": data_url,
                 "type": "POST",
@@ -565,6 +515,11 @@
                     }
                 }, // Kolom nomor otomatis
                 {
+                    data: 'category_mine',
+                    name: 'category_mine',
+                    searchable: true
+                },
+                {
                     data: 'date_production',
                     name: 'date_production'
                 },
@@ -573,23 +528,17 @@
                     name: 'shift'
                 },
                 {
+                    data: 'time_loading',
+                    name: 'time_loading'
+                },
+                {
                     data: 'loader',
                     name: 'loader',
                     searchable: true
                 },
                 {
-                    data: 'hauler',
-                    name: 'hauler',
-                    searchable: true
-                },
-                {
                     data: 'hauler_class',
                     name: 'hauler_class',
-                    searchable: true
-                },
-                {
-                    data: 'sources_area',
-                    name: 'sources_area',
                     searchable: true
                 },
                 {
@@ -608,43 +557,19 @@
                     searchable: true
                 },
                 {
-                    data: 'category_mine',
-                    name: 'category_mine',
-                    searchable: true
-                },
-
-
-                {
-                    data: 'mine_block',
-                    name: 'mine_block'
-                },
-                {
-                    data: 'rl',
-                    name: 'rl'
-                },
-                {
                     data: 'nama_material',
                     name: 'nama_material',
                     searchable: true
                 },
-
 
                 {
                     data: 'ritase',
                     name: 'ritase'
                 },
                 {
-                    data: 'bcm',
-                    name: 'bcm'
+                    data: 'tonnage',
+                    name: 'tonnage'
                 },
-                // {
-                //     data: 'time_loading',
-                //     name: 'time_loading'
-                // },
-                // {
-                //     data: 'time_dumping',
-                //     name: 'time_dumping'
-                // },
                 {
                     data: 'remarks',
                     name: 'remarks'
@@ -692,23 +617,23 @@
                             i : 0;
                 };
                 // computing column Total the complete result 
-                var col_14 = api
-                    .column(14)
+                var col_11 = api
+                    .column(11)
                     .data()
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
 
-                var col_15 = api
-                    .column(15)
+                var col_12 = api
+                    .column(12)
                     .data()
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
 
                 // Update footer by showing the total with the reference of the column index   
-                $(api.column(14).footer()).html(col_14.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                // $(api.column(15).footer()).html(col_15.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $(api.column(11).footer()).html(col_11.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $(api.column(12).footer()).html(col_12.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
             },
         });
         $('.th_hide').show();
@@ -739,38 +664,34 @@
             var id = $('#id').val();
             var date_production = $('#date_production').val().trim();
             var shift = $('#shift').val().trim();
-            var digger = $('#digger').val();
-            var hauler = $('#hauler').val();
-            var sources = $('#sources').val();
-            var loading_point = $('#point_edit').val();
-            var dumping_point = $('#dumping_edit').val();
-            var dome_id = $('#dome_id').val();
-            var category_mine = $('#category_edit').val();
-            var id_material = $('#id_material').val();
             var time_loading = $('#time_loading').val().trim();
+            var category_mine = $('#category_mine').val();
+            var id_material = $('#id_material').val();
+            var digger = $('#digger').val();
+            var hauler_class = $('#hauler_class').val();
+            var loading_point = $('#loading_point').val();
+            var dumping_point = $('#dumping_point').val();
+            var dome_id = $('#dome_id').val();
             var ritase = $('#ritase').val();
-            var area = $('#area').val();
-            var vendors = $('#vendorsEdit').val();
+            var tonnage = $('#tonnage').val();
             var remarks = $('#remarks').val();
 
             var updatedData = {
                 date_production: date_production,
                 shift: shift,
+                time_loading: time_loading,
+                category_mine: category_mine,
+                id_material: id_material,
                 digger: digger,
-                hauler: hauler,
-                sources: sources,
+                hauler_class: hauler_class,
                 loading_point: loading_point,
                 dumping_point: dumping_point,
                 dome_id: dome_id,
-                category_mine: category_mine,
-                id_material: id_material,
-                time_loading: time_loading,
                 ritase: ritase,
-                area: area,
-                vendors: vendors,
+                tonnage: tonnage,
                 remarks: remarks
             };
-            var url = '/sqms_apps/mining/mine-production/quick/update/' + id + '/';
+            var url = '/kqms/mining/mine-production/quick/update/' + id + '/';
 
             $.ajax({
                 url: url,
@@ -778,7 +699,7 @@
                 data: updatedData,
                 success: function (response) {
                     if (response.success) {
-                        toggleModal('editModal');
+                        window.HSOverlay.close('#edit-data');
                         // Tampilkan notifikasi sukses
                         const toast = window.Swal.mixin({
                             toast: true,
@@ -939,8 +860,8 @@
             },
             success: function (data) {
                 // Data berhasil diterima dari server
-                totalOre = parseFloat(data.Bcm); // Simpan nilai totalYtd
-                $("#totel_ore").html(formatAngka(totalOre));
+                totalProductions = parseFloat(data.tonnage); // Simpan nilai totalYtd
+                $("#total_materials").html(formatAngka(totalProductions));
             },
             error: function () {
                 // Penanganan kesalahan jika diperlukan
@@ -961,11 +882,11 @@
             },
             success: function (data) {
                 // Data berhasil diterima dari server
-                totalOre = parseFloat(data.Bcm); // Simpan nilai totalYtd
-                var formattedTotal = totalOre.toLocaleString('en-US', {
+                totalProductions = parseFloat(data.tonnage); // Simpan nilai totalYtd
+                var formattedTotal = totalProductions.toLocaleString('en-US', {
                     maximumFractionDigits: 2
                 });
-                $("#totals_mining").html(formatAngka(totalOre));
+                $("#totals_mining").html(formatAngka(totalProductions));
 
             },
             error: function () {
@@ -990,12 +911,12 @@
             success: function (data) {
                 // Data berhasil diterima dari server
 
-                totalOre = parseFloat(data.Bcm); // Simpan nilai totalYtd
-                var formattedTotal = totalOre.toLocaleString('en-US', {
+                totalProductions = parseFloat(data.tonnage); // Simpan nilai totalYtd
+                var formattedTotal = totalProductions.toLocaleString('en-US', {
                     maximumFractionDigits: 2
                 });
                 // $("#totals_project").html(formattedTotal);
-                $("#totals_project").html(formatAngka(totalOre));
+                $("#totals_project").html(formatAngka(totalProductions));
 
             },
             error: function () {
@@ -1028,7 +949,7 @@
                 $.each(data.results, function (index, value) {
                     options += '<option value="' + value.text + '">' + value.text + '</option>';
                 });
-                $('#material_filter').append(options);
+                $('#material_filter').append(options)
                 $('#material_filter').trigger('change'); // Trigger agar Select2 membaca opsi baru
             },
             error: function (xhr, status, error) {
@@ -1051,18 +972,6 @@
             }
         });
 
-        $.ajax({
-            url: "{% url 'get-mine-source-all' %}",
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                var options = '';
-                $.each(data.results, function (index, value) {
-                    options += '<option value="' + value.text + '">' + value.text + '</option>';
-                });
-                $('#sources_area').append(options);
-            }
-        });
 
         $('#loadingPoint').select2({
             ajax: {
@@ -1093,7 +1002,9 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
-            allowClear: true
+            allowClear: true,
+                 width: '100%',
+                                dropdownParent: $('#search-modal .ti-modal-body')
         });
 
         $('#dumpingPoint').select2({
@@ -1125,7 +1036,9 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
-            allowClear: true
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
         });
 
         $('#pile_id').select2({
@@ -1157,7 +1070,9 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
-            allowClear: true
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
         });
     });
 </script>
@@ -1167,6 +1082,21 @@
     $(document).ready(function () {
         var loader_get = 'Digger'
         var hauler_get = 'Hauler'
+        $('#shift').select2({
+            width: '100%',
+        });
+        $('#time_loading').select2({
+            width: '100%',
+        });
+        $('#id_material').select2({
+            width: '100%',
+        });
+        $('#category_mine').select2({
+            width: '100%',
+        });
+        $('#hauler_class').select2({
+            width: '100%',
+        });
 
         $('#digger').select2({
             ajax: {
@@ -1196,62 +1126,7 @@
             allowClear: true
         });
 
-        $('#hauler').select2({
-            ajax: {
-                url: "{% url 'get-mine-units-entry'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        category: hauler_get,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#sources').select2({
-            ajax: {
-                url: "{% url 'get-mine-source'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true
-        });
-
-        $('#point_edit').select2({
+        $('#loading_point').select2({
             ajax: {
                 url: "{% url 'get-mine-loading-point'%}",
                 dataType: 'json',
@@ -1275,10 +1150,11 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
+            width: '100%',
             allowClear: true
         });
 
-        $('#dumping_edit').select2({
+        $('#dumping_point').select2({
             ajax: {
                 url: "{% url 'get-mine-dumping-point'%}",
                 dataType: 'json',
@@ -1302,6 +1178,7 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
+            width: '100%',
             allowClear: true
         });
 
@@ -1329,6 +1206,7 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
+            width: '100%',
             allowClear: true
         });
 
@@ -1360,8 +1238,25 @@
                 $.each(data.results, function (index, value) {
                     options += '<option value="' + value.id + '">' + value.text + '</option>';
                 });
-                $('#category_edit').append(options);
-                $('#category_edit').trigger('change'); // Trigger agar Select2 membaca opsi baru
+                $('#category_mine').append(options);
+                $('#category_mine').trigger('change'); // Trigger agar Select2 membaca opsi baru
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error: ", error);
+            }
+        });
+        $.ajax({
+            url: "{% url 'get-hauler-class' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                // Loop melalui data.results untuk menambahkan opsi Select2
+                $.each(data.list, function (index, value) {
+                    options += '<option value="' + value.type_truck + '">' + value.type_truck + '</option>';
+                });
+                $('#hauler_class').append(options);
+                $('#hauler_class').trigger('change'); // Trigger agar Select2 membaca opsi baru
             },
             error: function (xhr, status, error) {
                 console.error("AJAX Error: ", error);
@@ -1407,6 +1302,51 @@
             var selectedText = selectedSource.find(':selected').text();
             inputArea.val(selectedText);
         });
+
+        let tf_ton_value = 0;  // simpan tf_ton global sementara
+
+        $('#hauler_class, #id_material').on('change', function () {
+            const hauler = $('#hauler_class').val();
+            const materialText = $('#id_material option:selected').text();
+
+            if (hauler && materialText) {
+                $.ajax({
+                    url: "{% url 'get-hauler-factor' %}",
+                    type: 'GET',
+                    data: {
+                        hauler_class: hauler,
+                        material: materialText.trim()
+                    },
+                    success: function (response) {
+                        console.log('Data diterima:', response);
+
+                        if (response.list.length > 0) {
+                            const data = response.list[0];
+
+                            tf_ton_value = parseFloat(data.tf_ton) || 0;  // simpan untuk dikali dengan ritase
+
+                            // Isi ton langsung jika ritase sudah diisi sebelumnya
+                            const ritase = parseFloat($('#ritase').val()) || 0;
+                            $('#tonnage').val((ritase * tf_ton_value).toFixed(2));
+                        } else {
+                            tf_ton_value = 0;
+                            $('#tonnage').val('');
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Gagal ambil data:', xhr.responseText);
+                        tf_ton_value = 0;
+                        $('#tonnage').val('');
+                    }
+                });
+            }
+        });
+        // Ketika ritase diketik, hitung ulang ton
+        $('#ritase').on('input', function () {
+            const ritase = parseFloat($(this).val()) || 0;
+            const ton = (ritase * tf_ton_value).toFixed(2);
+            $('#tonnage').val(ton);
+        });
     });
 
     /*--- Click to Edit Button ---*/
@@ -1422,15 +1362,15 @@
             dataType: "json",
             success: function (response) {
                 if (response) {
-                    const modal = document.getElementById('editModal');
-                    modal.classList.remove('hidden');
+                    window.HSOverlay.open('#edit-data');
                     // Mengisi formulir dengan data yang diterima
                     $('#id').val(response.id);
                     $('#date_production').val(response.date_production);
                     $('#shift').val(response.shift).trigger('change');
-                    $('#category_edit').val(response.category_mine).trigger('change');
+                    $('#category_mine').val(response.category_mine).trigger('change');
                     $('#id_material').val(response.id_material).trigger('change');
                     $('#time_loading').val(response.time_loading).trigger('change');
+                    $('#hauler_class').val(response.hauler_class).trigger('change');
                     $('#vendorsEdit').val(response.vendors);
                     $('#ritase').val(response.ritase);
                     $('#remarks').val(response.remarks);
@@ -1448,18 +1388,17 @@
 
                     $('#sources').val(response.sources).trigger('change');
                     // Tambahkan opsi baru ke Select2
-                    var newSource = new Option(response.sources_area, response.sources, true, true);
-                    $('#sources').append(newSource).trigger('change');
 
-                    $('#point_edit').val(response.loading_point).trigger('change');
+
+                    $('#loading_point').val(response.loading_point).trigger('change');
                     // Tambahkan opsi baru ke Select2
                     var newStokpile = new Option(response.loadingPoint, response.loading_point, true, true);
-                    $('#point_edit').append(newStokpile).trigger('change');
+                    $('#loading_point').append(newStokpile).trigger('change');
 
-                    $('#dumping_edit').val(response.dumping_point).trigger('change');
+                    $('#dumping_point').val(response.dumping_point).trigger('change');
                     // Tambahkan opsi baru ke Select2
                     var newDumping = new Option(response.dumpingPoint, response.dumping_point, true, true);
-                    $('#dumping_edit').append(newDumping).trigger('change');
+                    $('#dumping_point').append(newDumping).trigger('change');
 
                     $('#dome_id').val(response.dome_id).trigger('change');
                     // Tambahkan opsi baru ke Select2

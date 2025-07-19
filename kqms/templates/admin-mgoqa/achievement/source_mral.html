@@ -80,12 +80,12 @@
                                                 <th scope="col">UnRelease</th>
                                                 <th scope="col">Release</th>
                                                 <th scope="col">Ni</th>
-                                                <th scope="col">Co</th>
-                                                <th scope="col">Fe2O3</th>
                                                 <th scope="col">Fe</th>
+                                                <th scope="col">Co</th>
                                                 <th scope="col">MgO</th>
                                                 <th scope="col">SiO2</th>
-                                                <th scope="col">Sm</th>
+                                                <th scope="col">Fe2O3</th>
+                                                <th scope="col">SM</th>
                                                 <th scope="col">Class</th>
                                             </tr>
                                         </thead>
@@ -102,11 +102,11 @@
                                                 <th id="grand-total-unreleased">-</th>
                                                 <th id="grand-total-released">-</th>
                                                 <th id="grand-sum-ni">-</th>
-                                                <th id="grand-sum-co">-</th>
-                                                <th id="grand-sum-fe2o3">-</th>
                                                 <th id="grand-sum-fe">-</th>
+                                                <th id="grand-sum-co">-</th>
                                                 <th id="grand-sum-mgo">-</th>
                                                 <th id="grand-sum-sio2">-</th>
+                                                <th id="grand-sum-fe2o3">-</th>
                                                 <th id="grand-sum-sm">-</th>
                                                 <th id="">-</th>
                                             </tr>
@@ -311,33 +311,33 @@
                 newRow.append("<td>" + parseFloat(row.unreleased).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.released).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + row.ni + "</td>");
-                newRow.append("<td>" + row.co + "</td>");
-                newRow.append("<td>" + row.fe2o3 + "</td>")
                 newRow.append("<td>" + row.fe + "</td>")
+                newRow.append("<td>" + row.co + "</td>");
                 newRow.append("<td>" + row.mgo + "</td>")
                 newRow.append("<td>" + row.sio2 + "</td>")
+                newRow.append("<td>" + row.fe2o3 + "</td>")
                 newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
 
                 // Kolom "grade" berdasarkan kondisi Ni dan Mgo
-               var grade = "NULL";
+                var grade = "NULL";
 
-if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
-    grade = "HGS";
-} else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
-    grade = "MGS";
-} else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
-    grade = "LGS";
-} else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
-    grade = "HGL";
-} else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
-    grade = "LGL";
-} else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
-    grade = "OB";
-} else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
-    grade = "Waste";
-} else {
-    grade = "???";
-}
+                if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "HGS";
+                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                    grade = "MGS";
+                } else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
+                    grade = "LGS";
+                } else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "HGL";
+                } else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                    grade = "LGL";
+                } else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
+                    grade = "OB";
+                } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
+                    grade = "Waste";
+                } else {
+                    grade = "???";
+                }
 
 
                 // Tambahkan elemen <td> dengan kelas CSS yang sesuai
@@ -640,13 +640,13 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
 
 <script>
     $(document).ready(function () {
-        $('#btn_filter,#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide(); 
+        $('#btn_filter,#form-tanggal-awal,#form-tanggal-akhir, #form-bulan, #form-tahun,#form-tanggal-cut').hide();
         // Reset col-span dulu
         $('#form-bulan').removeClass('xl:col-span-6').addClass('xl:col-span-6');
         $('#form-tahun').removeClass('xl:col-span-6 xl:col-span-12');
         $('#filter').change(function () { // Ketika user memilih filter
             if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
-                $('#form-bulan, #form-tahun').hide(); 
+                $('#form-bulan, #form-tahun').hide();
                 $('#startDate').val('');
                 $('#endDate').val('');
                 $('#cutdDate').val('');
@@ -654,8 +654,8 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#bulanFilter').val('').trigger('change');
                 $('#sourceFilter').val('').trigger('change');
                 $('#materialFilter').val('').trigger('change');
-                $('#form-tanggal-awal,#form-tanggal-akhir').show(); 
-                $('#form-tanggal-cut').hide(); 
+                $('#form-tanggal-awal,#form-tanggal-akhir').show();
+                $('#form-tanggal-cut').hide();
             } else if ($(this).val() == '2') { // Jika filter nya 2 (per bulan)
                 $('#startDate').val('');
                 $('#endDate').val('');
@@ -664,9 +664,9 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#bulanFilter').val('').trigger('change');
                 $('#sourceFilter').val('').trigger('change');
                 $('#materialFilter').val('').trigger('change');
-                $('#form-tanggal-awal,#form-tanggal-akhir,#form-tanggal-cut').hide(); 
-                $('#form-bulan, #form-tahun').show(); 
-                  $('#form-tahun').removeClass('xl:col-span-12').addClass('xl:col-span-6');
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-tanggal-cut').hide();
+                $('#form-bulan, #form-tahun').show();
+                $('#form-tahun').removeClass('xl:col-span-12').addClass('xl:col-span-6');
             } else if ($(this).val() == '3') {
                 // Jika filternya 3 (Year)
                 $('#startDate').val('');
@@ -676,9 +676,9 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#bulanFilter').val('').trigger('change');
                 $('#sourceFilter').val('').trigger('change');
                 $('#materialFilter').val('').trigger('change');
-                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide(); 
-                $('#form-tahun').show(); 
-                 $('#form-tahun').removeClass('xl:col-span-6').addClass('xl:col-span-12'); // ← Expand ke full width
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide();
+                $('#form-tahun').show();
+                $('#form-tahun').removeClass('xl:col-span-6').addClass('xl:col-span-12'); // ← Expand ke full width
             } else if ($(this).val() == '4') {
                 // Jika filternya 4 (cut Date)
                 $('#startDate').val('');
@@ -688,8 +688,8 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#bulanFilter').val('').trigger('change');
                 $('#sourceFilter').val('').trigger('change');
                 $('#materialFilter').val('').trigger('change');
-                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tahun').hide(); 
-                $('#form-tanggal-cut').show(); 
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tahun').hide();
+                $('#form-tanggal-cut').show();
             } else { // Jika filternya 5 (Get ALl)
                 $('#startDate').val('');
                 $('#endDate').val('');
@@ -698,7 +698,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
                 $('#bulanFilter').val('').trigger('change');
                 $('#sourceFilter').val('').trigger('change');
                 $('#materialFilter').val('').trigger('change');
-                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide(); 
+                $('#form-tanggal-awal,#form-tanggal-akhir,#form-bulan,#form-tanggal-cut').hide();
             }
         })
 
@@ -719,7 +719,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
             success: function (data) {
                 var options = '';
                 $.each(data.tahun_pds, function (key, value) {
-                    options += '<option value="' + value.tahun + '">' + value.tahun +'</option>';
+                    options += '<option value="' + value.tahun + '">' + value.tahun + '</option>';
                 });
                 $('#tahunFilter').append(options);
             }
@@ -732,7 +732,7 @@ if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
             success: function (data) {
                 var options = '';
                 $.each(data.materials, function (key, value) {
-                    options += '<option value="' + value.nama_material + '">' + value.nama_material +'</option>';
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
                 });
 
                 $('#materialFilter').append(options);

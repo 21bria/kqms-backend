@@ -131,175 +131,119 @@ class viewproductionsQuickCreate(View):
 
 @login_required
 @csrf_exempt
+
 def create_quick_production(request):
-    if request.method == 'POST':
-        try:
-            # Aturan validasi
-            rules = {
-                'date_production[]' : ['required'],
-                'shift[]'           : ['required'],
-                'loader[]'          : ['required'],
-                'hauler[]'          : ['required'],
-                'sources_area[]'    : ['required'],
-                'loading_point[]'   : ['required'],
-                'dumping_point[]'   : ['required'],
-                'category[]'        : ['required'],
-                'id_material[]'     : ['required'],
-                'time_loading[]'    : ['required'],
-                'vendors'           : ['required'],
-            }
-
-            # Pesan kesalahan validasi yang disesuaikan
-            custom_messages = {
-                'date_production[].required': 'Date harus diisi.',
-                'shift[].required'          : 'Shift harus diisi.',
-                'loader[].required'         : 'Loader harus diisi.',
-                'hauler[].required'         : 'Hauler harus diisi.',
-                'sources_area[].required'   : 'Source harus diisi.',
-                'loading_point[].required'  : 'Loading point harus diisi.',
-                'dumping_point[].required'  : 'Dumping point harus diisi.',
-                'category[].required'       : 'Category harus diisi.',
-                'id_material[].required'    : 'Material harus diisi.',
-                'time_loading[].required'   : 'Loading Time harus diisi.',
-                'vendors.required'   : 'vendors harus diisi.'
-
-            }
-
-            # Validasi request
-            for field, field_rules in rules.items():
-                for rule in field_rules:
-                    if rule == 'required':
-                        if not request.POST.get(field):
-                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
-                    elif rule.startswith('min_length'):
-                        min_length = int(rule.split(':')[1])
-                        if len(request.POST.get(field, '')) < min_length:
-                            return JsonResponse({'error': custom_messages[f'{field}.min_length']}, status=400)
-                    elif rule.startswith('max_length'):
-                        max_length = int(rule.split(':')[1])
-                        if len(request.POST.get(field, '')) > max_length:
-                            return JsonResponse({'error': custom_messages[f'{field}.max_length']}, status=400)
-                    elif rule == 'regex':
-                        import re
-                        pattern = re.compile(r'^[a-zA-Z0-9]*$')
-                        if not pattern.match(request.POST.get(field, '')):
-                            return JsonResponse({'error': custom_messages[f'{field}.regex']}, status=400)
-
-            # Cek unik data
-            # sample_numbers = request.POST.getlist('sample_number[]')
-            # for sample_number in sample_numbers:
-            #     if SampleProductions.objects.filter(sample_number=sample_number).exists():
-            #         return JsonResponse({'error': f'SampleID {sample_number} already exists.'}, status=400)
-                
-            # code  = request.POST.get('code')
-           
-            # Gunakan transaksi database untuk memastikan integritas data
-            with transaction.atomic():
-                # Dapatkan data dari request
-                date_production = request.POST.getlist('date_production[]')
-                shift           = request.POST.getlist('shift[]')
-                loader          = request.POST.getlist('loader[]')
-                hauler          = request.POST.getlist('hauler[]')
-                sources_area    = request.POST.getlist('sources_area[]')
-                loading_point   = request.POST.getlist('loading_point[]')
-                dumping_point   = request.POST.getlist('dumping_point[]')
-                dome_id         = request.POST.getlist('dome_id[]')
-                category        = request.POST.getlist('category[]')
-                id_material     = request.POST.getlist('id_material[]')
-                time_loading    = request.POST.getlist('time_loading[]')
-                # block_id        = request.POST.getlist('block_id[]')
-                # from_rl         = request.POST.getlist('from_rl[]')
-                # to_rl           = request.POST.getlist('to_rl[]')
-                ritase          = request.POST.getlist('ritase[]')
-                # bcm             = request.POST.getlist('bcm[]')
-                # tonnage         = request.POST.getlist('tonnage[]')
-                area            = request.POST.getlist('area[]')
-                code            = request.POST.get('code')
-                vendors         = request.POST.get('vendors')
-
-                # Buat dictionary addition_factor untuk menampung bcm dan ton dari tabel yang sama
-                addition_factor = {
-                    f"{item['validation']}": {'bcm': item['tf_bcm'], 'ton': item['tf_ton']}
-                    for item in mineAdditionFactor.objects.values('validation', 'tf_bcm', 'tf_ton')
-                }   
-                
-                # Loop untuk menyimpan setiap data sample
-                for idx in range(len(date_production)):
-                    # Gabungkan nilai-nilai kolom menjadi Refresnsi Material
-                    combinedCode = date_production[idx] + category[idx] + (area[idx] if area else '') + \
-                                        (vendors if vendors else '') 
-                    if date_production[idx]:  # Akses elemen list menggunakan indeks `idx`
-                        date_obj = datetime.strptime(date_production[idx], '%Y-%m-%d')
-                        left_date = date_obj.day
-                    else:
-                        left_date = None
-
-                    # Ambil `unit_type` dari `MineUnits` berdasarkan `hauler` (unit_code)
-                    hauler_unit  = get_object_or_404(MineUnits, unit_code=hauler[idx])
-                    hauler_class = hauler_unit.unit_type if hauler_unit else None
-
-                    # Ambil `nama_material` dari `Material` berdasarkan `id_material`
-                    material      = get_object_or_404(Material, id=id_material[idx])
-                    nama_material = material.nama_material if material else None
-
-                    addition_key = f"{hauler_class.strip() if hauler_class else ''}{nama_material.strip() if nama_material else ''}"
-
-                    # Dapatkan bcm_factor dan ton_factor dari addition_factor dictionary
-                    bcm_factor = addition_factor.get(addition_key, {}).get('bcm', None)
-                    ton_factor = addition_factor.get(addition_key, {}).get('ton', None)
-
-                    hauler_class = str(hauler[idx]) if (hauler[idx]) else ''
-                    # Modifikasi hauler_class
-                    hauler_class = str(hauler[idx]) if hauler[idx] else ''  # Pastikan `hauler` menjadi string
-                    if 'ADT' in hauler_class:
-                        type_hauler = 'ADT'
-                    elif 'DT' in hauler_class:
-                        type_hauler = 'DT'
-                    else:
-                        type_hauler = None  # Hauler tidak valid atau tidak termasuk 'ADT' atau 'DT'  
-
-                    # Simpan data sample baru
-                    mineQuickProductions.objects.create(
-                        date_production = date_production[idx],
-                        shift           = shift[idx],
-                        loader          = loader[idx],
-                        hauler          = hauler[idx],
-                        sources         = sources_area[idx],
-                        loading_point   = loading_point[idx],
-                        dumping_point   = dumping_point[idx],
-                        dome_id         = dome_id[idx] if dome_id[idx] else None,  # Memastikan 'None' jika dome_id kosong
-                        category_mine   = category[idx],
-                        id_material     = id_material[idx],
-                        time_loading    = time_loading[idx],
-                        ritase          = ritase[idx], 
-                        bcm             = bcm_factor,
-                        tonnage         = ton_factor,
-                        # block_id        = block_id[idx] if block_id[idx] else None,
-                        # from_rl         = from_rl[idx],
-                        # to_rl           = to_rl[idx],
-                        hauler_class    = type_hauler,
-                        hauler_type     = type_hauler,
-                        ref_materials   = combinedCode,
-                        no_production   = code, 
-                        vendors         = vendors, 
-                        left_date       = left_date, 
-                        id_user         = request.user.id
-                    )
-
-            # Kembalikan respons JSON sukses
-            return JsonResponse({'success': True, 'message': 'Data berhasil disimpan.'})
-
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
-
-        except ValidationError as e:
-            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
-
-        except Exception as e:
-            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
-
-    else:
+    if request.method != 'POST':
         return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
+
+    try:
+        # Aturan validasi
+        rules = {
+            'date_production' : ['required'],
+            'shift'           : ['required'],
+            'time_loading'    : ['required'],
+            'category_mine'   : ['required'],
+            'id_material'     : ['required'],
+            'digger'          : ['required'],
+            'hauler_class'    : ['required'],
+            'loading_point'   : ['required'],
+            'dumping_point'   : ['required'],
+            'ritase'          : ['required'],
+        }
+
+        # Pesan kesalahan validasi
+        custom_messages = {
+            'date_production.required': 'Date harus diisi.',
+            'shift.required': 'Shift harus diisi.',
+            'digger.required': 'Loader harus diisi.',
+            'hauler_class.required': 'Hauler harus diisi.',
+            'sources_area.required': 'Source harus diisi.',
+            'loading_point.required': 'Loading point harus diisi.',
+            'dumping_point.required': 'Dumping point harus diisi.',
+            'category_mine.required': 'Category harus diisi.',
+            'id_material.required': 'Material harus diisi.',
+            'time_loading.required': 'Loading Time harus diisi.',
+            'ritase.required': 'Ritase harus diisi.',
+        }
+
+        # Validasi input
+        for field, field_rules in rules.items():
+            for rule in field_rules:
+                if rule == 'required' and not request.POST.get(field):
+                    return JsonResponse({'error': custom_messages.get(f'{field}.required', f'{field} wajib diisi')}, status=400)
+
+        # Ambil data dari request
+        date_production = request.POST.get('date_production')
+        shift           = request.POST.get('shift')
+        loader          = request.POST.get('digger')
+        hauler          = request.POST.get('hauler')
+        hauler_class    = request.POST.get('hauler_class')
+        sources_area    = request.POST.get('sources_area')
+        loading_point   = request.POST.get('loading_point')
+        dumping_point   = request.POST.get('dumping_point')
+        dome_id         = request.POST.get('dome_id')
+        category        = request.POST.get('category_mine')
+        id_material     = request.POST.get('id_material')
+        time_loading    = request.POST.get('time_loading')
+        ritase          = request.POST.get('ritase')
+        tonnage         = request.POST.get('tonnage')
+        area            = request.POST.get('area')
+        code            = request.POST.get('code')
+        vendors         = request.POST.get('vendors')
+        remarks         = request.POST.get('remarks')
+
+        # Siapkan kode gabungan unik
+        combinedCode = (
+            (date_production[:10] if date_production else '') +
+            (category or '') +
+            (area or '') +
+            (vendors or '')
+        )
+
+        # Ambil tanggal untuk left_date
+        left_date = None
+        if date_production:
+            try:
+                date_obj = datetime.strptime(date_production, '%Y-%m-%d')
+                left_date = date_obj.day
+            except ValueError:
+                return JsonResponse({'error': 'Format tanggal tidak valid'}, status=400)
+
+      
+        # Simpan ke database dalam transaksi
+        with transaction.atomic():
+            mineQuickProductions.objects.create(
+                date_production = date_production,
+                shift           = shift,
+                loader          = loader,
+                # hauler          = hauler,
+                sources         = sources_area,
+                loading_point   = loading_point,
+                dumping_point   = dumping_point,
+                dome_id         = dome_id or None,
+                category_mine   = category,
+                id_material     = id_material,
+                time_loading    = time_loading,
+                ritase          = ritase,
+                bcm             = 0,
+                tonnage         = tonnage,
+                hauler_class    = hauler_class,
+                # hauler_type     = type_hauler,
+                ref_materials   = combinedCode,
+                no_production   = code,
+                vendors         = vendors,
+                left_date       = left_date,
+                remarks         = remarks,
+                id_user         = request.user.id
+            )
+
+        return JsonResponse({'success': True, 'message': 'Data berhasil disimpan.'})
+
+    except IntegrityError as e:
+        return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
 
 @login_required
 @require_http_methods(["POST"])
@@ -310,8 +254,7 @@ def update_quickProduction(request,id):
             'date_production': ['required'],
             'shift'          : ['required'],
             'digger'         : ['required'],
-            'hauler'         : ['required'],
-            'sources'        : ['required'],
+            'hauler_class'   : ['required'],
             'loading_point'  : ['required'],
             'dumping_point'  : ['required'],
             'category_mine'  : ['required'],
@@ -324,17 +267,14 @@ def update_quickProduction(request,id):
         custom_messages = {
             'date_production.required': 'Date harus diisi.',
             'shift.required'          : 'Shift harus diisi.',
-            'digger.required'         : 'Digger harus diisi.',
-            'hauler.required'         : 'Hauler harus diisi.',
-            'sources.required'        : 'Sources harus diisi.',
-            'loading_point.required'  : 'Loading point harus diisi.',
-            'dumping_point.required'  : 'Dumping point harus diisi.',
+            'time_loading.required'   : 'Time harus diisi.',
             'category_mine.required'  : 'Category harus diisi.',
             'id_material.required'    : 'Material harus diisi.',
-            'time_loading.required'   : 'Time harus diisi.',
+            'digger.required'         : 'Digger harus diisi.',
+            'hauler_class.required'   : 'Hauler harus diisi.',
+            'loading_point.required'  : 'Loading point harus diisi.',
+            'dumping_point.required'  : 'Dumping point harus diisi.',
             'ritase.required'         : 'Ritase harus diisi.'
-
-
         }
 
         # Validasi request
@@ -369,37 +309,10 @@ def update_quickProduction(request,id):
         area         = request.POST.get('area')
         vendor       = request.POST.get('vendors')
         refCodes     = f"{date}{category}{area}{vendor}"
-
         dome_id      = request.POST.get('dome_id')
         dome_id      = int(dome_id) if dome_id and dome_id != 'None' else None
 
-        id_material  = request.POST.get('id_material')
-        hauler       = request.POST.get('hauler')
-        hauler_class = str(hauler) if (hauler) else ''
-
-         # Ambil `unit_type` dari `MineUnits` berdasarkan `unit_code`
-        hauler_unit  = get_object_or_404(MineUnits, unit_code=hauler)
-        hauler_class = hauler_unit.unit_type if hauler_unit else None
-
-        # Ambil `nama_material` dari `Material` berdasarkan `id_material`
-        material      = get_object_or_404(Material, id=id_material)
-        nama_material = material.nama_material if material else None
-
-        addition_key = f"{hauler_class.strip() if hauler_class else ''}{nama_material.strip() if nama_material else ''}"
-
-        # Dapatkan bcm_factor dan ton_factor dari addition_factor dictionary
-        bcm_factor = addition_factor.get(addition_key, {}).get('bcm', None)
-        ton_factor = addition_factor.get(addition_key, {}).get('ton', None)
-
-        # Modifikasi hauler_class
-        hauler_class = str(hauler) if hauler else ''  # Pastikan `hauler` menjadi string
-        if 'ADT' in hauler_class:
-            type_hauler = 'ADT'
-        elif 'DT' in hauler_class:
-            type_hauler = 'DT'
-        else:
-            type_hauler = None  # Hauler tidak valid atau tidak termasuk 'ADT' atau 'DT'  
-
+    
         if date:
             # Ubah string tanggal menjadi objek datetime
             date_obj = datetime.strptime(date, '%Y-%m-%d')  # Sesuaikan format sesuai dengan input
@@ -418,8 +331,7 @@ def update_quickProduction(request,id):
         data.vendors         = vendor
         data.shift           = request.POST.get('shift')
         data.loader          = request.POST.get('digger')
-        data.hauler          = request.POST.get('hauler')
-        data.sources         = request.POST.get('sources')
+        # data.sources         = request.POST.get('sources')
         data.loading_point   = request.POST.get('loading_point')
         data.dumping_point   = request.POST.get('dumping_point')
         data.dome_id         = dome_id
@@ -427,10 +339,8 @@ def update_quickProduction(request,id):
         data.id_material     = request.POST.get('id_material')
         data.time_loading    = request.POST.get('time_loading')
         data.ritase          = request.POST.get('ritase')
-        data.bcm             = bcm_factor
-        data.tonnage         = ton_factor
-        data.hauler_class    = hauler_class
-        data.hauler_type     = type_hauler
+        data.tonnage         = request.POST.get('tonnage')
+        data.hauler_class    = request.POST.get('hauler_class')
         data.remarks         = request.POST.get('remarks')
         data.ref_materials   = refCodes
         data.left_date       = left_date
@@ -517,8 +427,8 @@ def getIdQuickProduction(request):
                 'shift'          : clean_string(items.shift),
                 'loader'         : clean_string(items.loader),
                 'diggerName'     : clean_string(diggerName),
-                'hauler'         : clean_string(items.hauler),
-                'haulerName'     : clean_string(haulerName),
+                # 'hauler'         : clean_string(items.hauler),
+                # 'haulerName'     : clean_string(haulerName),
                 'hauler_class'   : clean_string(items.hauler_class),
                 'sources'        : items.sources,
                 'sources_area'   : clean_string(sources_area),

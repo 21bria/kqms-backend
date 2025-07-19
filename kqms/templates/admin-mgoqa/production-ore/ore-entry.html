@@ -1317,6 +1317,19 @@
                     });
                 });
 
+                // Inisialisasi event handler input untuk ritase[]
+                element.find('input[name="ritase[]"]').on('input', function () {
+                    const ritaseInput = $(this);
+                    const row = ritaseInput.closest('tr');
+
+                    // 🔁 Reset dulu
+                    row.find('input[name="tonnage[]"]').val('');
+                    row.find('input[name="truck_factor[]"]').val('');
+                    row.find('input[name="unit_truck[]"]').val('');
+                    // Reset calculate select (pastikan <select>, bukan <input>)
+                    row.find('select[name="calculate[]"]').val('').trigger('change');
+                });
+
                 // Fetch and populate select options dynamically 
                 $('.prospect_area').select2({
                     ajax: {
@@ -1822,7 +1835,7 @@
                     dataType: "json",
                     success: function (response) {
                         if (response.success) {
-                             // Tampilkan notifikasi sukses
+                            // Tampilkan notifikasi sukses
                             const toast = window.Swal.mixin({
                                 toast: true,
                                 position: 'top-end',

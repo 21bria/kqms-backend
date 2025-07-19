@@ -8,7 +8,7 @@ from ..views.settings.dropdown_view import *
 
 urlpatterns = [
     
-     # Get Dropdown dinamyc
+    # Get Dropdown dinamyc
     path('method_dropdown/', method_dropdown, name='method-dropdown'), 
     path('material_dropdown/', material_dropdown, name='material-dropdown'), 
     path('get-details-point/', get_details_point, name='get-details-point'), 
@@ -83,7 +83,12 @@ urlpatterns = [
     path('get-mine/stock/factories/sale/', get_stockFactories, name='get-sale-stock-factories'),
     path('get-mine/code/product/sale/', get_codeProduct, name='get-sale-code-product'),
 
-    path('get-task-import/', get_task_import, name='get-task-import'),
+    # for task
+    path('get-task-import/', get_task_import, name='get-task-import'), # type: ignore
+
+    # For Quick Mines productions
+    path('get-hauler-class/', get_haluer_class, name='get-hauler-class'), 
+    path('get-hauler-factor/', get_factors, name='get-hauler-factor'), 
     # END Drop Down
     
 

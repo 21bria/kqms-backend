@@ -119,8 +119,8 @@ class viewMineProductionQuick(View):
                 "id"             : item.id,
                 "date_production": item.date_production,
                 "shift"          : item.shift,
+                "time_loading"   : item.time_loading,
                 "loader"         : item.loader,
-                "hauler"         : item.hauler,
                 "hauler_class"   : item.hauler_class,
                 "sources_area"   : item.sources_area,
                 "loading_point"  : item.loading_point,
@@ -131,7 +131,7 @@ class viewMineProductionQuick(View):
                 "rl"             : item.rl,
                 "nama_material"  : item.nama_material,
                 "ritase"         : item.ritase,
-                "bcm"            : item.bcm,
+                "tonnage"        : item.tonnage,
                 "remarks"        : item.remarks
                 
             } for item in object_list
@@ -177,12 +177,12 @@ def total_mine_quick(request):
 
     result = queryset.aggregate(
         qty = Count('*'),
-        bcm = Sum('bcm', default=0)
+        tonnage = Sum('tonnage', default=0)
     )
 
     return JsonResponse({
         'Qty' : result['qty'],
-        'Bcm' : result['bcm']
+        'tonnage' : result['tonnage']
     })
 
 @login_required
@@ -216,12 +216,12 @@ def total_mining_quick(request):
         
     result = queryset.aggregate(
         qty = Count('*'),
-        bcm = Sum('bcm', default=0)
+        tonnage = Sum('tonnage', default=0)
     )
 
     return JsonResponse({
         'Qty': result['qty'],
-        'Bcm': result['bcm']
+        'tonnage': result['tonnage']
     })
 
 @login_required
@@ -254,12 +254,12 @@ def total_project_quick(request):
         
     result = queryset.aggregate(
         qty = Count('*'),
-        bcm = Sum('bcm', default=0)
+        tonnage = Sum('tonnage', default=0)
     )
 
     return JsonResponse({
         'Qty': result['qty'],
-        'Bcm': result['bcm']
+        'tonnage': result['tonnage']
     })
 
 @login_required

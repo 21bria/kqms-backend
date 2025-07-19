@@ -83,15 +83,15 @@
                                                 <th scope="col">UnRelease</th>
                                                 <th scope="col">Release</th>
                                                 <th scope="col">Ni</th>
-                                                <th scope="col">Co</th>
-                                                <th scope="col">Al2O3</th>
-                                                <th scope="col">CaO</th>
-                                                <th scope="col">Cr2O3</th>
                                                 <th scope="col">Fe</th>
+                                                <th scope="col">Al2O3</th>
+                                                <th scope="col">Co</th>
                                                 <th scope="col">MgO</th>
                                                 <th scope="col">SiO2</th>
-                                                <th scope="col">Sm</th>
-                                                <th scope="col">Mc</th>
+                                                <th scope="col">CaO</th>
+                                                <th scope="col">Cr2O3</th>
+                                                <th scope="col">SM</th>
+                                                <th scope="col">MC</th>
                                                 <th scope="col">Class</th>
                                             </tr>
                                         </thead>
@@ -107,14 +107,14 @@
                                                 <th id="grand-total-unprepared">-</th>
                                                 <th id="grand-total-unreleased">-</th>
                                                 <th id="grand-total-released">-</th>
-                                                <th id="grand-sum-ni">-</th>
-                                                <th id="grand-sum-co">-</th>
-                                                <th id="grand-sum-al2o3">-</th>
-                                                <th id="grand-sum-cao">-</th>
-                                                <th id="grand-sum-cr2o3">-</th>
+                                               <th id="grand-sum-ni">-</th>
                                                 <th id="grand-sum-fe">-</th>
+                                                <th id="grand-sum-al2o3">-</th>
+                                                <th id="grand-sum-co">-</th>
                                                 <th id="grand-sum-mgo">-</th>
                                                 <th id="grand-sum-sio2">-</th>
+                                                <th id="grand-sum-cao">-</th>
+                                                <th id="grand-sum-cr2o3">-</th>
                                                 <th id="grand-sum-sm">-</th>
                                                 <th id="grand-sum-mc">-</th>
                                                 <th id="">-</th>
@@ -339,14 +339,14 @@
                 newRow.append("<td>" + parseFloat(row.unprepared).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.unreleased).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.released).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
-                newRow.append("<td>" + row.ni + "</td>");
-                newRow.append("<td>" + row.co + "</td>");
-                newRow.append("<td>" + row.al2o3 + "</td>")
-                newRow.append("<td>" + row.cao + "</td>")
-                newRow.append("<td>" + row.cr2o3 + "</td>")
+                 newRow.append("<td>" + row.ni + "</td>");
                 newRow.append("<td>" + row.fe + "</td>")
+                newRow.append("<td>" + row.al2o3 + "</td>")
+                newRow.append("<td>" + row.co + "</td>");
                 newRow.append("<td>" + row.mgo + "</td>")
                 newRow.append("<td>" + row.sio2 + "</td>")
+                newRow.append("<td>" + row.cao + "</td>")
+                newRow.append("<td>" + row.cr2o3 + "</td>")
                 newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + row.mc + "</td>")
 

@@ -447,7 +447,7 @@ class Command(BaseCommand):
             order=4
         )
         Menu.objects.create(
-            title="By Sources",
+            title="Data mral",
             url="source-mral-page",
             parent=data_by_source,
             order=1

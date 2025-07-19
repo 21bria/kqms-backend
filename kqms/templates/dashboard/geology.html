@@ -768,13 +768,37 @@
     var options = {
         series: [],
         chart: {
-            toolbar: {
-                show: false
-            },
             type: 'line',
             height: 250,
             fontFamily: 'Nunito, sans-serif',
+            toolbar: {
+                show: true, // aktifkan toolbar
+                tools: {
+                    download: true,    // ✅ tombol download PNG/SVG
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+                export: {
+                    csv: {
+                        filename: 'export-chart',
+                        columnDelimiter: ',',
+                        headerCategory: 'Category',
+                        headerValue: 'Value',
+                    },
+                    svg: {
+                        filename: 'export-chart',
+                    },
+                    png: {
+                        filename: 'export-chart',
+                    }
+                }
+            }
         },
+
         grid: {
             borderColor: '#f1f1f1',
             // strokeDashArray: 3
@@ -1146,7 +1170,30 @@
         series: [],
         chart: {
             toolbar: {
-                show: false
+                show: true, // aktifkan toolbar
+                tools: {
+                    download: true,    // ✅ tombol download PNG/SVG
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+                export: {
+                    csv: {
+                        filename: 'export-chart',
+                        columnDelimiter: ',',
+                        headerCategory: 'Category',
+                        headerValue: 'Value',
+                    },
+                    svg: {
+                        filename: 'export-chart',
+                    },
+                    png: {
+                        filename: 'export-chart',
+                    }
+                }
             },
             type: 'line',
             height: 250,
@@ -1509,19 +1556,18 @@
             .then(data => {
                 const tbody = document.querySelector("#list-grade tbody");
                 tbody.innerHTML = "";
-
                 data.data.forEach(row => {
                     tbody.innerHTML += `
                     <tr  class="border-y border-inherit border-solid dark:border-defaultborder/10">
                         <td>${row.nama_material || '-'}</td>
                         <td>${parseFloat(row.ni || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.fe || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.mgo || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sio2 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sm || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.mc || 0).toFixed(2)}</td>
                        <td>${row.grade}</td>
@@ -1573,13 +1619,13 @@
                         <td>${parseFloat(row.total_ore || 0).toFixed(1)}</td>
                         <td>${parseFloat(row.released || 0).toFixed(1)}</td>
                         <td>${parseFloat(row.ni || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.fe || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.mgo || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sio2 || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
+                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sm || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.mc || 0).toFixed(2)}</td>
                        <td>${row.grade}</td>
