@@ -30,8 +30,9 @@ def import_waybills(file_path, original_file_name):
         df['delivery_time'] = pd.to_datetime(df['delivery_time'], format='%H:%M:%S').dt.time
 
         # Gabungkan kolom  menjadi datetime tanpa timezone
-        # df['delivery'] = df.apply(lambda row: datetime.combine(row['tgl_deliver'], row['delivery_time']), axis=1)
-        df['delivery'] = df.apply(lambda row: timezone.make_aware(datetime.combine(row['tgl_deliver'], row['delivery_time'])), axis=1)
+        # df['delivery'] = df.apply(lambda row: timezone.make_aware(datetime.combine(row['tgl_deliver'], row['delivery_time'])), axis=1)
+        df['delivery'] = df.apply(lambda row: datetime.combine(row['tgl_deliver'], row['delivery_time']), axis=1)
+
         # df['delivery'] = df['delivery'].apply(lambda x: x.replace(tzinfo=None))
         
 
@@ -64,8 +65,8 @@ def import_waybills(file_path, original_file_name):
                         waybill_number=waybill_number,
                         sample_id=sample_id,
                         numb_sample=numb_sample,
-                        mral_order=(str(mral_order).strip().lower() == 'yes'),
-                        roa_order=(str(roa_order).strip().lower() == 'yes'),
+                        mral_order=str(mral_order).strip(),
+                        roa_order=str(roa_order).strip(),
                         remarks=remarks
                     )
                     list_objects.append(obj)
