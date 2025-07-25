@@ -1,0 +1,880 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Laboratory create</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Waybills
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-12 col-span-12">
+                    <div class="box">
+                        <div class="box-header xxl:!flex !block">
+                            <div class="h5 mb-0 sm:flex block items-center">
+
+                                <div class="sm:ms-0 ms-0 sm:mt-0 mt-2">
+                                    <form id="add_item">
+                                        <div class="flex rounded-sm">
+                                            <input type="text" id="sample_id" name="sample_id"
+                                                placeholder="Jobs number.."
+                                                class=" ti-form-input rounded-none rounded-s-sm focus:z-10 w-full sm:me-1 !mb-2 sm:!mb-0 ">
+                                            <button aria-label="button" type="button" id="search_multi"
+                                                class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                    height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="grid grid-cols-12 sm:gap-x-6 gap-y-6">
+                                <div class="xl:col-span-12 col-span-12">
+                                    <div class="grid grid-cols-12 sm:gap-x-6 gap-y-6">
+                                        <div
+                                            class="xl:col-span-4 lg:col-span-6 md:col-span-6 sm:col-span-6 col-span-12">
+                                            <p class="font-semibold mb-2">
+                                                Deliver to :
+                                            </p>
+                                            <div class="grid grid-cols-12 col-span-12 gap-2">
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <div class="input-group">
+                                                        <div class="input-group-text text-[#8c9097] dark:text-white/50">
+                                                            <i class="ri-calendar-line"></i>
+                                                        </div>
+                                                        <input type="text" class="form-control" id="tgl_deliver"
+                                                            name="tgl_deliver" placeholder="Deliver Date"
+                                                            value="{{day_date}}">
+                                                    </div>
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <input type="text" class="form-control w-full !rounded-md !bg-light"
+                                                        id="delivery_time" name="delivery_time" placeholder="hh:mm">
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <input type="text" class="form-control w-full !rounded-md !bg-light"
+                                                        id="numb_sample" name="numb_sample" placeholder="Enter Qty">
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <textarea class="form-control w-full !rounded-md !bg-light"
+                                                        id="remarks" name="remarks" placeholder="Remarks" rows="3"
+                                                        style="height: 60px;"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 xl:flex hidden"></div>
+                                        <div
+                                            class="xl:col-span-4 lg:col-span-6 md:col-span-6 sm:col-span-6 col-span-12 sm:mt-0 mt-4">
+                                            <p class="font-semibold mb-2">
+                                                Account Details :
+                                            </p>
+                                            <div class="grid grid-cols-12 gap-2">
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <input type="text" class="form-control w-full !rounded-md !bg-light"
+                                                        id="waybill_number" name="waybill_number"
+                                                        placeholder="Waybill umber">
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <select class="form-control w-full !rounded-md !bg-light"
+                                                        id="section_order" name="section_order">
+                                                        <option value="">-- section -- </option>
+                                                        <option value="GC">GC</option>
+                                                        <option value="QA">QA</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <select class="form-control w-full !rounded-md !bg-light"
+                                                        id="mral_order" name="mral_order">
+                                                        <option value="">-- mral -- </option>
+                                                        <option value="Yes">Yes</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-12 col-span-12">
+                                                    <select class="form-control w-full !rounded-md !bg-light"
+                                                        id="roa_order" name="roa_order">
+                                                        <option value="">-- roa -- </option>
+                                                        <option value="Yes">Yes</option>
+                                                        <option value="No">No</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-12 col-span-12">
+                                    <div class="table-responsive">
+                                        <table id="data_table"
+                                            class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap"
+                                            style="width: 100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Sample Id</th>
+                                                    <th>Material</th>
+                                                    <th>Batch</th>
+                                                    <th>Method</th>
+                                                    <th>Type</th>
+                                                    <th>Sampling area</th>
+                                                    <th>Sampling point</th>
+                                                    <th>Keterangan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="xl:col-span-12 col-span-12">
+                                        <input class="form-control w-full !rounded-md !bg-light input-sm" id="id"
+                                            readonly="" type="hidden">
+                                        <input class="form-control w-full !rounded-md !bg-light input-sm"
+                                            id="hide_sample_id" readonly="" type="hidden">
+                                        <input class="form-control w-full !rounded-md !bg-light input-sm" id="remark"
+                                            readonly="" type="hidden">
+                                        <strong><input type="text" id="description"
+                                                class="form-control w-full !rounded-md !bg-light sm:me-1 !mb-2 sm:!mb-0 disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed"
+                                                readonly /></strong>
+                                    </div>
+                                    <div class="box-footer text-end">
+
+                                        <button type="button" id="batal"
+                                            class="ti-btn ti-btn-secondary ti-btn-wave sm:me-1 !mb-2 sm:!mb-0">Cancel</button>
+                                        <button type="button" id="clear"
+                                            class="ti-btn ti-btn-danger ti-btn-wave sm:me-1 !mb-2 sm:!mb-0">Clear
+                                            data</button>
+                                        <button type="button" id="save"
+                                            class="ti-btn ti-btn-success ti-btn-wave sm:me-1 !mb-2 sm:!mb-0">Send
+                                            data</i></button>
+                                    </div>
+                                </div>
+                                <!-- <div class="xl:col-span-12 col-span-12">
+                                    <div>
+                                        <label for="invoice-note" class="form-label">Note:</label>
+                                        <textarea class="form-control w-full !rounded-md !bg-light" id="invoice-note"
+                                            rows="3">Once the invoice has been verified by the accounts payable team and recorded, the only task left is to send it for approval before releasing the payment</textarea>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form action="#" id="form_multi">
+                    <div class="ti-modal-body px-2 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4 ">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">from</label>
+                                <input type="text" class="form-control w-full !rounded-md" id="sample_from"
+                                    name="sample_from">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">to</label>
+                                <input type="text" class="form-control w-full !rounded-md" id="sample_to"
+                                    name="sample_to">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="submit" id="add_multi"
+                            class="ti-btn bg-primary text-white !font-medium">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    // event double click untuk field delivery_time
+    $('#delivery_time').on('dblclick', function () {
+        // Mendapatkan waktu saat ini
+        var currentTime = new Date();
+        // Format waktu dalam bentuk jam:menit (HH:MM)
+        var hours = currentTime.getHours().toString().padStart(2, '0');
+        var minutes = currentTime.getMinutes().toString().padStart(2, '0');
+        // Format waktu
+        var formattedTime = hours + ':' + minutes;
+        // Isi value ke input field
+        $(this).val(formattedTime);
+    });
+
+    $(document).ready(function () {
+        flatpickr("#tgl_deliver", {
+            dateFormat: "Y-m-d",
+        });
+        $('#section_order').change(function () {
+            var team = $(this).val();
+            var date_delivery = $('#tgl_deliver').val(); // Pastikan id ini sesuai
+
+            if (!team || !date_delivery) {
+                console.warn("Team or Date Delivery is missing.");
+                $('#waybill_number').val('');
+                // Tampilkan notifikasi 
+                const toast = window.Swal.mixin({
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    padding: '2em',
+                });
+                toast.fire({
+                    icon: 'error',
+                    // title: 'Update successfully',
+                    html: "Team or Date Delivery is missing.",
+                    padding: '2em',
+                });
+                return;
+
+            }
+            var url = '/kqms/geology/generate-number/' + team + '/';
+            $.ajax({
+                url: url,
+                method: "GET",
+                data: { date_delivery: date_delivery },
+                dataType: "json",
+                success: function (data) {
+                    if (data.new_number) {
+                        $('#waybill_number').val(data.new_number);
+                    } else {
+                        console.warn("No number generated.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                }
+            });
+        });
+    });
+
+</script>
+
+
+
+<!-- higlight rowcolor jika refresh -->
+<script type="text/javascript">
+    function loadRowColor_refresh() {
+        setTimeout(function () {
+            var sample_id = $("#data_table").find("tr:last td:eq(1)").text();
+            $("#hide_sample_id").val(sample_id)
+            var iNum = parseInt($('#hide_sample_id').val());
+            var elems = $('.no_select').filter(function () {
+                return this.textContent == iNum;
+            }).click();
+            //auto scroll buttom datatable
+            var table = $("#data_table").DataTable();
+            var $scrollBody = $(table.table().node()).parent();
+            $scrollBody.scrollTop($scrollBody.get(0).scrollHeight);
+            //auto scroll buttom datatable  
+        }, 1000);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "waybill-list-temporary" %}';
+        var table = $('#data_table').DataTable({
+            "autoWidth": false,
+            scrollY: 370,
+            scrollX: true,
+            'searching': false,
+            // 'info': false,
+            // 'paging': false,
+            "lengthChange": false,
+            'processing': true,
+            'serverSide': true,
+            stripeClasses: [],
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'sample_id',
+                    name: 'sample_id'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material',
+                    searchable: true
+                },
+                {
+                    data: 'batch_code',
+                    name: 'batch_code'
+                },
+                {
+                    data: 'type_sample',
+                    name: 'type_sample',
+                    searchable: true
+                },
+                {
+                    data: 'sample_method',
+                    name: 'sample_method',
+                    searchable: true
+                },
+
+                {
+                    data: 'sampling_area',
+                    name: 'sampling_area',
+                    searchable: true
+                },
+                {
+                    data: 'sampling_point',
+                    name: 'sampling_point',
+                    searchable: true
+                },
+
+                {
+                    data: 'status_input',
+                    name: 'status_input'
+                },
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+
+        // Handle event ketika baris di klik
+        $('#data_table tbody').on('click', 'tr', function () {
+            var classList = $(this).attr('class'); // Mengambil kelas dari elemen 'tr'
+            if (classList && classList.includes('selected')) {
+                $(this).removeClass('selected selected-row');
+                // Reset 
+                $("#description").val('');
+            } else {
+                $('#data_table tbody tr').removeClass('selected selected-row');
+                $(this).addClass('selected selected-row');
+                // Dapatkan data dari baris yang dipilih
+                var rowData = table.row(this).data();
+                var sample_id = rowData.sample_id;
+                var nama_material = rowData.nama_material;
+                var remark = rowData.status_input;
+                // Setel nilai-nilai ke elemen HTML yang sesuai
+
+                $("#description").val(sample_id);
+                $("#hide_sample_id ").val(sample_id);
+                $("#remark ").val(remark);
+                if (remark == "Batal") {
+                    $(this).addClass('replace_color');
+
+                } else {
+                    $(this).removeClass('replace_color');
+                }
+            }
+        });
+        // Handle event when cell looses focus
+        $('#data_table').on('key-blur.dt', function (e, datatable, cell) {
+            $(table.row(cell.index().row).node()).removeClass('selected');
+            $(table.row(cell.index().row).node()).removeClass('replace_color');
+        });
+    });
+</script>
+
+<!-- event klik button multi -->
+<script>
+    $(document).ready(function () {
+        $('#search_multi').click(function () {
+            window.HSOverlay.open('#search-modal');
+        });
+        shortcut.add("M", function () {
+            $('#search_multi').click();
+        });
+    });
+</script>
+
+<!-- higlight row color -->
+<script type="text/javascript">
+    function loadRowColor() {
+        setTimeout(function () {
+            //function for highlight row
+            /*convert string to number*/
+            var iNum = $('#hide_sample_id').val();
+            var elems = $('.no_select').filter(function () {
+                return this.textContent == iNum;
+            }).click();
+            //function for highlight row
+            var table = $("#data_table").DataTable();
+            var $scrollBody = $(table.table().node()).parent();
+            $scrollBody.scrollTop($scrollBody.get(0).scrollHeight);
+        }, 300);
+    }
+</script>
+
+<!-- Cancel -->
+<script type="text/javascript">
+    $('#batal').click(function () {
+        var table = $('#data_table').DataTable();
+        var data = table.rows().data();
+        var isi_table = data.length;
+        var remark = $("#remark").val();
+
+        if (isi_table === 0) {
+            $("#sample_id").focus();
+            return false;
+        } else if (remark === 'Batal') {
+            $("#sample_id").focus();
+            loadRowColor();
+            return false;
+        } else {
+            var sample_id = $('#hide_sample_id').val();
+            var url = '{% url "update-status" %}';
+            $.ajax({
+                url: url,
+                type: "POST",
+                dataType: 'json',
+                data: {
+                    sample_id: sample_id
+                },
+                success: function (response) {
+                    // Handle respons jika berhasil
+                    console.log(response);
+                    $("#data_table").DataTable().ajax.reload();
+                    loadRowColor();
+                },
+                error: function (xhr, status, error) {
+                    // Handle kesalahan jika diperlukan
+                    console.error(error);
+                }
+            });
+        }
+    });
+</script>
+
+<!-- event klik button clear -->
+<script type="text/javascript">
+    $('#clear').click(function () {
+        var table = $('#data_table').DataTable();
+        var data = table.rows().data();
+        var isi_table = data.length;
+        if (isi_table == '0') {
+            $("#sample_id").focus();
+            return false;
+        } else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                width: 380,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{%url 'delete-temporary'%}",
+                        type: "DELETE",
+                        success: function (data) {
+                            // table.draw();
+                            $("#data_table").DataTable().ajax.reload();
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        icon: 'success',
+                        width: 380,
+                    })
+                }
+            })
+        }
+    });
+</script>
+
+<!-- Insert multi to temporary -->
+<script type="text/javascript">
+    $(document).on('submit', '#form_multi', function (event) {
+        event.preventDefault();
+        var sampleFrom = $('#sample_from').val();
+        var sampleTo = $('#sample_to').val();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            padding: '2em',
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        // AJAX request untuk insert data
+        let url = '{% url "waybill-add-multi" %}';
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                sampleFrom: sampleFrom,
+                sampleTo: sampleTo
+            },
+            success: function (response) {
+                if (response.status == true) {
+                    $("#hide_sample_id").val(response.insert_data[0].sample_number);
+                    $("#data_table").DataTable().ajax.reload();
+                    loadRowColor();
+                    $("#sample_from").val('');
+                    $("#sample_to").val('');
+                    window.HSOverlay.close('#search-modal');
+                    Toast.fire({
+                        icon: 'success',
+                        text: response.message + " : " + response.insert_count + ", Duplicate : " + response.duplicate,
+                        padding: '2em',
+                    });
+
+                } else {
+                    $("#sample_from").val('');
+                    $("#sample_to").val('');
+                    Toast.fire({
+                        icon: 'error',
+                        text: response.message + " !! : " + response.insert_data + " ",
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Failed to insert data'
+                });
+            }
+        });
+    });
+</script>
+<!-- Insert single item -->
+<script type="text/javascript">
+    $(document).on('submit', '#add_item', function (event) {
+        event.preventDefault();
+        var sample_id = $('#sample_id').val();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        })
+
+        // AJAX request untuk insert data
+        let url = '{% url "waybill-add-item" %}';
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                sample_id: sample_id,
+            },
+            success: function (response) {
+                if (response.status == true) {
+                    $("#hide_sample_id").val(sample_id);
+                    $("#data_table").DataTable().ajax.reload();
+                    loadRowColor();
+                    $("#sample_id").val('');
+                    Toast.fire({
+                        icon: 'success',
+                        text: response.message,
+                        padding: '2em',
+                    });
+
+                } else {
+                    $("#sample_id").val('');
+                    Toast.fire({
+                        icon: 'error',
+                        text: response.message,
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Failed to insert data'
+                });
+            }
+        });
+    });
+</script>
+
+<!-- Save Data -->
+<script>
+
+    $('#save').click(function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        var table = $('#data_table').DataTable();
+        var data = table.rows().data();
+        var isi_table = data.length;
+        var waybill_number = $('#waybill_number').val();
+        var numb_sample = $('#numb_sample').val();
+        var delivery_time = $('#delivery_time').val();
+        var tgl_deliver = $('#tgl_deliver').val();
+        var mral_order = $('#mral_order').val();
+        var roa_order = $('#roa_order').val();
+        var remarks = $('#remarks').val();
+
+        if (isi_table == '0') {
+            $("#sample_id").focus();
+            return false;
+        } else if (remarks == 'Batal') {
+            $("#sample_id").focus();
+            loadRowColor();
+            return false;
+        } else if (tgl_deliver == '') {
+            $("#tgl_deliver").focus();
+            return false;
+        } else if (delivery_time == '') {
+            $("#delivery_time").focus();
+            return false;
+        } else if (waybill_number == '') {
+            $("#waybill_number").focus();
+            return false;
+        } else if (numb_sample == '') {
+            $("#numb_sample").focus();
+            return false;
+        } else if (mral_order == '') {
+            $("#mral_order").focus();
+            Toast.fire({
+                icon: 'error',
+                title: 'Select MRAL Order !!'
+            });
+            return false;
+        } else if (roa_order == '') {
+            $("#roa_order").focus();
+            Toast.fire({
+                icon: 'error',
+                title: 'Select Roa Order !!'
+            });
+            return false;
+        } else {
+            // Ajax request untuk insert data waybill
+            $.ajax({
+                url: "{% url 'insert-waybill' %}",
+                method: 'POST',
+                data: {
+                    tgl_deliver: tgl_deliver,
+                    delivery_time: delivery_time,
+                    waybill_number: waybill_number,
+                    numb_sample: numb_sample,
+                    mral_order: mral_order,
+                    roa_order: roa_order,
+                    remarks: remarks
+                },
+                success: function (insertResponse) {
+                    console.log("Insert response:", insertResponse);
+
+                    const isSuccess = insertResponse.success === true || insertResponse.success === "true";
+
+                    if (isSuccess) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: insertResponse.message,
+                            width: 380,
+                        }).then(() => {
+                            // Kosongkan form
+                            $('#delivery_time, #numb_sample, #waybill_number, #remarks').val('');
+                            $('#tgl_deliver').val('');
+                            $('#mral_order, #roa_order').val('').trigger('change');
+                            // Hapus temporary
+                            $.ajax({
+                                url: "{% url 'delete-temporary' %}",
+                                type: "DELETE",
+                                success: function () {
+                                    console.log("Temporary data cleared.");
+                                    const table = $('#data_table').DataTable();
+                                    table.ajax.reload(function (json) {
+                                        console.log("🔥 Reload berhasil dari fungsi reloadDataTable", json);
+                                    }, false);
+                                    loadRowColor();
+                                }
+                            });
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: insertResponse.message || 'Failed to insert waybill data',
+                            width: 380,
+                        });
+                    }
+                },
+                error: function (insertXhr, insertStatus, insertError) {
+                    console.error("Insert error response:", insertXhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to insert waybill data',
+                        width: 380,
+                    });
+                }
+
+            });
+        }
+
+    });
+</script>
+
+</body>
+
+</html>
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+    table.dataTable td.focus {
+        outline: 0px solid #17a2b81a;
+    }
+
+    /* .replace_color {
+        background-color: #a99feee1 !important;
+        z-index: 1
+    } */
+
+    /* table.table.dataTable.table-hover>tbody>tr.selected:hover>* {
+        box-shadow: inset 0 0 0 9999px rgb(127 147 177 / 98%);
+        box-shadow: inset 0 0 0 9999px rgb(127 147 177 / 98%);
+    } */
+
+
+
+    div.dataTables_wrapper div.dataTables_filter {
+        /*  width: 100%;*/
+        margin-top: -30px;
+        color: black
+    }
+
+    */ .input-sm {
+        height: 25px;
+        padding: 5px 10px;
+        font-size: 12px;
+
+    }
+</style>

@@ -10,13 +10,13 @@ from django.contrib import messages
 
 @login_required
 def users_page(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     # Jika tidak memiliki izin, arahkan ke halaman error
-    #     context = {
-    #         'error_message': 'You do not have permission to access this page.',
-    #     }
-    #     return render(request, '403.html', context, status=403)
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        # Jika tidak memiliki izin, arahkan ke halaman error
+        context = {
+            'error_message': 'You do not have permission to access this page.',
+        }
+        return render(request, '403.html', context, status=403)
 
 
     return render(request, 'users/list-users.html')

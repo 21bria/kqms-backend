@@ -14,6 +14,8 @@ urlpatterns = [
     path('dashboard/', include('kqms.urls_path.dashboard')),
     path('dropdown/', include('kqms.urls_path.dropdown')),
     path('geology/', include('kqms.urls_path.geology')),
+    path('geology/', include('kqms.urls_path.geology')),
+    path('laboratory/', include('kqms.urls_path.laboratory')),
     path('mining/', include('kqms.urls_path.mining')),
     path('master/', include('kqms.urls_path.master')),
     path('config/', include('kqms.urls_path.config')),

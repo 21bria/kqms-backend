@@ -33,9 +33,6 @@ def import_waybills(file_path, original_file_name):
         # df['delivery'] = df.apply(lambda row: timezone.make_aware(datetime.combine(row['tgl_deliver'], row['delivery_time'])), axis=1)
         df['delivery'] = df.apply(lambda row: datetime.combine(row['tgl_deliver'], row['delivery_time']), axis=1)
 
-        # df['delivery'] = df['delivery'].apply(lambda x: x.replace(tzinfo=None))
-        
-
         df['numb_sample'] = df['numb_sample'].fillna(0).astype(int)
 
 

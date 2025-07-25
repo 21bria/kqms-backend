@@ -8,6 +8,7 @@ from ..models.merge_stock import domeMerge,stockpileMerge
 from ..models.mine_productions import mineProductions,mineQuickProductions
 import json
 from ..models.waybill_model import Waybills
+from ..models.laboratory import LaboratorySamples
 from datetime import datetime, date
 from django.db.models import Max
 from datetime import datetime
@@ -235,3 +236,34 @@ def generate_waybill_number(team, date_delivery=None):
     new_number = f"{formatted_date}/{formatted_kd}/{team.upper()}"
     return new_number
 
+def generate_lab_number( date_received=None):
+    # Menggunakan tanggal hari ini jika date_received tidak diberikan
+    if date_received is None:
+        today = date.today()
+        date_received = today.strftime('%Y-%m-%d')  # Mengambil tanggal hari ini
+
+    # Mengonversi string date_received ke objek date
+    date_obj = datetime.strptime(date_received, '%Y-%m-%d').date()  # Hanya ambil tanggal
+    formatted_date = date_obj.strftime('%y%m%d')
+
+    # Ambil nomor terakhir berdasarkan updated_at untuk hari ini
+    max_kd = LaboratorySamples.objects.filter(updated_at__date=date_obj).aggregate(Max('register'))
+    last_number = max_kd['register__max']
+
+    print(f"Last number: {last_number}")  # Debugging
+
+    # Menghitung nomor urut
+    if last_number and len(last_number.split('/')) >= 3:
+        try:
+            # Mengambil angka urut dari nomor terakhir
+            kd = int(last_number.split('/')[2]) + 1  # Ambil substring angka urut di tengah
+        except (ValueError, IndexError):
+            kd = 1  # Kembali ke 1 jika ada kesalahan
+    else:
+        kd = 1  # Reset ke 1 jika tidak ada entri untuk hari ini
+
+    # Format nomor urut menjadi 4 digit
+    formatted_kd = f"{kd:04d}"  
+    new_number = f"LAB/{formatted_date}/{formatted_kd}"  # Format sesuai kebutuhan
+    print(f"Generated new number: {new_number}")  # Debugging
+    return new_number

@@ -51,14 +51,19 @@
             <div class="grid grid-cols-12 gap-6">
                 <div class="col-span-12">
                     <div class="box">
-                        <div class="box-header">
-                            <h5 class="box-title">Source to dome {roa}</h5>
+                          <div class="box-header justify-between">
+                            <div class="box-title">
+                                Source to dome {roa}
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
                                 <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
-                                    <button id="exportFilter" type="button"
-                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
                                     <button id="openFilter" type="button"
                                         class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
                                     <a id="reload" href="#"
