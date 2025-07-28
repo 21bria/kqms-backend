@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.io as pio
 pio.templates
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import connections,DatabaseError
@@ -82,333 +82,293 @@ def extract_hours(t):
 # For plotly Chart
 @login_required
 def chartTatMral(request):
-    start_date = request.GET.get('startDate')
-    end_date = request.GET.get('endDate')
-    theme = request.GET.get("theme", "light")  # ← tangkap theme dari frontend
+    theme      = request.GET.get("theme", "light")  # ← tangkap theme dari frontend
 
-
-    # 🔍 Validasi tanggal dan susun kondisi WHERE
+    params     = []
     conditions = ["mral_order = 'Yes'"]
-    if start_date and end_date:
-        try:
-            datetime.strptime(start_date, '%Y-%m-%d')
-            datetime.strptime(end_date, '%Y-%m-%d')
-            conditions.append(f"tgl_produksi BETWEEN '{start_date}' AND '{end_date}'")
-        except ValueError:
-            raise ValueError("Invalid date format. Use YYYY-MM-DD.")
 
-    where_clause = "WHERE " + " AND ".join(conditions)
-
-    # 🛠️ Query berdasarkan DB vendor
-    if db_vendor == 'mysql':
-        query = f"""
-            SELECT 
-                tgl_produksi, 
-                mral_order,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' THEN sample_number END) AS jml_mral,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'OnTime' AND tat_mral IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'Late' AND tat_mral IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) IS NULL THEN '00:00:00'
-                    ELSE CONCAT(
-                        LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) / 3600), 2, '0'), ':',
-                        LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) % 3600) / 60), 2, '0'), ':',
-                        LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) % 60, 2, '0')
-                    )
-                END AS average_time,
-                '03:00:00' AS time_limit   
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, mral_order
-            ORDER BY tgl_produksi ASC;
-        """
-
-    elif db_vendor in ['mssql', 'microsoft']:
-        query = f"""
-            SELECT 
-                tgl_produksi, 
-                mral_order,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' THEN sample_number END) AS jml_mral,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'OnTime' AND tat_mral IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'Late' AND tat_mral IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(DATEDIFF(SECOND, delivery, release_mral)) IS NULL THEN '00:00:00'
-                    ELSE 
-                        RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_mral)) / 3600 AS VARCHAR), 2) + ':' +
-                        RIGHT('00' + CAST((AVG(DATEDIFF(SECOND, delivery, release_mral)) % 3600) / 60 AS VARCHAR), 2) + ':' +
-                        RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_mral)) % 60 AS VARCHAR), 2)
-                END AS average_time,
-                '03:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, mral_order
-            ORDER BY tgl_produksi ASC;
-        """
-
-    elif db_vendor == 'postgresql':
-        query = f"""
-            SELECT 
-                tgl_produksi,
-                mral_order,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' THEN sample_number END) AS jml_mral,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'OnTime' AND tat_mral IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'Late' AND tat_mral IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NULL THEN sample_number END) AS not_released,
-                COALESCE(
-                    TO_CHAR(
-                        MAKE_INTERVAL(secs => ROUND(AVG(EXTRACT(EPOCH FROM release_mral - delivery)))), 
-                        'HH24:MI:SS'
-                    ),
-                    '00:00:00'
-                ) AS average_time,
-                '03:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, mral_order
-            ORDER BY tgl_produksi ASC;
-        """
-
-    else:
-        raise ValueError("Unsupported database vendor.")
-
-
-    # df = pd.read_sql_query(query, connection)
-    df = pd.read_sql_query(query, connections['kqms_db'])
-
-    # Mengonversi kolom waktu
-    df['TAT_seconds']   = df['average_time'].apply(time_to_seconds)
-    df['Limit_seconds'] = df['time_limit'].apply(time_to_seconds)
-    # Menambahkan kolom dengan jam saja
-    df['Avg_hours']     = df['average_time'].apply(extract_hours)
-    df['Limit_hours']   = df['time_limit'].apply(extract_hours)
-        
-    # Konversi kembali ke format waktu untuk ditampilkan pada grafik
-    df['TAT_formatted']   = df['TAT_seconds'].apply(seconds_to_time)
-    df['Limit_formatted'] = df['Limit_seconds'].apply(seconds_to_time)
-
-    # Mengurutkan DataFrame berdasarkan tanggal produksi
-    df = df.sort_values(by='tgl_produksi')
-    if df.empty:
-        fig = go.Figure()
-        fig.update_layout(
-            xaxis={"visible": False},
-            yaxis={"visible": False},
-            plot_bgcolor='rgba(0,0,0,0)', 
-            annotations=[
-                {
-                    "text": "No matching data found",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "showarrow": False,
-                    "font": {"size": 14}
-                }
-            ],
-            height=360,
-            template="plotly_dark" if theme == "dark" else "plotly_white",
-        )
-        plot_div = fig.to_html(full_html=False)
-        return JsonResponse({'plot_div': plot_div})
-    
-    # Load data
-    order    = df['jml_mral'].tolist()
-    limit    = df['Limit_hours'].tolist()
-    avg_time = df['Avg_hours'].tolist()
-  
-    x        = df['tgl_produksi'].tolist()
-    avg_time_formatted = df['TAT_formatted'].tolist()
-    limit_formatted = df['Limit_formatted'].tolist()
-    
-    fig = go.Figure()
-
-    # Warna untuk masing-masing trace
-    colors = {
-        'order'   : '#92cd08',
-        'avg_time': '#edda0c',
-        'limit'   : '#d68000'
-    }
-    
-    # Menambahkan grafik batang untuk Samples
-    fig.add_trace(go.Bar(
-        x=x,
-        y=order,
-        text=order, 
-        name="Samples",
-        texttemplate='%{text:.0f}',
-    ))
-   
-    # Menambahkan garis untuk TAT Limit dengan sumbu y kedua
-    fig.add_trace(go.Scatter(
-            x=x,
-            y=limit,
-            mode='lines+markers',
-            marker=dict(size=7),
-            name='TAT Limit',
-            yaxis='y3',  # Menentukan sumbu y kedua
-            text=limit_formatted,
-            texttemplate='%{text}'
-        ))
-    
-    # Menambahkan garis untuk TAT Mral dengan sumbu y kedua
-    fig.add_trace(go.Scatter(
-        x=x,
-        y=avg_time,
-        mode='lines+markers',
-        marker=dict(size=7),
-        name='TAT Mral',
-        yaxis='y3', # Menentukan sumbu y kedua
-        text=avg_time_formatted,
-        texttemplate='%{text}'
-    ))
-
-    # Mengatur layout grafik
-    fig.update_layout(
-        legend=dict(orientation="h"),
-        title=f'TAT MRAL ({start_date} to {end_date})',
-        title_font=dict(size=16),
-        #margin=dict(l=40, r=25, t=60, b=25), 
-        title_x=0.5,
-        plot_bgcolor='rgba(0,0,0,0)',
-        showlegend=True,
-        xaxis=dict(
-            # title='Tanggal Produksi',
-            title_font=dict(size=12),
-        ),
-        yaxis=dict(
-            title='Samples Order',
-            title_font=dict(size=12),
-            side='left',
-            showgrid=True,
-            showline=True
-        ),
-        yaxis2=dict(
-            # title='Waktu (detik)',
-            title_font=dict(size=12),
-            side='right',
-            overlaying='y',  # Menggunakan sumbu y yang sama dengan overlay
-            showgrid=True,
-            showline=True,
-            showticklabels=False,
-            anchor='x'
-        ),
-        yaxis3=dict(
-            # title='Average Time (detik)',
-            title_font=dict(size=12),
-            side='right',
-            overlaying='y',  # Menggunakan sumbu y yang sama dengan overlay
-            showgrid=True,
-            showline=True,
-            anchor='x',
-            showticklabels=True,  # Menyembunyikan label teks
-            position=0.95,
-        ),
-        bargap=0.2, 
-        height=360,
-        template="plotly_dark" if theme == "dark" else "plotly_white",
-    )
-    plot_div = fig.to_html(full_html=False, config={
-    'modeBarButtonsToRemove': ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'],
-    'responsive': True
-})
-    return JsonResponse({'plot_div': plot_div})
-
-@login_required
-def chartTatRoa(request):
     start_date = request.GET.get('startDate')
     end_date = request.GET.get('endDate')
-    theme = request.GET.get("theme", "light")  # ← tangkap theme dari frontend
 
-    # 🔍 Validasi dan susun WHERE clause
-    conditions = ["roa_order = 'Yes'"]
+    # Filter tanggal dari frontend atau fallback default
     if start_date and end_date:
         try:
             datetime.strptime(start_date, '%Y-%m-%d')
             datetime.strptime(end_date, '%Y-%m-%d')
-            conditions.append(f"tgl_produksi BETWEEN '{start_date}' AND '{end_date}'")
+            conditions.append("tgl_produksi BETWEEN %s AND %s")
+            params.extend([start_date, end_date])
         except ValueError:
             raise ValueError("Invalid date format. Use YYYY-MM-DD.")
+    else:
+        # ⏳ Default ke Senin minggu ini sampai hari ini
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())  # Senin
+        conditions.append("tgl_produksi BETWEEN %s AND %s")
+        params.extend([monday, today])
 
     where_clause = "WHERE " + " AND ".join(conditions)
 
     # 🛠️ Query berdasarkan DB vendor
-    if db_vendor == 'mysql':
-        query = f"""
-            SELECT 
-                tgl_produksi,
-                roa_order,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
-                    ELSE 
-                        LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) / 3600), 2, '0') || ':' ||
-                        LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 3600) / 60), 2, '0') || ':' ||
-                        LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 60, 2, '0')
-                END AS average_time,
-                '120:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, roa_order
-            ORDER BY tgl_produksi ASC
+   
+    # Ekspresi waktu rata-rata tergantung vendor
+    if db_vendor in ['mssql', 'microsoft']:
+        avg_expr = """
+            CASE
+                WHEN AVG(DATEDIFF(SECOND, delivery, release_mral)) IS NULL THEN '00:00:00'
+                ELSE 
+                    RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_mral)) / 3600 AS VARCHAR), 2) + ':' +
+                    RIGHT('00' + CAST((AVG(DATEDIFF(SECOND, delivery, release_mral)) % 3600) / 60 AS VARCHAR), 2) + ':' +
+                    RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_mral)) % 60 AS VARCHAR), 2)
+            END
         """
-
-    elif db_vendor in ['mssql', 'microsoft']:
-        query = f"""
-            SELECT 
-                tgl_produksi,
-                roa_order,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(DATEDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
-                    ELSE 
-                        RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_roa)) / 3600 AS VARCHAR), 2) + ':' +
-                        RIGHT('00' + CAST((AVG(DATEDIFF(SECOND, delivery, release_roa)) % 3600) / 60 AS VARCHAR), 2) + ':' +
-                        RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_roa)) % 60 AS VARCHAR), 2)
-                END AS average_time,
-                '120:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, roa_order
-            ORDER BY tgl_produksi ASC
-        """
-
     elif db_vendor == 'postgresql':
-        query = f"""
-            SELECT 
-                tgl_produksi,
-                roa_order,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
-                COALESCE(
-                    TO_CHAR(INTERVAL '1 second' * ROUND(AVG(EXTRACT(EPOCH FROM release_roa - delivery))), 'HH24:MI:SS'),
-                    '00:00:00'
-                ) AS average_time,
-                '120:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, roa_order
-            ORDER BY tgl_produksi ASC
+        avg_expr = """
+            COALESCE(
+                TO_CHAR(
+                    MAKE_INTERVAL(secs => ROUND(AVG(EXTRACT(EPOCH FROM release_mral - delivery)))), 
+                    'HH24:MI:SS'
+                ),
+                '00:00:00'
+            )
         """
     else:
-        raise ValueError("Unsupported database vendor.")
+        return JsonResponse({'error': 'Unsupported database vendor.'}, status=500)
+
+    # Gabungkan query akhir
+    query = f"""
+        SELECT 
+            tgl_produksi,
+            mral_order,
+            COUNT(DISTINCT CASE WHEN mral_order = 'Yes' THEN sample_number END) AS jml_mral,
+            COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'OnTime' AND tat_mral IS NOT NULL THEN sample_number END) AS released_on_tat,
+            COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'Late' AND tat_mral IS NOT NULL THEN sample_number END) AS released_over_tat,
+            COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NOT NULL THEN sample_number END) AS total_released,
+            COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NULL THEN sample_number END) AS not_released,
+            {avg_expr} AS average_time,
+            '03:00:00' AS time_limit
+        FROM laboratory_performance_tat
+        {where_clause}
+        GROUP BY tgl_produksi, mral_order
+        ORDER BY tgl_produksi ASC
+    """
 
     try:
         with connections['kqms_db'].cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query,params)
+            chart_data = cursor.fetchall()
+
+        # Create DataFrame from SQL query results
+        df = pd.DataFrame(chart_data, 
+                          columns=['tgl_produksi', 'roa_order','jml_roa','released_on_tat','released_over_tat',
+                                   'total_released','not_released','average_time','time_limit'
+                                   ])
+        # Konversi waktu ke detik dan jam
+        df['TAT_seconds']   = df['average_time'].apply(time_to_seconds)
+        df['Limit_seconds'] = df['time_limit'].apply(time_to_seconds)
+        df['Avg_hours']     = df['average_time'].apply(extract_hours)
+        df['Limit_hours']   = df['time_limit'].apply(extract_hours)
+        df['TAT_formatted']   = df['TAT_seconds'].apply(seconds_to_time)
+        df['Limit_formatted'] = df['Limit_seconds'].apply(seconds_to_time)
+
+        # Mengurutkan DataFrame berdasarkan tanggal produksi
+        df = df.sort_values(by='tgl_produksi')
+        if df.empty:
+            fig = go.Figure()
+            fig.update_layout(
+                xaxis={"visible": False},
+                yaxis={"visible": False},
+                plot_bgcolor='rgba(0,0,0,0)', 
+                annotations=[
+                    {
+                        "text": "No matching data found",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "showarrow": False,
+                        "font": {"size": 14}
+                    }
+                ],
+                height=360,
+                template="plotly_dark" if theme == "dark" else "plotly_white",
+            )
+            plot_div = fig.to_html(full_html=False)
+            return JsonResponse({'plot_div': plot_div})
+        
+        # Load data
+        order    = df['jml_mral'].tolist()
+        limit    = df['Limit_hours'].tolist()
+        avg_time = df['Avg_hours'].tolist()
+    
+        x        = df['tgl_produksi'].tolist()
+        avg_time_formatted = df['TAT_formatted'].tolist()
+        limit_formatted = df['Limit_formatted'].tolist()
+        
+        fig = go.Figure()
+
+        # Warna untuk masing-masing trace
+        colors = {
+            'order'   : '#92cd08',
+            'avg_time': '#edda0c',
+            'limit'   : '#d68000'
+        }
+        
+        # Menambahkan grafik batang untuk Samples
+        fig.add_trace(go.Bar(
+            x=x,
+            y=order,
+            text=order, 
+            name="Samples",
+            texttemplate='%{text:.0f}',
+        ))
+    
+        # Menambahkan garis untuk TAT Limit dengan sumbu y kedua
+        fig.add_trace(go.Scatter(
+                x=x,
+                y=limit,
+                mode='lines+markers',
+                marker=dict(size=7),
+                name='TAT Limit',
+                yaxis='y3',  # Menentukan sumbu y kedua
+                text=limit_formatted,
+                texttemplate='%{text}'
+            ))
+        
+        # Menambahkan garis untuk TAT Mral dengan sumbu y kedua
+        fig.add_trace(go.Scatter(
+            x=x,
+            y=avg_time,
+            mode='lines+markers',
+            marker=dict(size=7),
+            name='TAT Mral',
+            yaxis='y3', # Menentukan sumbu y kedua
+            text=avg_time_formatted,
+            texttemplate='%{text}'
+        ))
+
+        # Mengatur layout grafik
+        fig.update_layout(
+            legend=dict(orientation="h"),
+            title=f'TAT MRAL ({start_date} to {end_date})',
+            title_font=dict(size=16),
+            #margin=dict(l=40, r=25, t=60, b=25), 
+            title_x=0.5,
+            plot_bgcolor='rgba(0,0,0,0)',
+            showlegend=True,
+            xaxis=dict(
+                # title='Tanggal Produksi',
+                title_font=dict(size=12),
+            ),
+            yaxis=dict(
+                title='Samples Order',
+                title_font=dict(size=12),
+                side='left',
+                showgrid=True,
+                showline=True
+            ),
+            yaxis2=dict(
+                # title='Waktu (detik)',
+                title_font=dict(size=12),
+                side='right',
+                overlaying='y',  # Menggunakan sumbu y yang sama dengan overlay
+                showgrid=True,
+                showline=True,
+                showticklabels=False,
+                anchor='x'
+            ),
+            yaxis3=dict(
+                # title='Average Time (detik)',
+                title_font=dict(size=12),
+                side='right',
+                overlaying='y',  # Menggunakan sumbu y yang sama dengan overlay
+                showgrid=True,
+                showline=True,
+                anchor='x',
+                showticklabels=True,  # Menyembunyikan label teks
+                position=0.95,
+            ),
+            bargap=0.2, 
+            height=360,
+            template="plotly_dark" if theme == "dark" else "plotly_white",
+        )
+        plot_div = fig.to_html(full_html=False, config={
+        'modeBarButtonsToRemove': ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'],
+        'responsive': True
+    })
+        
+        return JsonResponse({'plot_div': plot_div})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def chartTatRoa(request):
+    theme = request.GET.get("theme", "light")  # ← tangkap theme dari frontend
+
+    params = []
+    conditions = ["roa_order = 'Yes'"]
+    start_date = request.GET.get('startDate')
+    end_date   = request.GET.get('endDate')
+
+    # Filter tanggal dari frontend atau fallback default
+    if start_date and end_date:
+        try:
+            datetime.strptime(start_date, '%Y-%m-%d')
+            datetime.strptime(end_date, '%Y-%m-%d')
+            conditions.append("tgl_produksi BETWEEN %s AND %s")
+            params.extend([start_date, end_date])
+        except ValueError:
+            raise ValueError("Invalid date format. Use YYYY-MM-DD.")
+    else:
+        # ⏳ Default ke Senin minggu ini sampai hari ini
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())  # Senin
+        conditions.append("tgl_produksi BETWEEN %s AND %s")
+        params.extend([monday, today])
+        # WHERE clause
+    where_clause = "WHERE " + " AND ".join(conditions)
+
+    # Tentukan bagian AVG sesuai database vendor
+    if db_vendor in ['mssql', 'microsoft']:
+        avg_expr = """
+            CASE
+                WHEN AVG(DATEDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
+                ELSE 
+                    RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_roa)) / 3600 AS VARCHAR), 2) + ':' +
+                    RIGHT('00' + CAST((AVG(DATEDIFF(SECOND, delivery, release_roa)) % 3600) / 60 AS VARCHAR), 2) + ':' +
+                    RIGHT('00' + CAST(AVG(DATEDIFF(SECOND, delivery, release_roa)) % 60 AS VARCHAR), 2)
+            END
+        """
+    elif db_vendor == 'postgresql':
+        avg_expr = """
+            COALESCE(
+                TO_CHAR(INTERVAL '1 second' * ROUND(AVG(EXTRACT(EPOCH FROM release_roa - delivery))), 'HH24:MI:SS'),
+                '00:00:00'
+            )
+        """
+    else:
+        raise ValueError("Unsupported database vendor.")
+
+    # Gabungkan seluruh query dengan format() dan tanpa f-string untuk params
+    query = f"""
+        SELECT 
+            tgl_produksi,
+            roa_order,
+            COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
+            COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
+            COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
+            COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
+            COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
+            {avg_expr} AS average_time,
+            '120:00:00' AS time_limit
+        FROM laboratory_performance_tat
+        {where_clause}
+        GROUP BY tgl_produksi, roa_order
+        ORDER BY tgl_produksi ASC
+    """
+
+    try:
+        with connections['kqms_db'].cursor() as cursor:
+            cursor.execute(query,params)
             chart_data = cursor.fetchall()
 
         # Create DataFrame from SQL query results
@@ -568,47 +528,33 @@ def chartTatRoa(request):
     
 @login_required    
 def getDataMralByWeeks(request):
-    start_date = request.GET.get('startDate')
-    end_date   = request.GET.get('endDate')
-
-    # 🔍 Validasi dan susun WHERE clause
+    params = []
     conditions = ["mral_order = 'Yes'"]
+
+    start_date = request.GET.get('startDate')
+    end_date = request.GET.get('endDate')
+
+    # Filter tanggal dari frontend atau fallback default
     if start_date and end_date:
         try:
             datetime.strptime(start_date, '%Y-%m-%d')
             datetime.strptime(end_date, '%Y-%m-%d')
-            conditions.append(f"tgl_produksi BETWEEN '{start_date}' AND '{end_date}'")
+            conditions.append("tgl_produksi BETWEEN %s AND %s")
+            params.extend([start_date, end_date])
         except ValueError:
             raise ValueError("Invalid date format. Use YYYY-MM-DD.")
+    else:
+        # ⏳ Default ke Senin minggu ini sampai hari ini
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())  # Senin
+        conditions.append("tgl_produksi BETWEEN %s AND %s")
+        params.extend([monday, today])
 
     where_clause = "WHERE " + " AND ".join(conditions)
 
-    # 🔀 SQL berdasarkan database vendor
-    if db_vendor == 'mysql':
-        sql_query = f"""
-            SELECT 
-                tgl_produksi,
-                mral_order,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' THEN sample_number END) AS jml_mral,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'OnTime' AND tat_mral IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND mral_remark = 'Late' AND tat_mral IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN mral_order = 'Yes' AND tat_mral IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) IS NULL THEN '00:00:00'
-                    ELSE 
-                        LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) / 3600), 2, '0') || ':' ||
-                        LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) % 3600) / 60), 2, '0') || ':' ||
-                        LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_mral)) % 60, 2, '0')
-                END AS average_time,
-                '03:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            {where_clause}
-            GROUP BY tgl_produksi, mral_order
-            ORDER BY tgl_produksi ASC
-        """
 
-    elif db_vendor in ['mssql', 'microsoft']:
+    # 🔀 SQL berdasarkan database vendor
+    if db_vendor in ['mssql', 'microsoft']:
         sql_query = f"""
             SELECT 
                 tgl_produksi,
@@ -657,45 +603,27 @@ def getDataMralByWeeks(request):
 
 
     with connections['kqms_db'].cursor() as cursor:
-        cursor.execute(sql_query)
+        cursor.execute(sql_query,params)
         columns = [col[0] for col in cursor.description]
         sql_data = [
             dict(zip(columns, row))
             for row in cursor.fetchall()
         ]
 
-    # print(sql_data)  # Cetak hasil query
+    # Format tgl_produksi agar tidak ada jam
+    for row in sql_data:
+        if isinstance(row['tgl_produksi'], (datetime, date)):
+            row['tgl_produksi'] = row['tgl_produksi'].strftime('%Y-%m-%d')
+
     
     return JsonResponse({'data': sql_data})
 
 @login_required
 def getDataRoaByWeeks(request):
     start_date = request.GET.get('startDate')
-    end_date = request.GET.get('endDate')
+    end_date   = request.GET.get('endDate')
 
-    if db_vendor == 'mysql':
-        sql_query = f"""
-            SELECT 
-                tgl_produksi,
-                roa_order,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
-                    ELSE CONCAT(
-                        LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) / 3600), 2, '0'), ':',
-                        LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 3600) / 60), 2, '0'), ':',
-                        LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 60, 2, '0')
-                    )
-                END AS average_time,
-                '120:00:00' AS time_limit
-            FROM laboratory_performance_tat
-            WHERE roa_order = 'Yes'
-        """
-    elif db_vendor in ['mssql', 'microsoft']:
+    if db_vendor in ['mssql', 'microsoft']:
         sql_query = f"""
             SELECT 
                 tgl_produksi,
@@ -740,22 +668,37 @@ def getDataRoaByWeeks(request):
     else:
         raise ValueError("Unsupported database vendor.")
 
+    # if start_date and end_date:
+    #     sql_query += f" AND tgl_produksi BETWEEN '{start_date}' AND '{end_date}' "
+
+    params = []
     if start_date and end_date:
-        sql_query += f" AND tgl_produksi BETWEEN '{start_date}' AND '{end_date}' "
+        sql_query += " AND tgl_produksi BETWEEN %s AND %s "
+        params.extend([start_date, end_date])
+    else:
+        # Ambil Senin minggu ini
+        today = date.today()
+        monday = today - timedelta(days=today.weekday())  # .weekday() -> Senin = 0, Minggu = 6
+        sql_query += " AND tgl_produksi BETWEEN %s AND %s "
+        params.extend([monday, today])
 
     sql_query += """
         GROUP BY tgl_produksi, roa_order
         ORDER BY tgl_produksi ASC
     """
 
-
     with connections['kqms_db'].cursor() as cursor:
-        cursor.execute(sql_query)
+        cursor.execute(sql_query, params)
         columns = [col[0] for col in cursor.description]
         sql_data = [
             dict(zip(columns, row))
             for row in cursor.fetchall()
         ]
+
+    # Format tgl_produksi agar tidak ada jam
+    for row in sql_data:
+        if isinstance(row['tgl_produksi'], (datetime, date)):
+            row['tgl_produksi'] = row['tgl_produksi'].strftime('%Y-%m-%d')
 
     # print(sql_data)  # Cetak hasil query
     return JsonResponse({'data': sql_data})

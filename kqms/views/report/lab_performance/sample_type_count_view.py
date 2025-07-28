@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import plotly.io as pio
 pio.templates
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import connections
@@ -179,6 +179,13 @@ def chartOrdersYear(request):
             COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'CKS' THEN 1 END) +
             COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS gc_mral_pre_released,
 
+            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'CKS' THEN 1 END) + 
+            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS gc_roa_order,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'CKS' THEN 1 END) +
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS gc_roa_released,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_mral IS NULL AND type_sample = 'CKS' THEN 1 END) +
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_mral IS NULL AND type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS gc_roa_pre_released,
+
             COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'PDS' THEN 1 END) +
             COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
             COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS qa_mral_order,
@@ -256,6 +263,7 @@ def chartOrdersYear(request):
                 df['hos_mral_order'][0],
                 df['qa_roa_order'][0],
                 df['qa_mral_order'][0],
+                df['gc_roa_order'][0],
                 df['gc_mral_order'][0],
                ]
     
@@ -265,7 +273,8 @@ def chartOrdersYear(request):
                 df['hos_roa_released'][0],
                 df['hos_mral_released'][0],
                 df['qa_roa_released'][0],
-                df['qa_roa_released'][0],
+                df['qa_mral_released'][0],
+                df['gc_roa_released'][0],
                 df['gc_mral_released'][0],
                ]
     
@@ -276,10 +285,11 @@ def chartOrdersYear(request):
                 df['hos_mral_pre_released'][0],
                 df['qa_roa_pre_released'][0],
                 df['qa_mral_pre_released'][0],
+                df['gc_roa_pre_released'][0],
                 df['gc_mral_pre_released'][0],
                ]
 
-    y=['ROS-ROA', 'ROS-MRAL', 'HOS-ROA', 'HOS-MRAL','QA-ROA', 'QA-MRAL', 'GC-MRAL']
+    y=['ROS-ROA', 'ROS-MRAL', 'HOS-ROA', 'HOS-MRAL','QA-ROA', 'QA-MRAL', 'GC-MRAL','Gc-Roa']
     
     fig = go.Figure()
     
@@ -562,10 +572,10 @@ def chartFiveWeeks(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    gc  = df['GC'].tolist()
-    qa  = df['QA'].tolist()
-    hos = df['HOS'].tolist()
-    ros = df['ROS'].tolist()
+    gc  = df['gc'].tolist()
+    qa  = df['qa'].tolist()
+    hos = df['hos'].tolist()
+    ros = df['ros'].tolist()
     x   = df['minggu'].tolist()
     
 
@@ -647,12 +657,12 @@ def chartTypeByWeek(request):
     query = """
         SELECT
                 COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END) +
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS "GC",
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS "qc",
                 COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "QA",
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "HOS",
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ROS"
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "qa",
+                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "hos",
+                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ros"
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s   
     """
@@ -686,10 +696,10 @@ def chartTypeByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    gc  = df['GC'][0]
-    qa  = df['QA'][0]
-    hos = df['HOS'][0]
-    ros = df['ROS'][0]
+    gc  = df['gc'][0]
+    qa  = df['qa'][0]
+    hos = df['hos'][0]
+    ros = df['ros'][0]
 
     x_data = [ros, hos, qa, gc]
     y_data = ['ROS', 'HOS', 'QA', 'GC']
@@ -736,12 +746,12 @@ def donutTypeByWeek(request):
     query = """
             SELECT
                 COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END) +
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS "GC",
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS "gc",
                 COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "QA",
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "HOS",
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ROS"
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "qa",
+                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "hos",
+                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ros"
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s                                          
         """
@@ -774,10 +784,10 @@ def donutTypeByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    gc  = df['GC'][0]
-    qa  = df['QA'][0]
-    hos = df['HOS'][0]
-    ros = df['ROS'][0]
+    gc  = df['gc'][0]
+    qa  = df['qa'][0]
+    hos = df['hos'][0]
+    ros = df['ros'][0]
 
     values  = [ros, hos, qa, gc]
     labels = ['ROS', 'HOS', 'QA', 'GC']
@@ -820,8 +830,8 @@ def chartGcByWeek(request):
     query = """
             SELECT
                 tgl_produksi,
-                COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END)  AS CKS,
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS SPC
+                COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END)  AS cks,
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS spc
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s 
             GROUP BY  tgl_produksi
@@ -854,8 +864,8 @@ def chartGcByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    CKS  = df['CKS'].tolist()
-    SPC  = df['SPC'].tolist()
+    CKS  = df['cks'].tolist()
+    SPC  = df['spc'].tolist()
     x    = df['tgl_produksi'].tolist()
     
     fig = go.Figure()
@@ -916,9 +926,9 @@ def chartQaByWeek(request):
     query = """
             SELECT
                 tgl_produksi,
-                COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) AS PDS,
-                COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) AS QAQC,
-                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS SPC_QA
+                COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) AS pds,
+                COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) AS qaqc,
+                COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS spc_qa
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s     
             GROUP BY  tgl_produksi
@@ -952,9 +962,9 @@ def chartQaByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    PDS     = df['PDS'].tolist()
-    QAQC    = df['QAQC'].tolist()
-    SPC_QA  = df['SPC_QA'].tolist()
+    PDS     = df['pds'].tolist()
+    QAQC    = df['qaqc'].tolist()
+    SPC_QA  = df['spc_qa'].tolist()
     x       = df['tgl_produksi'].tolist()
     
     fig = go.Figure()
@@ -1029,8 +1039,8 @@ def chartSaleByWeek(request):
     query = """
             SELECT
                 tgl_produksi,
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS HOS,
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ROS
+                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
+                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s    
             GROUP BY  tgl_produksi
@@ -1064,8 +1074,8 @@ def chartSaleByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    HOS  = df['HOS'].tolist()
-    ROS  = df['ROS'].tolist()
+    HOS  = df['hos'].tolist()
+    ROS  = df['ros'].tolist()
     x    = df['tgl_produksi'].tolist()
     
     fig = go.Figure()
@@ -1126,13 +1136,13 @@ def getSampleOrdersByWeeks(request):
     sql_query = """
         SELECT
             tgl_produksi,
-            COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END) AS CKS,
-            COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS SPC,
-            COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) AS PDS,
-            COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) AS QAQC,
-            COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS SPC_QA,
-            COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS HOS,
-            COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ROS
+            COUNT(CASE WHEN type_sample = 'CKS' THEN 1 END) AS cks,
+            COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_GC' THEN 1 END) AS spc,
+            COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) AS pds,
+            COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) AS qaqc,
+            COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS spc_qa,
+            COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
+            COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
         FROM sample_type_count
     """
 
@@ -1154,8 +1164,11 @@ def getSampleOrdersByWeeks(request):
             for row in cursor.fetchall()
         ]
 
-    # print(sql_data)  # Cetak hasil query
-    
+    # Format tgl_produksi agar tidak ada jam
+    for row in sql_data:
+        if isinstance(row['tgl_produksi'], (datetime, date)):
+            row['tgl_produksi'] = row['tgl_produksi'].strftime('%Y-%m-%d')
+
     return JsonResponse({'data': sql_data})
 
 #List Data Tables:

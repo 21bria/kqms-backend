@@ -359,7 +359,7 @@
                 newRow.append(`<td>${index + 1}</td>`);
                 newRow.append(`<td>${row.tgl_produksi}</td>`);
 
-                ['CKS', 'SPC', 'PDS', 'QAQC', 'SPC_QA', 'HOS', 'ROS'].forEach(key => {
+                ['cks', 'spc', 'pds', 'qaqc', 'spc_qa', 'hos', 'ros'].forEach(key => {
                     const value = parseFloat(row[key]) || 0;
                     grandTotals[key] += value;
                     newRow.append(`<td>${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}</td>`);

@@ -726,7 +726,7 @@ class Command(BaseCommand):
             order=1
         )
         Menu.objects.create(
-            title="Charts samples(type)",
+            title="Samples (type)",
             url="sample-analyse-type-page",
             parent=tat_laboratory,
             order=2
