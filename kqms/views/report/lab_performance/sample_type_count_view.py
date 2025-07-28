@@ -289,7 +289,7 @@ def chartOrdersYear(request):
                 df['gc_mral_pre_released'][0],
                ]
 
-    y=['ROS-ROA', 'ROS-MRAL', 'HOS-ROA', 'HOS-MRAL','QA-ROA', 'QA-MRAL', 'GC-MRAL','Gc-Roa']
+    y=['ROS-roa', 'ROS-mral', 'HOS-roa', 'HOS-mral','QA-roa', 'QA-Mral', 'Gc-roa','Gc-mral']
     
     fig = go.Figure()
     
