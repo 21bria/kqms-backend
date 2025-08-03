@@ -9,7 +9,7 @@ from ..models.selling_barging import SellingBarging
 from ..models.materials import Material
 from ..models.stock_factories import StockFactories
 from ..models.source_model import SourceMinesDumping,SourceMinesDome
-from ..models.master_barge import BargeUnits
+from ..models.master_barge import BargeUnits,BargePort
 
 # Fungsi untuk membersihkan data numerik
 def clean_numeric(value):
@@ -54,6 +54,7 @@ def import_selling(file_path, original_file_name):
     stockpile_dict  = dict(SourceMinesDome.objects.annotate(trimmed=Trim('pile_id')).values_list('trimmed', 'id'))
     factory_dict    = dict(StockFactories.objects.annotate(trimmed=Trim('factory_stock')).values_list('trimmed', 'id'))
     barge_dict      = dict(BargeUnits.objects.annotate(trimmed=Trim('barge_code')).values_list('trimmed', 'id'))
+    port_dict       = dict(BargePort.objects.annotate(trimmed=Trim('port_name')).values_list('trimmed', 'port_name'))
 
 
     try:
@@ -65,6 +66,12 @@ def import_selling(file_path, original_file_name):
             stockpile_name  = str(row.get('stockpile', '')).strip()
             factory_name    = str(row.get('buyer', '')).strip()
             barge_code_str  = str(row.get('barge_code', '')).strip()
+            load_loc_name   = str(row.get('barge_load_loc', '')).strip()
+            unload_loc_name = str(row.get('barge_unload_loc', '')).strip()
+
+            validated_load_loc   = port_dict.get(load_loc_name, load_loc_name)
+            validated_unload_loc = port_dict.get(unload_loc_name, unload_loc_name)
+
 
             id_material     = material_dict.get(nama_material)
             id_pile         = pile_dict.get(pile_name)
@@ -91,6 +98,8 @@ def import_selling(file_path, original_file_name):
                 shift               = row['shift'],
                 date_barging        = row['date_barging_load'],
                 barge_code          = id_barge,
+                barging_load_loc    = validated_load_loc,
+                barging_unload_loc  = validated_unload_loc,
                 unit_code           = truck,
                 type_selling        = type_selling,
                 id_material         = id_material,
