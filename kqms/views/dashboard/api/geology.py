@@ -359,6 +359,7 @@ def get_chart_ore(request):
                         """ 
             else:
                 raise ValueError("Unsupported database vendor.")
+                
         elif filter_type =='yearly' and year: 
             if db_vendor == 'postgresql':
                 query = """
@@ -472,7 +473,7 @@ def get_chart_ore_class(request):
         params = []
 
         # Tentukan kondisi filter SQL dan parameter
-        if filter_type =='daily' and filter_date:  # Range
+        if filter_type =='daily' and filter_date:
             filter_sql += " AND tgl_production = %s"
             params = [filter_date]
 

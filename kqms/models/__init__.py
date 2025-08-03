@@ -7,6 +7,7 @@ from .mine_geologies import *
 from .plan_productions import *
 from .mine_productions import *
 from .mine_units import *
+from .master_barge import *
 from .ore_class import *
 from .ore_productions import *
 from .ore_truck_factor import *
@@ -15,6 +16,7 @@ from .sample_production import *
 from .sample_type import *
 from .sample_type_details import *
 from .selling_data import *
+from .selling_barging import *
 from .selling_official import *
 from .selling_plan import *
 from .selling_code import *

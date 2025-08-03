@@ -27,24 +27,24 @@ def get_chart_detail_others(request):
     date_end     = request.GET.get('date_end')
 
     if filter_type == 'monthly' and filter_year and filter_month:
-        return get_monthly_detail_chart(filter_year, filter_month)
+        return get_monthly_chart(filter_year, filter_month)
     
     elif filter_type == 'daily' and filter_date:
-        return get_daily_detail_chart(filter_date)
+        return get_daily_chart(filter_date)
 
     elif filter_type == 'range' and date_start and date_end:
-        return get_range_detail_chart(date_start, date_end)
+        return get_range_chart(date_start, date_end)
 
     elif filter_type == 'yearly' and filter_year:
         return get_yearly_chart(filter_year)
 
     elif filter_type == 'weekly' and filter_week:
-        return get_weekly_detail_chart(filter_week)
+        return get_weekly_chart(filter_week)
 
     else:
         return JsonResponse({'error': 'Invalid filter'}, status=400)
 
-def get_daily_detail_chart(filter_date):
+def get_daily_chart(filter_date):
     query = """ 
              SELECT
                 t1.id,
@@ -91,7 +91,7 @@ def get_daily_detail_chart(filter_date):
         'achievement': df['achievement'].tolist(),
     }, safe=False)
 
-def get_monthly_detail_chart(filter_year, filter_month):
+def get_monthly_chart(filter_year, filter_month):
      # Ambil jumlah hari terakhir dalam bulan
     last_day = calendar.monthrange(int(filter_year), int(filter_month))[1]
 
@@ -152,7 +152,7 @@ def get_monthly_detail_chart(filter_year, filter_month):
         # 'achievement': df['achievement'].astype(float).tolist()
     }, safe=False)
 
-def get_weekly_detail_chart(filter_week):
+def get_weekly_chart(filter_week):
     # iso_week_str = f"{iso_year}-{str(iso_week).zfill(2)}"  # pastikan format IYYY-IW: "2025-04"
     query = """
         WITH actual AS (
@@ -206,16 +206,21 @@ def get_weekly_detail_chart(filter_week):
     others_cols = ['ballast', 'biomass']
     others_plan_cols = [f + '_plan' for f in others_cols]
 
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in others_cols  :
+    # Konversi ke float
+    for col in others_cols + others_plan_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
+    # Hitung total dan achievement
     df['others']       = df[others_cols].sum(axis=1)
     df['others_plan']  = df[others_plan_cols].sum(axis=1)
 
-    df['total_actual'] = df['others']
-    df['total_plan']   = df['others_plan']
-    df['achievement']  = df.apply(lambda row: round((row['total_actual'] / row['total_plan'] * 100), 2) if row['total_plan'] > 0 else 0, axis=1)
+    df['total_actual'] = df['others'].astype(float)
+    df['total_plan']   = df['others_plan'].astype(float)
+
+    # Konversi total_actual dan total_plan ke float secara eksplisit
+    df['achievement']  = df.apply(
+        lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2)
+        if row['total_plan'] > 0 else 0, axis=1 )
 
     return JsonResponse({
         'x_data'       : df['hari'].astype(str).tolist(),
@@ -224,7 +229,7 @@ def get_weekly_detail_chart(filter_week):
         'achievement'  : df['achievement'].astype(float).tolist(),
     }, safe=False)
 
-def get_range_detail_chart(date_start, date_end):
+def get_range_chart(date_start, date_end):
     query = """
         WITH actual AS (
             SELECT
@@ -274,16 +279,22 @@ def get_range_detail_chart(date_start, date_end):
     others_cols = ['ballast', 'biomass']
     others_plan_cols = [f + '_plan' for f in others_cols]
 
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in others_cols:
+    # Konversi kolom ke numerik / float (handle string atau null)
+    for col in others_cols + others_plan_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
+    # Hitung total dan achievement
     df['others']       = df[others_cols].sum(axis=1)
     df['others_plan']  = df[others_plan_cols].sum(axis=1)
 
-    df['total_actual'] = df['others']
-    df['total_plan']   = df['others_plan']
-    df['achievement']  = df.apply(lambda row: round((row['total_actual'] / row['total_plan'] * 100), 2) if row['total_plan'] > 0 else 0, axis=1)
+    df['total_actual'] = df['others'].astype(float)
+    df['total_plan']   = df['others_plan'].astype(float)
+
+    # Konversi total_actual dan total_plan ke float secara eksplisit
+    df['achievement']  = df.apply(
+        lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2)
+        if row['total_plan'] > 0 else 0,axis=1
+    )
 
     return JsonResponse({
         'x_data'       : df['tanggal'].astype(str).tolist(),

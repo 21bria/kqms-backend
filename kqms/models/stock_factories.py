@@ -1,7 +1,7 @@
 from django.db import models
 class StockFactories(models.Model):
     factory_stock  = models.CharField(max_length=150, unique=True)
-    capasity       = models.FloatField(null=True,blank=True)
+    capacity       = models.FloatField(null=True,blank=True)
     description    = models.CharField(max_length=255, default=None, null=True, blank=True)
     status         = models.IntegerField(default=None, null=True, blank=True)
     created_at     = models.DateTimeField(auto_now_add=True)

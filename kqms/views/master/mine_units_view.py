@@ -96,12 +96,12 @@ class MineUnits_List(View):
 @login_required
 @csrf_exempt
 def get_MineUnits(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa','admin-mining','admin-selling','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','admin-selling','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = MineUnits.objects.get(id=id)
@@ -124,12 +124,12 @@ def get_MineUnits(request, id):
 
 @login_required
 def insert_MineUnits(request):
-    # allowed_groups = ['superadmin','admin-mgoqa','admin-mining','admin-selling','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','admin-selling','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi

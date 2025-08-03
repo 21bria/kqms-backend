@@ -60,7 +60,7 @@ class SamplesCreate(View):
 
         data = data.filter(no_sample=code)
         # NOT IN
-        data = data.exclude(type_sample__in=['HOS', 'ROS','HOS_SPC','ROS_SPC','ROS_CKS','ROS_SPC','ROS_PSI','HOS_CKS','HOS_SPC'])
+        data = data.exclude(type_sample__in=['LIS', 'SAS','LIS_SPC','SAS_SPC','LIS_CKS','SAS_CKS'])
 
         # Atur sorting
         if order_dir == 'desc':
@@ -348,7 +348,7 @@ def update_sample(request, id):
             duplicateCheck = SampleProductions.objects.exclude(id=id).filter(kode_batch=combinedKodeBatch).exists()
             if duplicateCheck:
                 return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)
-        elif type in ['HOS', 'ROS']:
+        elif type in ['LIS', 'SAS']:
             duplicateSelling = SampleProductions.objects.exclude(id=id).filter(kode_batch=productKodeBatch).exists()
             if duplicateSelling:
                 return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)

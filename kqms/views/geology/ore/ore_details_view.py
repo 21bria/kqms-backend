@@ -174,7 +174,7 @@ def export_detail_mral(request):
     end_date       = request.GET.get('endDate')
     material       = request.GET.get('material_filter')
     batch_status   = request.GET.get('batch_status')
-    area_filter    = request.GET.get('area_filter')
+    # area_filter    = request.GET.get('area_filter')
     point_filter   = request.GET.get('point_filter')
     source_filter  = request.GET.get('source_filter')
 
@@ -210,8 +210,8 @@ def export_detail_mral(request):
         queryset = queryset.filter(nama_material=material)
     if batch_status:
         queryset = queryset.filter(batch_status=batch_status)
-    if area_filter:
-        queryset = queryset.filter(stockpile=area_filter)
+    # if area_filter:
+    #     queryset = queryset.filter(stockpile=area_filter)
     if point_filter:
         queryset = queryset.filter(pile_id=point_filter)
     if source_filter:

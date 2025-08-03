@@ -793,7 +793,7 @@ def get_chart_inventory(request):
         if filter_type =='range' and date_start and date_end: 
             if db_vendor == 'postgresql':
                 query = """
-                        WITH tanggal AS (
+                       WITH tanggal AS (
                                 SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                             ),
                             incoming AS (
@@ -806,12 +806,12 @@ def get_chart_inventory(request):
                             ),
                             outgoing AS (
                                 SELECT
-                                    date_wb::date AS date,
-                                    SUM(netto_weigth_f) AS total_out
-                                FROM ore_sellings s
+                                    date_hauling::date AS date,
+                                    SUM(tonnage) AS total_out
+                                FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_wb BETWEEN %s AND %s
-                                GROUP BY date_wb
+                                WHERE date_hauling BETWEEN %s AND %s
+                                GROUP BY date_hauling
                             ),
                             saldo_awal AS (
                                 SELECT
@@ -820,9 +820,9 @@ def get_chart_inventory(request):
                                         FROM ore_productions
                                         WHERE tgl_production < %s
                                     ), 0) - COALESCE((
-                                        SELECT SUM(netto_weigth_f)
-                                        FROM ore_sellings
-                                        WHERE date_wb < %s
+                                        SELECT SUM(tonnage)
+                                        FROM ore_sellings_barging
+                                        WHERE date_hauling < %s
                                     ), 0) AS value
                             )         
                             SELECT
@@ -838,41 +838,7 @@ def get_chart_inventory(request):
                             ORDER BY t.date 
                 """
             else:
-                 query = """
-                        WITH tanggal AS (
-                            SELECT CAST(%s AS DATE) AS date
-                            UNION ALL
-                            SELECT DATEADD(DAY, 1, date)
-                            FROM tanggal
-                            WHERE date < %s
-                        ),
-                        incoming AS (
-                            SELECT
-                                CAST(tgl_production AS DATE) AS date,
-                                SUM(tonnage) AS total_in
-                            FROM ore_productions
-                            WHERE tgl_production BETWEEN %s AND %s
-                            GROUP BY CAST(tgl_production AS DATE)
-                        ),
-                        outgoing AS (
-                            SELECT
-                                CAST(date_wb AS DATE) AS date,
-                                SUM(netto_weigth_f) AS total_out
-                            FROM ore_sellings s
-                            LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
-                            GROUP BY CAST(date_wb AS DATE)
-                        )
-                        SELECT
-                            CONVERT(VARCHAR, t.date, 23) AS label,
-                            ISNULL(i.total_in, 0) AS total_in,
-                            ISNULL(o.total_out, 0) AS total_out
-                        FROM tanggal t
-                        LEFT JOIN incoming i ON t.date = i.date
-                        LEFT JOIN outgoing o ON t.date = o.date
-                        ORDER BY t.date
-                        OPTION (MAXRECURSION 1000)
-                    """
+                 raise ValueError("Unsupported vendor")
              
             params = [
                       date_start, date_end,
@@ -932,12 +898,12 @@ def get_chart_inventory(request):
                         ),
                         outgoing AS (
                             SELECT
-                                date_wb::date AS date,
-                                SUM(netto_weigth_f) AS total_out
-                            FROM ore_sellings s
+                                date_hauling::date AS date,
+                                SUM(tonnage) AS total_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
-                            GROUP BY date_wb
+                            WHERE date_hauling BETWEEN %s AND %s
+                            GROUP BY date_hauling
                         ),
                         daily AS (
                             SELECT
@@ -955,9 +921,9 @@ def get_chart_inventory(request):
                                     FROM ore_productions
                                     WHERE tgl_production < %s
                                 ), 0) - COALESCE((
-                                    SELECT SUM(netto_weigth_f)
-                                    FROM ore_sellings
-                                    WHERE date_wb < %s
+                                    SELECT SUM(tonnage)
+                                    FROM ore_sellings_barging
+                                    WHERE date_hauling < %s
                                 ), 0) AS value
                         )
                         SELECT
@@ -976,64 +942,7 @@ def get_chart_inventory(request):
                         )
                 """
             else:
-                query = """
-                    WITH tanggal AS (
-                        SELECT CAST(%s AS DATE) AS date
-                        UNION ALL
-                        SELECT DATEADD(DAY, 1, date)
-                        FROM tanggal
-                        WHERE date < %s
-                    ),
-                    incoming AS (
-                        SELECT
-                            CAST(tgl_production AS DATE) AS date,
-                            SUM(tonnage) AS total_in
-                        FROM ore_productions
-                        WHERE tgl_production BETWEEN %s AND %s
-                        GROUP BY CAST(tgl_production AS DATE)
-                    ),
-                    outgoing AS (
-                        SELECT
-                            CAST(date_wb AS DATE) AS date,
-                            SUM(netto_weigth_f) AS total_out
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_wb BETWEEN %s AND %s
-                        GROUP BY CAST(date_wb AS DATE)
-                    ),
-                    daily AS (
-                        SELECT
-                            t.date,
-                            ISNULL(i.total_in, 0) AS total_in,
-                            ISNULL(o.total_out, 0) AS total_out
-                        FROM tanggal t
-                        LEFT JOIN incoming i ON t.date = i.date
-                        LEFT JOIN outgoing o ON t.date = o.date
-                    ),
-                    saldo_awal AS (
-                        SELECT
-                            COALESCE((
-                                SELECT SUM(tonnage)
-                                FROM ore_productions
-                                WHERE tgl_production < %s
-                            ), 0) - COALESCE((
-                                SELECT SUM(netto_weigth_f)
-                                FROM ore_sellings
-                                WHERE date_wb < %s
-                            ), 0) AS value
-                    )
-                    SELECT 
-                        DATENAME(WEEKDAY, date) AS label, -- Nama hari (Sunday, Monday, ...)
-                        COALESCE(i.total_in, 0) AS total_in,
-                        COALESCE(o.total_out, 0) AS total_out,
-                        SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
-                            OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-                            + (SELECT value FROM saldo_awal) AS running_balance
-                    FROM daily
-                    GROUP BY DATENAME(WEEKDAY, date), DATEPART(WEEKDAY, date)
-                    ORDER BY DATEPART(WEEKDAY, date)
-                    OPTION (MAXRECURSION 1000);
-                """
+               raise ValueError("Unsupported vendor")
 
             params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'),
                       start_date.strftime('%Y-%m-%d'),end_date.strftime('%Y-%m-%d'),
@@ -1102,48 +1011,13 @@ def get_chart_inventory(request):
                             ORDER BY t.date 
                 """
             else:
-                query = """
-                        WITH tanggal AS (
-                            SELECT CAST(%s AS DATE) AS date
-                            UNION ALL
-                            SELECT DATEADD(DAY, 1, date)
-                            FROM tanggal
-                            WHERE date < %s
-                        ),
-                        incoming AS (
-                            SELECT
-                                CAST(tgl_production AS DATE) AS date,
-                                SUM(tonnage) AS total_in
-                            FROM ore_productions
-                            WHERE tgl_production BETWEEN %s AND %s
-                            GROUP BY CAST(tgl_production AS DATE)
-                        ),
-                        outgoing AS (
-                            SELECT
-                                CAST(date_wb AS DATE) AS date,
-                                SUM(netto_weigth_f) AS total_out
-                            FROM ore_sellings s
-                            LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
-                            GROUP BY CAST(date_wb AS DATE)
-                        )
-                        SELECT
-                            CONVERT(VARCHAR, t.date, 23) AS label,
-                            ISNULL(i.total_in, 0) AS total_in,
-                            ISNULL(o.total_out, 0) AS total_out
-                        FROM tanggal t
-                        LEFT JOIN incoming i ON t.date = i.date
-                        LEFT JOIN outgoing o ON t.date = o.date
-                        ORDER BY t.date
-                        OPTION (MAXRECURSION 1000)
-                    """
+              raise ValueError("Unsupported vendor")
        
         elif filter_type =='yearly' and year: 
             year = int(year)
-
             if db_vendor == 'postgresql':
                 query = """
-                     WITH bulan AS (
+                    WITH bulan AS (
                             SELECT generate_series(1, 12) AS month
                         ),
                         incoming AS (
@@ -1156,12 +1030,12 @@ def get_chart_inventory(request):
                         ),
                         outgoing AS (
                             SELECT
-                                EXTRACT(MONTH FROM date_wb)::int AS month,
-                                SUM(netto_weigth_f) AS total_out
-                            FROM ore_sellings s
+                                EXTRACT(MONTH FROM date_hauling)::int AS month,
+                                SUM(tonnage) AS total_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE EXTRACT(YEAR FROM date_wb) = %s
-                            GROUP BY EXTRACT(MONTH FROM date_wb)
+                            WHERE EXTRACT(YEAR FROM date_hauling) = %s
+                            GROUP BY EXTRACT(MONTH FROM date_hauling)
                         ),
                         saldo_awal AS (
                             SELECT
@@ -1170,9 +1044,9 @@ def get_chart_inventory(request):
                                     FROM ore_productions
                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) - COALESCE((
-                                    SELECT SUM(netto_weigth_f)
-                                    FROM ore_sellings
-                                    WHERE EXTRACT(YEAR FROM date_wb) < %s
+                                    SELECT SUM(tonnage)
+                                    FROM ore_sellings_barging
+                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
                                 ), 0) AS value
                         )
                         SELECT
@@ -1187,50 +1061,10 @@ def get_chart_inventory(request):
                         LEFT JOIN incoming i ON bulan.month = i.month
                         LEFT JOIN outgoing o ON bulan.month = o.month
                         ORDER BY bulan.month;
-
                 """
             else:
-                query = """
-                    WITH bulan AS (
-                        SELECT 1 AS month
-                        UNION ALL SELECT 2
-                        UNION ALL SELECT 3
-                        UNION ALL SELECT 4
-                        UNION ALL SELECT 5
-                        UNION ALL SELECT 6
-                        UNION ALL SELECT 7
-                        UNION ALL SELECT 8
-                        UNION ALL SELECT 9
-                        UNION ALL SELECT 10
-                        UNION ALL SELECT 11
-                        UNION ALL SELECT 12
-                    ),
-                    incoming AS (
-                        SELECT
-                            MONTH(tgl_production) AS month,
-                            SUM(tonnage) AS total_in
-                        FROM ore_productions
-                        WHERE YEAR(tgl_production) = %s
-                        GROUP BY MONTH(tgl_production)
-                    ),
-                    outgoing AS (
-                        SELECT
-                            MONTH(date_wb) AS month,
-                            SUM(netto_weigth_f) AS total_out
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE YEAR(date_wb) = %s
-                        GROUP BY MONTH(date_wb)
-                    )
-                    SELECT
-                        DATENAME(MONTH, DATEFROMPARTS(%s, b.month, 1)) AS label,
-                        ISNULL(i.total_in, 0) AS total_in,
-                        ISNULL(o.total_out, 0) AS total_out
-                    FROM bulan b
-                    LEFT JOIN incoming i ON b.month = i.month
-                    LEFT JOIN outgoing o ON b.month = o.month
-                    ORDER BY b.month
-                """
+                raise ValueError("Unsupported vendor")
+            
             params = [year,year,year,year]
 
         elif filter_type =='all':
@@ -1245,11 +1079,11 @@ def get_chart_inventory(request):
                     ),
                     outgoing AS (
                         SELECT
-                            EXTRACT(YEAR FROM date_wb)::int AS year,
-                            SUM(netto_weigth_f) AS total_out
-                        FROM ore_sellings s
+                            EXTRACT(YEAR FROM date_hauling)::int AS year,
+                            SUM(tonnage) AS total_out
+                        FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        GROUP BY EXTRACT(YEAR FROM date_wb)
+                        GROUP BY EXTRACT(YEAR FROM date_hauling)
                     )
                     SELECT
                         COALESCE(i.year, o.year) AS label,
@@ -1262,30 +1096,7 @@ def get_chart_inventory(request):
                     ORDER BY label
                 """
             else:
-                query = """
-                    WITH incoming AS (
-                        SELECT
-                            YEAR(tgl_production) AS year,
-                            SUM(tonnage) AS total_in
-                        FROM ore_productions
-                        GROUP BY YEAR(tgl_production)
-                    ),
-                    outgoing AS (
-                        SELECT
-                            YEAR(date_wb) AS year,
-                            SUM(netto_weigth_f) AS total_out
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        GROUP BY YEAR(date_wb)
-                    )
-                    SELECT
-                        ISNULL(i.year, o.year) AS label,
-                        ISNULL(i.total_in, 0) AS total_in,
-                        ISNULL(o.total_out, 0) AS total_out
-                    FROM incoming i
-                    FULL OUTER JOIN outgoing o ON i.year = o.year
-                    ORDER BY label
-                """
+                raise ValueError("Unsupported vendor")
             params = []
 
         else:
@@ -1338,7 +1149,6 @@ def get_grade_class(ni, mgo, fe):
     else:
         return "???"
 
-    
 def get_grade_roa(request):
     try:
         filter_type = request.GET.get('filter_type')

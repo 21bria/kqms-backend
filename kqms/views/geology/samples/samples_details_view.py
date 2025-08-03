@@ -296,7 +296,6 @@ def deleteSampleCreate(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-    
 @login_required
 def samples_data_page(request):
     today = datetime.today()

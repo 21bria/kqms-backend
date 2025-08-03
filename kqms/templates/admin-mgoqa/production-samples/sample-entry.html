@@ -1064,7 +1064,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            initializeSelect2($('#oreTable tbody tr:first'));
+            initializeSelect2($('#samplesTable tbody tr:first'));
             $('#addRow').on('click', function () {
                 var newRow = '<tr>' +
                     '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="copyRow ti-btn ti-btn-icon bg-success/10 text-success hover:bg-success hover:text-white !rounded-full ti-btn-wave">' +
@@ -1590,7 +1590,9 @@
                             $("[name='gc_expect[]']").val('');
                             // Hapus baris formulir yang baru ditambahkan
                             $('#samplesTable tbody tr:last').remove();
-                            var no_production = $('#no_production').val();
+                             // Hapus semua baris dan sembunyikan header
+                            $('#samplesTable tbody').empty();
+                            var no_production = $('#code').val();
                             // Kirim permintaan AJAX ke server dengan filter
                             $('#data_table').DataTable().clear().draw();
                         } else {

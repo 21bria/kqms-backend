@@ -201,12 +201,12 @@ def insert_sourceDomePoint(request):
 
 @login_required    
 def update_sourceDomePoint(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control','admin-mining']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Ambil objek berdasarkan ID

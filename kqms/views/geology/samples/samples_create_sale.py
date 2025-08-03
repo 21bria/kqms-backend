@@ -53,11 +53,11 @@ class viewEntrySale(View):
        
 
         # Filter berdasarkan parameter dari request
-        no_sample   = request.POST.get('no_sample')
+        no_sample   = request.POST.get('code')
 
         data = data.filter(no_sample=no_sample)
         # NOT IN
-        data = data.filter(type_sample__in=['HOS', 'ROS','HOS_SPC','ROS_SPC','ROS_CKS','ROS_SPC','ROS_PSI','HOS_CKS','HOS_SPC'])
+        data = data.filter(type_sample__in=['LIS', 'SAS','LIS_SPC','SAS_SPC','LIS_CKS','SAS_CKS'])
 
         # Atur sorting
         if order_dir == 'desc':
@@ -86,7 +86,6 @@ class viewEntrySale(View):
             object_list = paginator.page(paginator.num_pages).object_list
 
         data = [
-         
             {
                 "id"                : item.id,
                 "tgl_sample"        : item.tgl_sample,
@@ -106,8 +105,7 @@ class viewEntrySale(View):
                 "sampling_deskripsi": item.sampling_deskripsi,
                 "no_sample"         : item.no_sample,
                 "created_at"        : item.created_at.strftime('%Y-%m-%d %H:%M:%S')
-                            
-                
+
             } for item in object_list
         ]
 
@@ -152,7 +150,7 @@ def create_sample_sale(request):
                 'id_material[].required'      : 'Material harus diisi.',
                 'sample_number[].required'    : 'SampleID harus diisi.',
                 'sample_number[].min_length'  : 'SampleID minimal 9 karakter.',
-                'sample_number[].max_length'  : 'SampleID maksimal 10 karakter.',
+                'sample_number[].max_length'  : 'SampleID maksimal 15 karakter.',
                 'sample_number[].regex'       : 'SampleID hanya boleh terdiri dari huruf dan angka.'
             }
 
@@ -202,7 +200,7 @@ def create_sample_sale(request):
                 method              = request.POST.getlist('method[]')
                 type                = request.POST.getlist('type[]')
                 productCode         = request.POST.getlist('codeProduct[]')
-                no_sample           = request.POST.get('no_sample')
+                no_sample           = request.POST.get('code')
                 
                 # Loop untuk menyimpan setiap data sample
                 for idx in range(len(tgl_sample)):
@@ -214,7 +212,7 @@ def create_sample_sale(request):
                     pulpKodeBatch     = pulpKodeBatch.replace(" ", "")  # Menghapus spasi
 
                     # Definisikan tipe-tipe yang ingin cek
-                    valid_types = ['HOS', 'ROS']
+                    valid_types = ['LIS', 'SAS']
 
                     # Cek apakah kode batch sudah ada dalam database
                     if type[idx] in valid_types:
@@ -233,15 +231,16 @@ def create_sample_sale(request):
                         product_code        = product_code[idx],
                         sampling_deskripsi  = sampling_deskripsi[idx] if sampling_deskripsi else "",
                         batch_code          = batch_code[idx] if batch_code else "",
-                        increments           = int(increments[idx]) if increments and increments[idx].isdigit() else 0,
+                        increments          = int(increments[idx]) if increments and increments[idx].isdigit() else 0,
                         sample_weight       = float(sample_weight[idx]) if sample_weight and sample_weight[idx].replace('.', '', 1).isdigit() else 0.0,
                         primer_raw          = primer_raw[idx]  if primer_raw and primer_raw[idx].replace('.', '', 1).isdigit() else 0.0,
+                        to_its              = '00:00:00',
                         gc_expect           = 'No',
                         type                = type[idx],
                         kode_batch          = combinedKodeBatch,
                         selling_pulp        = pulpKodeBatch,
                         no_sample           = no_sample, 
-                        id_user             = request.user.id  # Sesuaikan dengan cara Anda mendapatkan user ID
+                        id_user             = request.user.id  
                     )
 
             # Kembalikan respons JSON sukses

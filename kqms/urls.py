@@ -14,9 +14,9 @@ urlpatterns = [
     path('dashboard/', include('kqms.urls_path.dashboard')),
     path('dropdown/', include('kqms.urls_path.dropdown')),
     path('geology/', include('kqms.urls_path.geology')),
-    path('geology/', include('kqms.urls_path.geology')),
     path('laboratory/', include('kqms.urls_path.laboratory')),
     path('mining/', include('kqms.urls_path.mining')),
+    path('selling/', include('kqms.urls_path.selling')),
     path('master/', include('kqms.urls_path.master')),
     path('config/', include('kqms.urls_path.config')),
     path('report/', include('kqms.urls_path.report')),
@@ -33,8 +33,5 @@ urlpatterns = [
     path('generate-dummy-selling-plan/', generate_dummy_selling_plan, name='generate_dummy_selling_plan'),
     path('generate-dummy-mine-pds/', generate_dummy_mine_productions, name='generate_dummy_mine_productions'),
     path('generate-dummy-plan-mine/', generate_dummy_plan_productions, name='generate_dummy_plan_productions'),
-
-   
-
     
 ]

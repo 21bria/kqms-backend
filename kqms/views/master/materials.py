@@ -112,12 +112,12 @@ def get_material(request, id):
 
 @login_required(login_url='/sqms_apps/login/')
 def insert_material(request):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission to insert data.'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission to insert data.'}, 
+            status=403
+    )
     
     if request.method == 'POST':
         nama_material = request.POST.get('nama_material')
@@ -182,12 +182,12 @@ def update_material(request, id):
 
 @login_required
 def delete_material(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission to delete data.'}, 
-    #         status=403
-    #     )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission to delete data.'}, 
+            status=403
+        )
 
     if request.method == 'DELETE':
         job_id = request.GET.get('id')

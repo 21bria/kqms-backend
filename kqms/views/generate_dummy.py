@@ -187,7 +187,7 @@ def generate_dummy_loading(request):
 # Selling
 def generate_dummy_selling(request, total=4000):
     start_date = datetime(2021, 1, 1)
-    end_date = datetime(2025, 6, 29)
+    end_date = datetime(2025, 7, 30)
 
     type_selling_choices = ['HPAL', 'RKEF']
     shifts = ['Day', 'Night']
@@ -259,7 +259,7 @@ def generate_dummy_selling(request, total=4000):
 
 def generate_dummy_selling_plan(request):
     start_date = datetime(2021, 1, 1)
-    end_date = datetime(2025, 6, 29)
+    end_date = datetime(2025, 7, 30)
 
     type_ores = ['LIM', 'SAP']  # Material 7 = limonite, 10 = saprolite (misal)
     type_sellings = ['HPAL', 'RKEF']
@@ -311,9 +311,9 @@ def generate_dummy_selling_plan(request):
 # Mining
 def generate_dummy_plan_productions(request):
     start_date = datetime(2021, 1, 1)
-    end_date = datetime(2025, 6, 29)
+    end_date = datetime(2025, 7, 30)
 
-    vendors_list = ['PPA', 'NPM']
+    vendors_list = ['NPM', 'NPM']
     categories = ['Mining', 'Project']
     sources = ['Pit A', 'Pit B', 'Pit C', 'Pit D']
 
@@ -357,7 +357,7 @@ def generate_dummy_plan_productions(request):
 
 def generate_dummy_mine_productions(request):
     start_date = datetime(2021, 1, 1)
-    end_date = datetime(2025, 6, 29)
+    end_date = datetime(2025, 7, 30)
 
     materials = [18, 27, 28, 29, 30, 31, 32, 33, 34, 35]
     vendors = ['Vendor A', 'Vendor B', 'Vendor C']

@@ -10,6 +10,9 @@ from ..views.master.sampling_type_view import *
 from ..views.master.sample_method_view import *
 from ..views.master.mine_geologies_view import *
 from ..views.master.selling_code_view import *
+from ..views.master.selling_factory_view import *
+from ..views.master.selling_barge_view import *
+from ..views.master.selling_port_view import *
 from ..views.master.mine_units_view import *
 from ..views.settings.data_control.ore_class_view import *
 
@@ -105,9 +108,28 @@ urlpatterns = [
     path('sale-code/update/<int:id>/', update_code, name='update-sale-code'),
     path('sale-code/delete/', delete_code, name='delete-sale-code'),
 
-    # Table Sale Stock Temp
+    # Table Sale Factory
+    path('sale-factory/', factory_page, name='sale-factory-page'), 
+    path('sale-factory/list', SaleFactoryList.as_view(), name='sale-factory-list'), 
+    path('sale-factory/insert/', insert_factory, name='insert-sale-factory'), 
+    path('sale-factory/get_id/<int:id>/', get_factory, name='get-sale-factory'),
+    path('sale-factory/update/<int:id>/', update_factory, name='update-sale-factory'),
+    path('sale-factory/delete/', delete_factory, name='delete-sale-factory'),
 
-    # Table Sale Dome Temp
+    # Table Sale Barge
+    path('sale-barge/', barge_page, name='sale-barge-page'), 
+    path('sale-barge/list', SaleBargeList.as_view(), name='sale-barge-list'), 
+    path('sale-barge/insert/', insert_barge, name='insert-sale-barge'), 
+    path('sale-barge/get_id/<int:id>/', get_barge, name='get-sale-barge'),
+    path('sale-barge/update/<int:id>/', update_barge, name='update-sale-barge'),
+    path('sale-barge/delete/', delete_barge, name='delete-sale-barge'),
 
+    # Table Sale Port
+    path('sale-port/', port_page, name='sale-port-page'), 
+    path('sale-port/list', SalePortList.as_view(), name='sale-port-list'), 
+    path('sale-port/insert/', insert_port, name='insert-sale-port'), 
+    path('sale-port/get_id/<int:id>/', get_port, name='get-sale-port'),
+    path('sale-port/update/<int:id>/', update_port, name='update-sale-port'),
+    path('sale-port/delete/', delete_port, name='delete-sale-port'),
 
 ]

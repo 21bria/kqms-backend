@@ -245,14 +245,14 @@
                                 </select>
                             </div>
 
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-4 col-span-12" id="sampleArea">
                                 <label class="form-label">Sampling Area<span class="text-danger">*</span></label>
                                 <select id="sampling_area" name="sampling_area" class="form-control w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
 
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-4 col-span-12" id="samplePoint">
                                 <label class="form-label">Sampling Point<span class="text-danger">*</span></label>
                                 <select id="sampling_point" name="sampling_point"
                                     class="form-control w-full !rounded-md">
@@ -313,11 +313,11 @@
                                     class="form-control w-full !rounded-md" placeholder="From RL">
                             </div>
 
-                            <div class="xl:col-span-4 col-span-12">
+                            <!-- <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Sent to ITS<span class="text-danger">*</span></label>
                                 <input type="text" id="to_its" name="to_its" class="form-control w-full !rounded-md"
                                     placeholder="Sent to ITS">
-                            </div>
+                            </div> -->
 
                             <div class="xl:col-span-4 col-span-12">
                                 <label>-<span class="text-danger"></span></label>
@@ -325,7 +325,6 @@
                                     class="form-control w-full !rounded-md disabled:pointer-events-none disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] cursor-not-allowed"
                                     disabled />
                             </div>
-
                             <div class="xl:col-span-4 col-span-12">
                                 <label>-<span class="text-danger"></span></label>
                                 <input type="text" id="unit_truck" name="unit_truck"
@@ -390,7 +389,6 @@
 
 <!-- Call JS -->
 {% include 'layout/js.html' %}
-
 
 
 <script>
@@ -600,8 +598,6 @@
             var id_material = $('#id_material').val();
             var sampling_area = $('#sampling_area').val();
             var sampling_point = $('#sampling_point').val();
-            // var from_rl = $('#from_rl').val().trim();
-            // var to_rl = $('#to_rl').val().trim();
             var batch_code = $('#batch_code').val();
             var increments = $('#increments').val();
             var sample_weight = $('#sample_weight').val();
@@ -651,10 +647,8 @@
                 success: function (response) {
                     if (response.success) {
                         $('#id').val('');
-                        // Tutup modal (gunakan HSOverlay jika pakai Tailwind UI HS)
                         window.HSOverlay.close('#edit-data');
                         //  Tampilkan SweetAlert
-                       
                         Swal.fire({
                             title: response.message,
                             icon: "success",
@@ -663,12 +657,11 @@
                             showConfirmButton: true,
                             confirmButtonText: 'OK',
                         });
-
-
                         $('#id_type_sample').val('').trigger('change');
                         $('#id_method').val('').trigger('change');
                         ('#unit_truck').val('');
                         // Kirim permintaan AJAX ke server
+                        
                         $('#data_table').DataTable().clear().draw();
                     } else {
                         // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
@@ -1222,13 +1215,13 @@
                     $('#type').val(response.type);
                     var responseToIts = response.to_its;
                     // Ini akan mengambil bagian jam (00:00:00)
-                    var jam = responseToIts.substring(0, 8);
-                    $('#to_its').val(jam);
+                    // var jam = responseToIts.substring(0, 8);
+                    // $('#to_its').val(jam);
 
                     $('#sampling_deskripsi').val(response.sampling_deskripsi);
                     $('#remark').val(response.remark);
                     // $('#gc_expect').val(response.gc_expect).trigger('change');
-                   
+
 
                     $('#sampling_area').val(response.sampling_area).trigger('change');
                     // Tambahkan opsi baru ke Select2
@@ -1276,49 +1269,49 @@
                     inputDesk.hide();
                     inputType.val(selectedText);
                     break;
-                case "HOS":
+                case "LIS":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "HOS_SPC":
+                case "LIS_SPC":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "HOS_CKS":
+                case "LIS_CKS":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "ROS":
+                case "SAS":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "ROS_CKS":
+                case "SAS_CKS":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "ROS_PSI":
+                case "SAS_PSI":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();
                     $('#samplePoint').hide();
                     $('#sampleArea').hide();
                     break;
-                case "ROS_SPC":
+                case "SAS_SPC":
                     inputType.val(selectedText);
                     $('#sellingArea').show();
                     $('#sellingPoint').show();

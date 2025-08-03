@@ -27,7 +27,7 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Waybills samples</h3>
+                        Laboratory samples</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -40,7 +40,7 @@
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Waybills
+                        laboratory
                     </li>
                 </ol>
             </div>
@@ -51,7 +51,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">List Waybills</h5>
+                            <h5 class="box-title">List laboratory</h5>
                         </div>
                         <div class="box-body">
                             <div class="grid grid-cols-12 gap-4 mb-5">
@@ -72,29 +72,31 @@
                                     </div>
                                 </div>
                                 <div class="xl:col-span-2 col-span-12">
-                                    <select id="mralOrder" name="mralOrder"
-                                        class="form-control w-full !rounded-md form-select text-white-dark">
-                                        <option value="">-- MRAL --</option>
-                                        <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
+                                    <select class="form-control w-full !rounded-md !bg-light" id="priority"
+                                        name="priority">
+                                        <option value="">-- Priority -- </option>
+                                        <option value="High">High Priority</option>
+                                        <option value="Medium">Medium Priority</option>
+                                        <option value="Low">Low Priority</option>
                                     </select>
                                 </div>
                                 <div class="xl:col-span-2 col-span-12">
-                                    <select id="roaOrder" name="roaOrder"
-                                        class="form-control w-full !rounded-md form-select text-white-dark">
-                                        <option value="">-- ROA --</option>
-                                        <option value="Yes">Yes</option>
-                                        <option value="No">No</option>
+                                    <select class="form-control w-full !rounded-md !bg-light" id="status" name="status">
+                                        <option value="">-- Status -- </option>
+                                        <option value="Waiting Final">Waiting Final</option>
+                                        <option value="Waiting Press">Waiting Press</option>
+                                        <option value="Waiting Analyse">Waiting Analyse</option>
                                     </select>
                                 </div>
+
                                 <div class="hs-dropdown ti-dropdown [--placement:right-top] ">
                                     <button type="button"
-                                        class="hs-dropdown-toggle relative ti-btn ti-btn-secondary-full  !py-2 !rounded-e-none ti-dropdown-toggle !me-0">
+                                        class="hs-dropdown-toggle relative ti-btn ti-btn-primary-full  !py-2 !rounded-e-none ti-dropdown-toggle !me-0">
                                         Actions
                                     </button>
                                     <div class="hs-dropdown ti-dropdown [--placement:right-top]">
                                         <button id="hs-split-dropright" type="button"
-                                            class="hs-dropdown-toggle relative  ti-dropdown-toggle !opacity-[0.85] rounded-none  ti-btn ti-btn-secondary-full !rounded-s-none">
+                                            class="hs-dropdown-toggle relative  ti-dropdown-toggle !opacity-[0.85] rounded-none  ti-btn ti-btn-primary-full !rounded-s-none">
                                             <span class="sr-only">Toggle Dropdown</span>
                                             <svg class="w-auto h-2.5 ti-dropdown-caret !text-white" width="16"
                                                 height="16" viewBox="0 0 16 16" fill="none"
@@ -128,17 +130,20 @@
                                     style="width: 100%">
                                     <thead>
                                         <tr>
-                                            <th class="bg-soft-secondary" width="4%">No</th>
-                                            <th class="bg-soft-secondary" width="11%">Delivery Date</th>
-                                            <th class="bg-soft-secondary" width="10%">Time Delivery</th>
-                                            <th class="bg-soft-secondary">Waybill Number</th>
-                                            <th class="bg-soft-secondary">Qty</th>
-                                            <th class="bg-soft-secondary">SampleID</th>
-                                            <th class="bg-soft-secondary">Mral Order</th>
-                                            <th class="bg-soft-secondary">Roa Order</th>
-                                            <th class="bg-soft-secondary">Remarks</th>
-                                            <th class="bg-soft-secondary">Users</th>
-                                            <th class="bg-soft-secondary">Actions</th>
+                                            <th>#</th>
+                                            <th>Rechived</th>
+                                            <th>Shift</th>
+                                            <th>Priority</th>
+                                            <th>Jobs ID</th>
+                                            <th>Waybills</th>
+                                            <th>Sample</th>
+                                            <th>Wet</th>
+                                            <th>Final</th>
+                                            <th>Press</th>
+                                            <th>Analyse</th>
+                                            <th>Status</th>
+                                            <th>Remarks</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -153,9 +158,8 @@
         </div>
         <!-- Start::main-content -->
 
-
         <!-- Start::edit modal -->
-        <div id="edit-data" class="hs-overlay hidden ti-modal">
+        <div id="edit-data" class="hs-overlay hidden ti-modal" aria-overlay="true" tabindex="-1">
             <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
                 <div class="ti-modal-content">
                     <div class="ti-modal-header">
@@ -173,45 +177,76 @@
                             <input type="hidden" name="id" id="id">
                             <div class="grid grid-cols-12 gap-4">
                                 <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Date Deliver</label>
+                                    <label class="form-label">Date Rechived</label>
                                     <div class="input-group">
                                         <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
                                                 class="ri-calendar-line"></i> </div>
-                                        <input type="text" class="form-control" id="tgl_deliver" name="tgl_deliver"
-                                            placeholder="Choose date">
+                                        <input type="text" class="form-control" id="date_received_e"
+                                            name="date_received_e" placeholder="Choose date">
                                     </div>
                                 </div>
+
                                 <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Time Deliver</label>
-                                    <input type="text" class="form-control" id="delivery_time" name="delivery_time"
+                                    <label class="form-label">Time</label>
+                                    <input type="text" class="form-control" id="time_received_e" name="time_received_e"
                                         placeholder="hh:mm">
                                 </div>
                                 <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Waybill number</label>
-                                    <input type="tetx" class="form-control" id="waybill_number" name="waybill_number">
+                                    <label class="form-label">Shift</label>
+                                    <select class="form-control w-full !rounded-md !bg-light" id="shift_e"
+                                        name="shift_e">
+                                        <option value="">-- Shift -- </option>
+                                        <option value="Shift 1">Shift 1</option>
+                                        <option value="Shift 2">Shift 2</option>
+                                    </select>
                                 </div>
                                 <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">SampleID</label>
-                                    <input type="text" class="form-control" id="sample_id" name="sample_id">
+                                    <label class="form-label">Priority</label>
+                                    <select class="form-control w-full !rounded-md !bg-light" id="priority_e"
+                                        name="priority_e">
+                                        <option value="">-- Priority -- </option>
+                                        <option value="High">High Priority</option>
+                                        <option value="Medium">Medium Priority</option>
+                                        <option value="Low">Low Priority</option>
+                                    </select>
                                 </div>
-                                <div class="xl:col-span-4 col-span-12">
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Waybill</label>
+                                    <input type="text" class="form-control" id="waybill_e" name="waybill_e">
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Sample</label>
+                                    <input type="text" class="form-control" id="sample_e" name="sample_e">
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
                                     <label class="form-label">Qty</label>
-                                    <input type="number" class="form-control" id="numb_sample" name="numb_sample"
+                                    <input type="number" class="form-control" id="sample_wet_e" name="sample_wet_e"
                                         placeholder="0">
                                 </div>
-                                <div class="xl:col-span-4 col-span-12">
+
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Sections</label>
+                                    <select class="form-control w-full !rounded-md !bg-light" id="sections_e"
+                                        name="sections_e">
+                                        <option value="">-- Section -- </option>
+                                        <option value="GC">GC</option>
+                                        <option value="QA">QA</option>
+                                        <option value="Others">Others</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-6 col-span-12">
                                     <label class="form-label">mral order</label>
-                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="mral_order"
-                                        name="mral_order">
+                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="mral_order_e"
+                                        name="mral_order_e">
                                         <option value="">Select</option>
                                         <option value="Yes">Yes</option>
                                         <option value="No">No</option>
                                     </select>
                                 </div>
-                                <div class="xl:col-span-4 col-span-12">
+                                <div class="xl:col-span-6 col-span-12">
                                     <label class="form-label">roa order</label>
-                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="roa_order"
-                                        name="roa_order">
+                                    <select class="ti-form-select rounded-sm !py-2 !px-3t" id="roa_order_e"
+                                        name="roa_order_e">
                                         <option value="">Select</option>
                                         <option value="Yes">Yes</option>
                                         <option value="No">No</option>
@@ -221,7 +256,7 @@
                             <!-- Description -->
                             <div class="mt-4">
                                 <label class="form-label">Remarks </label>
-                                <textarea id="remarks" name="remarks" rows="3"
+                                <textarea id="remarks_e" name="remarks_e" rows="3"
                                     class="form-control w-full !rounded-md resize-none"
                                     placeholder="Enter Description"></textarea>
                             </div>
@@ -241,6 +276,98 @@
                 </div>
             </div>
         </div>
+        <!-- Start::edit modal Samples -->
+        <!-- Start::edit modal Samples -->
+        <div id="edit-samples" class="hs-overlay hidden ti-modal" aria-modal="true" tabindex="-1">
+            <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+                <div class="ti-modal-content">
+                    <!-- Header -->
+                    <div class="ti-modal-header">
+                        <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                            Input Value
+                        </h6>
+                        <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                            data-hs-overlay="#edit-samples">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                        <form id="editSampleForm">
+                            <input type="hidden" name="id" id="id">
+                            <input type="hidden" name="edit_type" id="edit_type">
+
+                            <div class="grid grid-cols-12 gap-4">
+                                <!-- Date -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Date Received</label>
+                                    <div class="input-group">
+                                        <div class="input-group-text text-[#8c9097] dark:text-white/50">
+                                            <i class="ri-calendar-line"></i>
+                                        </div>
+                                        <input type="text" class="form-control w-full !rounded-md !bg-light readonly"
+                                            id="date_received" name="date_received" placeholder="Choose date" readonly>
+                                    </div>
+                                </div>
+
+                                <!-- Sample ID -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Sample</label>
+                                    <input type="text" class="form-control w-full !rounded-md !bg-light" id="samples"
+                                        name="samples" readonly>
+                                </div>
+
+                                <!-- Wet -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Wet</label>
+                                    <input type="number" class="form-control w-full !rounded-md !bg-light"
+                                        id="sample_wet" name="sample_wet" placeholder="0" readonly>
+                                </div>
+
+                                <!-- Final -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Final</label>
+                                    <input type="number" class="form-control" id="sample_final" name="sample_final"
+                                        placeholder="0">
+                                </div>
+
+                                <!-- Press -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Press</label>
+                                    <input type="number" class="form-control" id="sample_press" name="sample_press"
+                                        placeholder="0">
+                                </div>
+
+                                <!-- Analysis -->
+                                <div class="xl:col-span-6 col-span-12">
+                                    <label class="form-label">Analysis</label>
+                                    <input type="number" class="form-control" id="sample_analysis"
+                                        name="sample_analysis" placeholder="0">
+                                </div>
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="mt-4">
+                                <label class="form-label">Remarks</label>
+                                <textarea id="remarks" name="remarks" rows="3"
+                                    class="form-control w-full !rounded-md resize-none"
+                                    placeholder="Enter Description"></textarea>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-6 flex justify-end gap-2">
+                                <button type="button" class="hs-dropdown-toggle ti-btn ti-btn-light align-middle"
+                                    data-hs-overlay="#edit-samples">Cancel</button>
+                                <button type="button" id="update-value"
+                                    class="ti-btn bg-primary text-white">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End::edit modal Samples -->
 
     </div>
 
@@ -281,7 +408,7 @@
         // });
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
-        let data_url = '{% url "waybill-list" %}';
+        let data_url = '{% url "laboratory-list-prep" %}';
         // var material_filter = 'LIM';
         var table = $('#data_table').DataTable({
             'processing': true,
@@ -301,8 +428,8 @@
                 "data": function (data) {
                     data.startDate = $('#startDate').val();
                     data.endDate = $('#endDate').val();
-                    data.mralOrder = $('#mralOrder').val();
-                    data.roaOrder = $('#roaOrder').val();
+                    data.priority = $('#priority').val();
+                    data.status = $('#status').val();
                     return data;
                 },
             },
@@ -316,51 +443,98 @@
                     }
                 }, // Kolom nomor otomatis
                 {
-                    data: 'tgl_deliver',
-                    name: 'tgl_deliver'
+                    data: 'date_received',
+                    name: 'date_received'
                 },
-
                 {
-                    data: 'delivery_time',
-                    name: 'delivery_time',
+                    data: 'shift',
+                    name: 'shift',
+                    searchable: true
+                },
+                {
+                    data: 'priority',
+                    name: 'priority',
                     render: function (data, type, row) {
-                        // Pastikan data adalah string yang sesuai dengan format waktu
-                        if (type === 'display' && typeof data === 'string' && data.length >=
-                            8) {
-                            // Ambil bagian pertama (hh:mm:ss) dari data waktu
-                            var shortTime = data.substring(0, 8);
-                            return shortTime;
+                        if (data === 'High') {
+                            return '<span class="badge bg-danger/10 text-danger">High</span>';
+                        } else if (data === 'Medium') {
+                            return '<span class="badge bg-warning/10 text-warning">Medium</span>';
+                        } else if (data === 'Low') {
+                            return '<span class="badge bg-success/10 text-success">Low</span>';
+                        } else {
+                            return '<span class="badge bg-secondary/10 text-secondary">-</span>';
                         }
-                        return data;
                     }
                 },
                 {
-                    data: 'waybill_number',
-                    name: 'waybill_number'
+                    data: 'job_number',
+                    name: 'job_number',
+                    searchable: true
                 },
                 {
-                    data: 'numb_sample',
-                    name: 'numb_sample'
+                    data: 'waybill_number',
+                    name: 'waybill_number',
+                    searchable: true
                 },
                 {
                     data: 'sample_id',
-                    name: 'sample_id'
+                    name: 'sample_id',
+                    searchable: true
                 },
                 {
-                    data: 'mral_order',
-                    name: 'mral_order'
+                    data: 'sample_wet',
+                    name: 'sample_wet',
+                    render: function (data, type, row) {
+                        if (parseInt(data) > 0) {
+                            return '<span class="text-success">' + data + '</span>';
+                        } else {
+                            return '<span class="text-danger">0</span>';
+                        }
+                    }
                 },
                 {
-                    data: 'roa_order',
-                    name: 'roa_order'
+                    data: 'sample_final',
+                    name: 'sample_final',
+                    render: function (data, type, row) {
+                        const colorClass = parseInt(data) > 0 ? 'text-success' : 'text-danger';
+                        const colorBg = parseInt(data) > 0 ? 'badge bg-success/10' : 'badge bg-danger/10';
+                        return `<a href="#" class="${colorClass}  ${colorBg} underline editFinal" data-type="final" data-id="${row.id}" data-value="${data}">${data}</a>`;
+                    }
                 },
+                {
+                    data: 'sample_press',
+                    name: 'sample_press',
+                    render: function (data, type, row) {
+                        const colorClass = parseInt(data) > 0 ? 'text-success' : 'text-danger';
+                        const colorBg = parseInt(data) > 0 ? 'badge bg-success/10' : 'badge bg-danger/10';
+                        return `<a href="#" class="${colorClass}  ${colorBg} open-modal underline editPress" data-type="press" data-id="${row.id}" data-value="${data}">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'sample_analysis',
+                    name: 'sample_analysis',
+                    render: function (data, type, row) {
+                        const colorClass = parseInt(data) > 0 ? 'text-success' : 'text-danger';
+                        const colorBg = parseInt(data) > 0 ? 'badge bg-success/10' : 'badge bg-danger/10';
+                        return `<a href="#" class="${colorClass}  ${colorBg} open-modal underline editAnalysis" data-type="analysis" data-id="${row.id}" data-value="${data}">${data}</a>`;
+                    }
+                },
+                {
+                    data: 'status',
+                    name: 'status',
+                    searchable: true,
+                    render: function (data, type, row) {
+                        if (data === 'Complete') {
+                            return '<span class="badge bg-secondary/10 text-secondary">Completed</span>';
+                        } else {
+                            return '<span class="badge bg-warning/10 text-warning">' + data + '</span>';
+                        }
+                    }
+                },
+
                 {
                     data: 'remarks',
                     name: 'remarks'
-                },
-                {
-                    data: 'username',
-                    name: 'username'
                 },
                 {
                     'data': null,
@@ -369,23 +543,23 @@
                     'searchable': false,
                     'render': function (data, type, row) {
                         return `
-                                     <div  class="flex gap-2 items-center" >
-                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
-                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                               </svg>
-                                            </a>
-                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
-                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
-                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    `;
+                                <div  class="flex gap-2 items-center" >
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                     </a>
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                                `;
                     }
-                }
+                },
 
             ],
             // Mengatur default sort pada kolom secara desc
@@ -403,17 +577,192 @@
         /*  Reset */
         $('#reload').on('click', function () {
             // Reset tanggal ke default, jika ada nilai default di context Python
-            $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
-            $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
-            $('#mralOrder').val('').trigger('change');
-            $('#roaOrder').val('').trigger('change');
-            table.ajax.reload(); //just reload table
+            $('#startDate').val('{{ start_date }}');
+            $('#endDate').val('{{ end_date }}');
+            $('#priority').val('').trigger('change');
+            $('#status').val('').trigger('change');
+            table.ajax.reload();
+        });
+
+        /* Update*/
+        $('#updateButton').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/laboratory/update/' + id + '/';
+            var date_received = $('#date_received_e').val();
+            var time_received = $('#time_received_e').val();
+            var shift = $('#shift_e').val();
+            var priority = $('#priority_e').val();
+            var waybill_number = $('#waybill_e').val();
+            var sample_wet = $('#sample_wet_e').val();
+            var sample_id = $('#sample_e').val();
+            var sections = $('#sections_e').val();
+            var mral_order = $('#mral_order_e').val();
+            var roa_order = $('#roa_order_e').val();
+            var remarks = $('#remarks_e').val();
+
+            var updatedData = {
+                date_received: date_received,
+                time_received: time_received,
+                shift: shift,
+                priority: priority,
+                waybill_number: waybill_number,
+                sample_wet: sample_wet,
+                sections: sections,
+                sample_id: sample_id,
+                mral_order: mral_order,
+                roa_order: roa_order,
+                remarks: remarks
+            };
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: updatedData,
+                success: function (response) {
+                    console.log(response); // 
+                    if (response) {
+                        $('#id').val('');
+                        $('#date_received_e').val('');
+                        $('#time_received_e').val('');
+                        $('#shift_e').val('');
+                        $('#waybill_e').val('');
+                        $('#sample_wet_e').val('');
+                        $('#sample_e').val('');
+                        $('#sections_e').val('');
+                        $('#mral_order_e').val('').trigger('change');
+                        $('#roa_order_e').val('').trigger('change');;
+                        $('#remarks_e').val('');
+                        window.HSOverlay.close('#edit-data');
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Update successfully',
+                            padding: '2em',
+                        });
+                        // Kirim permintaan AJAX ke server
+                        table.ajax.reload();
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    let message = 'Terjadi kesalahan server';
+
+                    if (xhr.status === 422 && xhr.responseJSON?.message) {
+                        message = xhr.responseJSON.message;
+                    } else if (xhr.status === 400 && xhr.responseJSON?.error) {
+                        message = xhr.responseJSON.error;
+                    } else if (xhr.status === 403 && xhr.responseJSON?.error) {
+                        message = xhr.responseJSON.error;
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: message,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true,
+                    });
+                }
+            });
+        });
+
+
+        $('#update-value').click(function (e) {
+            e.preventDefault();
+            var id = $('#id').val();
+            var url = '/kqms/laboratory/update-value/' + id + '/';
+            var sample_final = $('#sample_final').val();
+            var sample_press = $('#sample_press').val();
+            var sample_analysis = $('#sample_analysis').val();
+            var status = $('#status').val();
+            var remarks = $('#remarks').val();
+
+            var updatedData = {
+                sample_final: sample_final,
+                sample_press: sample_press,
+                sample_analysis: sample_analysis,
+                status: status,
+                remarks: remarks
+            };
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: updatedData,
+                success: function (response) {
+                    console.log(response); // 
+                    if (response) {
+                        $('#id').val('');
+                        $('#sample_final').val('');
+                        $('#sample_press').val('');
+                        $('#sample_analysis').val('');
+                        $('#status').val('');
+                        $('#remarks').val('');
+                        window.HSOverlay.close('#edit-samples');
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Update successfully',
+                            padding: '2em',
+                        });
+                        // Kirim permintaan AJAX ke server
+                        table.ajax.reload();
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    let message = 'Terjadi kesalahan server';
+
+                    if (xhr.status === 422 && xhr.responseJSON?.message) {
+                        message = xhr.responseJSON.message;
+                    } else if (xhr.status === 400 && xhr.responseJSON?.error) {
+                        message = xhr.responseJSON.error;
+                    } else if (xhr.status === 403 && xhr.responseJSON?.error) {
+                        message = xhr.responseJSON.error;
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: message,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true,
+                    });
+                }
+            });
         });
 
         /*--- Delete ---*/
         $('#data_table').on('click', '.deleteData', function () {
             var id = $(this).data('id');
-            var url = '{% url "delete-data-waybill" %}?id=' + id;
+            var url = '{% url "delete-data-lab-prep" %}?id=' + id;
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -467,107 +816,12 @@
             })
         });
 
-        /* Update*/
-        $('#updateButton').click(function (e) {
-            e.preventDefault();
-            var id = $('#id').val();
-            var url = '/kqms/geology/waybill/update/' + id + '/';
-            var tgl_deliver = $('#tgl_deliver').val();
-            var delivery_time = $('#delivery_time').val();
-            var waybill_number = $('#waybill_number').val();
-            var numb_sample = $('#numb_sample').val();
-            var sample_id = $('#sample_id').val();
-            var mral_order = $('#mral_order').val();
-            var roa_order = $('#roa_order').val();
-            var remarks = $('#remarks').val();
 
-            var updatedData = {
-                tgl_deliver: tgl_deliver,
-                delivery_time: delivery_time,
-                waybill_number: waybill_number,
-                numb_sample: numb_sample,
-                sample_id: sample_id,
-                mral_order: mral_order,
-                roa_order: roa_order,
-                remarks: remarks
-            };
-
-            $.ajax({
-                type: "POST",
-                url: url,
-                dataType: "json",
-                headers: {
-                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: updatedData,
-                success: function (response) {
-                    console.log(response); // 
-                    if (response) {
-                        $('#id').val('');
-                        $('#tgl_deliver').val('');
-                        $('#delivery_time').val('');
-                        $('#waybill_number').val('');
-                        $('#sample_id').val('');
-                        $('#mral_order').val('').trigger('change');
-                        $('#roa_order').val('').trigger('change');;
-                        $('#remarks').val('');
-                        window.HSOverlay.close('#edit-data');
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'success',
-                            title: 'Update successfully',
-                            padding: '2em',
-                        });
-                        // Kirim permintaan AJAX ke server
-                        table.ajax.reload();
-                    } else {
-                        alert('Terjadi kesalahan: ' + response.message);
-                    }
-                },
-                error: function (xhr, textStatus, status, errorThrown, error) {
-                    if (xhr.status === 403) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: 'You do not have permission',
-                            padding: '2em',
-                        });
-                    } else if (xhr.status === 404) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            title: 'Data tidak ditemukan',
-                            padding: '2em',
-                        });
-                    } else {
-                        alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
-                    }
-                }
-            });
-        });
     });
 </script>
 
 <!-- Exports to Excel -->
-<script>
+<!-- <script>
     $(document).ready(function () {
         $('#exportButton').click(function () {
             // Dapatkan nilai dari filter tanggal
@@ -583,23 +837,18 @@
                 return;
             }
 
-            var exportUrl = "{% url 'export-waybill-data' %}?startDate=" + startDate + "&endDate=" +
-                endDate;
-            // Redirect ke URL eksport dengan filter
+            var exportUrl = "{% url 'export-waybill-data' %}?startDate=" + startDate + "&endDate=" + endDate;
             window.location.href = exportUrl;
         });
     });
-</script>
+</script> -->
 
-<!-- Call dropdown for Line Edit Ore  -->
+<!-- Call for Line Edit  -->
 <script>
-    /*--- Click to Edit Button ---*/
     $('body').on('click', '.editData', function () {
         var id = $(this).data('id');
-        var url = '/kqms/geology/waybill/get-id/' + id + '/';
+        var url = '/kqms/laboratory/laboratory/get-id/' + id + '/';
 
-        /* Hide */
-        $('#batchcodeError').hide();
         $.ajax({
             type: "GET",
             url: url,
@@ -611,18 +860,21 @@
 
                     $('#saveBtn').html('Update Data');
                     $('#id').val(response.id);
-                    $('#tgl_deliver').val(response.tgl_deliver);
-                    var responseToIts = response.delivery_time;
+                    $('#date_received_e').val(response.date_received);
+                    $('#shift_e').val(response.shift);
+                    $('#priority_e').val(response.priority);
+                    var responseToIts = response.time_received;
                     // Ini akan mengambil bagian jam (00:00:00)
                     var jam = responseToIts.substring(0, 8);
-                    $('#delivery_time').val(jam);
+                    $('#time_received_e').val(jam);
                     // $('#delivery_time').val(response.delivery_time);
-                    $('#waybill_number').val(response.waybill_number);
-                    $('#sample_id').val(response.sample_id);
-                    $('#numb_sample').val(response.numb_sample);
-                    $('#mral_order').val(response.mral_order).trigger('change');
-                    $('#roa_order').val(response.roa_order).trigger('change');
-                    $('#remarks').val(response.remarks);
+                    $('#waybill_e').val(response.waybill_number);
+                    $('#sample_e').val(response.sample_id);
+                    $('#sample_wet_e').val(response.sample_wet);
+                    $('#sections_e').val(response.sections).trigger('change');
+                    $('#mral_order_e').val(response.mral_order).trigger('change');
+                    $('#roa_order_e').val(response.roa_order).trigger('change');
+                    $('#remarks_e').val(response.remarks);
                 } else {
                     alert(
                         'Data tidak ditemukan'
@@ -649,7 +901,81 @@
             }
         });
     });
+
+    $('body').on('click', '.editFinal, .editPress, .editAnalysis', function () {
+        var id = $(this).data('id');
+        var type = $(this).data('type');      // final, press, analysis
+        var value = $(this).data('value');    // nilainya
+        var url = '/kqms/laboratory/laboratory/get-id/' + id + '/';
+
+        // GET data sample dari server
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            success: function (response) {
+                if (response) {
+                    // Buka modal
+                    window.HSOverlay.open('#edit-samples');
+
+                    // Set semua field ke kosong dulu
+                    $('#sample_final').val('');
+                    $('#sample_press').val('');
+                    $('#sample_analysis').val('');
+
+                    // Masukkan ID dan remarks umum
+                    $('#saveBtn').html('Update Data');
+                    $('#id').val(response.id);
+                    $('#remarks').val(response.remarks || '');
+                    $('#date_received').val(response.date_received);
+                    $('#waybill').val(response.waybill_number);
+                    $('#samples').val(response.sample_id);
+                    $('#sample_wet').val(response.sample_wet);
+
+                    // Reset semua ke readonly dulu
+                    $('#sample_final, #sample_press, #sample_analysis').prop('readonly', true);
+
+                    // Aktifkan dan fokus hanya satu sesuai type
+                    if (type === 'final') {
+                        $('#sample_press').val(response.sample_press || 0);
+                        $('#sample_analysis').val(response.sample_analysis || 0);
+                        $('#sample_final').prop('readonly', false).val(response.sample_final || 0).focus();
+                    } else if (type === 'press') {
+                        $('#sample_final').val(response.sample_final || 0);
+                        $('#sample_analysis').val(response.sample_analysis || 0);
+                        $('#sample_press').prop('readonly', false).val(response.sample_press || 0).focus();
+                    } else if (type === 'analysis') {
+                        $('#sample_final').val(response.sample_final || 0);
+                        $('#sample_press').val(response.sample_press || 0);
+                        $('#sample_analysis').prop('readonly', false).val(response.sample_analysis || 0).focus();
+                    }
+
+                    // Set nilai hidden type untuk keperluan submit nanti
+                    $('#edit_type').val(type);
+
+                } else {
+                    alert('Data tidak ditemukan');
+                }
+            },
+            error: function (xhr, status, error) {
+                if (xhr.status === 403) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'error',
+                        title: 'You do not have permission',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                } else {
+                    alert('Terjadi kesalahan: ' + error);
+                }
+            }
+        });
+    });
+
 </script>
+
 
 </body>
 

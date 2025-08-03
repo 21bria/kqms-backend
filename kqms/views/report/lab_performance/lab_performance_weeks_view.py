@@ -287,32 +287,32 @@ def chartWeeksTatRoa(request):
     except (TypeError, ValueError):
         jml_week = 4  # Default jika invalid
 
-    if db_vendor == 'mysql':
-        query = f"""
-        SELECT 
-                YEAR(tgl_produksi) AS year,
-                CONCAT('Week ', WEEK(tgl_produksi)) AS minggu,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
-                COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
-                CASE
-                    WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
-                    ELSE 
-                        LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) / 3600), 2, '0') + ':' +
-                        LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 3600) / 60), 2, '0') + ':' +
-                        LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 60, 2, '0')
-                END AS average_time,
-                '105:00:00' AS time_limit,
-                120 AS time_limit_hours
-            FROM laboratory_performance_tat
-            WHERE roa_order = 'Yes' 
-                AND tgl_produksi >= DATE_SUB(CURDATE(), INTERVAL {jml_week} WEEK)
-            GROUP BY YEAR(tgl_produksi), WEEK(tgl_produksi)
-            ORDER BY minggu ASC;
-        """
-    elif db_vendor in ['mssql', 'microsoft']:
+    # if db_vendor == 'mysql':
+    #     query = f"""
+    #     SELECT 
+    #             YEAR(tgl_produksi) AS year,
+    #             CONCAT('Week ', WEEK(tgl_produksi)) AS minggu,
+    #             COUNT(DISTINCT CASE WHEN roa_order = 'Yes' THEN sample_number END) AS jml_roa,
+    #             COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'OnTime' AND tat_roa IS NOT NULL THEN sample_number END) AS released_on_tat,
+    #             COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND roa_remark = 'Late' AND tat_roa IS NOT NULL THEN sample_number END) AS released_over_tat,
+    #             COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NOT NULL THEN sample_number END) AS total_released,
+    #             COUNT(DISTINCT CASE WHEN roa_order = 'Yes' AND tat_roa IS NULL THEN sample_number END) AS not_released,
+    #             CASE
+    #                 WHEN AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) IS NULL THEN '00:00:00'
+    #                 ELSE 
+    #                     LPAD(FLOOR(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) / 3600), 2, '0') + ':' +
+    #                     LPAD(FLOOR((AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 3600) / 60), 2, '0') + ':' +
+    #                     LPAD(AVG(TIMESTAMPDIFF(SECOND, delivery, release_roa)) % 60, 2, '0')
+    #             END AS average_time,
+    #             '105:00:00' AS time_limit,
+    #             120 AS time_limit_hours
+    #         FROM laboratory_performance_tat
+    #         WHERE roa_order = 'Yes' 
+    #             AND tgl_produksi >= DATE_SUB(CURDATE(), INTERVAL {jml_week} WEEK)
+    #         GROUP BY YEAR(tgl_produksi), WEEK(tgl_produksi)
+    #         ORDER BY minggu ASC;
+    #     """
+    if db_vendor in ['mssql', 'microsoft']:
         query = f"""
         SELECT 
                 YEAR(tgl_produksi) AS year,
@@ -333,7 +333,7 @@ def chartWeeksTatRoa(request):
                 120 AS time_limit_hours
             FROM laboratory_performance_tat
             WHERE roa_order = 'Yes' 
-                AND tgl_produksi >= DATEADD(WEEK, -{jml_week}, GETDATE())
+                AND tgl_produksi >= DATEADD(WEEK, - {jml_week}, GETDATE())
             GROUP BY YEAR(tgl_produksi), DATEPART(WEEK, tgl_produksi)
             ORDER BY minggu ASC;
         """

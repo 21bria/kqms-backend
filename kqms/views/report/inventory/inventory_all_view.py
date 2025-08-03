@@ -54,8 +54,8 @@ def getInventoryAll(request):
         SELECT COUNT(*)
         FROM inventory_by_dome AS t1
         LEFT JOIN selling_by_dome AS t2 
-            ON t2.sampling_area = t1.stockpile 
-            AND t2.sampling_point = t1.pile_id
+            ON t2.stockpile = t1.stockpile 
+            AND t2.dome = t1.pile_id
         WHERE t1.status_dome != 'Finished'
     """
 
@@ -105,8 +105,8 @@ def getInventoryAll(request):
             t1.SM
         FROM inventory_by_dome AS t1
         LEFT JOIN selling_by_dome AS t2 
-            ON t2.sampling_area = t1.stockpile 
-            AND t2.sampling_point = t1.pile_id
+            ON t2.stockpile = t1.stockpile 
+            AND t2.dome = t1.pile_id
         WHERE t1.status_dome != 'Finished'
     """
 
@@ -163,8 +163,8 @@ def getInventoryHpal(request):
         SELECT COUNT(*)
         FROM inventory_by_dome AS t1
         LEFT JOIN selling_by_dome AS t2 ON 
-            t2.sampling_area = t1.stockpile AND
-            t2.sampling_point = t1.pile_id
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
         WHERE t1.status_dome != 'Finished'
     """
 
@@ -213,8 +213,8 @@ def getInventoryHpal(request):
                 t1.SM
             FROM inventory_by_dome AS t1
             LEFT JOIN selling_by_dome AS t2 
-                ON t2.sampling_area = t1.stockpile 
-                AND t2.sampling_point = t1.pile_id
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
             WHERE t1.status_dome != 'Finished' AND t1.sale_adjust='HPAL'
         """
     else:
@@ -284,8 +284,8 @@ def getInventoryRkef(request):
         SELECT COUNT(*)
         FROM inventory_by_dome AS t1
         LEFT JOIN selling_by_dome AS t2 ON 
-            t2.sampling_area = t1.stockpile AND
-            t2.sampling_point = t1.pile_id
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
         WHERE t1.status_dome != 'Finished'
     """
 
@@ -336,8 +336,8 @@ def getInventoryRkef(request):
                 t1.SM
             FROM inventory_by_dome AS t1
             LEFT JOIN selling_by_dome AS t2 
-                ON t2.sampling_area = t1.stockpile 
-                AND t2.sampling_point = t1.pile_id
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
             WHERE t1.status_dome != 'Finished' AND t1.sale_adjust='RKEF'
         """
     else:
@@ -400,8 +400,8 @@ def getStockpileAll(request):
         SELECT COUNT(*)
         FROM inventory_by_dome AS t1
         LEFT JOIN selling_by_dome AS t2 ON 
-            t2.sampling_area = t1.stockpile AND
-            t2.sampling_point = t1.pile_id
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
         WHERE t1.status_dome != 'Finished'
     """
 
@@ -448,8 +448,8 @@ def getStockpileAll(request):
                     t1.SM
                 FROM inventory_by_dome AS t1
                 LEFT JOIN selling_by_dome AS t2 
-                    ON t2.sampling_area = t1.stockpile 
-                    AND t2.sampling_point = t1.pile_id
+                    ON t2.stockpile = t1.stockpile 
+                    AND t2.dome = t1.pile_id
                 WHERE t1.status_dome != 'Finished'
             """
         else:
@@ -539,8 +539,8 @@ def getStockpileHpal(request):
                     t1.SM
                 FROM inventory_by_dome AS t1
                 LEFT JOIN selling_by_dome AS t2 
-                    ON t2.sampling_area = t1.stockpile 
-                    AND t2.sampling_point = t1.pile_id
+                    ON t2.stockpile = t1.stockpile 
+                    AND t2.dome = t1.pile_id
                 WHERE t1.status_dome != 'Finished' 
                         AND t1.sale_adjust='HPAL'
             """
@@ -600,8 +600,8 @@ def getStockpileRkef(request):
                 t1.SM
             FROM inventory_by_dome AS t1
             LEFT JOIN selling_by_dome AS t2 
-                ON t2.sampling_area = t1.stockpile 
-                AND t2.sampling_point = t1.pile_id
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
             WHERE t1.status_dome != 'Finished' 
                     AND t1.sale_adjust='RKEF'
         """

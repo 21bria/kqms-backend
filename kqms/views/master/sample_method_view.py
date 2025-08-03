@@ -114,6 +114,7 @@ def get_method(request, id):
 
 @login_required
 def insert_method(request):
+    
     if request.method == 'POST':
         sample_method = request.POST.get('sample_method', '').strip()
         keterangan    = request.POST.get('keterangan', '').strip()
@@ -152,12 +153,12 @@ def insert_method(request):
 
 @login_required
 def update_method(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             job = SampleMethod.objects.get(id=id)

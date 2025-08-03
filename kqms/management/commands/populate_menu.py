@@ -76,7 +76,7 @@ class Command(BaseCommand):
         
         Menu.objects.create(
             title="Sample Selling",
-            url="#",
+            url="samples-sale-entry-page",
             parent=from_entry,
             order=2,
             open_new_tab=True
@@ -174,13 +174,13 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
         )
         
-        Menu.objects.create(
-            title="Status Lab.",
-            url="status-prep-page",
-            parent=laboratory,
-            order=3,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-lab']
-        )
+        # Menu.objects.create(
+        #     title="Status Lab.",
+        #     url="status-prep-page",
+        #     parent=laboratory,
+        #     order=3,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-lab']
+        # )
         
         
         # Productions
@@ -351,7 +351,7 @@ class Command(BaseCommand):
 
         Menu.objects.create(
             title="Daily Selling",
-            url="#",
+            url="selling-barge-page",
             parent=selling,
             order=1,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
@@ -863,6 +863,34 @@ class Command(BaseCommand):
             url="mine-geologies-page",
             parent=master,
             order=10,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+        )
+        Menu.objects.create(
+            title="Selling Code",
+            url="sale-code-page",
+            parent=master,
+            order=11,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+        )
+        Menu.objects.create(
+            title="Selling Factory",
+            url="sale-factory-page",
+            parent=master,
+            order=12,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+        )
+        Menu.objects.create(
+            title="Selling Barge",
+            url="sale-barge-page",
+            parent=master,
+            order=13,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+        )
+        Menu.objects.create(
+            title="Selling Jetty",
+            url="sale-port-page",
+            parent=master,
+            order=14,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
 

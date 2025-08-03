@@ -1,8 +1,13 @@
 from django.urls import path
 from ..views.dashboard.index import *
+# Quality
 from ..views.dashboard.api.geology import *
+from ..views.dashboard.api.details.quality import *
+
+
 from ..views.dashboard.api.selling import *
 from ..views.dashboard.api.inventory import *
+from ..views.dashboard.api.details.inventory import *
 
 # Get Mining
 from ..views.dashboard.mining.all_summary import *
@@ -20,6 +25,9 @@ urlpatterns = [
     path('api/ore-summary/', get_ore_summary, name='get_ore_summary'),
     path('api/ore-chart/', get_chart_ore, name='get_chart_ore'),
     path('api/ore-class-chart/', get_chart_ore_class, name='get_chart_ore_class'),
+    path('api/chart/detail-quality/', get_chart_detail_quality, name='get_chart_detail_quality'),
+    path('api/chart/detail-ore-class-lim/', get_chart_ore_class_lim, name='get_chart_ore_class_lim'),
+    path('api/chart/detail-ore-class-sap/', get_chart_ore_class_sap, name='get_chart_ore_class_sap'),
    
     # Mining Dashboard
     path('api/summary/mines/ore', get_chart_ore_mining, name='get_chart_ore_mining'),
@@ -43,6 +51,8 @@ urlpatterns = [
     path('api/stock-grade/', get_stockpile_roa, name='get_stockpile_roa'),
     path('api/dome-grade/', get_dome_roa, name='get_dome_roa'),
     path('api/ore-grade/', get_grade_roa, name='get_grade_roa'),
+
+    path('api/inventory/chart/details/', get_chart_inventory_details, name='get_chart_inventory_details'),
 
 ]
     

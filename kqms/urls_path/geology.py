@@ -74,7 +74,7 @@ urlpatterns = [
     path('export-samples-relation/',export_samples_relation, name='export-samples-relation'),
 
 
-      # Table Waybills
+    # Table Waybills
     path('waybill-list-page/', waybill_page, name='waybill-list-page'), 
     path('waybill-list/', Waybill_data.as_view(), name='waybill-list'), 
     path('export-waybill-data/',export_data_waybill, name='export-waybill-data'),

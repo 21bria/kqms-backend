@@ -73,10 +73,10 @@ class SaleCodeList(View):
 
         data = [
             {
-                "id": item.id,
+                "id"          :item.id,
                 "product_code": item.product_code,
                 "description" : item.description,
-                "active,"     : item.active,
+                "active"     : item.active,
                 "type"        : item.type
             } for item in object_list
         ]
@@ -113,83 +113,134 @@ def get_code(request, id):
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
- 
+
+
 @login_required
 def insert_code(request):
-    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
+            {'status': 'error', 'message': 'You do not have permission'},
             status=403
-    )
-    if request.method == 'POST':
-        product_code = request.POST.get('product_code')
-        description  = request.POST.get('description')
-        active       = request.POST.get('active')
-        type         = request.POST.get('type')
+        )
 
-        try:
-            new_job = SellingCode.objects.create(
-                                    product_code=product_code, 
-                                    description=description, 
-                                    active=active,
-                                    type=type
-                                    )
-            return JsonResponse({
-                'status' : 'success',
-                'message': 'Data berhasil disimpan.',
-                'data': {
-                    'id'          : new_job.id,
-                    'product_code': new_job.product_code,
-                    'description' : new_job.description,
-                    'active'      : new_job.active,
-                    'type'        : new_job.type,
-                    'created_at'  : new_job.created_at
-                }
-            })
-        except IntegrityError as e:
-            # Check if the error is a duplicate entry error
-            if  str(e):
-                return JsonResponse({'status': 'error', 'message': 'Data already exists'}, status=400)
-            else:
-                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    else:
+    if request.method != 'POST':
         return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, status=405)
 
+    # Aturan dan pesan validasi
+    rules = {
+        'product_code': ['required'],
+        'type': ['required'],
+    }
+
+    custom_messages = {
+        'product_code.required': 'Code is required.',
+        'type.required': 'Type is required.',
+    }
+
+    # Validasi input
+    cleaned_data = {}
+    for field, field_rules in rules.items():
+        value = request.POST.get(field, '').strip()
+        if 'required' in field_rules and not value:
+            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
+        cleaned_data[field] = value
+
+    product_code    = cleaned_data['product_code']
+    type_code       = cleaned_data['type']
+    description     = request.POST.get('description', '').strip()
+    active = 1
+
+    # Cek duplikat manual sebelum simpan
+    if SellingCode.objects.filter(product_code=product_code).exists():
+        return JsonResponse({'status': 'error', 'message': 'Product code already exists.'}, status=400)
+
+    # Simpan ke database
+    try:
+        new_code = SellingCode.objects.create(
+            product_code=product_code,
+            description=description,
+            active=active,
+            type=type_code
+        )
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Data berhasil disimpan.',
+            'data': {
+                'id': new_code.id,
+                'product_code': new_code.product_code,
+                'description': new_code.description,
+                'active': new_code.active,
+                'type': new_code.type,
+                'created_at': new_code.created_at
+            }
+        })
+    except IntegrityError:
+        # Fallback jika validasi manual gagal mendeteksi duplikat
+        return JsonResponse({'status': 'error', 'message': 'Product code already exists (DB constraint).'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
 @login_required
 def update_code(request, id):
-    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
+            {'status': 'error', 'message': 'You do not have permission'},
             status=403
-    )
-    if request.method == 'POST':
-        try:
-            job = SellingCode.objects.get(id=int(id))
-            job.product_code = request.POST.get('product_code')
-            job.description  = request.POST.get('description')
-            job.type         = request.POST.get('type')
-            job.active       = 1
-            job.save()
+        )
 
-            return JsonResponse({
-                'id'          : job.id,
-                'product_code': job.product_code,
-                'description' : job.description,
-                'active'      : job.active,
-                'type'        : job.type,
-                'created_at'  : job.created_at
-            })
-        except SellingCode.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
-        except IntegrityError as e:
-            error_message = str(e)
-            return JsonResponse({'error': 'The data already exists', 'message': error_message}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-    else:
+    if request.method != 'POST':
         return JsonResponse({'error': 'Metode tidak diizinkan'}, status=405)
+
+    try:
+        rules = {
+            'product_code': ['required'],
+            'type': ['required'],
+        }
+
+        custom_messages = {
+            'product_code.required': 'Code is required.',
+            'type.required': 'Type is required.',
+        }
+
+        cleaned_data = {}
+        for field, field_rules in rules.items():
+            value = request.POST.get(field, '').strip()
+            if 'required' in field_rules and not value:
+                return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
+            cleaned_data[field] = value
+
+        # Ambil data yang akan diupdate
+        job = SellingCode.objects.get(id=int(id))
+
+        # Cek duplikat product_code untuk record lain
+        if SellingCode.objects.filter(product_code=cleaned_data['product_code']).exclude(id=job.id).exists():
+            return JsonResponse({'error': 'Product code already exists.'}, status=400)
+
+        # Update field
+        job.product_code = cleaned_data['product_code']
+        job.description  = request.POST.get('description', '').strip()
+        job.type         = cleaned_data['type']
+        active_value    = request.POST.get('active')
+        job.active      = int(active_value) if active_value is not None else 1
+        job.save()
+
+        return JsonResponse({
+            'id'         : job.id,
+            'product_code': job.product_code,
+            'description' : job.description,
+            'active'      : job.active,
+            'type'        : job.type,
+            'created_at'  : job.created_at
+        })
+
+    except SellingCode.DoesNotExist:
+        return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+    except IntegrityError:
+        return JsonResponse({'error': 'Product code already exists (DB constraint)'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @login_required
 def delete_code(request):

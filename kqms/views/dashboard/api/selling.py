@@ -28,7 +28,7 @@ def build_summary_query(db_vendor: str, where_clause: str) -> str:
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust IN ('HPAL', 'RKEF') THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total,
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'HPAL' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_lim,
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'RKEF' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_sap
-            FROM details_selling
+            FROM details_selling_barging
             {where_clause}
         """
     elif db_vendor in ['mysql', 'mssql', 'microsoft']:
@@ -37,7 +37,7 @@ def build_summary_query(db_vendor: str, where_clause: str) -> str:
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust IN ('HPAL', 'RKEF') THEN tonnage ELSE 0 END), 2), 0) AS total,
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'HPAL' THEN tonnage ELSE 0 END), 2), 0) AS total_lim,
                 COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'RKEF' THEN tonnage ELSE 0 END), 2), 0) AS total_sap
-            FROM details_selling
+            FROM details_selling_barging
             {where_clause}
         """
     else:
@@ -51,29 +51,33 @@ def get_selling_summary(request):
         week        = request.GET.get('week')
         date_start  = request.GET.get('date_start')
         date_end    = request.GET.get('date_end')
+        filter_date = request.GET.get('filter_date')
 
         where_clause = "WHERE 1=1"
         params = []
 
         # Filter logika ...
-        if filter_type =='range' and date_start and date_end:
-            where_clause += " AND date_wb BETWEEN %s AND %s"
+        if filter_type =='daily' and filter_date:
+            where_clause += " AND date_hauling = %s"
+            params += [filter_date]
+        elif filter_type =='range' and date_start and date_end:
+            where_clause += " AND date_hauling BETWEEN %s AND %s"
             params += [date_start, date_end]
         elif filter_type =='weekly' and week:
             # Contoh week: '2025-26'
-            where_clause += " AND TO_CHAR(date_wb, 'IYYY-IW') = %s" \
+            where_clause += " AND TO_CHAR(date_hauling, 'IYYY-IW') = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND DATE_FORMAT(date_wb, '%%x-%%v') = %s"
+                " AND DATE_FORMAT(date_hauling, '%%x-%%v') = %s"
             params += [week]
         elif filter_type =='monthly' and year and month:
-            where_clause += " AND EXTRACT(YEAR FROM date_wb) = %s AND EXTRACT(MONTH FROM date_wb) = %s" \
+            where_clause += " AND EXTRACT(YEAR FROM date_hauling) = %s AND EXTRACT(MONTH FROM date_hauling) = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND YEAR(date_wb) = %s AND MONTH(date_wb) = %s"
+                " AND YEAR(date_hauling) = %s AND MONTH(date_hauling) = %s"
             params += [year, month]
         elif filter_type =='yearly' and year:
-            where_clause += " AND EXTRACT(YEAR FROM date_wb) = %s" \
+            where_clause += " AND EXTRACT(YEAR FROM date_hauling) = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND YEAR(date_wb) = %s"
+                " AND YEAR(date_hauling) = %s"
             params.append(year)
         elif filter_type =='all':
             pass
@@ -108,9 +112,9 @@ def get_chart_selling(request):
         week        = request.GET.get('week')
         date_start  = request.GET.get('date_start')
         date_end    = request.GET.get('date_end')
-        daily       = request.GET.get('daily')
+        filter_date = request.GET.get('filter_date')
 
-        if filter_type =='daily' and daily : 
+        if filter_type =='daily' and filter_date : 
             if db_vendor == 'postgresql':
                 query = """
                         WITH working_hours AS (
@@ -125,11 +129,11 @@ def get_chart_selling(request):
                         actual AS (
                             SELECT
                                 EXTRACT(HOUR FROM time_hauling) AS hour_label,
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN os.netto_weigth_f ELSE 0 END) AS actual_lim,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN os.netto_weigth_f ELSE 0 END) AS actual_sap
-                            FROM ore_sellings os
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN os.tonnage ELSE 0 END) AS actual_lim,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN os.tonnage ELSE 0 END) AS actual_sap
+                            FROM ore_sellings_barging os
                             LEFT JOIN materials m ON m.id = os.id_material
-                            WHERE DATE(date_wb) = %s::date
+                            WHERE DATE(date_hauling) = %s::date
                             GROUP BY EXTRACT(HOUR FROM time_hauling)
                         ),
                         plan_total AS (
@@ -149,130 +153,65 @@ def get_chart_selling(request):
                         )
                         SELECT
                             wh.hour_label as label,
+                            COALESCE(a.actual_lim, 0) + COALESCE(a.actual_sap, 0) AS actual_total,
                             COALESCE(a.actual_lim, 0) AS actual_lim,
-                            COALESCE(p.plan_lim, 0) AS plan_lim,
                             COALESCE(a.actual_sap, 0) AS actual_sap,
+                            COALESCE(p.plan_lim, 0) + COALESCE(p.plan_sap, 0) AS plan_total,
+                            COALESCE(p.plan_lim, 0) AS plan_lim,
                             COALESCE(p.plan_sap, 0) AS plan_sap
                         FROM working_hours wh
                         LEFT JOIN actual a ON a.hour_label = wh.hour_label
                         LEFT JOIN plan p ON p.hour_label = wh.hour_label
                         ORDER BY wh.sort_order;
                     """ 
-            elif db_vendor in ['mssql', 'microsoft']:
-                query = """
-                    WITH working_hours AS (
-                        SELECT hour_label, 
-                            CASE 
-                                WHEN hour_label >= 7 THEN hour_label 
-                                ELSE hour_label + 24 
-                            END AS sort_order
-                        FROM (
-                            VALUES 
-                                (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11),
-                                (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23)
-                        ) AS hours(hour_label)
-                    ),
-                    actual AS (
-                        SELECT 
-                            DATEPART(HOUR, time_hauling) AS hour_label,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN os.netto_weigth_f ELSE 0 END) AS actual_lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN os.netto_weigth_f ELSE 0 END) AS actual_sap
-                        FROM ore_sellings os
-                        LEFT JOIN materials m ON m.id = os.id_material
-                        WHERE CAST(date_wb AS DATE) = %s
-                        GROUP BY DATEPART(HOUR, time_hauling)
-                    ),
-                    plan_total AS (
-                        SELECT 
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS total_lim,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS total_sap
-                        FROM ore_sellings_plan
-                        WHERE CAST(plan_date AS DATE) = %s
-                    ),
-                    plan AS (
-                        SELECT
-                            wh.hour_label,
-                            ROUND(ISNULL(pt.total_lim, 0) / 24.0, 2) AS plan_lim,
-                            ROUND(ISNULL(pt.total_sap, 0) / 24.0, 2) AS plan_sap
-                        FROM working_hours wh
-                        CROSS JOIN plan_total pt
-                    )
-                    SELECT 
-                        wh.hour_label AS label,
-                        ISNULL(a.actual_lim, 0) AS actual_lim,
-                        ISNULL(p.plan_lim, 0) AS plan_lim,
-                        ISNULL(a.actual_sap, 0) AS actual_sap,
-                        ISNULL(p.plan_sap, 0) AS plan_sap
-                    FROM working_hours wh
-                    LEFT JOIN actual a ON a.hour_label = wh.hour_label
-                    LEFT JOIN plan p ON p.hour_label = wh.hour_label
-                    ORDER BY wh.sort_order;
-                """
             else:
                 raise ValueError("Unsupported vendor")
 
-            params = [daily, daily]
+            params = [filter_date, filter_date]
 
-        elif filter_type =='range' and date_start and date_end: 
-            query = """
-                SELECT 
-                    COALESCE(actual.date_wb::date, plan.plan_date) AS label,
-                    COALESCE(actual.lim, 0) AS actual_lim,
-                    COALESCE(plan.lim_plan, 0) AS plan_lim,
-                    COALESCE(actual.sap, 0) AS actual_sap,
-                    COALESCE(plan.sap_plan, 0) AS plan_sap
-                FROM (
-                    SELECT 
-                        date_wb::date,
-                        SUM(CASE WHEN nama_material = 'LIM' THEN netto_weigth_f ELSE 0 END) AS lim,
-                        SUM(CASE WHEN nama_material = 'SAP' THEN netto_weigth_f ELSE 0 END) AS sap
-                    FROM ore_sellings os 
-                    left join materials m on m.id=os.id_material
-                    WHERE date_wb BETWEEN %s AND %s
-                    GROUP BY date_wb::date
-                ) AS actual
-                FULL OUTER JOIN (
-                    SELECT 
-                        plan_date,
-                        SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                        SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                    FROM ore_sellings_plan
-                    WHERE plan_date BETWEEN %s AND %s
-                    GROUP BY plan_date
-                ) AS plan
-                ON actual.date_wb::date = plan.plan_date
-                ORDER BY label
+        elif filter_type =='range' and date_start and date_end:
 
-            """ if db_vendor == 'postgresql' else """
-                SELECT 
-                        COALESCE(CONVERT(date, actual.date_wb), plan.plan_date) AS label,
-                        COALESCE(actual.lim, 0) AS actual_lim,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(actual.sap, 0) AS actual_sap,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM (
-                        SELECT 
-                            CONVERT(date, s.date_wb) AS date_wb,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap
-                        FROM ore_sellings s
+            if db_vendor == 'postgresql':
+                query = """
+                    WITH tanggal AS (
+                        SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                    ),
+                    actual AS (
+                        SELECT
+                            date_hauling::date AS date,
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap
+                        FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE s.date_wb BETWEEN %s AND %s
-                        GROUP BY CONVERT(date, s.date_wb)
-                    ) AS actual
-                    FULL OUTER JOIN (
-                        SELECT 
-                            plan_date,
+                        WHERE date_hauling BETWEEN %s AND %s
+                        GROUP BY date_hauling::date
+                    ),
+                    plan AS (
+                        SELECT
+                            plan_date::date AS date,
                             SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
                             SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
                         FROM ore_sellings_plan
                         WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY plan_date
-                    ) AS plan
-                        ON CONVERT(date, actual.date_wb) = plan.plan_date
-                    ORDER BY label
-            """
-            params = [date_start, date_end,date_start, date_end]
+                        GROUP BY plan_date::date
+                    )
+                    SELECT
+                            TO_CHAR(tanggal.date, 'YYYY-MM-DD') AS label,
+                            COALESCE(a.lim, 0) + COALESCE(a.sap, 0) AS actual_total,
+                            COALESCE(a.lim, 0) AS actual_lim,
+                            COALESCE(a.sap, 0) AS actual_sap,
+                            COALESCE(p.lim_plan, 0) + COALESCE(p.sap_plan, 0) AS plan_total,
+                            COALESCE(p.lim_plan, 0) AS plan_lim,
+                            COALESCE(p.sap_plan, 0) AS plan_sap
+                    FROM tanggal
+                    LEFT JOIN actual a ON tanggal.date = a.date
+                    LEFT JOIN plan p ON tanggal.date = p.date
+                    ORDER BY tanggal.date;
+                """
+            else:
+                raise ValueError("Unsupported vendor")
+            
+            params = [date_start, date_end,date_start, date_end,date_start, date_end]
 
         elif filter_type =='weekly' and year and month and week:
             try:
@@ -314,275 +253,190 @@ def get_chart_selling(request):
             # SQL Query
             if db_vendor == 'postgresql':
                 query = """
-                    SELECT
-                        hari.label,
-                        COALESCE(actual.lim, 0) AS actual_lim,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(actual.sap, 0) AS actual_sap,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM (
-                        SELECT unnest(ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']) AS label
-                    ) hari
-                    LEFT JOIN (
-                        SELECT 
-                            TRIM(TO_CHAR(date_wb, 'Day')) AS hari,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_wb BETWEEN %s AND %s
-                        GROUP BY hari
-                    ) actual ON hari.label = actual.hari
-                    LEFT JOIN (
-                        SELECT 
-                            TRIM(TO_CHAR(plan_date, 'Day')) AS hari,
+                    WITH tanggal AS (
+                        SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                    ),
+                    actual AS (
+                        SELECT
+                            tgl_production::date AS date,
+                            SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
+                        FROM ore_production
+                        WHERE tgl_production BETWEEN %s AND %s
+                        GROUP BY tgl_production
+                    ),
+                    plan AS (
+                        SELECT
+                            plan_date::date AS date,
                             SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
                             SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
                         FROM ore_sellings_plan
                         WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY hari
-                    ) plan ON hari.label = plan.hari
+                        GROUP BY plan_date
+                    ),
+                    combine AS (
+                        SELECT
+                            tanggal.date,
+                            TO_CHAR(tanggal.date, 'FMDay') AS day_name,
+                            COALESCE(a.lim, 0) AS lim,
+                            COALESCE(a.sap, 0) AS sap,
+                            COALESCE(p.lim_plan, 0) AS lim_plan,
+                            COALESCE(p.sap_plan, 0) AS sap_plan
+                        FROM tanggal
+                        LEFT JOIN actual a ON tanggal.date = a.date
+                        LEFT JOIN plan p ON tanggal.date = p.date
+                    )
+                    SELECT
+                        day_name AS label,
+                        SUM(lim + sap) AS actual_total,
+                        SUM(lim) AS actual_lim,
+                        SUM(sap) AS actual_sap,
+                        SUM(lim_plan + sap_plan) AS plan_total,
+                        SUM(lim_plan) AS plan_lim,
+                        SUM(sap_plan) AS plan_sap
+                    FROM combine
+                    GROUP BY day_name
                     ORDER BY ARRAY_POSITION(
                         ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-                        hari.label
-                    )
+                        day_name
+                    );
                 """
             else:
-                query = """
-                   SELECT
-                        hari.label,
-                        COALESCE(actual.lim, 0) AS actual_lim,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(actual.sap, 0) AS actual_sap,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM (
-                        SELECT unnest(ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']) AS label
-                    ) hari
-                    LEFT JOIN (
-                        SELECT 
-                            TRIM(TO_CHAR(date_wb, 'Day')) AS hari,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_wb BETWEEN %s AND %s
-                        GROUP BY hari
-                    ) actual ON hari.label = actual.hari
-                    LEFT JOIN (
-                        SELECT 
-                            TRIM(TO_CHAR(plan_date, 'Day')) AS hari,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
-                        WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY hari
-                    ) plan ON hari.label = plan.hari
-                    ORDER BY ARRAY_POSITION(
-                        ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-                        hari.label
-                    )
-                """
-            params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'),start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
+                raise ValueError("Unsupported vendor")
+        
+            params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'),
+                      start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'),
+                      start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')
+                      ]
 
         elif filter_type =='monthly' and year and month: 
-            year = int(year)
+            year  = int(year)
             month = int(month)
-
             # Ambil jumlah hari terakhir dalam bulan
             last_day = calendar.monthrange(year, month)[1]
-
             # Bangun tanggal awal dan akhir bulan
-            tgl_pertama = datetime(year, month, 1).date()
+            tgl_pertama  = datetime(year, month, 1).date()
             tgl_terakhir = datetime(year, month, last_day).date()
 
-            
-
             # Siapkan parameter untuk query
-            # params = [tgl_pertama, tgl_terakhir, tgl_terakhir.day]
-            params = [tgl_pertama, tgl_terakhir, tgl_pertama, tgl_terakhir, tgl_terakhir.day]
-
-
+            params = [tgl_pertama, tgl_terakhir, tgl_pertama, tgl_terakhir,  tgl_pertama, tgl_terakhir]
             if db_vendor == 'postgresql':
                 query = """
-                   SELECT
-                        tanggal.left_date AS label,
-                        COALESCE(actual.total_lim, 0) AS actual_lim,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(actual.total_sap, 0) AS actual_sap,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM tanggal
-                    LEFT JOIN (
+                   WITH tanggal AS (
+                        SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                    ),
+                    incoming AS (
                         SELECT
-                            left_date,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS total_lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS total_sap
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE s.date_wb BETWEEN %s AND %s
-                        GROUP BY left_date
-                    ) AS actual ON tanggal.left_date = actual.left_date
-                    LEFT JOIN (
+                            date_hauling::date AS date,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total,
+                            ROUND(SUM(CASE WHEN material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                        FROM details_selling_barging
+                        WHERE date_hauling BETWEEN %s AND %s
+                        GROUP BY date_hauling
+                    ),
+                    plan AS (
                         SELECT
-                            left_date,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
+                            plan_date::date AS date,
+                            ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
+                            ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan,
+                            ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan
                         FROM ore_sellings_plan
                         WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY left_date
-                    ) AS plan ON tanggal.left_date = plan.left_date
-                    WHERE tanggal.left_date <= %s
-                    ORDER BY tanggal.left_date
-
+                        GROUP BY plan_date
+                    )
+                    SELECT
+                        TO_CHAR(tanggal.date, 'DD') AS label,
+                        COALESCE(i.total, 0) AS total_actual,
+                        COALESCE(i.lim, 0) AS lim_actual,
+                        COALESCE(i.sap, 0) AS sap_actual,
+                        COALESCE(p.total_plan, 0) AS total_plan,
+                        COALESCE(p.lim_plan, 0) AS lim_plan,
+                        COALESCE(p.sap_plan, 0) AS sap_plan
+                    FROM tanggal
+                    LEFT JOIN incoming i ON tanggal.date = i.date
+                    LEFT JOIN plan p ON tanggal.date = p.date
+                    ORDER BY tanggal.date;
                 """
             else:
-                query = """
-                   SELECT
-                        tanggal.left_date AS label,
-                        COALESCE(actual.total_lim, 0) AS actual_lim,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(actual.total_sap, 0) AS actual_sap,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM tanggal
-                    LEFT JOIN (
-                        SELECT
-                            s.left_date,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS total_lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS total_sap
-                        FROM ore_sellings s
-                        LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE s.date_wb BETWEEN %s AND %s
-                        GROUP BY s.left_date
-                    ) AS actual ON tanggal.left_date = actual.left_date
-                    LEFT JOIN (
-                        SELECT
-                            left_date,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
-                        WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY left_date
-                    ) AS plan ON tanggal.left_date = plan.left_date
-                    WHERE tanggal.left_date <= %s
-                    ORDER BY tanggal.left_date
-                """
+                raise ValueError("Unsupported vendor")
        
         elif filter_type =='yearly' and year: 
-            query = """
-                SELECT 
-                    TO_CHAR(COALESCE(actual.month_date, plan.month_date), 'Mon YYYY') AS label,
-                    COALESCE(actual.lim, 0) AS actual_lim,
-                    COALESCE(plan.lim_plan, 0) AS plan_lim,
-                    COALESCE(actual.sap, 0) AS actual_sap,
-                    COALESCE(plan.sap_plan, 0) AS plan_sap
-                FROM (
-                    SELECT 
-                        DATE_TRUNC('month', date_wb) AS month_date,
-                        SUM(CASE WHEN nama_material = 'LIM' THEN netto_weigth_f ELSE 0 END) AS lim,
-                        SUM(CASE WHEN nama_material = 'SAP' THEN netto_weigth_f ELSE 0 END) AS sap
-                    FROM ore_sellings os
-                    LEFT JOIN materials m ON m.id = os.id_material
-                    WHERE EXTRACT(YEAR FROM date_wb) = %s
-                    GROUP BY DATE_TRUNC('month', date_wb)
-                ) AS actual
-                FULL OUTER JOIN (
-                    SELECT 
-                        DATE_TRUNC('month', plan_date) AS month_date,
-                        SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                        SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                    FROM ore_sellings_plan
-                    WHERE EXTRACT(YEAR FROM plan_date) = %s
-                    GROUP BY DATE_TRUNC('month', plan_date)
-                ) AS plan
-                ON actual.month_date = plan.month_date
-                ORDER BY COALESCE(actual.month_date, plan.month_date)
-
-            """ if db_vendor == 'postgresql' else """
-                        SELECT 
-                            FORMAT(COALESCE(actual.month_date, plan.month_date), 'MMM yyyy') AS label,
-                            COALESCE(actual.lim, 0) AS actual_lim,
-                            COALESCE(plan.lim_plan, 0) AS plan_lim,
-                            COALESCE(actual.sap, 0) AS actual_sap,
-                            COALESCE(plan.sap_plan, 0) AS plan_sap
-                        FROM (
-                            SELECT 
-                                DATEFROMPARTS(YEAR(s.date_wb), MONTH(s.date_wb), 1) AS month_date,
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap
-                            FROM ore_sellings s
-                            LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE YEAR(s.date_wb) = ?
-                            GROUP BY YEAR(s.date_wb), MONTH(s.date_wb)
-                        ) AS actual
-                        FULL OUTER JOIN (
-                            SELECT 
-                                DATEFROMPARTS(YEAR(plan_date), MONTH(plan_date), 1) AS month_date,
-                                SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                                SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                            FROM ore_sellings_plan
-                            WHERE YEAR(plan_date) = ?
-                            GROUP BY YEAR(plan_date), MONTH(plan_date)
-                        ) AS plan
-                        ON actual.month_date = plan.month_date
-                        ORDER BY COALESCE(actual.month_date, plan.month_date)
-
+            if db_vendor == 'postgresql':
+                query = """
+                  WITH bulan AS (
+                      SELECT generate_series(1, 12) AS month
+                  ),
+                  incoming AS (
+                      SELECT
+                          EXTRACT(MONTH FROM tgl_production)::int AS month,
+                          ROUND(SUM(tonnage)::numeric, 2) AS total_actual,
+                          ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim_actual,
+                          ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap_actual
+                      FROM ore_production
+                      WHERE EXTRACT(YEAR FROM tgl_production) = %s
+                      GROUP BY EXTRACT(MONTH FROM tgl_production)
+                  ),
+                  plan AS (
+                      SELECT
+                          EXTRACT(MONTH FROM plan_date)::int AS month,
+                          ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan,
+                          ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
+                          ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan
+                      FROM ore_sellings_plan
+                      WHERE EXTRACT(YEAR FROM plan_date) = %s
+                      GROUP BY EXTRACT(MONTH FROM plan_date)
+                  )
+                  SELECT
+                      TO_CHAR(TO_DATE(bulan.month::text, 'MM'), 'Mon') AS label,
+                      COALESCE(i.total_actual, 0) AS total_actual,
+                      COALESCE(i.lim_actual, 0) AS lim_actual,
+                      COALESCE(i.sap_actual, 0) AS sap_actual,
+                      COALESCE(p.total_plan, 0) AS total_plan,
+                      COALESCE(p.lim_plan, 0) AS lim_plan,
+                      COALESCE(p.sap_plan, 0) AS sap_plan
+                  FROM bulan
+                  LEFT JOIN incoming i ON bulan.month = i.month
+                  LEFT JOIN plan p ON bulan.month = p.month
+                  ORDER BY bulan.month;
                 """
+            else:
+                raise ValueError("Unsupported vendor")
             params = [year,year]
 
         elif filter_type =='all':
-            query = """
-                SELECT 
-                    COALESCE(actual.year_label, plan.year_label) AS label,
-                    COALESCE(actual.lim, 0) AS actual_lim,
-                    COALESCE(plan.lim_plan, 0) AS plan_lim,
-                    COALESCE(actual.sap, 0) AS actual_sap,
-                    COALESCE(plan.sap_plan, 0) AS plan_sap
-                FROM (
+            if db_vendor == 'postgresql':
+                query = """
                     SELECT 
-                        TO_CHAR(date_wb, 'YYYY') AS year_label,
-                        SUM(CASE WHEN nama_material = 'LIM' THEN netto_weigth_f ELSE 0 END) AS lim,
-                        SUM(CASE WHEN nama_material = 'SAP' THEN netto_weigth_f ELSE 0 END) AS sap
-                    FROM ore_sellings os
-                    LEFT JOIN materials m ON m.id = os.id_material
-                    GROUP BY TO_CHAR(date_wb, 'YYYY')
-                ) AS actual
-                FULL OUTER JOIN (
-                    SELECT 
-                        TO_CHAR(plan_date, 'YYYY') AS year_label,
-                        SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                        SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                    FROM ore_sellings_plan
-                    GROUP BY TO_CHAR(plan_date, 'YYYY')
-                ) AS plan
-                ON actual.year_label = plan.year_label
-                ORDER BY label
-
-            """ if db_vendor == 'postgresql' else """
-            SELECT 
-                COALESCE(actual.year_label, plan.year_label) AS label,
-                COALESCE(actual.lim, 0) AS actual_lim,
-                COALESCE(plan.lim_plan, 0) AS plan_lim,
-                COALESCE(actual.sap, 0) AS actual_sap,
-                COALESCE(plan.sap_plan, 0) AS plan_sap
-            FROM (
-                SELECT 
-                    CAST(YEAR(s.date_wb) AS VARCHAR) AS year_label,
-                    SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim,
-                    SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap
-                FROM ore_sellings s
-                LEFT JOIN materials m ON m.id = s.id_material
-                GROUP BY YEAR(s.date_wb)
-            ) AS actual
-            FULL OUTER JOIN (
-                SELECT 
-                    CAST(YEAR(plan_date) AS VARCHAR) AS year_label,
-                    SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                    SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                FROM ore_sellings_plan
-                GROUP BY YEAR(plan_date)
-            ) AS plan
-            ON actual.year_label = plan.year_label
-            ORDER BY label
-            """
+                        COALESCE(actual.year_label, plan.year_label) AS label,
+                        COALESCE(actual.lim, 0) + COALESCE(actual.sap, 0) AS actual_total,
+                        COALESCE(actual.lim, 0) AS actual_lim,
+                        COALESCE(actual.sap, 0) AS actual_sap,
+                        COALESCE(plan.lim_plan, 0) + COALESCE(plan.sap_plan, 0) AS plan_total,
+                        COALESCE(plan.lim_plan, 0) AS plan_lim,
+                        COALESCE(plan.sap_plan, 0) AS plan_sap
+                    FROM (
+                        SELECT 
+                            TO_CHAR(date_hauling, 'YYYY') AS year_label,
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
+                        FROM ore_sellings_barging os
+                        LEFT JOIN materials m ON m.id = os.id_material
+                        GROUP BY TO_CHAR(date_hauling, 'YYYY')
+                    ) AS actual
+                    FULL OUTER JOIN (
+                        SELECT 
+                            TO_CHAR(plan_date, 'YYYY') AS year_label,
+                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
+                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
+                        FROM ore_sellings_plan
+                        GROUP BY TO_CHAR(plan_date, 'YYYY')
+                    ) AS plan
+                    ON actual.year_label = plan.year_label
+                    ORDER BY label;
+                """
+            else:
+                raise ValueError("Unsupported vendor")
             params = []
 
         else:
@@ -595,41 +449,40 @@ def get_chart_selling(request):
 
         x_labels     = []
         actual_total = []
+        lim_actual   = []
+        sap_actual   = []
         plan_total   = []
+        lim_plan     = []
+        sap_plan     = []
 
-        # Data per material (opsional kalau mau tetap simpan)
-        actual_lim = []
-        plan_lim   = []
-        actual_sap = []
-        plan_sap   = []
 
         for row in results:
             print(f"ROW: {row} ({len(row)} fields)")
-            # if len(row) < 5:
-            #     continue  # skip jika data tidak lengkap
-
-            label       = str(row[0])
-            lim_actual  = float(row[1] or 0)
-            lim_plan    = float(row[2] or 0)
-            sap_actual  = float(row[3] or 0)
-            sap_plan    = float(row[4] or 0)
-            
-            total_actual = lim_actual + sap_actual
-            total_plan   = lim_plan + sap_plan
+  
+            label        = str(row[0])
+            total_actual = float(row[1] or 0)
+            lim_value    = float(row[2] or 0)
+            sap_value    = float(row[3] or 0)
+            total_plan   = float(row[4] or 0)
+            lim_target   = float(row[5] or 0)
+            sap_target   = float(row[6] or 0)
 
             x_labels.append(label)
-            actual_lim.append(lim_actual)
-            plan_lim.append(lim_plan)
-            actual_sap.append(sap_actual)
-            plan_sap.append(sap_plan)
             actual_total.append(total_actual)
+            lim_actual.append(lim_value)
+            sap_actual.append(sap_value)
             plan_total.append(total_plan)
-
+            lim_plan.append(lim_target)
+            sap_plan.append(sap_target)
 
         return JsonResponse({
-            'x_data'       : x_labels,
-            'y_data_plan'  : plan_total,
-            'y_data_actual': actual_total,
+            'x_data'        : x_labels,
+            'y_data_actual' : actual_total,
+            'y_lim_actual'  : lim_actual,
+            'y_sap_actual'  : sap_actual,
+            'y_data_plan'   : plan_total,
+            'y_lim_plan'    : lim_plan,
+            'y_sap_plan'    : sap_plan,
         })
 
     except DatabaseError:
@@ -654,7 +507,7 @@ def get_chart_selling_class(request):
 
         # Tentukan kondisi filter SQL dan parameter
         if filter_type =='range' and date_start and date_end:  # Range
-            filter_sql += " AND date_wb BETWEEN %s AND %s"
+            filter_sql += " AND date_hauling BETWEEN %s AND %s"
             params = [date_start, date_end]
 
         elif filter_type =='weekly' and year and month and week:  # Weekly
@@ -664,17 +517,17 @@ def get_chart_selling_class(request):
             end_date = start_date + timedelta(days=6)
             if end_date.month != month:
                 end_date = datetime(year, month + 1, 1) - timedelta(days=1)
-            filter_sql += " AND date_wb BETWEEN %s AND %s"
+            filter_sql += " AND date_hauling BETWEEN %s AND %s"
             params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
 
         elif filter_type =='monthly' and year and month:  # Monthly
-            filter_sql += " AND EXTRACT(YEAR FROM date_wb) = %s AND EXTRACT(MONTH FROM date_wb) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_wb) = %s AND MONTH(date_wb) = %s"
+            filter_sql += " AND EXTRACT(YEAR FROM date_hauling) = %s AND EXTRACT(MONTH FROM date_hauling) = %s" \
+                if db_vendor == 'postgresql' else " AND YEAR(date_hauling) = %s AND MONTH(date_hauling) = %s"
             params = [year, month]
 
         elif filter_type =='yearly' and year:  # Yearly
-            filter_sql += " AND EXTRACT(YEAR FROM date_wb) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_wb) = %s"
+            filter_sql += " AND EXTRACT(YEAR FROM date_hauling) = %s" \
+                if db_vendor == 'postgresql' else " AND YEAR(date_hauling) = %s"
             params = [year]
 
         elif filter_type =='all':  # All

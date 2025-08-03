@@ -236,34 +236,41 @@ def generate_waybill_number(team, date_delivery=None):
     new_number = f"{formatted_date}/{formatted_kd}/{team.upper()}"
     return new_number
 
-def generate_lab_number( date_received=None):
-    # Menggunakan tanggal hari ini jika date_received tidak diberikan
+def generate_lab_number(date_received=None):
+    # Gunakan tanggal hari ini jika tidak diberikan
     if date_received is None:
-        today = date.today()
-        date_received = today.strftime('%Y-%m-%d')  # Mengambil tanggal hari ini
-
-    # Mengonversi string date_received ke objek date
-    date_obj = datetime.strptime(date_received, '%Y-%m-%d').date()  # Hanya ambil tanggal
-    formatted_date = date_obj.strftime('%y%m%d')
-
-    # Ambil nomor terakhir berdasarkan updated_at untuk hari ini
-    max_kd = LaboratorySamples.objects.filter(updated_at__date=date_obj).aggregate(Max('register'))
-    last_number = max_kd['register__max']
-
-    print(f"Last number: {last_number}")  # Debugging
-
-    # Menghitung nomor urut
-    if last_number and len(last_number.split('/')) >= 3:
+        date_received = date.today()
+    elif isinstance(date_received, str):
+        # Konversi string ke objek date
         try:
-            # Mengambil angka urut dari nomor terakhir
-            kd = int(last_number.split('/')[2]) + 1  # Ambil substring angka urut di tengah
-        except (ValueError, IndexError):
-            kd = 1  # Kembali ke 1 jika ada kesalahan
-    else:
-        kd = 1  # Reset ke 1 jika tidak ada entri untuk hari ini
+            date_received = datetime.strptime(date_received, '%Y-%m-%d').date()
+        except ValueError:
+            raise ValueError("Format tanggal harus 'YYYY-MM-DD'")
 
-    # Format nomor urut menjadi 4 digit
-    formatted_kd = f"{kd:04d}"  
-    new_number = f"LAB/{formatted_date}/{formatted_kd}"  # Format sesuai kebutuhan
-    print(f"Generated new number: {new_number}")  # Debugging
+    # Format tanggal ke YYMMDD
+    formatted_date = date_received.strftime('%y%m%d')
+
+    # Ambil nomor terakhir pada tanggal tersebut
+    max_kd = LaboratorySamples.objects.filter(
+        updated_at__date=date_received
+    ).aggregate(Max('job_number'))
+    
+    last_number = max_kd['job_number__max']
+    print(f"[DEBUG] Last register: {last_number}")
+
+    # Hitung urutan baru
+    kd = 1
+    if last_number and isinstance(last_number, str):
+        parts = last_number.split('/')
+        if len(parts) == 3 and parts[1] == formatted_date:
+            try:
+                kd = int(parts[2]) + 1
+            except ValueError:
+                pass  # Gunakan kd=1 jika parsing gagal
+
+    # Format urutan ke 4 digit dan gabungkan
+    formatted_kd = f"{kd:04d}"
+    new_number = f"KAWI/{formatted_date}/{formatted_kd}"
+
+    print(f"[DEBUG] Generated new register: {new_number}")
     return new_number

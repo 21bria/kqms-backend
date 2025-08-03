@@ -6,6 +6,7 @@ from .import_assay_roa import import_assay_roa
 from .import_mines_productions import import_mine_productions
 from .import_mines_productions_quick import import_mine_productions_quick
 from .import_plan_mine_productions import import_plan_mine_productions
+from .import_selling_barge import import_selling
 from .cleanup import clean_temp_duplicates,truncate_old_task_imports
 
 __all__ = [
@@ -18,5 +19,6 @@ __all__ = [
     'import_assay_roa',
     'import_mine_productions',
     'import_mine_productions_quick',
-    'import_plan_mine_productions'
+    'import_plan_mine_productions',
+    'import_selling'
     ]
