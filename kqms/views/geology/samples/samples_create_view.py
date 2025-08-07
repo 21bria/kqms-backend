@@ -326,9 +326,8 @@ def update_sample(request, id):
 
         combinedKodeBatch = combinedKodeBatch.replace(" ", "")  # Menghapus spasi
         
-        productCode     = request.POST.get('codeProduct')
-        # methodSale          = request.POST.get('unit_truck')
-        productKodeBatch = f"{type}{method}{id_material}{productCode}{batch_code}"  # Selling sample
+        productCode      = request.POST.get('codeProduct')
+        productKodeBatch = f"{type}{id_material}{productCode}{batch_code}"  # Selling sample
         pulpKodeBatch    = f"{type}{method}{productCode}{batch_code}"  # 
         
         productKodeBatch = productKodeBatch.replace(" ", "")  # Menghapus spasi

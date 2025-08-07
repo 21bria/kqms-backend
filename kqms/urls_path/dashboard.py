@@ -54,5 +54,15 @@ urlpatterns = [
 
     path('api/inventory/chart/details/', get_chart_inventory_details, name='get_chart_inventory_details'),
 
+    path('api/inventory-data/', get_data_inventory, name='get-data-inventory'),
+    path('api/inventory-lim/', get_inventory_lim, name='get-lim-inventory'),
+    path('api/inventory-sap/', get_inventory_sap, name='get-sap-inventory'),
+    path('api/inventory-stockpile/', get_inventory_stockpile, name='get-stockpile-inventory'),
+    # Finish Inventory
+    path('api/inventory-finish/', get_inventory_finished, name='get-finish-inventory'),
+    path('api/inventory-finish-stockpile/', get_stockpile_finished, name='get-finish-stockpile-inventory'),
+
+
+
 ]
     

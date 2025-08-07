@@ -258,12 +258,13 @@ def get_chart_selling(request):
                     ),
                     actual AS (
                         SELECT
-                            tgl_production::date AS date,
-                            SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
-                        FROM ore_production
-                        WHERE tgl_production BETWEEN %s AND %s
-                        GROUP BY tgl_production
+                            date_hauling::date AS date,
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        WHERE date_hauling BETWEEN %s AND %s
+                        GROUP BY date_hauling
                     ),
                     plan AS (
                         SELECT
@@ -364,19 +365,20 @@ def get_chart_selling(request):
         elif filter_type =='yearly' and year: 
             if db_vendor == 'postgresql':
                 query = """
-                  WITH bulan AS (
+                    WITH bulan AS (
                       SELECT generate_series(1, 12) AS month
                   ),
-                  incoming AS (
-                      SELECT
-                          EXTRACT(MONTH FROM tgl_production)::int AS month,
-                          ROUND(SUM(tonnage)::numeric, 2) AS total_actual,
-                          ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim_actual,
-                          ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap_actual
-                      FROM ore_production
-                      WHERE EXTRACT(YEAR FROM tgl_production) = %s
-                      GROUP BY EXTRACT(MONTH FROM tgl_production)
-                  ),
+                   incoming AS (
+                        SELECT
+                            EXTRACT(MONTH FROM date_hauling)::int AS month,
+                    		ROUND(SUM(tonnage)::numeric, 2) AS total,
+                            ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        WHERE EXTRACT(YEAR FROM date_hauling) = %s
+                      GROUP BY EXTRACT(MONTH FROM date_hauling)
+                     ),
                   plan AS (
                       SELECT
                           EXTRACT(MONTH FROM plan_date)::int AS month,
@@ -389,9 +391,9 @@ def get_chart_selling(request):
                   )
                   SELECT
                       TO_CHAR(TO_DATE(bulan.month::text, 'MM'), 'Mon') AS label,
-                      COALESCE(i.total_actual, 0) AS total_actual,
-                      COALESCE(i.lim_actual, 0) AS lim_actual,
-                      COALESCE(i.sap_actual, 0) AS sap_actual,
+                      COALESCE(i.total, 0) AS total_actual,
+                      COALESCE(i.lim, 0) AS lim_actual,
+                      COALESCE(i.sap, 0) AS sap_actual,
                       COALESCE(p.total_plan, 0) AS total_plan,
                       COALESCE(p.lim_plan, 0) AS lim_plan,
                       COALESCE(p.sap_plan, 0) AS sap_plan

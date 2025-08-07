@@ -3,10 +3,12 @@ from django.db import models
 class SellingOfficial(models.Model):
     id_surveyor      = models.IntegerField(default=None, null=True, blank=True)
     type_selling     = models.CharField(max_length=50, default=None, null=True, blank=True)
+    official         = models.CharField(max_length=5, default=None, null=True, blank=True)
     tonnage          = models.FloatField(default=None, null=True, blank=True)
     id_factory       = models.IntegerField(default=None, null=True, blank=True)
     so_number        = models.CharField(max_length=150,default=None, null=True, blank=True)
     product_code     = models.CharField(max_length=150,default=None, null=True, blank=True)
+    official_code    = models.CharField(max_length=150,default=None, null=True, blank=True)
     ni               = models.FloatField(default=None, null=True, blank=True)
     co	             = models.FloatField(default=None, null=True, blank=True)
     al2o3	         = models.FloatField(default=None, null=True, blank=True)
@@ -31,7 +33,8 @@ class SellingOfficial(models.Model):
 
     indexes = [
         models.Index(fields=['type_selling']),
-        models.Index(fields=['product_code'])
+        models.Index(fields=['product_code']),
+        models.Index(fields=['official'])
     ]
 
 class SellingSurveyor(models.Model):

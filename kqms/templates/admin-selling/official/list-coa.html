@@ -1,0 +1,680 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Split COA</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        roa
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <!-- <h5 class="box-title">Achievement {roa} Review</h5> -->
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Sample {coa} Review
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-start mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <!-- <div class="grid grid-cols-5 gap-2 xl:grid-cols-5">
+
+                                        <div class="mb-0" id="form-pilih">
+                                            <label class="form-label">Select</label>
+                                            <select name="filter" class="ti-form-select rounded-sm !py-2 !px-3t"
+                                                id="filter">
+                                                <option value="">-- Filter Category -- </option>
+                                                <option value="1">By Range</option>
+                                                <option value="2">By Code</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label class="form-label">Type </label>
+                                            <select name="typeFilter" class="ti-form-select rounded-sm !py-2 !px-3t" id="typeFilter">
+                                                <option value="">-- Type -- </option>
+                                                <option value="HPAL">HPAL</option>
+                                                <option value="RKEF">RKEF</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0" id="form-tanggal">
+                                            <label class="form-label">Start Date </label>
+                                            <input class="form-control w-full !rounded-md" type="date" id='startDate'
+                                                name='startDate'>
+                                        </div>
+                                        <div class="mb-3" id="form-tanggal-akhir">
+                                            <label class="form-label">End Date</label>
+                                            <input class="form-control w-full !rounded-md" type="date" id='endDate'
+                                                name='endDate'>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="grid grid-cols-5 gap-2 xl:grid-cols-5">
+                                        <div class="mb-0" id="form-pilih">
+                                            <label class="form-label">Select</label>
+                                            <select name="filter" class="ti-form-select rounded-sm !py-2 !px-3t"
+                                                id="filter">
+                                                <option value="">-- Select -- </option>
+                                                <option value="1">By Range</option>
+                                                <option value="2">By Month</option>
+                                                <option value="3">By Year</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label class="form-label">Type </label>
+                                            <select name="materialFilter" class="ti-form-select rounded-sm !py-2 !px-3t"
+                                                id="materialFilter">
+                                                <option value="">-- Type -- </option>
+                                                <option value="HOS">HPAL</option>
+                                                <option value="ROS">RKEF</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0" id="form-tanggal">
+                                            <label class="form-label">Start Date </label>
+                                            <input class="form-control w-full !rounded-md" type="date" id='startDate'
+                                                name='startDate'>
+                                        </div>
+                                        <div class="mb-3" id="form-tanggal-akhir">
+                                            <label class="form-label">End Date</label>
+                                            <input class="form-control w-full !rounded-md" type="date" id='endDate'
+                                                name='endDate'>
+                                        </div>
+                                        <div class="mb-0" id="form-bulan">
+                                            <div class="form-group">
+                                                <label class="form-label">Bulan</label>
+                                                <select id="bulanFilter" name="bulanFilter"
+                                                    class="ti-form-select rounded-sm !py-2 !px-3tt">
+                                                    <option value="">-- Select --</option>
+                                                    <option value="1">Januari</option>
+                                                    <option value="2">Februari</option>
+                                                    <option value="3">Maret</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">Mei</option>
+                                                    <option value="6">Juni</option>
+                                                    <option value="7">Juli</option>
+                                                    <option value="8">Agustus</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">Oktober</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">Desember</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-0" id="form-tahun">
+                                            <label class="form-label text-blue">Tahun</label>
+                                            <select id="tahunFilter" name="tahunFilter"
+                                                class="ti-form-select rounded-sm !py-2 !px-3tt">
+                                                <option value="">Select Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+
+                                <!-- <button id="search" type="button"
+                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button> -->
+                                <a id="search" href="#" class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Apply
+                                    Filter</a>
+                            </div>
+                            <div class="overflow-auto">
+                                <div class="table-responsive">
+
+                                    <table id="list-table"
+                                        class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2" class="center-align">Code</th>
+                                                <th colspan="5" class="center-align">Internal</th>
+                                                <th colspan="5" class="center-align">Pulp (Surveyor)</th>
+                                                <th colspan="5" class="center-align">COA</th>
+                                                <!-- <th colspan="2" class="center-align">Grade Control</th>
+                                                <th colspan="2" class="center-align">Mining</th>
+                                                <th colspan="2" class="center-align">Difference</th> -->
+                                            </tr>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Product</th>
+                                                <th>Internal (ton)</th>
+                                                <th>Ni</th>
+                                                <th>Fe</th>
+                                                <th>MgO</th>
+                                                <th>SiO2</th>
+                                                <th>Pulp (Ton)</th>
+                                                <th>Ni</th>
+                                                <th>Fe</th>
+                                                <th>MgO</th>
+                                                <th>SiO2</th>
+                                                <th>COA (Ton)</th>
+                                                <th>Ni</th>
+                                                <th>Fe</th>
+                                                <th>MgO</th>
+                                                <th>SiO2</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>-</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>-</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>-</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="2">Grand Total</th>
+                                                <th id="total-ore">-</th>
+                                                <th id="sum-ni">-</th>
+                                                <th id="sum-fe">-</th>
+                                                <th id="sum-mgo">-</th>
+                                                <th id="sum-sio2">-</th>
+                                                <th id="pulp-total-ore">-</th>
+                                                <th id="pulp-sum-ni">-</th>
+                                                <th id="pulp-sum-fe">-</th>
+                                                <th id="pulp-sum-mgo">-</th>
+                                                <th id="pulp-sum-sio2">-</th>
+                                                <th id="coa-total-ore">-</th>
+                                                <th id="coa-sum-ni">-</th>
+                                                <th id="coa-sum-fe">-</th>
+                                                <th id="coa-sum-mgo">-</th>
+                                                <th id="coa-sum-sio2">-</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+
+    <!-- End::add task modal -->
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btn_filter,#form-tanggal,#form-tanggal-akhir, #form-bulan, #form-tahun')
+            .hide(); // Sebagai default kita sembunyikan form filter tanggal, bulan & tahunnya
+        $('#filter').change(function () { // Ketika user memilih filter
+            if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
+                $('#form-bulan, #form-tahun').hide(); // Sembunyikan form bulan dan tahun
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir').show(); // Tampilkan form tanggal
+            } else if ($(this).val() == '2') { // Jika filter nya 2 (per bulan)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir')
+                    .hide(); // Sembunyikan form tanggal
+                $('#form-bulan, #form-tahun')
+                    .show(); // Tampilkan form bulan dan tahun
+            } else if ($(this).val() == '3') {
+                // Jika filternya 3 (Year)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir,#form-bulan')
+                    .hide(); // Sembunyikan form tanggal dan bulan
+                $('#form-tahun').show(); // Tampilkan form tahun
+
+            } else {
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir,#form-bulan')
+                    .hide(); // Sembunyikan form
+            }
+        })
+    });
+
+    $.ajax({
+        url: "{% url 'get-sale-product' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.list, function (key, value) {
+                options += '<option value="' + value.code_lot + '">' + value.code_lot + '</option>';
+            });
+            $('#codeFilter').append(options).select2({
+                width: '100%',
+            })
+        }
+    });
+    $.ajax({
+        url: "{% url 'get-year-sale' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.tahun, function (key, value) {
+                options += '<option value="' + value.tahun + '">' + value.tahun + '</option>';
+            });
+            $('#tahunFilter').append(options).select2({
+                width: '100%',
+            })
+        }
+    });
+    $("#filter").select2({
+        width: '100%',
+    });
+    $('#typeFilter').select2({
+        width: '100%',
+    })
+    $('#materialFilter').select2({
+        width: '100%',
+    })
+    $('#bulanFilter').select2({
+        width: '100%',
+    })
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        /*--- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $('#search').click(function () {
+            // Mengambil nilai filter dari elemen-elemen HTML yang sesuai
+            var filter = $('#filter').val();
+            var materialFilter = $('#materialFilter').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var bulanFilter = $('#bulanFilter').val();
+            var tahunFilter = $('#tahunFilter').val();
+
+            // Menjalankan filter berdasarkan parameter yang dipilih
+            if (filter == '') {
+                $('#filter').select2('open');
+                return false;
+            } else if (materialFilter == '') {
+                $('#materialFilter').select2('open');
+                return false;
+            } else if (filter == '1' && startDate == '') {
+                $('#startDate').focus();
+                return false;
+            } else if (filter == '1' && endDate == '') {
+                $('#endDate').focus();
+                return false;
+            } else if (filter == '2' && bulanFilter == '') {
+                $('#bulanFilter').select2('open');
+                return false;
+            } else if (filter == '2' && bulanFilter !== '' && tahunFilter == '') {
+                $('#tahunFilter').select2('open');
+                return false;
+            } else if (filter == '3' && tahunFilter == '') {
+                $('#tahunFilter').select2('open');
+                return false;
+            } else {
+                // $(this).attr("disabled", "disabled");
+                loadAWK();
+            }
+
+        });
+
+        $('#reload').click(function () {
+
+            var delivery_order = $('#delivery_order').val();
+            if (delivery_order == '') {
+                $('#delivery_order').select2('open');
+                return false;
+            } else {
+                // Panggil function Group,Awk,Scci
+                devSplitAwk();
+                // devOfficialAwk();
+            }
+
+        });
+    });
+</script>
+
+<!-- For AWK -->
+<
+
+<script type="text/javascript">
+    function loadAWK() {
+        var rowCount = 0; // Jumlah baris
+        var table = $("#list-table").find("tbody");
+        var grandTotalOre = 0;
+        var grandTotalPulp = 0;
+        var grandTotalCoa = 0;
+        var internalNi = [];
+        var internalFe = [];
+        var internalMgo = [];
+        var internalSiO2 = [];
+        var pulpNi = [];
+        var pulpFe = [];
+        var pulpMgo = [];
+        var pulpSiO2 = [];
+        var coaNi = [];
+        var coaFe = [];
+        var coaMgo = [];
+        var coaSiO2 = [];
+
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+        // Fungsi untuk menambahkan data ke tabel
+        function appendDataAWK(data) {
+            grandTotalOre = 0;
+            grandTotalPulp = 0;
+            grandTotalCoa = 0;
+            // Loop melalui data dan tambahkan ke tabel
+            $.each(data, function (index, row) {
+                var newRow = $("<tr>");
+                newRow.append("<td>" + (index + 1) + "</td>"); // Menambahkan nomor urut
+                newRow.append("<td>" + formatValue(row.code_lot) + "</td>");
+                newRow.append("<td>" + parseFloat(row.tonnage_split).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.ni_split).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.fe_split).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.mgo_split).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.sio2_split).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+
+                newRow.append("<td>" + parseFloat(row.tonnage_pulp).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.ni_pulp).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.fe_pulp).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.mgo_pulp).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.sio2_pulp).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+
+                newRow.append("<td>" + parseFloat(row.tonnage_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.ni_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.fe_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.mgo_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.sio2_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+
+
+                grandTotalOre += parseFloat(row.tonnage_split);
+                grandTotalPulp += parseFloat(row.tonnage_pulp);
+                grandTotalCoa += parseFloat(row.tonnage_official);
+
+                /* Hitung SUM Product */
+                internalNi.push(row.tonnage_split * row.ni_split);
+                internalFe.push(row.tonnage_split * row.fe_split);
+                internalMgo.push(row.tonnage_split * row.mgo_split);
+                internalSiO2.push(row.tonnage_split * row.sio2_split);
+
+                pulpNi.push(row.tonnage_pulp * row.ni_pulp);
+                pulpFe.push(row.tonnage_pulp * row.fe_pulp);
+                pulpMgo.push(row.tonnage_pulp * row.mgo_pulp);
+                pulpSiO2.push(row.tonnage_pulp * row.sio2_pulp);
+
+                coaNi.push(row.tonnage_official * row.ni_official);
+                coaFe.push(row.tonnage_official * row.fe_official);
+                coaMgo.push(row.tonnage_official * row.mgo_official);
+                coaSiO2.push(row.tonnage_official * row.sio2_official);
+
+                // Tambahkan baris ke tabel
+                table.append(newRow);
+
+            });
+
+            // Set grand total di bawah footer tabel
+            $("#total-ore").text(grandTotalOre.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#pulp-total-ore").text(grandTotalPulp.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#coa-total-ore").text(grandTotalCoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+
+            // Proses SUM Product Grade
+            var sumProduct = function (dataArray) {
+                return dataArray.reduce((sum, value) => sum + value, 0);
+            };
+
+
+            // Bagi dengan total released
+            var sumResults = [
+                { id: "sum-ni", value: (sumProduct(internalNi) / grandTotalOre) || 0 },
+                { id: "sum-fe", value: (sumProduct(internalFe) / grandTotalOre) || 0 },
+                { id: "sum-mgo", value: (sumProduct(internalMgo) / grandTotalOre) || 0 },
+                { id: "sum-sio2", value: (sumProduct(internalSiO2) / grandTotalOre) || 0 },
+
+                { id: "pulp-sum-ni", value: (sumProduct(pulpNi) / grandTotalPulp) || 0 },
+                { id: "pulp-sum-fe", value: (sumProduct(pulpFe) / grandTotalPulp) || 0 },
+                { id: "pulp-sum-mgo", value: (sumProduct(pulpMgo) / grandTotalPulp) || 0 },
+                { id: "pulp-sum-sio2", value: (sumProduct(pulpSiO2) / grandTotalPulp) || 0 },
+
+                { id: "coa-sum-ni", value: (sumProduct(coaNi) / grandTotalCoa) || 0 },
+                { id: "coa-sum-fe", value: (sumProduct(coaFe) / grandTotalCoa) || 0 },
+                { id: "coa-sum-mgo", value: (sumProduct(coaMgo) / grandTotalCoa) || 0 },
+                { id: "coa-sum-sio2", value: (sumProduct(coaSiO2) / grandTotalCoa) || 0 },
+            ];
+
+            sumResults.forEach(result => {
+                $("#" + result.id).text(result.value.toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            });
+        }
+
+        // Lakukan permintaan Ajax ke endpoint controller Anda
+        var table = $("#list-table").find("tbody");
+        table.empty();
+        var materialFilter = $('#materialFilter').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var bulanFilter = $('#bulanFilter').val();
+        var tahunFilter = $('#tahunFilter').val();
+        $.ajax({
+            type: "GET",
+            url: "{% url 'sale-split-coa-list'%}",
+            data: {
+                materialFilter: materialFilter,
+                tahunFilter: tahunFilter,
+                bulanFilter: bulanFilter,
+                startDate: startDate,
+                endDate: endDate
+            },
+            success: function (response) {
+                // Data berhasil diterima dari server
+                table.empty();
+                var sqlData = response.data;
+                appendDataAWK(sqlData);
+            },
+            error: function () {
+                // Penanganan kesalahan jika diperlukan
+                console.log("Gagal mengambil data dari server.");
+            },
+        });
+        devSplitAwk();
+    }
+    function devSplitAwk() {
+        var awkiNi = 0
+        var groupNi = 0
+        var DevAwkNi = 0
+        var DevAwkMc = 0
+        groupNi = $('#group-sum-ni').text();
+        awkNi = $('#awk-sum-ni').text();
+        $('#dev-split-awk-ni').text(0);
+        // Deviation Split AWK with Daily Check Sample
+        if (!isNaN(groupNi) && !isNaN(awkNi) && groupNi !== 0) {
+            DevAwkNi = (awkNi - groupNi) / groupNi * 100;
+            DevAwkNi = DevAwkNi.toFixed(2);
+            // Tampilkan  "Deviation Ni"
+            $("#dev-split-awk-ni").text(+DevAwkNi + "%");
+        }
+    }
+</script>
+
+</body>
+
+</html>
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+    .table-scrollable {
+        max-height: 635px;
+        /* Setel tinggi maksimum */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
+        overflow-x: auto;
+        /* Disable horizontal scrolling jika tidak diperlukan */
+    }
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+</style>

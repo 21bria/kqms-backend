@@ -37,12 +37,12 @@ def inventory_stockpile_rkef(request):
 def getInventoryAll(request):
     saleFilter   = request.GET.get('saleFilter')
     # Ambil filter dari request
-    areaFilter  = request.GET.get('areaFilter', '[]')  # Menggunakan '[]' sebagai default jika None
-    pointFilter = request.GET.get('pointFilter', '[]')  # Menggunakan '[]' sebagai default jika None
+    areaFilter  = request.GET.get('areaFilter', '[]')  
+    pointFilter = request.GET.get('pointFilter', '[]') 
 
     # Parsing JSON
-    areaFilter  = json.loads(areaFilter)  # Parsing JSON menjadi list
-    pointFilter = json.loads(pointFilter)  # Parsing JSON menjadi lis
+    areaFilter  = json.loads(areaFilter)  
+    pointFilter = json.loads(pointFilter) 
 
     # Pagination setup
     page = int(request.GET.get('page', 1))
@@ -92,7 +92,7 @@ def getInventoryAll(request):
             t1.released,
             t1.nama_material,
             COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
-            COALESCE(ROUND((t1.total_ore - t2.tonnage)::numeric, 2), 0) AS balance,
+            ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
             t1.Ni,
             t1.Co,
             t1.Al2O3,
@@ -200,7 +200,7 @@ def getInventoryHpal(request):
                 t1.released,
                 t1.nama_material,
                 COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
-                COALESCE(ROUND((t1.total_ore - t2.tonnage)::numeric, 2), 0) AS balance,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
                 t1.Ni,
                 t1.Co,
                 t1.Al2O3,
@@ -323,7 +323,7 @@ def getInventoryRkef(request):
                 t1.released,
                 t1.nama_material,
                 COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
-                COALESCE(ROUND((t1.total_ore - t2.tonnage)::numeric, 2), 0) AS balance,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
                 t1.Ni,
                 t1.Co,
                 t1.Al2O3,
@@ -435,7 +435,7 @@ def getStockpileAll(request):
                     SUM(t1.released) AS released,
                     t1.nama_material,
                     COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
-                    COALESCE(ROUND((SUM(t1.total_ore) - SUM(t2.tonnage))::numeric, 2), 0) AS balance,
+                    COALESCE(ROUND((SUM(t1.released) - SUM(t2.tonnage))::numeric, 2), 0) AS balance,
                     t1.Ni,
                     t1.Co,
                     t1.Al2O3,
@@ -526,7 +526,7 @@ def getStockpileHpal(request):
                     t1.released,
                     t1.nama_material,
                     COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
-                    COALESCE(ROUND((t1.total_ore - t2.tonnage)::numeric, 2), 0) AS balance,
+                    ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
                     t1.Ni,
                     t1.Co,
                     t1.Al2O3,
@@ -587,7 +587,7 @@ def getStockpileRkef(request):
                 t1.released,
                 t1.nama_material,
                 COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
-                COALESCE(ROUND((t1.total_ore - t2.tonnage)::numeric, 2), 0) AS balance,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
                 t1.Ni,
                 t1.Co,
                 t1.Al2O3,

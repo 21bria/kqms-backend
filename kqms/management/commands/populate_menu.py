@@ -358,21 +358,21 @@ class Command(BaseCommand):
         )
         Menu.objects.create(
             title="Selling Plan",
-            url="#",
+            url="sale-plan-page",
             parent=selling,
             order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
         Menu.objects.create(
             title="Samples Split",
-            url="#",
+            url="sale-split-sample-page",
             parent=selling,
             order=3,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
         Menu.objects.create(
             title="Data Official",
-            url="#",
+            url="sale-official-page",
             parent=selling,
             order=4,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
@@ -384,20 +384,41 @@ class Command(BaseCommand):
             order=5,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
+        # Menu.objects.create(
+        #     title="Split mral",
+        #     url="#",
+        #     parent=split_official,
+        #     order=1,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
         Menu.objects.create(
-            title="Split mral",
-            url="#",
+            title="Split coa",
+            url="sale-split-coa-page",
             parent=split_official,
             order=1,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
-        Menu.objects.create(
-            title="Split roa",
-            url="#",
-            parent=split_official,
-            order=2,
+       
+        split_official = Menu.objects.create(
+            title="Ore Blending",
+            parent=selling,
+            order=6,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
+        Menu.objects.create(
+            title="Form Blending",
+            url="blending-form-page",
+            parent=split_official,
+            order=1,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        )
+        # Menu.objects.create(
+        #     title="Split coa",
+        #     url="sale-split-coa-page",
+        #     parent=split_official,
+        #     order=2,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
        
         # Analytics
         analytics = Menu.objects.create(

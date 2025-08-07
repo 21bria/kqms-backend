@@ -14,6 +14,7 @@ from django.utils.timezone import now
 from django.db.models.functions import TruncWeek
 logger = logging.getLogger(__name__) #tambahkan ini untuk multi database.
 import json
+from decimal import Decimal
 from ....utils.db_utils import get_db_vendor
 
 # Memanggil fungsi utility
@@ -51,10 +52,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
@@ -64,10 +65,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -80,11 +81,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             -- LIM
@@ -117,10 +118,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -131,10 +132,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -147,11 +148,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             ISNULL(i.lim_in, 0) AS lim_in,
@@ -218,10 +219,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
@@ -231,10 +232,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -247,11 +248,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             -- LIM
@@ -284,10 +285,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -298,10 +299,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -314,11 +315,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             ISNULL(i.lim_in, 0) AS lim_in,
@@ -338,9 +339,9 @@ def get_inventory_summary(request):
             
             params = [
                 start_date.strftime('%Y-%m-%d'),  # 1: tgl_production < %s
-                start_date.strftime('%Y-%m-%d'),  # 2: date_wb < %s
+                start_date.strftime('%Y-%m-%d'),  # 2: date_hauling < %s
                 start_date.strftime('%Y-%m-%d'),  # 3: tgl_production < %s
-                start_date.strftime('%Y-%m-%d'),  # 4: date_wb < %s
+                start_date.strftime('%Y-%m-%d'),  # 4: date_hauling < %s
                 start_date.strftime('%Y-%m-%d'),  # 5: BETWEEN
                 end_date.strftime('%Y-%m-%d'),    # 6: BETWEEN
                 start_date.strftime('%Y-%m-%d'),  # 7: BETWEEN
@@ -373,10 +374,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
@@ -386,10 +387,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -402,11 +403,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             -- LIM
@@ -439,10 +440,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -453,10 +454,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -469,11 +470,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE date_wb BETWEEN %s AND %s
+                            WHERE date_hauling BETWEEN %s AND %s
                         )
                         SELECT
                             ISNULL(i.lim_in, 0) AS lim_in,
@@ -506,10 +507,10 @@ def get_inventory_summary(request):
                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE EXTRACT(YEAR FROM date_wb) < %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
@@ -519,10 +520,10 @@ def get_inventory_summary(request):
                                      WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE EXTRACT(YEAR FROM date_wb) < %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -535,11 +536,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE EXTRACT(YEAR FROM date_wb) = %s
+                            WHERE EXTRACT(YEAR FROM date_hauling) = %s
                         )
                         SELECT
                             -- LIM
@@ -572,10 +573,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -586,10 +587,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -602,11 +603,11 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE YEAR(date_wb) = %s
+                            WHERE YEAR(date_hauling) = %s
                         )
                         SELECT
                             ISNULL(i.lim_in, 0) AS lim_in,
@@ -638,10 +639,10 @@ def get_inventory_summary(request):
                                 WHERE tgl_production < %s
                             ), 0) -
                             COALESCE((
-                                SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                FROM ore_sellings s
+                                SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_wb < %s
+                                WHERE date_hauling < %s
                             ), 0) AS lim_awal,
 
                             COALESCE((
@@ -651,10 +652,10 @@ def get_inventory_summary(request):
                                 WHERE tgl_production < %s
                             ), 0) -
                             COALESCE((
-                                SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                FROM ore_sellings s
+                                SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_wb < %s
+                                WHERE date_hauling < %s
                             ), 0) AS sap_awal
                     ),
                     incoming AS (
@@ -666,9 +667,9 @@ def get_inventory_summary(request):
                     ),
                     outgoing AS (
                         SELECT
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                        FROM ore_sellings s
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                        FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                     )
                     SELECT
@@ -699,10 +700,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -713,10 +714,10 @@ def get_inventory_summary(request):
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 ISNULL((
-                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END)
-                                    FROM ore_sellings s
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_wb < %s
+                                    WHERE date_hauling < %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -728,9 +729,9 @@ def get_inventory_summary(request):
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.netto_weigth_f ELSE 0 END) AS lim_out,
-                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.netto_weigth_f ELSE 0 END) AS sap_out
-                            FROM ore_sellings s
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                         )
                         SELECT
@@ -979,12 +980,12 @@ def get_chart_inventory(request):
                             ),
                             outgoing AS (
                                 SELECT
-                                    date_wb::date AS date,
-                                    SUM(netto_weigth_f) AS total_out
-                                FROM ore_sellings s
+                                    date_hauling::date AS date,
+                                    SUM(tonnage) AS total_out
+                                FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_wb BETWEEN %s AND %s
-                                GROUP BY date_wb
+                                WHERE date_hauling BETWEEN %s AND %s
+                                GROUP BY date_hauling
                             ),
                             saldo_awal AS (
                                 SELECT
@@ -993,9 +994,9 @@ def get_chart_inventory(request):
                                         FROM ore_productions
                                         WHERE tgl_production < %s
                                     ), 0) - COALESCE((
-                                        SELECT SUM(netto_weigth_f)
-                                        FROM ore_sellings
-                                        WHERE date_wb < %s
+                                        SELECT SUM(tonnage)
+                                        FROM ore_sellings_barging
+                                        WHERE date_hauling < %s
                                     ), 0) AS value
                             )
                             SELECT
@@ -1481,3 +1482,810 @@ def get_dome_roa(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+# Get Inventory
+def get_data_inventory(request):
+    saleFilter   = request.GET.get('saleFilter')
+    # Ambil filter dari request
+    areaFilter  = request.GET.get('areaFilter', '[]')  
+    pointFilter = request.GET.get('pointFilter', '[]') 
+
+    # Parsing JSON
+    areaFilter  = json.loads(areaFilter)  
+    pointFilter = json.loads(pointFilter) 
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 100
+    offset = (page - 1) * per_page
+
+    # == SQL untuk menghitung total data ==
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 
+            ON t2.stockpile = t1.stockpile 
+            AND t2.dome = t1.pile_id
+        WHERE t1.status_dome != 'Finished'
+    """
+
+    filters = []
+    params = []
+
+    if saleFilter:
+        filters.append("t1.sale_adjust = %s")
+        params.append(saleFilter)
+
+    if areaFilter:
+        filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+
+    if pointFilter:
+        filters.append(f"t1.pile_id IN ({', '.join(['%s'] * len(pointFilter))})")
+        params.extend(pointFilter)
+
+    if filters:
+        count_query += " AND " + " AND ".join(filters)
+
+    # Eksekusi count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query, params)
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0
+
+    # == SQL utama untuk ambil data ==
+    query = """
+        SELECT
+            t1.stockpile,
+            t1.pile_id,
+            t1.total_ore,
+            t1.released,
+            t1.nama_material,
+            COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
+            ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
+            t1.Ni,
+            t1.Co,
+            t1.Al2O3,
+            t1.CaO,
+            t1.Cr2O3,
+            t1.Fe,
+            t1.Mgo,
+            t1.SiO2,
+            t1.MC,
+            t1.SM
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 
+            ON t2.stockpile = t1.stockpile 
+            AND t2.dome = t1.pile_id
+        WHERE t1.status_dome != 'Finished'
+    """
+
+    if filters:
+        query += " AND " + " AND ".join(filters)
+
+    query += " ORDER BY t1.nama_material ASC, t1.stockpile ASC"
+    query += " LIMIT %s OFFSET %s;"
+    params += [per_page, offset]  # Tambah parameter untuk LIMIT dan OFFSET
+
+    # Eksekusi query utama
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query, params)
+        columns = [col[0] for col in cursor.description]
+        sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    
+    # Konversi Decimal/str → float untuk field tertentu
+    for item in sql_data:
+        for field in [
+            'total_ore', 'released', 'total_selling', 'balance',
+            'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+        ]:
+            val = item.get(field)
+            if isinstance(val, Decimal):
+                item[field] = float(val)
+            elif isinstance(val, (float, int)):
+                item[field] = float(val)
+            elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                item[field] = float(val)
+
+    # Pagination
+    more_data = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more': more_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_data': total_data
+        }
+    })
+
+def get_inventory_lim(request):
+    # saleFilter   = request.GET.get('saleFilter')
+    # Ambil filter dari request
+    areaFilter  = request.GET.get('areaFilter', '[]')
+    pointFilter = request.GET.get('pointFilter', '[]')
+
+    # Parsing JSON hanya jika filter tidak kosong
+    try:
+        areaFilter  = json.loads(areaFilter) if areaFilter else []
+        pointFilter = json.loads(pointFilter) if pointFilter else []
+    except json.JSONDecodeError:
+        areaFilter  = []
+        pointFilter = []
+
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 100
+    offset = (page - 1) * per_page
+
+    # Query to count total data
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 ON 
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
+        WHERE t1.status_dome != 'Finished'
+    """
+
+    # Apply filters to the count query
+    count_filters = []
+    params = []
+
+    # Memeriksa dan menambahkan filter untuk stockpile
+    if areaFilter:  # Pastikan areaFilter tidak kosong
+        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+    # Memeriksa dan menambahkan filter untuk pile_id
+    if pointFilter:  # Pastikan pointFilter tidak kosong
+        count_filters.append(f"t1.pile_id IN ({', '.join(['%s'] * len(pointFilter))})")
+        params.extend(pointFilter)
+
+    if count_filters:
+        count_query += " AND " + " AND ".join(count_filters)
+
+    # Execute count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query, params)  # ← perbaikan di sini
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0
+
+    # Main data query with pagination
+    if db_vendor == 'postgresql':
+        query = """
+            SELECT
+                t1.stockpile,
+                t1.pile_id,
+                t1.total_ore,
+                t1.released,
+                t1.nama_material,
+                COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
+                t1.Ni,
+                t1.Co,
+                t1.Al2O3,
+                t1.CaO,
+                t1.Cr2O3,
+                t1.Fe,
+                t1.Mgo,
+                t1.SiO2,
+                t1.MC,
+                t1.SM
+            FROM inventory_by_dome AS t1
+            LEFT JOIN selling_by_dome AS t2 
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
+            WHERE t1.status_dome != 'Finished' AND t1.sale_adjust='HPAL'
+        """
+    else:
+        raise ValueError("Unsupported database vendor.")
+    if count_filters:
+        query += " AND " + " AND ".join(count_filters)
+
+    # Add pagination and order by clauses
+    query += " ORDER BY t1.nama_material ASC, t1.stockpile ASC"
+   
+     # Query untuk mengambil data dengan pagination
+    if db_vendor == 'postgresql':
+        query += f" LIMIT {per_page} OFFSET {offset};"
+       
+    elif db_vendor in ['mssql', 'microsoft']:
+        # Adding pagination (OFFSET-FETCH) SQL SERVER
+        query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
+    else:
+        raise ValueError("Unsupported database vendor.")
+
+    # Fetch paginated data
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query, params)  # ← perbaikan di sini
+        if cursor.description:
+            columns = [col[0] for col in cursor.description]
+            sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            sql_data = []
+
+    for item in sql_data:
+        for field in [
+            'total_ore', 'released', 'total_selling', 'balance',
+            'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+        ]:
+            val = item.get(field)
+            if isinstance(val, Decimal):
+                item[field] = float(val)
+            elif isinstance(val, (float, int)):
+                item[field] = float(val)
+            elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                item[field] = float(val)
+
+
+    # Calculate if there is more data
+    more_data = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more'        : more_data,
+            'total_pages' : total_pages,
+            'current_page': page,
+            'total_data'  : total_data
+        }
+    })
+
+def get_inventory_sap(request):
+    # Ambil filter dari request
+    areaFilter  = request.GET.get('areaFilter', '[]')
+    pointFilter = request.GET.get('pointFilter', '[]')
+
+    # Parsing JSON hanya jika filter tidak kosong
+    try:
+        areaFilter  = json.loads(areaFilter) if areaFilter else []
+        pointFilter = json.loads(pointFilter) if pointFilter else []
+    except json.JSONDecodeError:
+        areaFilter  = []
+        pointFilter = []
+
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 100
+    offset = (page - 1) * per_page
+
+    # Query to count total data
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 ON 
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
+        WHERE t1.status_dome != 'Finished'
+    """
+
+    # Apply filters to the count query
+    count_filters = []
+    params = []
+
+    # Memeriksa dan menambahkan filter untuk stockpile
+    if areaFilter:  # Pastikan areaFilter tidak kosong
+        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+
+    # Memeriksa dan menambahkan filter untuk pile_id
+    if pointFilter:  # Pastikan pointFilter tidak kosong
+        count_filters.append(f"t1.pile_id IN ({', '.join(['%s'] * len(pointFilter))})")
+        params.extend(pointFilter)
+
+    if count_filters:
+        count_query += " AND " + " AND ".join(count_filters)
+
+    # Execute count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query, params)  # ← perbaikan di sini
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0
+
+
+    # Main data query with pagination
+    if db_vendor == 'postgresql':
+        query = """
+            SELECT
+                t1.stockpile,
+                t1.pile_id,
+                t1.total_ore,
+                t1.released,
+                t1.nama_material,
+                COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
+                t1.Ni,
+                t1.Co,
+                t1.Al2O3,
+                t1.CaO,
+                t1.Cr2O3,
+                t1.Fe,
+                t1.Mgo,
+                t1.SiO2,
+                t1.MC,
+                t1.SM
+            FROM inventory_by_dome AS t1
+            LEFT JOIN selling_by_dome AS t2 
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
+            WHERE t1.status_dome != 'Finished' AND t1.sale_adjust='RKEF'
+        """
+    else:
+        raise ValueError("Unsupported database vendor.")
+    
+    if count_filters:
+        query += " AND " + " AND ".join(count_filters)
+
+    # Add pagination and order by clauses
+    query += " ORDER BY t1.nama_material ASC, t1.stockpile ASC"
+    
+    # Query untuk mengambil data dengan pagination
+    if db_vendor == 'postgresql':
+        query += f" LIMIT {per_page} OFFSET {offset};"
+       
+    elif db_vendor in ['mssql', 'microsoft']:
+        # Adding pagination (OFFSET-FETCH) SQL SERVER
+        query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
+    else:
+        raise ValueError("Unsupported database vendor.")
+
+    # Fetch paginated data
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query,params)
+        if cursor.description:
+            columns = [col[0] for col in cursor.description]
+            sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            sql_data = []
+
+    for item in sql_data:
+            for field in [
+                'total_ore', 'released', 'total_selling', 'balance',
+                'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+            ]:
+                val = item.get(field)
+                if isinstance(val, Decimal):
+                    item[field] = float(val)
+                elif isinstance(val, (float, int)):
+                    item[field] = float(val)
+                elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                    item[field] = float(val)
+
+    # Calculate if there is more data
+    more_data = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more': more_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_data': total_data
+        }
+    })
+
+def get_inventory_stockpile(request):
+    saleFilter = request.GET.get('saleFilter')
+    areaFilter  = request.GET.get('areaFilter', '[]')  # Menggunakan '[]' sebagai default jika None
+    # Parsing JSON
+    areaFilter  = json.loads(areaFilter)  # Parsing JSON menjadi list
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 100
+    offset = (page - 1) * per_page
+
+    # Query to count total data
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 ON 
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
+        WHERE t1.status_dome != 'Finished'
+    """
+
+    # Apply filters to the count query
+    count_filters = []
+    params = []
+
+    if saleFilter:
+        count_filters.append("t1.sale_adjust = %s")
+        params.append(saleFilter)
+
+    if areaFilter:  # Pastikan areaFilter tidak kosong
+        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+
+    if count_filters:
+        count_query += " AND " + " AND ".join(count_filters)
+
+    # Execute count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query,params)
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0 
+   
+
+        if db_vendor == 'postgresql':
+            query = """
+                SELECT
+                    t1.stockpile,
+                    SUM(t1.total_ore) AS total_ore,
+                    SUM(t1.released) AS released,
+                    t1.nama_material,
+                    COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
+                    COALESCE(ROUND((SUM(t1.total_ore) - SUM(t2.tonnage))::numeric, 2), 0) AS balance,
+                    t1.Ni,
+                    t1.Co,
+                    t1.Al2O3,
+                    t1.CaO,
+                    t1.Cr2O3,
+                    t1.Fe,
+                    t1.Mgo,
+                    t1.SiO2,
+                    t1.MC,
+                    t1.SM
+                FROM inventory_by_dome AS t1
+                LEFT JOIN selling_by_dome AS t2 
+                    ON t2.stockpile = t1.stockpile 
+                    AND t2.dome = t1.pile_id
+                WHERE t1.status_dome != 'Finished'
+            """
+        else:
+            raise ValueError("Unsupported database vendor.")
+
+        # Add filters if any
+        if count_filters:
+            query += " AND " + " AND ".join(count_filters)
+
+        # Add the GROUP BY clause
+        query += """
+            GROUP BY 
+                t1.stockpile, 
+                t1.nama_material, 
+                t1.Ni, 
+                t1.Co, 
+                t1.Al2O3, 
+                t1.CaO, 
+                t1.Cr2O3, 
+                t1.Fe, 
+                t1.Mgo, 
+                t1.SiO2, 
+                t1.MC, 
+                t1.SM
+        """
+
+        # Add ordering and pagination (if needed)
+        query += """
+            ORDER BY t1.nama_material ASC, t1.stockpile ASC
+        """
+
+        if db_vendor == 'postgresql':
+            query += f" LIMIT {per_page} OFFSET {offset};"
+        elif db_vendor in ['mssql', 'microsoft']:
+            query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
+        else:
+            raise ValueError("Unsupported database vendor.")
+
+
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query,params)
+        if cursor.description:
+            columns = [col[0] for col in cursor.description]
+            sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            sql_data = []
+
+        for item in sql_data:
+            for field in [
+                'total_ore', 'released', 'total_selling', 'balance',
+                'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+            ]:
+                val = item.get(field)
+                if isinstance(val, Decimal):
+                    item[field] = float(val)
+                elif isinstance(val, (float, int)):
+                    item[field] = float(val)
+                elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                    item[field] = float(val)
+    
+    # Calculate if there is more data
+    more_data = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more': more_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_data': total_data
+        }
+    })
+
+# Get Finish Inventory
+def get_inventory_finished(request):
+    saleFilter   = request.GET.get('saleFilter')
+    # Ambil filter dari request
+    areaFilter  = request.GET.get('areaFilter', '[]')  # Menggunakan '[]' sebagai default jika None
+    pointFilter = request.GET.get('pointFilter', '[]')  # Menggunakan '[]' sebagai default jika None
+
+    # Parsing JSON
+    areaFilter  = json.loads(areaFilter)  # Parsing JSON menjadi list
+    pointFilter = json.loads(pointFilter)  # Parsing JSON menjadi lis
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 50
+    offset = (page - 1) * per_page
+
+    # Query to count total data
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 ON 
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
+        WHERE t1.status_dome = 'Finished'
+    """
+
+    # Apply filters to the count query
+    count_filters = []
+    params = []
+
+    if saleFilter:
+        count_filters.append("t1.sale_adjust = %s")
+        params.append(saleFilter)
+
+    # Memeriksa dan menambahkan filter untuk stockpile
+    if areaFilter: 
+        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+
+    # Memeriksa dan menambahkan filter untuk pile_id
+    if pointFilter:  
+        count_filters.append(f"t1.pile_id IN ({', '.join(['%s'] * len(pointFilter))})")
+        params.extend(pointFilter)
+
+
+    if count_filters:
+        count_query += " AND " + " AND ".join(count_filters)
+
+    # Execute count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query,params)
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0 
+
+
+    # Main data query with pagination
+    if db_vendor == 'postgresql':
+        query = """
+            SELECT
+                t1.stockpile,
+                t1.pile_id,
+                t1.total_ore,
+                t1.released,
+                t1.nama_material,
+                COALESCE(ROUND(t2.tonnage::numeric, 2), 0) AS total_selling,
+                ROUND((t1.released - COALESCE(t2.tonnage, 0))::numeric, 2) AS balance,
+                t1.Ni,
+                t1.Co,
+                t1.Al2O3,
+                t1.CaO,
+                t1.Cr2O3,
+                t1.Fe,
+                t1.Mgo,
+                t1.SiO2,
+                t1.MC,
+                t1.SM
+            FROM inventory_by_dome AS t1
+            LEFT JOIN selling_by_dome AS t2 
+                ON t2.stockpile = t1.stockpile 
+                AND t2.dome = t1.pile_id
+            WHERE t1.status_dome = 'Finished'
+        """
+    else:
+        raise ValueError("Unsupported database vendor.")
+    
+    if count_filters:
+        query += " AND " + " AND ".join(count_filters)
+
+    # Add pagination and order by clauses
+    query += " ORDER BY t1.nama_material ASC, t1.stockpile ASC"
+    
+    # Query untuk mengambil data 
+    if db_vendor == 'postgresql':
+        query += f" LIMIT {per_page} OFFSET {offset};"
+       
+    elif db_vendor in ['mssql', 'microsoft']:
+        # Adding pagination (OFFSET-FETCH) SQL SERVER
+        query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
+    else:
+        raise ValueError("Unsupported database vendor.")
+
+    # Fetch paginated data
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query,params)
+        if cursor.description:
+            columns = [col[0] for col in cursor.description]
+            sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            sql_data = []
+
+    
+    for item in sql_data:
+            for field in [
+                'total_ore', 'released', 'total_selling', 'balance',
+                'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+            ]:
+                val = item.get(field)
+                if isinstance(val, Decimal):
+                    item[field] = float(val)
+                elif isinstance(val, (float, int)):
+                    item[field] = float(val)
+                elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                    item[field] = float(val)
+
+
+    # Calculate if there is more data
+    more_data = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more': more_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_data': total_data
+        }
+    })
+
+def get_stockpile_finished(request):
+    saleFilter = request.GET.get('saleFilter')
+    areaFilter  = request.GET.get('areaFilter', '[]')  # Menggunakan '[]' sebagai default jika None
+    # Parsing JSON
+    areaFilter  = json.loads(areaFilter)  # Parsing JSON menjadi list
+
+    # Pagination setup
+    page = int(request.GET.get('page', 1))
+    per_page = 50
+    offset = (page - 1) * per_page
+
+    # Query to count total data
+    count_query = """
+        SELECT COUNT(*)
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2 ON 
+            t2.stockpile = t1.stockpile AND
+            t2.dome = t1.pile_id
+        WHERE t1.status_dome = 'Finished'
+    """
+
+    # Apply filters to the count query
+    count_filters = []
+    params = []
+
+    if saleFilter:
+        count_filters.append("t1.sale_adjust = %s")
+        params.append(saleFilter)
+
+    if areaFilter:  # Pastikan areaFilter tidak kosong
+        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+        params.extend(areaFilter)
+
+    if count_filters:
+        count_query += " AND " + " AND ".join(count_filters)
+
+    # Execute count query
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(count_query,params)
+        result = cursor.fetchone()
+        total_data = result[0] if result else 0 
+   
+
+    if db_vendor == 'postgresql':
+            query = """
+                SELECT
+                    t1.stockpile,
+                    SUM(t1.total_ore) AS total_ore,
+                    SUM(t1.released) AS released,
+                    t1.nama_material,
+                    COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
+                    COALESCE(ROUND((SUM(t1.total_ore) - SUM(t2.tonnage))::numeric, 2), 0) AS balance,
+                    t1.Ni,
+                    t1.Co,
+                    t1.Al2O3,
+                    t1.CaO,
+                    t1.Cr2O3,
+                    t1.Fe,
+                    t1.Mgo,
+                    t1.SiO2,
+                    t1.MC,
+                    t1.SM
+                FROM inventory_by_dome AS t1
+                LEFT JOIN selling_by_dome AS t2 
+                    ON t2.stockpile = t1.stockpile 
+                    AND t2.dome = t1.pile_id
+                WHERE t1.status_dome='Finished'
+            """
+    else:
+        raise ValueError("Unsupported database vendor.")
+    
+    if count_filters:
+            query += " AND " + " AND ".join(count_filters)
+
+    query += """
+            GROUP BY 
+                t1.stockpile, 
+                t1.nama_material, 
+                t2.sale_adjust, 
+                t1.Ni, 
+                t1.Co, 
+                t1.Al2O3, 
+                t1.CaO, 
+                t1.Cr2O3, 
+                t1.Fe, 
+                t1.Mgo, 
+                t1.SiO2, 
+                t1.MC, 
+                t1.SM
+        """
+
+    # Add ordering and pagination (if needed)
+    query += """
+            ORDER BY t1.nama_material ASC, t1.stockpile ASC
+        """ 
+    # Query untuk mengambil data dengan pagination
+    if db_vendor == 'postgresql':
+        query += f" LIMIT {per_page} OFFSET {offset};"
+       
+    elif db_vendor in ['mssql', 'microsoft']:
+        # Adding pagination (OFFSET-FETCH) SQL SERVER
+        query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
+    else:
+        raise ValueError("Unsupported database vendor.")
+
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query, params)
+        if cursor.description:
+            columns = [col[0] for col in cursor.description]
+            sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            sql_data = []
+
+    
+    for item in sql_data:
+            for field in [
+                'total_ore', 'released', 'total_selling', 'balance',
+                'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+            ]:
+                val = item.get(field)
+                if isinstance(val, Decimal):
+                    item[field] = float(val)
+                elif isinstance(val, (float, int)):
+                    item[field] = float(val)
+                elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                    item[field] = float(val)
+    
+    # Calculate if there is more data
+    more_data   = len(sql_data) == per_page
+    total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
+
+    return JsonResponse({
+        'data': sql_data,
+        'pagination': {
+            'more': more_data,
+            'total_pages': total_pages,
+            'current_page': page,
+            'total_data': total_data
+        }
+    })

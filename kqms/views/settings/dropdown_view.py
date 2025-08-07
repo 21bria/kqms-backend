@@ -418,7 +418,7 @@ def get_year_sale(request):
             # Buat SQL raw query
             sql_query = """
                 SELECT DISTINCT tahun
-                FROM details_selling
+                FROM details_selling_barging
                 ORDER BY tahun ASC
             """
 
@@ -698,9 +698,9 @@ def get_sale_product(request):
         try:
             # Buat SQL raw query dengan LEFT JOIN
             sql_query = """
-                SELECT DISTINCT delivery_order
-                FROM ore_sellings
-                ORDER BY delivery_order ASC;
+                SELECT DISTINCT code_lot
+                FROM ore_sellings_barging
+                ORDER BY code_lot ASC;
             """
 
              # Eksekusi query
@@ -709,11 +709,11 @@ def get_sale_product(request):
                 result = cursor.fetchall()
 
             # Ubah hasil query menjadi list of dictionaries
-            data_list = [{'delivery_order': row[0]} for row in result]
+            data_list = [{'code_lot': row[0]} for row in result]
 
             # Buat respons JSON dengan list data
             response_data = {
-                'details_product': data_list,
+                'list': data_list,
             }
 
             return JsonResponse(response_data)

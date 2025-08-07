@@ -1,0 +1,978 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<!-- <div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div> -->
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Form Blending</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        inventory
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-3">
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Inventory Review
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-table') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <div class="table-responsive">
+                                    <table id="list-table"
+                                        class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" style="width:4%">#</th>
+                                                <th scope="col" style="width:4%">No</th>
+                                                <th scope="col" style="width: 98px">Dome</th>
+                                                <th scope="col">Material</th>
+                                                <th scope="col">Released</th>
+                                                <th scope="col">Balance</th>
+                                                <th scope="col">Ni</th>
+                                                <th scope="col">Fe</th>
+                                                <th scope="col">Al2O3</th>
+                                                <th scope="col">Co</th>
+                                                <th scope="col">MgO</th>
+                                                <th scope="col">SiO2</th>
+                                                <th scope="col">SM</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box">
+                        <div class="box-header justify-between">
+                            <div class="box-title">
+                                Form Input
+                            </div>
+                            <div class="prism-toggle">
+                                <a href="javascript:;" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-primary"
+                                    onclick="selectElementContents( document.getElementById('list-outpout') );">Copy
+                                    <i class="ri-code-line ms-2 inline-block align-middle"></i></a>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <form>
+                                <div class="grid grid-cols-12 gap-4">
+
+                                    <div class="xl:col-span-3 col-span-12">
+                                        <label class="form-label">Blend Code</label>
+                                        <input type="text" class="form-control w-full !rounded-md !bg-light"
+                                            id="blend-code" name="blend-code" readonly>
+                                    </div>
+                                    <div class="xl:col-span-3 col-span-12">
+                                        <label class="form-label">Type</label>
+                                        <select id="type" name="type" class="form-control w-full !rounded-md">
+                                            <option value="">-- Select --</option>
+                                            <option value="auto">Auto</option>
+                                            <option value="manual">Manual</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-12 gap-4 mt-4">
+
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Tonnage<span class="text-danger">*</span></label>
+                                        <input type="Tonnage" class="form-control w-full !rounded-md !bg-light"
+                                            id="target-tonase" id="target-tonase"
+                                            placeholder="Target Tonase (e.g. 1000)">
+                                    </div>
+                                    <div class="xl:col-span-3 col-span-12">
+                                        <label class="form-label">Ni %<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control w-full !rounded-md !bg-light"
+                                            id="target-ni" name="target-ni" placeholder="Target Ni (%)">
+                                    </div>
+                                    <div class="xl:col-span-3 col-span-12">
+                                        <label class="form-label">Materials</label>
+                                        <select id="materialFilter" name="materialFilter"
+                                            class="form-control w-full !rounded-md">
+                                            <option value="">-- Select --</option>
+                                            <option value="HPAL">Limonite</option>
+                                            <option value="RKEF">Saprolite</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end mt-2 mb-4">
+                                    <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                        <button id="submit-selected" type="button"
+                                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Calculate</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="overflow-auto">
+                                <div class="table-responsive">
+                                    <table id="list-outpout"
+                                        class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" style="width:4%">No</th>
+                                                <th scope="col" style="width: 98px">Dome</th>
+                                                <th scope="col">Used</th>
+                                                <th scope="col">Balance</th>
+                                                <th scope="col">Ni</th>
+                                                <th scope="col">Fe</th>
+                                                <th scope="col">Co</th>
+                                                <th scope="col">MgO</th>
+                                                <th scope="col">Al2O3</th>
+                                                <th scope="col">SiO2</th>
+                                                <th scope="col">SM</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                        <tfoot>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div class="flex justify-end mt-2">
+                                    <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                        <a id="save" href="#"
+                                            class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave disabled opacity-50 pointer-events-none">
+                                            Save Data
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <!-- End::row-1 -->
+
+    </div>
+    <!-- Start::main-content -->
+
+</div>
+
+<!-- ========== Search Modal ========== -->
+<div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+    <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+        <div class="ti-modal-content">
+            <div class="ti-modal-header">
+                <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                    id="mail-ComposeLabel"></h6>
+                <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                    data-hs-overlay="#search-modal">
+                    <span class="sr-only">Close</span>
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form>
+                <div class="ti-modal-body px-4 !overflow-visible">
+                    <div class="grid grid-cols-12 gap-6 px-4 ">
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="form-label">Materials</label>
+                            <select id="saleFilter" name="saleFilter" class="form-control w-full !rounded-md">
+                                <option value="">-- Select --</option>
+                                <option value="HPAL">Limonite</option>
+                                <option value="RKEF">Saprolite</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="form-label">Stockpile</label>
+                            <select id="areaFilter" name="areaFilter" class="form-control w-full !rounded-md"
+                                multiple="multiple">
+                                <option value="">--- Select ---</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="form-label">Dome</label>
+                            <select id="pointFilter" name="pointFilter" class="form-control  w-full !rounded-md"
+                                multiple="multiple">
+                                <option value="">--- Select ---</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="ti-modal-footer">
+                    <button type="button" id="applyFilterBtn" class="ti-btn bg-primary text-white !font-medium">Apply
+                        Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<!-- Scripts -->
+<script type="text/javascript">
+    let cachedResult = null; // ✅ Global scope
+
+    $(document).ready(function () {
+        //Number Only Decimal
+        $(document).on('keyup', '#target-tonase,#target-ni', function (e) {
+            var regex = /[^\d.]|\.(?=.*\.)/g;
+            var subst = "";
+            var str = $(this).val();
+            var result = str.replace(regex, subst);
+            $(this).val(result);
+        });
+        $('#type').on('change', function () {
+            const selected = $(this).val();
+            if (selected === 'manual') {
+                $('#list-table').closest('.block').show();  // tampilkan tabel
+            } else {
+                $('#list-table').closest('.block').hide();  // sembunyikan jika auto
+            }
+        }).trigger('change'); // trigger di awal saat page load
+
+        /*--- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        let isLoading = false;
+        var rowCount = 0; // Jumlah baris
+        var table = $("#list-table").find("tbody");
+        var loading = false; // Status loading
+        var page = 1; // Halaman saat ini
+        var loadingComplete = false;
+
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+        // Fungsi untuk menambahkan data ke tabel
+        function appendDataToTable(data) {
+            // Loop melalui data dan tambahkan ke tabel
+            $.each(data, function (index, row) {
+                var newRow = $("<tr>");
+                var checkbox = '<input type="checkbox" class="form-checkbox row-checkbox" data-row=\'' + JSON.stringify(row) + '\'>';
+                newRow.append("<td>" + checkbox + "</td>");
+                newRow.append("<td>" + (rowCount + index + 1) + "</td>");
+                newRow.append("<td>" + row.pile_id + "</td>");
+                newRow.append("<td>" + row.nama_material + "</td>");
+                // newRow.append("<td>" + parseFloat(row.released).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.total_selling).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.balance).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
+                newRow.append("<td>" + row.ni + "</td>");
+                newRow.append("<td>" + row.fe + "</td>")
+                newRow.append("<td>" + row.al2o3 + "</td>")
+                newRow.append("<td>" + row.co + "</td>");
+                newRow.append("<td>" + row.mgo + "</td>")
+                newRow.append("<td>" + row.sio2 + "</td>")
+                newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
+
+                // Tambahkan baris ke tabel
+                table.append(newRow);
+            });
+
+            loading = false; // Set status loading ke false
+        }
+
+        // Panggil fetchData saat halaman dimuat untuk pertama kalinya
+        var saleFilter = $('#saleFilter').val();
+        var areaFilter = $('#areaFilter').val();
+        var pointFilter = $('#pointFilter').val();
+
+        var filter_data = {
+            saleFilter: saleFilter,
+            areaFilter: areaFilter,
+            pointFilter: pointFilter
+        };
+
+        fetchData(filter_data);
+
+        // Fungsi untuk mengambil data dari server
+        function fetchData(filter_data) {
+            if (loading || loadingComplete) return;
+            loading = true;
+            // Tampilkan loader hanya jika ini adalah pemanggilan awal
+            if (page === 1) {
+                $('#loader').show();
+                $('#table-header').hide();
+            }
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blending-get-sorce' %}?page=" + page,
+                data: filter_data,
+                dataType: 'json',
+                success: function (response) {
+                    var sqlData = response.data;
+                    // console.log("Current Page:", page);
+                    $('#loader').hide();
+                    if (sqlData.length < 1) {
+                        loadingComplete = true;
+                    }
+                    appendDataToTable(sqlData);
+                    page++; // Naikkan halaman untuk permintaan berikutnya
+                },
+                error: function () {
+                    $('#loader').hide();
+                    console.log("Gagal mengambil data dari server.");
+                    loading = false;
+                },
+                complete: function () {
+                    loading = false;
+                    $('#loader').hide();
+                    $('#table-header').show();
+                }
+            });
+        }
+
+        $(".table-scrollable").on("scroll", function () {
+            if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight - 100) {
+                // Ambil kembali nilai filter terbaru
+                var filter_data = {
+                    saleFilter: $('#saleFilter').val(),
+                    areaFilter: JSON.stringify($('#areaFilter').val()),
+                    pointFilter: JSON.stringify($('#pointFilter').val())
+                };
+                fetchData(filter_data);
+            }
+        });
+
+
+        $('#applyFilterBtn').click(function () {
+            page = 1; // Reset halaman ke 1
+            loadingComplete = false; // 🔥 Reset agar fetchData mau jalan lagi
+            // Mengambil nilai filter dari elemen-elemen HTML yang sesuai
+            var areaFilter = $('#areaFilter').val();
+            var pointFilter = $('#pointFilter').val();
+            var saleFilter = $('#saleFilter').val();
+            // Bersihkan tabel sebelum memuat data baru
+            var table = $("#list-table").find("tbody");
+            table.empty();
+            // Reset rowCount untuk memulai dari 0
+            rowCount = 0;
+            // Reset array
+            var filter_data = {
+                saleFilter: $('#saleFilter').val(),
+                areaFilter: JSON.stringify($('#areaFilter').val()), // Gunakan JSON.stringify
+                pointFilter: JSON.stringify($('#pointFilter').val()) // Gunakan JSON.stringify
+            };
+            // Mulai memuat data baru berdasarkan filter
+            isLoading = true; // Set flag loading
+
+            fetchData(filter_data)
+            window.HSOverlay.close('#search-modal');
+        });
+
+        $('#reload').click(function () {
+            // Tampilkan loader dan sembunyikan header tabel
+            $('#loader').show(); // Tampilkan loader
+            $('#table-header').hide(); // Sembunyikan header tabe
+            page = 1; // Reset halaman ke 1
+            // Bersihkan tabel sebelum memuat data baru
+            var table = $("#list-table").find("tbody");
+            table.empty();
+            // Reset rowCount untuk memulai dari 0
+            rowCount = 0;
+
+            // Reset filter values
+            resetFilterValues();
+            loadingComplete = false; // Reset loadingComplete
+            isLoading = true; // Set flag loading
+            // Ambil nilai dari elemen input
+            var filter_data = {
+                saleFilter: $('#saleFilter').val(),
+                areaFilter: $('#areaFilter').val(),
+                pointFilter: $('#pointFilter').val()
+            };
+
+            fetchData(filter_data)
+        });
+
+        // Fungsi untuk reset nilai ilter
+        function resetFilterValues() {
+            $('#saleFilter').val('');
+            $('#saleFilter').val('').trigger('change');
+            $('#areaFilter').val('').trigger('change');
+            $('#pointFilter').val('').trigger('change');
+        }
+
+        $('#submit-selected').on('click', function () {
+            const type = $('#type').val();
+            const target_tonase = parseFloat($('#target-tonase').val());
+            const target_ni = parseFloat($('#target-ni').val());
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 1500,
+                padding: '2em',
+            });
+
+
+            if (!type) {
+                toast.fire({
+                    icon: 'error',
+                    html: 'Silakan pilih <b>Type</b> terlebih dahulu.',
+                });
+                $('#type').focus(); // 👉 Fokus otomatis
+                return;
+            }
+
+
+            // ✅ Validasi input umum
+            if (!target_tonase) {
+                toast.fire({ icon: 'error', html: 'Silakan isi <b>Target Tonase</b> terlebih dahulu.' });
+                return;
+            }
+
+            if (!target_ni) {
+                toast.fire({ icon: 'error', html: 'Silakan isi <b>Target Ni</b> terlebih dahulu.' });
+                return;
+            }
+
+            // Siapkan payload dasar
+            const payload = {
+                target_tonase: target_tonase,
+                target_ni: target_ni
+            };
+
+            let url = ""; // 🔥 URL akan diisi tergantung type
+            let selectedPiles = [];
+
+            if (type === "manual") {
+                // ✅ Validasi dome harus dipilih
+                $('.row-checkbox:checked').each(function () {
+                    const rowData = $(this).data('row');
+                    selectedPiles.push({
+                        pile_id: rowData.pile_id,
+                        stockpile: rowData.stockpile,
+                        used_tonase: parseFloat(rowData.balance),
+                        balance: parseFloat(rowData.balance),
+                        ni: parseFloat(rowData.ni),
+                        fe: parseFloat(rowData.fe),
+                        co: parseFloat(rowData.co),
+                        al2o3: parseFloat(rowData.al2o3),
+                        mgo: parseFloat(rowData.mgo),
+                        sio2: parseFloat(rowData.sio2),
+                        sm: parseFloat(rowData.sm)
+                    });
+                });
+
+                if (selectedPiles.length === 0) {
+                    toast.fire({ icon: 'error', html: 'Silakan <b>pilih minimal 1 dome</b>.' });
+                    return;
+                }
+
+                const totalAvailable = selectedPiles.reduce((sum, p) => sum + (p.balance || 0), 0);
+                if (target_tonase > totalAvailable) {
+                    Swal.fire({
+                        icon: 'error',
+                        html: `🚫 Target tonase (<b>${target_tonase}</b>) melebihi stok tersedia dari dome terpilih (<b>${totalAvailable.toFixed(2)}</b>).`,
+                    });
+                    return;
+                }
+
+                // Set payload dan URL untuk manual
+                payload.selected_piles = selectedPiles;
+                url = "{% url 'blending-manual-calculate' %}";
+
+            } else if (type === "auto") {
+                const material = $('#materialFilter').val();
+                // if (!material) {
+                //     toast.fire({ icon: 'error', html: 'Silakan pilih <b>Material</b> terlebih dahulu.' });
+                //     $('#materialFilter').focus(); // 👉 auto focus
+                //     return;
+                // }
+
+                payload.material = material; // ⬅️ kirim ke backend
+                // Auto hanya kirim payload biasa (tanpa dome)
+                url = "{% url 'blending-auto-calculate' %}";
+            } else {
+                toast.fire({ icon: 'error', html: 'Silakan pilih <b>Type</b> terlebih dahulu.' });
+                return;
+            }
+
+            // ✅ Show loading dan kirim AJAX
+            Swal.fire({
+                title: 'Sedang menghitung simulasi...',
+                html: 'Mohon tunggu sebentar...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            $.ajax({
+                url: url,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (res) {
+                    Swal.close();
+                    if (res.success) {
+                        renderSimulationResult(res);
+                        $('#save').removeClass('disabled opacity-50 pointer-events-none');
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', html: res.error });
+                    }
+                },
+                error: function (err) {
+                    Swal.close();
+                    Swal.fire({ icon: 'error', title: 'Error', html: 'Terjadi kesalahan server.' });
+                    console.error(err);
+                }
+            });
+        });
+
+
+
+        function renderSimulationResult(data) {
+            cachedResult = data; // ✅ simpan ke global untuk digunakan nanti saat save
+            const tableBody = $('#list-outpout tbody');
+            tableBody.empty(); // Bersihkan isi lama
+
+            const result = data.result;
+            const finalNi = data.final_grade.ni;
+            const finalFe = data.final_grade.fe;
+            const finalCo = data.final_grade.co;
+            const finalMgo = data.final_grade.mgo;
+            const finalAl2O3 = data.final_grade.al2o3;
+            const finalSiO2 = data.final_grade.sio2;
+            const finalSM = data.final_grade.sm;
+            const totalUsed = data.total_used;
+
+            // 👉 Baris per pile
+            result.forEach((row, index) => {
+                const newRow = `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${row.pile_id}</td>
+                <td>${parseFloat(row.used_tonase).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${parseFloat(row.balance).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td>${row.ni}</td>
+                <td>${row.fe}</td>
+                <td>${row.co}</td>
+                <td>${row.mgo}</td>
+                <td>${row.al2o3}</td>
+                <td>${row.sio2}</td>
+                <td>${row.sm}</td>
+            </tr>
+            `;
+                tableBody.append(newRow);
+            });
+
+            // 👉 Baris TOTAL
+            const totalRow = `
+            <tr class="summary-row font-bold text-black">
+                <td colspan="2">TOTAL Used</td>
+                <td>${parseFloat(totalUsed).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                <td></td>
+                <td>${finalNi?.toFixed(2) ?? '-'}</td>
+                <td>${finalFe?.toFixed(2) ?? '-'}</td>
+                <td>${finalCo?.toFixed(2) ?? '-'}</td>
+                <td>${finalMgo?.toFixed(2) ?? '-'}</td>
+                <td>${finalAl2O3?.toFixed(2) ?? '-'}</td>
+                <td>${finalSiO2?.toFixed(2) ?? '-'}</td>
+                <td>${finalSM?.toFixed(2) ?? '-'}</td>
+            </tr>
+            `;
+            tableBody.append(totalRow);
+        }
+
+    });
+
+    $('#save').on('click', function (e) {
+        e.preventDefault();
+
+        // ⛔ Disable tombol supaya tidak bisa klik dua kali
+        $(this).addClass('disabled opacity-50 pointer-events-none');
+
+        // ✅ Ambil data dari form & hasil kalkulasi
+        const blendCode = $('#blend-code').val();
+        const target_tonase = parseFloat($('#target-tonase').val());
+        const target_ni = parseFloat($('#target-ni').val());
+
+        // Ambil data dari table hasil simulasi
+        const result = [];
+        $('#list-outpout tbody tr').each(function () {
+            const tds = $(this).find('td');
+
+            // ✅ Lewatkan baris TOTAL
+            if ($(this).hasClass('summary-row')) return;
+
+            // ✅ Cek jumlah kolom cukup
+            if (tds.length > 0) {
+                const used_tonase = parseFloat(tds.eq(2).text().replace(/,/g, ''));
+
+                // ✅ Lewatkan jika used_tonase tidak valid (NaN/null)
+                if (isNaN(used_tonase)) return;
+
+                result.push({
+                    pile_id: tds.eq(1).text(),
+                    used_tonase: used_tonase,
+                    balance: parseFloat(tds.eq(3).text().replace(/,/g, '')),
+                    ni: parseFloat(tds.eq(4).text()),
+                    fe: parseFloat(tds.eq(5).text()),
+                    co: parseFloat(tds.eq(6).text()),
+                    mgo: parseFloat(tds.eq(7).text()),
+                    al2o3: parseFloat(tds.eq(8).text()),
+                    sio2: parseFloat(tds.eq(9).text()),
+                    sm: parseFloat(tds.eq(10).text())
+                });
+            }
+        });
+
+        // Ambil final grade dari baris pertama (jika ada)
+        const firstRow = $('#list-outpout tbody tr').first().find('td');
+        const final_grade = {
+            ni: parseFloat(firstRow.eq(4).text()),
+            fe: parseFloat(firstRow.eq(5).text()),
+            co: parseFloat(firstRow.eq(6).text()),
+            mgo: parseFloat(firstRow.eq(7).text()),
+            al2o3: parseFloat(firstRow.eq(8).text()),
+            sio2: parseFloat(firstRow.eq(9).text()),
+            sm: parseFloat(firstRow.eq(10).text())
+        };
+
+        // const total_used = cachedResult?.total_used ?? 0;
+
+        const total_used = cachedResult?.total_used ?? 0;
+
+        console.log("Total used:", total_used);
+        console.log("Payload:", {
+            blend_code: blendCode,
+            target_tonase,
+            target_ni,
+            final_grade,
+            total_used,
+            result
+        });
+
+        // Kirim ke backend
+        $.ajax({
+            url: "{% url 'create-blending-sale' %}",
+            method: 'POST',
+            dataType: "json",
+            contentType: 'application/json',
+            data: JSON.stringify({
+                blend_code: blendCode,
+                target_tonase: target_tonase,
+                target_ni: target_ni,
+                final_grade: final_grade,
+                total_used: total_used,
+                result: result
+            }),
+            success: function (res) {
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        html: '✅ Data successfully saved with code <b>' + res.blend_code + '</b>',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+
+                    // RESET FORM & TABEL
+                    resetAfterSuccess();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal menyimpan',
+                        text: res.error || 'Terjadi kesalahan saat menyimpan data.'
+                    });
+                }
+
+                // Aktifkan kembali tombol save
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Terjadi kesalahan saat menyimpan.'
+                });
+
+            }
+        });
+
+        function resetAfterSuccess() {
+            // Reset inputan
+            $('#target-tonase').val('');
+            $('#target-ni').val('');
+            $('#blend-code').val('');
+
+            // Ambil kode baru
+            $.ajax({
+                url: "{% url 'get-blend-code' %}",
+                method: 'GET',
+                success: function (res) {
+                    $('#blend-code').val(res.blend_code);
+                },
+                error: function () {
+                    console.error('❌ Gagal mengambil kode blend.');
+                }
+            });
+
+            // Kosongkan tabel hasil simulasi
+            $('#list-outpout tbody').empty();
+
+            // Disable tombol Save
+
+
+            // Uncheck semua checkbox
+            $('.row-checkbox').prop('checked', false);
+
+            // Reset hasil simulasi yang tersimpan
+            cachedResult = null;
+        }
+
+    });
+
+</script>
+<!-- Create -->
+<script>
+    $(document).ready(function () {
+        // Ambil kode blend otomatis saat halaman dimuat
+        $.ajax({
+            url: "{% url 'get-blend-code' %}",
+            method: 'GET',
+            success: function (res) {
+                $('#blend-code').val(res.blend_code);
+            },
+            error: function () {
+                console.error('❌ Gagal mengambil kode blend.');
+            }
+        });
+    });
+
+</script>
+
+<!-- Filter -->
+<script>
+    $(document).ready(function () {
+
+        /*---  Filter Modal and Apply Filter  ----*/
+        $('#openFilter').click(function () {
+            window.HSOverlay.open('#search-modal');
+            $("#saleFilter").select2({
+                width: '100%',
+            });
+
+        });
+
+        $('#areaFilter').select2({
+            ajax: {
+                url: "{% url 'get-mine-dumping-point' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select stockpile',
+            allowClear: true,
+        });
+
+        $('#pointFilter').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select dome',
+            allowClear: true,
+        });
+    });
+</script>
+
+</body>
+
+</html>
+
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+    .table-scrollable {
+        max-height: 635px;
+        /* Setel tinggi maksimum */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
+        overflow-x: auto;
+        /* Disable horizontal scrolling jika tidak diperlukan */
+    }
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+
+    /* Styling umum untuk baris total */
+    .summary-row {
+        font-weight: bold;
+        background: #f3f4f6;
+        /* abu-abu terang */
+        color: #111827;
+        /* teks gelap */
+    }
+
+    /* Jika dark mode aktif */
+    .dark .summary-row {
+        background: #374151;
+        /* abu-abu gelap (Tailwind slate-700) */
+        color: #f9fafb;
+        /* teks terang */
+    }
+</style>
