@@ -425,7 +425,6 @@ def getStockpileAll(request):
         cursor.execute(count_query,params)
         result = cursor.fetchone()
         total_data = result[0] if result else 0 
-   
 
         if db_vendor == 'postgresql':
             query = """
