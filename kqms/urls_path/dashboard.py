@@ -4,8 +4,8 @@ from ..views.dashboard.index import *
 from ..views.dashboard.api.geology import *
 from ..views.dashboard.api.details.quality import *
 
-
 from ..views.dashboard.api.selling import *
+from ..views.dashboard.api.barging import *
 from ..views.dashboard.api.inventory import *
 from ..views.dashboard.api.details.inventory import *
 
@@ -44,6 +44,9 @@ urlpatterns = [
     # Selling Dashboard
     path('api/selling-summary/', get_selling_summary, name='get_selling_summary'),
     path('api/selling-chart/', get_chart_selling, name='get_chart_selling'),
+    # Barging
+    path('api/barging-summary/', get_barging_summary, name='get-barging-summary'),
+    path('api/barging-chart/', get_chart_barging, name='get-chart-barging'),
 
     # Inventory Dashboard
     path('api/inventory-summary/', get_inventory_summary, name='get_inventory_summary'),
