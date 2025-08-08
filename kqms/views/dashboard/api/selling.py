@@ -58,26 +58,26 @@ def get_selling_summary(request):
 
         # Filter logika ...
         if filter_type =='daily' and filter_date:
-            where_clause += " AND date_hauling = %s"
+            where_clause += " AND date_barge_out = %s"
             params += [filter_date]
         elif filter_type =='range' and date_start and date_end:
-            where_clause += " AND date_hauling BETWEEN %s AND %s"
+            where_clause += " AND date_barge_out BETWEEN %s AND %s"
             params += [date_start, date_end]
         elif filter_type =='weekly' and week:
             # Contoh week: '2025-26'
-            where_clause += " AND TO_CHAR(date_hauling, 'IYYY-IW') = %s" \
+            where_clause += " AND TO_CHAR(date_barge_out, 'IYYY-IW') = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND DATE_FORMAT(date_hauling, '%%x-%%v') = %s"
+                " AND DATE_FORMAT(date_barge_out, '%%x-%%v') = %s"
             params += [week]
         elif filter_type =='monthly' and year and month:
-            where_clause += " AND EXTRACT(YEAR FROM date_hauling) = %s AND EXTRACT(MONTH FROM date_hauling) = %s" \
+            where_clause += " AND EXTRACT(YEAR FROM date_barge_out) = %s AND EXTRACT(MONTH FROM date_barge_out) = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND YEAR(date_hauling) = %s AND MONTH(date_hauling) = %s"
+                " AND YEAR(date_barge_out) = %s AND MONTH(date_barge_out) = %s"
             params += [year, month]
         elif filter_type =='yearly' and year:
-            where_clause += " AND EXTRACT(YEAR FROM date_hauling) = %s" \
+            where_clause += " AND EXTRACT(YEAR FROM date_barge_out) = %s" \
                 if db_vendor == 'postgresql' else \
-                " AND YEAR(date_hauling) = %s"
+                " AND YEAR(date_barge_out) = %s"
             params.append(year)
         elif filter_type =='all':
             pass
@@ -133,7 +133,7 @@ def get_chart_selling(request):
                                 SUM(CASE WHEN m.nama_material = 'SAP' THEN os.tonnage ELSE 0 END) AS actual_sap
                             FROM ore_sellings_barging os
                             LEFT JOIN materials m ON m.id = os.id_material
-                            WHERE DATE(date_hauling) = %s::date
+                            WHERE DATE(date_barge_out) = %s::date
                             GROUP BY EXTRACT(HOUR FROM time_hauling)
                         ),
                         plan_total AS (
@@ -178,13 +178,13 @@ def get_chart_selling(request):
                     ),
                     actual AS (
                         SELECT
-                            date_hauling::date AS date,
+                            date_barge_out::date AS date,
                             SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim,
                             SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_hauling BETWEEN %s AND %s
-                        GROUP BY date_hauling::date
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out::date
                     ),
                     plan AS (
                         SELECT
@@ -258,13 +258,13 @@ def get_chart_selling(request):
                     ),
                     actual AS (
                         SELECT
-                            date_hauling::date AS date,
+                            date_barge_out::date AS date,
                             SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
                             SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_hauling BETWEEN %s AND %s
-                        GROUP BY date_hauling
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out
                     ),
                     plan AS (
                         SELECT
@@ -328,13 +328,13 @@ def get_chart_selling(request):
                     ),
                     incoming AS (
                         SELECT
-                            date_hauling::date AS date,
+                            date_barge_out::date AS date,
                             ROUND(SUM(tonnage)::numeric, 2) AS total,
                             ROUND(SUM(CASE WHEN material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
                             ROUND(SUM(CASE WHEN material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM details_selling_barging
-                        WHERE date_hauling BETWEEN %s AND %s
-                        GROUP BY date_hauling
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out
                     ),
                     plan AS (
                         SELECT
@@ -370,14 +370,14 @@ def get_chart_selling(request):
                   ),
                    incoming AS (
                         SELECT
-                            EXTRACT(MONTH FROM date_hauling)::int AS month,
+                            EXTRACT(MONTH FROM date_barge_out)::int AS month,
                     		ROUND(SUM(tonnage)::numeric, 2) AS total,
                             ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
                             ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE EXTRACT(YEAR FROM date_hauling) = %s
-                      GROUP BY EXTRACT(MONTH FROM date_hauling)
+                        WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                      GROUP BY EXTRACT(MONTH FROM date_barge_out)
                      ),
                   plan AS (
                       SELECT
@@ -419,12 +419,12 @@ def get_chart_selling(request):
                         COALESCE(plan.sap_plan, 0) AS plan_sap
                     FROM (
                         SELECT 
-                            TO_CHAR(date_hauling, 'YYYY') AS year_label,
+                            TO_CHAR(date_barge_out, 'YYYY') AS year_label,
                             SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
                             SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
                         FROM ore_sellings_barging os
                         LEFT JOIN materials m ON m.id = os.id_material
-                        GROUP BY TO_CHAR(date_hauling, 'YYYY')
+                        GROUP BY TO_CHAR(date_barge_out, 'YYYY')
                     ) AS actual
                     FULL OUTER JOIN (
                         SELECT 
@@ -509,7 +509,7 @@ def get_chart_selling_class(request):
 
         # Tentukan kondisi filter SQL dan parameter
         if filter_type =='range' and date_start and date_end:  # Range
-            filter_sql += " AND date_hauling BETWEEN %s AND %s"
+            filter_sql += " AND date_barge_out BETWEEN %s AND %s"
             params = [date_start, date_end]
 
         elif filter_type =='weekly' and year and month and week:  # Weekly
@@ -519,17 +519,17 @@ def get_chart_selling_class(request):
             end_date = start_date + timedelta(days=6)
             if end_date.month != month:
                 end_date = datetime(year, month + 1, 1) - timedelta(days=1)
-            filter_sql += " AND date_hauling BETWEEN %s AND %s"
+            filter_sql += " AND date_barge_out BETWEEN %s AND %s"
             params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
 
         elif filter_type =='monthly' and year and month:  # Monthly
-            filter_sql += " AND EXTRACT(YEAR FROM date_hauling) = %s AND EXTRACT(MONTH FROM date_hauling) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_hauling) = %s AND MONTH(date_hauling) = %s"
+            filter_sql += " AND EXTRACT(YEAR FROM date_barge_out) = %s AND EXTRACT(MONTH FROM date_barge_out) = %s" \
+                if db_vendor == 'postgresql' else " AND YEAR(date_barge_out) = %s AND MONTH(date_barge_out) = %s"
             params = [year, month]
 
         elif filter_type =='yearly' and year:  # Yearly
-            filter_sql += " AND EXTRACT(YEAR FROM date_hauling) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_hauling) = %s"
+            filter_sql += " AND EXTRACT(YEAR FROM date_barge_out) = %s" \
+                if db_vendor == 'postgresql' else " AND YEAR(date_barge_out) = %s"
             params = [year]
 
         elif filter_type =='all':  # All
