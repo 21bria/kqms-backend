@@ -1587,12 +1587,36 @@ def get_data_inventory(request):
             elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                 item[field] = float(val)
 
+
+    # Tambahkan ini setelah `sql_data` selesai dikonversi
+    total_released = sum(item['released'] for item in sql_data if item['released'])
+    total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+
+
+    def weighted_avg(field):
+        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+
+    sum_results = {
+            'total_ore': total_ore,
+            'total_released': total_released,
+            'avg_ni': weighted_avg('ni'),
+            'avg_co': weighted_avg('co'),
+            'avg_al2o3': weighted_avg('al2o3'),
+            'avg_cao': weighted_avg('cao'),
+            'avg_cr2o3': weighted_avg('cr2o3'),
+            'avg_fe': weighted_avg('fe'),
+            'avg_mgo': weighted_avg('mgo'),
+            'avg_sio2': weighted_avg('sio2'),
+            'avg_mc': weighted_avg('mc')
+    }
+
     # Pagination
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
-        'data': sql_data,
+        'data'      : sql_data,
+        'summary'   : sum_results,
         'pagination': {
             'more': more_data,
             'total_pages': total_pages,
@@ -1720,13 +1744,37 @@ def get_inventory_lim(request):
             elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                 item[field] = float(val)
 
+     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    total_released = sum(item['released'] for item in sql_data if item['released'])
+    total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+
+
+    def weighted_avg(field):
+        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+
+    sum_results = {
+            'total_ore': total_ore,
+            'total_released': total_released,
+            'avg_ni': weighted_avg('ni'),
+            'avg_co': weighted_avg('co'),
+            'avg_al2o3': weighted_avg('al2o3'),
+            'avg_cao': weighted_avg('cao'),
+            'avg_cr2o3': weighted_avg('cr2o3'),
+            'avg_fe': weighted_avg('fe'),
+            'avg_mgo': weighted_avg('mgo'),
+            'avg_sio2': weighted_avg('sio2'),
+            'avg_mc': weighted_avg('mc')
+    }
+
+
 
     # Calculate if there is more data
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
-        'data': sql_data,
+        'data'      : sql_data,
+        'summary'   : sum_results,
         'pagination': {
             'more'        : more_data,
             'total_pages' : total_pages,
@@ -1856,12 +1904,36 @@ def get_inventory_sap(request):
                 elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                     item[field] = float(val)
 
+     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    total_released = sum(item['released'] for item in sql_data if item['released'])
+    total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+
+
+    def weighted_avg(field):
+        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+
+    sum_results = {
+            'total_ore': total_ore,
+            'total_released': total_released,
+            'avg_ni': weighted_avg('ni'),
+            'avg_co': weighted_avg('co'),
+            'avg_al2o3': weighted_avg('al2o3'),
+            'avg_cao': weighted_avg('cao'),
+            'avg_cr2o3': weighted_avg('cr2o3'),
+            'avg_fe': weighted_avg('fe'),
+            'avg_mgo': weighted_avg('mgo'),
+            'avg_sio2': weighted_avg('sio2'),
+            'avg_mc': weighted_avg('mc')
+    }
+
+
     # Calculate if there is more data
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
-        'data': sql_data,
+        'data'      : sql_data,
+        'summary'   : sum_results,
         'pagination': {
             'more': more_data,
             'total_pages': total_pages,
@@ -1996,14 +2068,38 @@ def get_inventory_stockpile(request):
                 elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                     item[field] = float(val)
     
+     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    total_released = sum(item['released'] for item in sql_data if item['released'])
+    total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+
+
+    def weighted_avg(field):
+        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+
+    sum_results = {
+            'total_ore': total_ore,
+            'total_released': total_released,
+            'avg_ni': weighted_avg('ni'),
+            'avg_co': weighted_avg('co'),
+            'avg_al2o3': weighted_avg('al2o3'),
+            'avg_cao': weighted_avg('cao'),
+            'avg_cr2o3': weighted_avg('cr2o3'),
+            'avg_fe': weighted_avg('fe'),
+            'avg_mgo': weighted_avg('mgo'),
+            'avg_sio2': weighted_avg('sio2'),
+            'avg_mc': weighted_avg('mc')
+    }
+
+    
     # Calculate if there is more data
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
-        'data': sql_data,
+        'data'      : sql_data,
+        'summary'   : sum_results,
         'pagination': {
-            'more': more_data,
+            'more'  : more_data,
             'total_pages': total_pages,
             'current_page': page,
             'total_data': total_data
