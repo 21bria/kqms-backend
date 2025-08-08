@@ -2002,7 +2002,7 @@ def get_inventory_stockpile(request):
                     SUM(t1.released) AS released,
                     t1.nama_material,
                     COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
-                    COALESCE(ROUND((SUM(t1.total_ore) - SUM(t2.tonnage))::numeric, 2), 0) AS balance,
+                    ROUND((SUM(t1.released) - COALESCE(SUM(t2.tonnage), 0))::numeric, 2) AS balance,
                     t1.Ni,
                     t1.Co,
                     t1.Al2O3,
