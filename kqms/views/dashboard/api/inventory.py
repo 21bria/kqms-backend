@@ -1133,17 +1133,17 @@ def get_chart_inventory(request):
 def get_grade_class(ni, mgo, fe):
     if ni is None or mgo is None or fe is None:
         return "NULL"
-    if ni >= 1.6 and mgo >= 7.0 and fe <= 27.0:
+    if ni >= 1.6 and mgo >= 9.0 and fe <= 27.0:
         return "HGS"
-    elif 1.2 <= ni < 1.6 and mgo >= 7.0 and fe <= 27.0:
+    elif 1.2 <= ni < 1.6 and mgo >= 9.0 and fe <= 27.0:
         return "MGS"
-    elif ni < 1.2 and 7.0 <= mgo <= 20.0 and fe <= 27.0:
+    elif ni < 1.2 and 9.0 <= mgo <= 20.0 and fe <= 27.0:
         return "LGS"
-    elif ni >= 1.1 and mgo < 7.0 and fe >= 27.0:
+    elif ni >= 1.1 and mgo < 9.0 and fe >= 27.0:
         return "HGL"
-    elif ni < 1.1 and mgo < 7.0 and fe >= 27.0:
+    elif ni < 1.1 and mgo < 9.0 and fe >= 27.0:
         return "LGL"
-    elif ni < 0.9 and mgo < 7.0 and fe < 27.0:
+    elif ni < 0.9 and mgo < 9.0 and fe < 27.0:
         return "OB"
     elif ni < 1.2 and mgo > 20.0 and fe >= 27.0:
         return "WASTE"

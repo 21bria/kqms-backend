@@ -308,17 +308,17 @@
 
                 // Kolom "grade" berdasarkan kondisi Ni dan Mgo
                 var grade = "NULL";
-                if (row.ni >= 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                if (row.ni >= 1.6 && row.mgo >= 9.0 && row.fe <= 27.0) {
                     grade = "HGS";
-                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 7.0 && row.fe <= 27.0) {
+                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 9.0 && row.fe <= 27.0) {
                     grade = "MGS";
-                } else if (row.ni < 1.2 && row.mgo >= 7.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
+                } else if (row.ni < 1.2 && row.mgo >= 9.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
                     grade = "LGS";
-                } else if (row.ni >= 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                } else if (row.ni >= 1.1 && row.mgo < 9.0 && row.fe >= 27.0) {
                     grade = "HGL";
-                } else if (row.ni < 1.1 && row.mgo < 7.0 && row.fe >= 27.0) {
+                } else if (row.ni < 1.1 && row.mgo < 9.0 && row.fe >= 27.0) {
                     grade = "LGL";
-                } else if (row.ni < 0.9 && row.mgo < 7.0 && row.fe < 27.0) {
+                } else if (row.ni < 0.9 && row.mgo < 9.0 && row.fe < 27.0) {
                     grade = "OB";
                 } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
                     grade = "Waste";
