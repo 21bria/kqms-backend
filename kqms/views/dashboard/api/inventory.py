@@ -1591,6 +1591,8 @@ def get_data_inventory(request):
     # Tambahkan ini setelah `sql_data` selesai dikonversi
     total_released = sum(item['released'] for item in sql_data if item['released'])
     total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+    total_selling  = sum(item['total_selling'] for item in sql_data if item['total_selling'])
+    total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
 
     def weighted_avg(field):
@@ -1599,6 +1601,8 @@ def get_data_inventory(request):
     sum_results = {
             'total_ore': total_ore,
             'total_released': total_released,
+            'total_selling': total_selling,
+            'total_balance': total_balance,
             'avg_ni': weighted_avg('ni'),
             'avg_co': weighted_avg('co'),
             'avg_al2o3': weighted_avg('al2o3'),
@@ -1744,9 +1748,11 @@ def get_inventory_lim(request):
             elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                 item[field] = float(val)
 
-     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    # Tambahkan ini setelah `sql_data` selesai dikonversi
     total_released = sum(item['released'] for item in sql_data if item['released'])
     total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+    total_selling  = sum(item['total_selling'] for item in sql_data if item['total_selling'])
+    total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
 
     def weighted_avg(field):
@@ -1755,6 +1761,8 @@ def get_inventory_lim(request):
     sum_results = {
             'total_ore': total_ore,
             'total_released': total_released,
+            'total_selling': total_selling,
+            'total_balance': total_balance,
             'avg_ni': weighted_avg('ni'),
             'avg_co': weighted_avg('co'),
             'avg_al2o3': weighted_avg('al2o3'),
@@ -1765,8 +1773,6 @@ def get_inventory_lim(request):
             'avg_sio2': weighted_avg('sio2'),
             'avg_mc': weighted_avg('mc')
     }
-
-
 
     # Calculate if there is more data
     more_data = len(sql_data) == per_page
@@ -1904,9 +1910,11 @@ def get_inventory_sap(request):
                 elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                     item[field] = float(val)
 
-     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    # Tambahkan ini setelah `sql_data` selesai dikonversi
     total_released = sum(item['released'] for item in sql_data if item['released'])
     total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+    total_selling  = sum(item['total_selling'] for item in sql_data if item['total_selling'])
+    total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
 
     def weighted_avg(field):
@@ -1915,6 +1923,8 @@ def get_inventory_sap(request):
     sum_results = {
             'total_ore': total_ore,
             'total_released': total_released,
+            'total_selling': total_selling,
+            'total_balance': total_balance,
             'avg_ni': weighted_avg('ni'),
             'avg_co': weighted_avg('co'),
             'avg_al2o3': weighted_avg('al2o3'),
@@ -1925,7 +1935,6 @@ def get_inventory_sap(request):
             'avg_sio2': weighted_avg('sio2'),
             'avg_mc': weighted_avg('mc')
     }
-
 
     # Calculate if there is more data
     more_data = len(sql_data) == per_page
@@ -2068,9 +2077,11 @@ def get_inventory_stockpile(request):
                 elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
                     item[field] = float(val)
     
-     # Tambahkan ini setelah `sql_data` selesai dikonversi
+    # Tambahkan ini setelah `sql_data` selesai dikonversi
     total_released = sum(item['released'] for item in sql_data if item['released'])
     total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
+    total_selling  = sum(item['total_selling'] for item in sql_data if item['total_selling'])
+    total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
 
     def weighted_avg(field):
@@ -2079,6 +2090,8 @@ def get_inventory_stockpile(request):
     sum_results = {
             'total_ore': total_ore,
             'total_released': total_released,
+            'total_selling': total_selling,
+            'total_balance': total_balance,
             'avg_ni': weighted_avg('ni'),
             'avg_co': weighted_avg('co'),
             'avg_al2o3': weighted_avg('al2o3'),
