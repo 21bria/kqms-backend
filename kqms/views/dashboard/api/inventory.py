@@ -2055,7 +2055,6 @@ def get_inventory_stockpile(request):
         else:
             raise ValueError("Unsupported database vendor.")
 
-
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(query,params)
         if cursor.description:
