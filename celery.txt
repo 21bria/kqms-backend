@@ -27,3 +27,7 @@ TRUNCATE TABLE your_table_name RESTART IDENTITY CASCADE;
 
 
 python manage.py runserver 0.0.0.0:8000
+
+sudo systemctl daemon-reload
+sudo systemctl start celery.service
+sudo systemctl status celery.service

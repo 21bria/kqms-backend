@@ -273,6 +273,7 @@ class Command(BaseCommand):
             title="Entry data",
             url="mine-production-entry-page",
             parent=mining_productions,
+            open_new_tab=True,
             order=1,
             allowed_group_names=['superadmin','data-control','admin-mining']
         )
