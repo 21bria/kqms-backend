@@ -92,12 +92,12 @@ class SampleType_List(View):
 @login_required      
 @csrf_exempt
 def get_sampleType(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             sample_type = get_object_or_404(SampleType, id=id)
@@ -120,72 +120,73 @@ def get_sampleType(request, id):
 
 @login_required
 def insert_sampleType(request):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
-    if request.method == 'POST':
-        type_sample = request.POST.get('type_sample')
-        keterangan = request.POST.get('keterangan')
-        status = 1
-        method_ids = request.POST.getlist('method_id[]')
-        # print("request.POST.getlist('method_id'):", method_ids)
-        # print("request.POST:", request.POST)
+    allowed_groups = ['superadmin', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
 
-        try:
-            with transaction.atomic():
-                # Simpan tipe sampel ke dalam tabel sample_types
-                new_data = SampleType.objects.create(
-                    type_sample=type_sample,
-                    keterangan=keterangan,
-                    status=status
-                )
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, status=405)
 
-               # Nilai-nilai manual
-                # type_id = 1
-                # method_ids = [2, 3, 4]
-                # details = [SampleTypeDetails(id_type=new_data.id, id_method=method_id) for method_id in method_ids]
-                # SampleTypeDetails.objects.bulk_create(details)
-                details = []
-                for method_id in method_ids:
-                    details.append(SampleTypeDetails(id_type=new_data.id, id_method=method_id))
+    # Ambil data dari POST
+    type_sample = (request.POST.get('type_sample') or '').strip()
+    keterangan = (request.POST.get('keterangan') or '').strip()
+    method_ids = request.POST.getlist('method_id[]') or []
+    status = 1
 
+    # 1️⃣ Cek apakah sudah ada di database (case-insensitive)
+    if SampleType.objects.filter(type_sample__iexact=type_sample).exists():
+        return JsonResponse({
+            'status': 'error',
+            'message': f"Type sample '{type_sample}' sudah ada."
+        }, status=400)
+
+    try:
+        with transaction.atomic():
+            # 2️⃣ Simpan tipe sampel
+            new_data = SampleType.objects.create(
+                type_sample=type_sample,
+                keterangan=keterangan,
+                status=status
+            )
+
+            # 3️⃣ Siapkan details
+            details = [
+                SampleTypeDetails(id_type=new_data, id_method=method_id)
+                for method_id in method_ids
+            ]
+
+            if details:
                 SampleTypeDetails.objects.bulk_create(details)
 
-                print("new_data.id:", new_data.id)
-                print("method_ids:", method_ids)
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Data berhasil disimpan.',
+                'data': {
+                    'id': new_data.id,
+                    'type_sample': new_data.type_sample,
+                    'keterangan': new_data.keterangan,
+                    'status': new_data.status,
+                    'created_at': new_data.created_at
+                }
+            })
 
-                return JsonResponse({
-                    'status': 'success',
-                    'message': 'Data berhasil disimpan.',
-                    'data': {
-                        'id'         : new_data.id,
-                        'type_sample': new_data.type_sample,
-                        'keterangan' : new_data.keterangan,
-                        'status'     : new_data.status,
-                        'created_at' : new_data.created_at
-                    }
-                })
-            
-        except IntegrityError as e:
-            # Check if the error is a duplicate entry error
-            if str(e):
-                return JsonResponse({'status': 'error', 'message': 'The data already exists'}, status=400)
-            else:
-                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, status=405)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f"Gagal menyimpan data: {str(e)}"
+        }, status=500)
 
 @login_required    
 def update_sampleType(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    #     )
+    allowed_groups = ['superadmin','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
 
     if request.method == 'POST':
         try:
@@ -233,12 +234,12 @@ def update_sampleType(request, id):
 
 @login_required    
 def delete_sampleType(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:
