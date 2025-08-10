@@ -21,9 +21,9 @@ def summary_ore(request):
         if db_vendor == 'postgresql':
             query = """
                 SELECT 
-                    SUM(CASE WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO','LGSO', 'MGSO', 'HGSO') THEN tonnage ELSE 0 END)::numeric  AS total,
-                    SUM(CASE WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO') THEN tonnage ELSE 0 END)::numeric AS limonite,
-                    SUM(CASE WHEN nama_material IN ('LGSO', 'MGSO', 'HGSO') THEN tonnage ELSE 0 END)::numeric AS saprolite
+                    SUM(CASE WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO','LGSO', 'MGSO', 'HGSO','LIM','SAP') THEN tonnage ELSE 0 END)::numeric  AS total,
+                    SUM(CASE WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO','LIM') THEN tonnage ELSE 0 END)::numeric AS limonite,
+                    SUM(CASE WHEN nama_material IN ('LGSO', 'MGSO', 'HGSO','SAP') THEN tonnage ELSE 0 END)::numeric AS saprolite
                 FROM mine_productions
                 """
         else:
@@ -198,7 +198,9 @@ def get_summary_dataframe(where_actual, where_plan, group_actual, group_plan, pa
                 SUM(CASE WHEN nama_material = 'MWS' THEN tonnage ELSE 0 END)::numeric AS mws,
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
-                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso
+                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap
             FROM mine_productions
             WHERE {where_actual}
             GROUP BY {group_actual}
@@ -218,7 +220,9 @@ def get_summary_dataframe(where_actual, where_plan, group_actual, group_plan, pa
                 SUM(mws)::numeric AS mws_plan,
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
-                SUM(hgso)::numeric AS hgso_plan
+                SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan
             FROM plan_productions
             WHERE {where_plan}
             GROUP BY {group_plan}
@@ -250,7 +254,11 @@ def get_summary_dataframe(where_actual, where_plan, group_actual, group_plan, pa
             ROUND(COALESCE(a.mgso, 0), 2) AS mgso,
             ROUND(COALESCE(p.mgso_plan, 0), 2) AS mgso_plan,
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
-            ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan
+            ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan
         FROM actual a
         FULL OUTER JOIN plan p ON a.periode = p.periode
         ORDER BY periode
@@ -265,15 +273,16 @@ def get_summary_dataframe(where_actual, where_plan, group_actual, group_plan, pa
         'ob', 'ob_plan', 'waste', 'waste_plan', 'quarry', 'quarry_plan',
         'ballast', 'ballast_plan', 'biomass', 'biomass_plan',
         'lglo', 'lglo_plan', 'mglo', 'mglo_plan', 'hglo', 'hglo_plan',
-        'mws', 'mws_plan', 'lgso', 'lgso_plan', 'mgso', 'mgso_plan', 'hgso', 'hgso_plan'
+        'mws', 'mws_plan', 'lgso', 'lgso_plan', 'mgso', 'mgso_plan', 'hgso', 'hgso_plan',
+        'lim', 'lim_plan', 'sap', 'sap_plan'
     ])
 
     return df
 
 def generate_summary(df, label):
-    ore_cols = ['lglo', 'mglo', 'hglo', 'lgso', 'mgso', 'hgso', 'mws']
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso', 'mws']
+    ore_cols = ['lglo', 'mglo', 'hglo', 'lgso', 'mgso', 'hgso', 'mws','lim','sap']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso', 'mws','sap']
     non_ore_cols = ['topsoil', 'ob', 'waste', 'quarry', 'ballast', 'biomass']
 
     ore_plan_cols = [f + '_plan' for f in ore_cols]
@@ -439,8 +448,8 @@ def get_daily_chart(filter_date):
                         SUM(
                             COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +
                             COALESCE(hglo, 0) + COALESCE(waste, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
-                            COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(quarry, 0) + 
-                            COALESCE(ballast, 0) + COALESCE(biomass, 0)
+                            COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(lim, 0) + COALESCE(sap, 0) +  
+                            COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
                         ) AS plan_data
                     FROM mine_productions
                     LEFT JOIN plan_productions 
@@ -482,8 +491,8 @@ def get_daily_chart(filter_date):
                         SUM(
                             ISNULL(topsoil, 0) + ISNULL(ob, 0) + ISNULL(lglo, 0) + ISNULL(mglo, 0) +
                             ISNULL(hglo, 0) + ISNULL(waste, 0) + ISNULL(mws, 0) + ISNULL(lgso, 0) +
-                            ISNULL(mgso, 0) + ISNULL(hgso, 0) + ISNULL(quarry, 0) + 
-                            ISNULL(ballast, 0) + ISNULL(biomass, 0)
+                            ISNULL(mgso, 0) + ISNULL(hgso, 0) +  ISNULL(lim, 0) +  ISNULL(sap, 0) + 
+                            ISNULL(quarry, 0) + ISNULL(ballast, 0) + ISNULL(biomass, 0)
                         ) AS plan_data
                     FROM mine_productions mp
                     LEFT JOIN plan_productions pp ON mp.date_production = pp.date_plan
@@ -558,13 +567,15 @@ def get_daily_ore_chart(filter_date):
                             COALESCE(lglo, 0) + COALESCE(mglo, 0) +
                             COALESCE(hglo, 0) + COALESCE(mws, 0) +
                             COALESCE(lgso, 0) + COALESCE(mgso, 0) +
-                            COALESCE(hgso, 0)
+                            COALESCE(hgso, 0) + COALESCE(lim, 0) +
+                            COALESCE(sap, 0)
                         ) AS plan_data,
                         -- Total tonnage utama (tanpa mws)
                         SUM(
                             COALESCE(lglo, 0) + COALESCE(mglo, 0) +
                             COALESCE(hglo, 0) + COALESCE(lgso, 0) +
-                            COALESCE(mgso, 0) + COALESCE(hgso, 0)
+                            COALESCE(mgso, 0) + COALESCE(hgso, 0) +
+                            COALESCE(lim, 0)  + COALESCE(sap, 0) 
                         ) AS total_tonnage
                     FROM mine_productions
                     LEFT JOIN plan_productions 
@@ -600,8 +611,8 @@ def get_daily_ore_chart(filter_date):
                 agg_data AS (
                     SELECT 
                         CAST(CAST(CAST(t_load AS INT) AS VARCHAR) + ':00:00' AS TIME) AS t_load_time,
-                        SUM(ISNULL(lglo, 0) + ISNULL(mglo, 0) + ISNULL(hglo, 0) + ISNULL(lgso, 0) + ISNULL(mgso, 0) + ISNULL(hgso, 0)) AS total_tonnage,
-                        SUM(ISNULL(lglo, 0) + ISNULL(mglo, 0) + ISNULL(hglo, 0) + ISNULL(mws, 0) + ISNULL(lgso, 0) + ISNULL(mgso, 0) + ISNULL(hgso, 0)) AS plan_data
+                        SUM(ISNULL(lglo, 0) + ISNULL(mglo, 0) + ISNULL(hglo, 0) + ISNULL(lgso, 0) + ISNULL(mgso, 0) + ISNULL(hgso, 0) + ISNULL(lim, 0) + ISNULL(sap, 0)) AS total_tonnage,
+                        SUM(ISNULL(lglo, 0) + ISNULL(mglo, 0) + ISNULL(hglo, 0) + ISNULL(mws, 0) + ISNULL(lgso, 0) + ISNULL(mgso, 0) + ISNULL(hgso, 0) + ISNULL(lim, 0) + ISNULL(sap, 0)) AS plan_data
                     FROM mine_productions mp
                     LEFT JOIN plan_productions pp ON mp.date_production = pp.date_plan
                     WHERE date_production = %s
@@ -674,9 +685,9 @@ def get_monthly_chart(filter_year, filter_month):
                         SUM(
                             COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + 
                             COALESCE(mglo, 0) + COALESCE(hglo, 0) + COALESCE(waste, 0) + 
-                            COALESCE(mws, 0) + COALESCE(lgso, 0) + COALESCE(mgso, 0) + 
-                            COALESCE(hgso, 0) + COALESCE(quarry, 0) + COALESCE(ballast, 0) + 
-                            COALESCE(biomass, 0)
+                            COALESCE(mws, 0)  + COALESCE(lgso, 0) + COALESCE(mgso, 0) + 
+                            COALESCE(hgso, 0) + COALESCE(lim, 0)  + COALESCE(sap, 0) + 
+                            COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
                         ) AS plan_data
                     FROM plan_productions
                     WHERE date_plan BETWEEN %s AND %s
@@ -739,6 +750,8 @@ def get_weekly_chart(filter_week):
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
                 SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap,
                 SUM(CASE WHEN nama_material = 'Top Soil' THEN tonnage ELSE 0 END)::numeric AS topsoil,
                 SUM(CASE WHEN nama_material = 'OB' THEN tonnage ELSE 0 END)::numeric AS ob,
                 SUM(CASE WHEN nama_material = 'Waste' THEN tonnage ELSE 0 END)::numeric AS waste,
@@ -760,6 +773,8 @@ def get_weekly_chart(filter_week):
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
                 SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan,
                 SUM(topsoil)::numeric AS topsoil_plan,
                 SUM(ob)::numeric AS ob_plan,
                 SUM(waste)::numeric AS waste_plan,
@@ -794,6 +809,12 @@ def get_weekly_chart(filter_week):
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
             ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
             ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+            ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach,
             ROUND(COALESCE(a.topsoil, 0), 2) AS topsoil,
             ROUND(COALESCE(p.topsoil_plan, 0), 2) AS topsoil_plan,
             ROUND(CASE WHEN p.topsoil_plan > 0 THEN (a.topsoil * 100.0 / p.topsoil_plan)::numeric ELSE 0 END, 2) AS topsoil_ach,
@@ -833,6 +854,8 @@ def get_weekly_chart(filter_week):
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
         'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach',
         'topsoil', 'topsoil_plan', 'topsoil_ach',
         'ob', 'ob_plan', 'ob_ach',
         'waste', 'waste_plan', 'waste_ach',
@@ -843,8 +866,8 @@ def get_weekly_chart(filter_week):
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
     non_ore_cols = ['topsoil', 'ob', 'waste', 'quarry', 'ballast', 'biomass']
@@ -904,6 +927,8 @@ def get_range_chart(date_start, date_end):
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
                 SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap,
                 SUM(CASE WHEN nama_material = 'Top Soil' THEN tonnage ELSE 0 END)::numeric AS topsoil,
                 SUM(CASE WHEN nama_material = 'OB' THEN tonnage ELSE 0 END)::numeric AS ob,
                 SUM(CASE WHEN nama_material = 'Waste' THEN tonnage ELSE 0 END)::numeric AS waste,
@@ -924,6 +949,8 @@ def get_range_chart(date_start, date_end):
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
                 SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan,
                 SUM(topsoil)::numeric AS topsoil_plan,
                 SUM(ob)::numeric AS ob_plan,
                 SUM(waste)::numeric AS waste_plan,
@@ -957,6 +984,12 @@ def get_range_chart(date_start, date_end):
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
             ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
             ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+            ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach,
             ROUND(COALESCE(a.topsoil, 0), 2) AS topsoil,
             ROUND(COALESCE(p.topsoil_plan, 0), 2) AS topsoil_plan,
             ROUND(CASE WHEN p.topsoil_plan > 0 THEN (a.topsoil * 100.0 / p.topsoil_plan)::numeric ELSE 0 END, 2) AS topsoil_ach,
@@ -998,6 +1031,8 @@ def get_range_chart(date_start, date_end):
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
         'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach',
         'topsoil', 'topsoil_plan', 'topsoil_ach',
         'ob', 'ob_plan', 'ob_ach',
         'waste', 'waste_plan', 'waste_ach',
@@ -1008,8 +1043,8 @@ def get_range_chart(date_start, date_end):
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
     non_ore_cols = ['topsoil', 'ob', 'waste', 'quarry', 'ballast', 'biomass']
@@ -1064,6 +1099,8 @@ def get_yearly_chart(yearly):
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
                 SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap,
                 SUM(CASE WHEN nama_material = 'Top Soil' THEN tonnage ELSE 0 END)::numeric AS topsoil,
                 SUM(CASE WHEN nama_material = 'OB' THEN tonnage ELSE 0 END)::numeric AS ob,
                 SUM(CASE WHEN nama_material = 'Waste' THEN tonnage ELSE 0 END)::numeric AS waste,
@@ -1084,6 +1121,8 @@ def get_yearly_chart(yearly):
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
                 SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan,
                 SUM(topsoil)::numeric AS topsoil_plan,
                 SUM(ob)::numeric AS ob_plan,
                 SUM(waste)::numeric AS waste_plan,
@@ -1117,6 +1156,12 @@ def get_yearly_chart(yearly):
                     ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
                     ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
                     ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+                    ROUND(COALESCE(a.lim, 0), 2) AS lim,
+                    ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+                    ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+                    ROUND(COALESCE(a.sap, 0), 2) AS sap,
+                    ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+                    ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach,
                     ROUND(COALESCE(a.topsoil, 0), 2) AS topsoil,
                     ROUND(COALESCE(p.topsoil_plan, 0), 2) AS topsoil_plan,
                     ROUND(CASE WHEN p.topsoil_plan > 0 THEN (a.topsoil * 100.0 / p.topsoil_plan)::numeric ELSE 0 END, 2) AS topsoil_ach,
@@ -1156,6 +1201,8 @@ def get_yearly_chart(yearly):
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
         'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach',
         'topsoil', 'topsoil_plan', 'topsoil_ach',
         'ob', 'ob_plan', 'ob_ach',
         'waste', 'waste_plan', 'waste_ach',
@@ -1166,8 +1213,8 @@ def get_yearly_chart(yearly):
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
     non_ore_cols = ['topsoil', 'ob', 'waste', 'quarry', 'ballast', 'biomass']
@@ -1219,8 +1266,8 @@ def get_all_chart():
                     SUM(
                         COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +
                         COALESCE(hglo, 0) + COALESCE(waste, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
-                        COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(quarry, 0) + 
-                        COALESCE(ballast, 0) + COALESCE(biomass, 0)
+                        COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(lim, 0) + COALESCE(sap, 0) + 
+                        COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
                     ) AS plan_data
                 FROM plan_productions
                 GROUP BY TO_CHAR(date_plan, 'YYYY')

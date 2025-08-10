@@ -7,7 +7,7 @@ from ..views.mining.analyst_days_production import*
 from ..views.mining.analyst_week_production_view import*
 from ..views.mining.analyst_month_production_view import*
 from ..views.mining.analyst_year_production_view import*
-from ..views.mining.productions_entry_view import*
+from ..views.mining.productions_entry import*
 from ..views.mining.Quick.productions_entry_quick_view import *
 from ..views.mining.truck_factors import *
 from ..views.mining.volume_adjustment_view import *

@@ -118,6 +118,8 @@ class viewPlanMineProduction(View):
                 "UGLO"     : item.uglo,
                 "MGSO"     : item.mgso,
                 "HGSO"     : item.hgso,
+                "Lim"     : item.lim,
+                "Sap"     : item.sap,
                 "Quarry"   : item.quarry,
                 "Ballast"  : item.ballast,
                 "Biomass"  : item.biomass

@@ -24,3 +24,6 @@ sudo systemctl restart celery
 
 =====
 TRUNCATE TABLE your_table_name RESTART IDENTITY CASCADE;
+
+
+python manage.py runserver 0.0.0.0:8000

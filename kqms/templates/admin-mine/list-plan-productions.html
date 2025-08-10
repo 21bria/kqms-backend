@@ -80,14 +80,14 @@
                                             <th class="bg-soft-secondary">Vendors</th>
                                             <th class="bg-soft-secondary">Soils</th>
                                             <th class="bg-soft-secondary">OB</th>
-                                            <th class="bg-soft-secondary">LGLO</th>
+                                            <!-- <th class="bg-soft-secondary">LGLO</th>
                                             <th class="bg-soft-secondary">MGLO</th>
-                                            <th class="bg-soft-secondary">HGLO</th>
+                                            <th class="bg-soft-secondary">HGLO</th> -->
                                             <th class="bg-soft-secondary">Waste</th>
-                                            <th class="bg-soft-secondary">MWS</th>
-                                            <th class="bg-soft-secondary">LGSO</th>
-                                            <th class="bg-soft-secondary">MGSO</th>
-                                            <th class="bg-soft-secondary">HGSO</th>
+                                            <!-- <th class="bg-soft-secondary">MWS</th>
+                                            <th class="bg-soft-secondary">LGSO</th> -->
+                                            <th class="bg-soft-secondary">LIM</th>
+                                            <th class="bg-soft-secondary">SAP</th>
                                             <th class="bg-soft-secondary">Quarry</th>
                                             <th class="bg-soft-secondary">Ballast</th>
                                             <th class="bg-soft-secondary">Biomass</th>
@@ -283,30 +283,30 @@
                         return parseFloat(data).toFixed(2);
                     }
                 },
-                {
-                    data: 'LGLO',
-                    name: 'LGLO',
-                    searchable: false,
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
-                {
-                    data: 'MGLO',
-                    name: 'MGLO',
-                    searchable: false,
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
+                // {
+                //     data: 'LGLO',
+                //     name: 'LGLO',
+                //     searchable: false,
+                //     render: function (data) {
+                //         return parseFloat(data).toFixed(2);
+                //     }
+                // },
+                // {
+                //     data: 'MGLO',
+                //     name: 'MGLO',
+                //     searchable: false,
+                //     render: function (data) {
+                //         return parseFloat(data).toFixed(2);
+                //     }
+                // },
 
-                {
-                    data: 'HGLO',
-                    name: 'HGLO',
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
+                // {
+                //     data: 'HGLO',
+                //     name: 'HGLO',
+                //     render: function (data) {
+                //         return parseFloat(data).toFixed(2);
+                //     }
+                // },
                 {
                     data: 'Waste',
                     name: 'Waste',
@@ -314,32 +314,32 @@
                         return parseFloat(data).toFixed(2);
                     }
                 },
-                {
-                    data: 'MWS',
-                    name: 'MWS',
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
+                // {
+                //     data: 'MWS',
+                //     name: 'MWS',
+                //     render: function (data) {
+                //         return parseFloat(data).toFixed(2);
+                //     }
+                // },
 
 
+                // {
+                //     data: 'LGSO',
+                //     name: 'LGSO',
+                //     render: function (data) {
+                //         return parseFloat(data).toFixed(2);
+                //     }
+                // },
                 {
-                    data: 'LGSO',
-                    name: 'LGSO',
+                    data: 'Lim',
+                    name: 'Lim',
                     render: function (data) {
                         return parseFloat(data).toFixed(2);
                     }
                 },
                 {
-                    data: 'MGSO',
-                    name: 'MGSO',
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
-                {
-                    data: 'HGSO',
-                    name: 'HGSO',
+                    data: 'Sap',
+                    name: 'Sap',
                     render: function (data) {
                         return parseFloat(data).toFixed(2);
                     }

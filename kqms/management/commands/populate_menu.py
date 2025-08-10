@@ -269,12 +269,19 @@ class Command(BaseCommand):
             order=10,
              allowed_group_names=['superadmin','data-control','admin-mining']
         )
+        Menu.objects.create(
+            title="Entry data",
+            url="mine-production-entry-page",
+            parent=mining_productions,
+            order=1,
+            allowed_group_names=['superadmin','data-control','admin-mining']
+        )
         
         Menu.objects.create(
             title="Data Plan",
             url="mine-production-plan-page",
             parent=mining_productions,
-            order=1,
+            order=2,
             allowed_group_names=['superadmin','data-control','admin-mining','user-mining']
         )
         
@@ -282,7 +289,7 @@ class Command(BaseCommand):
             title="Daily productions",
             url="mine-production-page",
             parent=mining_productions,
-            order=2,
+            order=3,
             allowed_group_names=['superadmin','data-control','admin-mining','user-mining']
         )
         

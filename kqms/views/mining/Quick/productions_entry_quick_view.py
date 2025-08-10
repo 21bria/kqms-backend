@@ -15,6 +15,7 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
+from uuid import UUID
 from ....models.mine_productions import mineQuickProductions
 from ....models.mine_productions_view import mineQuickProductionsView
 from ....models.source_model import SourceMines,SourceMinesLoading,SourceMinesDumping,SourceMinesDome
@@ -367,16 +368,28 @@ def update_quickProduction(request,id):
 
 @login_required
 def delete_quick_production(request):
+    allowed_groups = ['superadmin','data-control','admin-mining']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
-        get_id = request.GET.get('id')
-        if get_id:
-            data = mineQuickProductions.objects.get(id=int(get_id))
+        job_id = request.GET.get('id')
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+        
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID
+            data = mineQuickProductions.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except mineQuickProductions.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 @login_required
 def getIdQuickProduction(request):

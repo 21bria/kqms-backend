@@ -136,32 +136,37 @@ def get_chart_selling(request):
                             WHERE DATE(date_barge_out) = %s::date
                             GROUP BY EXTRACT(HOUR FROM time_hauling)
                         ),
-                        plan_total AS (
+                        detail AS (
                             SELECT
-                                SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS total_lim,
-                                SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS total_sap
-                            FROM ore_sellings_plan
-                            WHERE plan_date = %s::date
-                        ),
-                        plan AS (
-                            SELECT
-                                wh.hour_label,
-                                ROUND((COALESCE(pt.total_lim, 0) / 24.0)::numeric, 2) AS plan_lim,
-                                ROUND((COALESCE(pt.total_sap, 0) / 24.0)::numeric, 2) AS plan_sap
-                            FROM working_hours wh
-                            CROSS JOIN plan_total pt
+                                EXTRACT(HOUR FROM time_hauling) AS hour_label,
+                                mb.barge_code,
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN os.tonnage ELSE 0 END) AS lim,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN os.tonnage ELSE 0 END) AS sap,
+                                SUM(os.tonnage) AS total
+                            FROM ore_sellings_barging os
+                            LEFT JOIN materials m ON m.id = os.id_material
+                            LEFT JOIN master_barge mb ON mb.id = os.barge_code
+                            WHERE DATE(date_barge_out) = %s::date
+                            GROUP BY EXTRACT(HOUR FROM time_hauling), mb.barge_code
                         )
                         SELECT
-                            wh.hour_label as label,
+                            wh.hour_label AS label,
                             COALESCE(a.actual_lim, 0) + COALESCE(a.actual_sap, 0) AS actual_total,
                             COALESCE(a.actual_lim, 0) AS actual_lim,
                             COALESCE(a.actual_sap, 0) AS actual_sap,
-                            COALESCE(p.plan_lim, 0) + COALESCE(p.plan_sap, 0) AS plan_total,
-                            COALESCE(p.plan_lim, 0) AS plan_lim,
-                            COALESCE(p.plan_sap, 0) AS plan_sap
+                            COALESCE(json_agg(
+                                json_build_object(
+                                    'barge_code', d.barge_code,
+                                    'lim', d.lim,
+                                    'sap', d.sap,
+                                    'total', d.total
+                                )
+                                ORDER BY d.barge_code
+                            ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
                         FROM working_hours wh
                         LEFT JOIN actual a ON a.hour_label = wh.hour_label
-                        LEFT JOIN plan p ON p.hour_label = wh.hour_label
+                        LEFT JOIN detail d ON d.hour_label = wh.hour_label
+                        GROUP BY wh.hour_label, wh.sort_order, a.actual_lim, a.actual_sap
                         ORDER BY wh.sort_order;
                     """ 
             else:
@@ -173,7 +178,7 @@ def get_chart_selling(request):
 
             if db_vendor == 'postgresql':
                 query = """
-                    WITH tanggal AS (
+                   WITH tanggal AS (
                         SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                     ),
                     actual AS (
@@ -186,26 +191,37 @@ def get_chart_selling(request):
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date
                     ),
-                    plan AS (
+                    detail AS (
                         SELECT
-                            plan_date::date AS date,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
-                        WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY plan_date::date
+                            date_barge_out::date AS date,
+                            mb.barge_code,
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap,
+                            SUM(s.tonnage) AS total
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out::date, mb.barge_code
                     )
                     SELECT
-                            TO_CHAR(tanggal.date, 'YYYY-MM-DD') AS label,
-                            COALESCE(a.lim, 0) + COALESCE(a.sap, 0) AS actual_total,
-                            COALESCE(a.lim, 0) AS actual_lim,
-                            COALESCE(a.sap, 0) AS actual_sap,
-                            COALESCE(p.lim_plan, 0) + COALESCE(p.sap_plan, 0) AS plan_total,
-                            COALESCE(p.lim_plan, 0) AS plan_lim,
-                            COALESCE(p.sap_plan, 0) AS plan_sap
+                        TO_CHAR(tanggal.date, 'YYYY-MM-DD') AS label,
+                        COALESCE(a.lim, 0) + COALESCE(a.sap, 0) AS actual_total,
+                        COALESCE(a.lim, 0) AS actual_lim,
+                        COALESCE(a.sap, 0) AS actual_sap,
+                        COALESCE(json_agg(
+                            json_build_object(
+                                'barge_code', d.barge_code,
+                                'lim', d.lim,
+                                'sap', d.sap,
+                                'total', d.total
+                            )
+                            ORDER BY d.barge_code
+                        ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
                     FROM tanggal
                     LEFT JOIN actual a ON tanggal.date = a.date
-                    LEFT JOIN plan p ON tanggal.date = p.date
+                    LEFT JOIN detail d ON tanggal.date = d.date
+                    GROUP BY tanggal.date, a.lim, a.sap
                     ORDER BY tanggal.date;
                 """
             else:
@@ -259,42 +275,61 @@ def get_chart_selling(request):
                     actual AS (
                         SELECT
                             date_barge_out::date AS date,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS actual_lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS actual_sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out
                     ),
-                    plan AS (
+                    detail AS (
                         SELECT
-                            plan_date::date AS date,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
-                        WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY plan_date
+                            date_barge_out::date AS date,
+                            mb.barge_code,
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap,
+                            SUM(tonnage) AS total
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out, mb.barge_code
                     ),
                     combine AS (
                         SELECT
                             tanggal.date,
                             TO_CHAR(tanggal.date, 'FMDay') AS day_name,
-                            COALESCE(a.lim, 0) AS lim,
-                            COALESCE(a.sap, 0) AS sap,
-                            COALESCE(p.lim_plan, 0) AS lim_plan,
-                            COALESCE(p.sap_plan, 0) AS sap_plan
+                            COALESCE(a.actual_lim, 0) AS actual_lim,
+                            COALESCE(a.actual_sap, 0) AS actual_sap,
+                            COALESCE(json_agg(
+                                json_build_object(
+                                    'barge_code', d.barge_code,
+                                    'lim', d.lim,
+                                    'sap', d.sap,
+                                    'total', d.total
+                                )
+                                ORDER BY d.barge_code
+                            ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
                         FROM tanggal
                         LEFT JOIN actual a ON tanggal.date = a.date
-                        LEFT JOIN plan p ON tanggal.date = p.date
+                        LEFT JOIN detail d ON tanggal.date = d.date
+                        GROUP BY tanggal.date, day_name, a.actual_lim, a.actual_sap
                     )
                     SELECT
                         day_name AS label,
-                        SUM(lim + sap) AS actual_total,
-                        SUM(lim) AS actual_lim,
-                        SUM(sap) AS actual_sap,
-                        SUM(lim_plan + sap_plan) AS plan_total,
-                        SUM(lim_plan) AS plan_lim,
-                        SUM(sap_plan) AS plan_sap
+                        SUM(actual_lim + actual_sap) AS actual_total,
+                        SUM(actual_lim) AS actual_lim,
+                        SUM(actual_sap) AS actual_sap,
+                        json_agg(
+                            json_build_object(
+                                'date', to_char(date, 'YYYY-MM-DD'),
+                                'lim', actual_lim,
+                                'sap', actual_sap,
+                                'total', actual_lim + actual_sap,
+                                'barges', barges
+                            )
+                            ORDER BY date
+                        ) AS details
                     FROM combine
                     GROUP BY day_name
                     ORDER BY ARRAY_POSITION(
@@ -320,43 +355,59 @@ def get_chart_selling(request):
             tgl_terakhir = datetime(year, month, last_day).date()
 
             # Siapkan parameter untuk query
-            params = [tgl_pertama, tgl_terakhir, tgl_pertama, tgl_terakhir,  tgl_pertama, tgl_terakhir]
+            params = [
+                      tgl_pertama, tgl_terakhir, 
+                      tgl_pertama, tgl_terakhir,
+                      tgl_pertama, tgl_terakhir
+                      ]
+            
             if db_vendor == 'postgresql':
                 query = """
                    WITH tanggal AS (
                         SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                     ),
-                    incoming AS (
+                    summary AS (
                         SELECT
                             date_barge_out::date AS date,
                             ROUND(SUM(tonnage)::numeric, 2) AS total,
-                            ROUND(SUM(CASE WHEN material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
-                        FROM details_selling_barging
+                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out
                     ),
-                    plan AS (
+                    detail AS (
                         SELECT
-                            plan_date::date AS date,
-                            ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
-                            ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan,
-                            ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan
-                        FROM ore_sellings_plan
-                        WHERE plan_date BETWEEN %s AND %s
-                        GROUP BY plan_date
+                            date_barge_out::date AS date,
+                            mb.barge_code,
+                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        WHERE date_barge_out BETWEEN %s AND %s
+                        GROUP BY date_barge_out, mb.barge_code
                     )
                     SELECT
                         TO_CHAR(tanggal.date, 'DD') AS label,
-                        COALESCE(i.total, 0) AS total_actual,
-                        COALESCE(i.lim, 0) AS lim_actual,
-                        COALESCE(i.sap, 0) AS sap_actual,
-                        COALESCE(p.total_plan, 0) AS total_plan,
-                        COALESCE(p.lim_plan, 0) AS lim_plan,
-                        COALESCE(p.sap_plan, 0) AS sap_plan
+                        COALESCE(s.total, 0) AS total,
+                        COALESCE(s.lim, 0) AS lim,
+                        COALESCE(s.sap, 0) AS sap,
+                        COALESCE(json_agg(
+                            json_build_object(
+                                'barge_code', d.barge_code,
+                                'lim', d.lim,
+                                'sap', d.sap,
+                                'total', d.total
+                            )
+                            ORDER BY d.barge_code
+                        ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
                     FROM tanggal
-                    LEFT JOIN incoming i ON tanggal.date = i.date
-                    LEFT JOIN plan p ON tanggal.date = p.date
+                    LEFT JOIN summary s ON tanggal.date = s.date
+                    LEFT JOIN detail d ON tanggal.date = d.date
+                    GROUP BY tanggal.date, s.total, s.lim, s.sap
                     ORDER BY tanggal.date;
                 """
             else:
@@ -366,41 +417,54 @@ def get_chart_selling(request):
             if db_vendor == 'postgresql':
                 query = """
                     WITH bulan AS (
-                      SELECT generate_series(1, 12) AS month
-                  ),
-                   incoming AS (
+                        SELECT generate_series(1, 12) AS month
+                    ),
+                    -- 🔹 Summary per bulan
+                    summary AS (
                         SELECT
                             EXTRACT(MONTH FROM date_barge_out)::int AS month,
-                    		ROUND(SUM(tonnage)::numeric, 2) AS total,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total,
                             ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
                             ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         WHERE EXTRACT(YEAR FROM date_barge_out) = %s
-                      GROUP BY EXTRACT(MONTH FROM date_barge_out)
-                     ),
-                  plan AS (
-                      SELECT
-                          EXTRACT(MONTH FROM plan_date)::int AS month,
-                          ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan,
-                          ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
-                          ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan
-                      FROM ore_sellings_plan
-                      WHERE EXTRACT(YEAR FROM plan_date) = %s
-                      GROUP BY EXTRACT(MONTH FROM plan_date)
-                  )
-                  SELECT
-                      TO_CHAR(TO_DATE(bulan.month::text, 'MM'), 'Mon') AS label,
-                      COALESCE(i.total, 0) AS total_actual,
-                      COALESCE(i.lim, 0) AS lim_actual,
-                      COALESCE(i.sap, 0) AS sap_actual,
-                      COALESCE(p.total_plan, 0) AS total_plan,
-                      COALESCE(p.lim_plan, 0) AS lim_plan,
-                      COALESCE(p.sap_plan, 0) AS sap_plan
-                  FROM bulan
-                  LEFT JOIN incoming i ON bulan.month = i.month
-                  LEFT JOIN plan p ON bulan.month = p.month
-                  ORDER BY bulan.month;
+                        GROUP BY EXTRACT(MONTH FROM date_barge_out)
+                    ),
+                    -- 🔹 Detail per bulan + barge_code
+                    detail AS (
+                        SELECT
+                            EXTRACT(MONTH FROM date_barge_out)::int AS month,
+                            mb.barge_code,
+                            ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                        GROUP BY EXTRACT(MONTH FROM date_barge_out), mb.barge_code
+                    )
+                    SELECT
+                        TO_CHAR(TO_DATE(bulan.month::text, 'MM'), 'Mon') AS label,
+                        COALESCE(s.total, 0) AS total,
+                        COALESCE(s.lim, 0) AS lim,
+                        COALESCE(s.sap, 0) AS sap,
+                        COALESCE(json_agg(
+                            json_build_object(
+                                'barge_code', d.barge_code,
+                                'lim', d.lim,
+                                'sap', d.sap,
+                                'total', d.total
+                            )
+                            ORDER BY d.barge_code
+                        ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
+                    FROM bulan
+                    LEFT JOIN summary s ON bulan.month = s.month
+                    LEFT JOIN detail d ON bulan.month = d.month
+                    GROUP BY bulan.month, s.total, s.lim, s.sap
+                    ORDER BY bulan.month;
                 """
             else:
                 raise ValueError("Unsupported vendor")
@@ -409,33 +473,56 @@ def get_chart_selling(request):
         elif filter_type =='all':
             if db_vendor == 'postgresql':
                 query = """
-                    SELECT 
-                        COALESCE(actual.year_label, plan.year_label) AS label,
-                        COALESCE(actual.lim, 0) + COALESCE(actual.sap, 0) AS actual_total,
-                        COALESCE(actual.lim, 0) AS actual_lim,
-                        COALESCE(actual.sap, 0) AS actual_sap,
-                        COALESCE(plan.lim_plan, 0) + COALESCE(plan.sap_plan, 0) AS plan_total,
-                        COALESCE(plan.lim_plan, 0) AS plan_lim,
-                        COALESCE(plan.sap_plan, 0) AS plan_sap
-                    FROM (
-                        SELECT 
-                            TO_CHAR(date_barge_out, 'YYYY') AS year_label,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap
-                        FROM ore_sellings_barging os
-                        LEFT JOIN materials m ON m.id = os.id_material
-                        GROUP BY TO_CHAR(date_barge_out, 'YYYY')
-                    ) AS actual
-                    FULL OUTER JOIN (
-                        SELECT 
-                            TO_CHAR(plan_date, 'YYYY') AS year_label,
-                            SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
-                            SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
-                        GROUP BY TO_CHAR(plan_date, 'YYYY')
-                    ) AS plan
-                    ON actual.year_label = plan.year_label
-                    ORDER BY label;
+                    WITH tahun AS (
+                        SELECT generate_series(
+                            (SELECT MIN(EXTRACT(YEAR FROM date_barge_out))::int FROM ore_sellings_barging),
+                            (SELECT MAX(EXTRACT(YEAR FROM date_barge_out))::int FROM ore_sellings_barging)
+                        ) AS year
+                    ),
+                    -- 🔹 Summary per tahun
+                    summary AS (
+                        SELECT
+                            EXTRACT(YEAR FROM date_barge_out)::int AS year,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total,
+                            ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        GROUP BY EXTRACT(YEAR FROM date_barge_out)
+                    ),
+                    -- 🔹 Detail per tahun + barge_code
+                    detail AS (
+                        SELECT
+                            EXTRACT(YEAR FROM date_barge_out)::int AS year,
+                            mb.barge_code,
+                            ROUND(SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(tonnage)::numeric, 2) AS total
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        GROUP BY EXTRACT(YEAR FROM date_barge_out), mb.barge_code
+                    )
+                    SELECT
+                        tahun.year::text AS label,
+                        COALESCE(s.total, 0) AS total,
+                        COALESCE(s.lim, 0) AS lim,
+                        COALESCE(s.sap, 0) AS sap,
+                        COALESCE(json_agg(
+                            json_build_object(
+                                'barge_code', d.barge_code,
+                                'lim', d.lim,
+                                'sap', d.sap,
+                                'total', d.total
+                            )
+                            ORDER BY d.barge_code
+                        ) FILTER (WHERE d.barge_code IS NOT NULL), '[]') AS barges
+                    FROM tahun
+                    LEFT JOIN summary s ON tahun.year = s.year
+                    LEFT JOIN detail d ON tahun.year = d.year
+                    GROUP BY tahun.year, s.total, s.lim, s.sap
+                    ORDER BY tahun.year;
                 """
             else:
                 raise ValueError("Unsupported vendor")
@@ -449,43 +536,37 @@ def get_chart_selling(request):
             cursor.execute(query, params)
             results = cursor.fetchall()
 
-        x_labels     = []
-        actual_total = []
-        lim_actual   = []
-        sap_actual   = []
-        plan_total   = []
-        lim_plan     = []
-        sap_plan     = []
+        def round_barges(barges_list):
+            for b in barges_list:
+                for key in ['lim', 'sap', 'total']:
+                    if key in b and b[key] is not None:
+                        b[key] = round(float(b[key]), 1)
+                if 'barges' in b and isinstance(b['barges'], list):
+                    round_barges(b['barges'])
 
-
+        details = []
         for row in results:
-            print(f"ROW: {row} ({len(row)} fields)")
-  
-            label        = str(row[0])
-            total_actual = float(row[1] or 0)
-            lim_value    = float(row[2] or 0)
-            sap_value    = float(row[3] or 0)
-            total_plan   = float(row[4] or 0)
-            lim_target   = float(row[5] or 0)
-            sap_target   = float(row[6] or 0)
+            barges = row[4] if row[4] else []
+            round_barges(barges)
 
-            x_labels.append(label)
-            actual_total.append(total_actual)
-            lim_actual.append(lim_value)
-            sap_actual.append(sap_value)
-            plan_total.append(total_plan)
-            lim_plan.append(lim_target)
-            sap_plan.append(sap_target)
+            details.append({
+                'label'       : str(row[0]),
+                'total_actual': round(float(row[1] or 0), 1),
+                'lim_actual'  : round(float(row[2] or 0), 1),
+                'sap_actual'  : round(float(row[3] or 0), 1),
+                'barges'      : barges
+            })
 
         return JsonResponse({
-            'x_data'        : x_labels,
-            'y_data_actual' : actual_total,
-            'y_lim_actual'  : lim_actual,
-            'y_sap_actual'  : sap_actual,
-            'y_data_plan'   : plan_total,
-            'y_lim_plan'    : lim_plan,
-            'y_sap_plan'    : sap_plan,
+            'summary': {
+                'x_data'       : [d['label'] for d in details],
+                'y_data_actual': [d['total_actual'] for d in details],
+                'y_data_lim'   : [d['lim_actual'] for d in details],
+                'y_data_sap'   : [d['sap_actual'] for d in details],
+            },
+            'details': details
         })
+
 
     except DatabaseError:
         logger.exception("DB Error in chart selling")

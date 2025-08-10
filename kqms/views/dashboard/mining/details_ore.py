@@ -1,7 +1,7 @@
 # views.py
 import logging
 from django.http import JsonResponse
-from django.db import connections, DatabaseError
+from django.db import connections
 import pandas as pd
 from datetime import datetime, date, timedelta
 import calendar
@@ -56,14 +56,14 @@ def get_daily_detail_chart(filter_date):
 			    SELECT 
 			        t_load,
 			        SUM(CASE 
-					    WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO', 'MWS', 'LGSO', 'MGSO', 'HGSO') 
+					    WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO', 'MWS', 'LGSO', 'MGSO', 'HGSO','LIM','SAP') 
 					    THEN tonnage 
 					    ELSE 0 
 					END)::numeric AS total_tonnage,
 			        SUM(
 			            COALESCE(lglo, 0) + COALESCE(mglo, 0) +
 			            COALESCE(hglo, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
-			            COALESCE(mgso, 0) + COALESCE(hgso, 0)
+			            COALESCE(mgso, 0) + COALESCE(hgso, 0)+ COALESCE(lim, 0)+ COALESCE(sap, 0)
 			        ) AS plan_data
 			    FROM mine_productions
 			    LEFT JOIN plan_productions 
@@ -107,7 +107,7 @@ def get_monthly_detail_chart(filter_year, filter_month):
                 SELECT 
                     left_date,
                     SUM(CASE 
-					    WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO', 'MWS', 'LGSO', 'MGSO', 'HGSO') 
+					    WHEN nama_material IN ('LGLO', 'MGLO', 'HGLO', 'MWS', 'LGSO', 'MGSO', 'HGSO','LIM','SAP') 
 					    THEN tonnage 
 					    ELSE 0 
 					END)::numeric AS tonnage
@@ -122,8 +122,8 @@ def get_monthly_detail_chart(filter_year, filter_month):
                     SUM(
                         COALESCE(lglo, 0) + COALESCE(mglo, 0) + 
                         COALESCE(hglo, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) + 
-                        COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(quarry, 0) + 
-                        COALESCE(ballast, 0) + COALESCE(biomass, 0)
+                        COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(LIM, 0) + COALESCE(SAP, 0) + 
+                        COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
                     ) AS plan_data
                 FROM plan_productions
                 WHERE EXTRACT(MONTH FROM date_plan) = %s
@@ -170,7 +170,9 @@ def get_weekly_detail_chart(filter_week):
                 SUM(CASE WHEN nama_material = 'MWS' THEN tonnage ELSE 0 END)::numeric AS mws,
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
-                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso
+                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap
             FROM mine_productions
             WHERE TO_CHAR(date_production, 'IYYY-IW') = %s
             GROUP BY tanggal
@@ -185,7 +187,9 @@ def get_weekly_detail_chart(filter_week):
                 SUM(mws)::numeric AS mws_plan,
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
-                SUM(hgso)::numeric AS hgso_plan
+                SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan
             FROM plan_productions
             WHERE TO_CHAR(date_plan, 'IYYY-IW') = %s
             GROUP BY tanggal
@@ -213,7 +217,13 @@ def get_weekly_detail_chart(filter_week):
             ROUND(CASE WHEN p.mgso_plan > 0 THEN (a.mgso * 100.0 / p.mgso_plan)::numeric ELSE 0 END, 2) AS mgso_ach,
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
             ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
-            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach
+            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+            ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.tanggal = p.tanggal
         ORDER BY tanggal;
@@ -233,13 +243,15 @@ def get_weekly_detail_chart(filter_week):
         'mws',  'mws_plan',  'mws_ach',
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
-        'hgso', 'hgso_plan', 'hgso_ach'  
+        'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach'
     ]
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
 
@@ -277,7 +289,9 @@ def get_range_detail_chart(date_start, date_end):
                 SUM(CASE WHEN nama_material = 'MWS' THEN tonnage ELSE 0 END)::numeric AS mws,
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
-                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso
+                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap
             FROM mine_productions
             WHERE date_production BETWEEN %s AND %s
             GROUP BY tanggal
@@ -291,7 +305,9 @@ def get_range_detail_chart(date_start, date_end):
                 SUM(mws)::numeric AS mws_plan,
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
-                SUM(hgso)::numeric AS hgso_plan
+                SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan
             FROM plan_productions
             WHERE date_plan BETWEEN %s AND %s
             GROUP BY tanggal
@@ -318,7 +334,13 @@ def get_range_detail_chart(date_start, date_end):
             ROUND(CASE WHEN p.mgso_plan > 0 THEN (a.mgso * 100.0 / p.mgso_plan)::numeric ELSE 0 END, 2) AS mgso_ach,
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
             ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
-            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach
+            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+            ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.tanggal = p.tanggal
         ORDER BY tanggal;
@@ -338,13 +360,15 @@ def get_range_detail_chart(date_start, date_end):
         'mws',  'mws_plan',  'mws_ach',
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
-        'hgso', 'hgso_plan', 'hgso_ach'
+        'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach'
     ]
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
 
@@ -384,7 +408,9 @@ def get_yearly_chart(yearly):
                 SUM(CASE WHEN nama_material = 'MWS' THEN tonnage ELSE 0 END)::numeric AS mws,
                 SUM(CASE WHEN nama_material = 'LGSO' THEN tonnage ELSE 0 END)::numeric AS lgso,
                 SUM(CASE WHEN nama_material = 'MGSO' THEN tonnage ELSE 0 END)::numeric AS mgso,
-                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso
+                SUM(CASE WHEN nama_material = 'HGSO' THEN tonnage ELSE 0 END)::numeric AS hgso,
+                SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap
             FROM mine_productions
             WHERE EXTRACT(YEAR FROM date_production) = %s
             GROUP BY bulan
@@ -398,7 +424,9 @@ def get_yearly_chart(yearly):
                 SUM(mws)::numeric AS mws_plan,
                 SUM(lgso)::numeric AS lgso_plan,
                 SUM(mgso)::numeric AS mgso_plan,
-                SUM(hgso)::numeric AS hgso_plan
+                SUM(hgso)::numeric AS hgso_plan,
+                SUM(lim)::numeric AS lim_plan,
+                SUM(sap)::numeric AS sap_plan
             FROM plan_productions
             WHERE EXTRACT(YEAR FROM date_plan) = %s
             GROUP BY bulan
@@ -425,7 +453,13 @@ def get_yearly_chart(yearly):
             ROUND(CASE WHEN p.mgso_plan > 0 THEN (a.mgso * 100.0 / p.mgso_plan)::numeric ELSE 0 END, 2) AS mgso_ach,
             ROUND(COALESCE(a.hgso, 0), 2) AS hgso,
             ROUND(COALESCE(p.hgso_plan, 0), 2) AS hgso_plan,
-            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach
+            ROUND(CASE WHEN p.hgso_plan > 0 THEN (a.hgso * 100.0 / p.hgso_plan)::numeric ELSE 0 END, 2) AS hgso_ach,
+            ROUND(COALESCE(a.lim, 0), 2) AS lim,
+            ROUND(COALESCE(p.lim_plan, 0), 2) AS lim_plan,
+            ROUND(CASE WHEN p.lim_plan > 0 THEN (a.lim * 100.0 / p.lim_plan)::numeric ELSE 0 END, 2) AS lim_ach,
+            ROUND(COALESCE(a.sap, 0), 2) AS sap,
+            ROUND(COALESCE(p.sap_plan, 0), 2) AS sap_plan,
+            ROUND(CASE WHEN p.sap_plan > 0 THEN (a.sap * 100.0 / p.sap_plan)::numeric ELSE 0 END, 2) AS sap_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.bulan = p.bulan
         ORDER BY bulan;
@@ -445,13 +479,15 @@ def get_yearly_chart(yearly):
         'mws',  'mws_plan',  'mws_ach',
         'lgso', 'lgso_plan', 'lgso_ach',
         'mgso', 'mgso_plan', 'mgso_ach',
-        'hgso', 'hgso_plan', 'hgso_ach'
+        'hgso', 'hgso_plan', 'hgso_ach',
+        'lim', 'lim_plan', 'lim_ach',
+        'sap', 'sap_plan', 'sap_ach'
     ]
 
     df = pd.DataFrame(data, columns=columns)
 
-    lim_cols = ['lglo', 'mglo', 'hglo']
-    sap_cols = ['lgso', 'mgso', 'hgso']
+    lim_cols = ['lglo', 'mglo', 'hglo','lim']
+    sap_cols = ['lgso', 'mgso', 'hgso','sap']
     lim_plan_cols = [f + '_plan' for f in lim_cols]
     sap_plan_cols = [f + '_plan' for f in sap_cols]
 
@@ -470,7 +506,6 @@ def get_yearly_chart(yearly):
 
     df['limonite_ach']  = df.apply(lambda r: round((r['limonite'] / r['limonite_plan'] * 100), 2) if r['limonite_plan'] > 0 else 0, axis=1)
     df['saprolite_ach'] = df.apply(lambda r: round((r['saprolite'] / r['saprolite_plan'] * 100), 2) if r['saprolite_plan'] > 0 else 0, axis=1)
-
 
     # Define month names
     x_data = df['bulan'].apply(lambda x: datetime.strptime(x, '%Y-%m').strftime('%b %y')).tolist()

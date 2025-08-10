@@ -7,20 +7,22 @@ class planProductions(models.Model):
     category   = models.CharField(max_length=25, default=None, null=True, blank=True)
     sources    = models.CharField(max_length=50, default=None, null=True, blank=True)
     vendors    = models.CharField(max_length=15, default=None, null=True, blank=True)
-    topsoil    = models.FloatField(default=None, null=True, blank=True)
-    ob         = models.FloatField(default=None, null=True, blank=True)
-    lglo       = models.FloatField(default=None, null=True, blank=True)
-    mglo       = models.FloatField(default=None, null=True, blank=True)
-    hglo       = models.FloatField(default=None, null=True, blank=True)
-    waste      = models.FloatField(default=None, null=True, blank=True)
-    mws        = models.FloatField(default=None, null=True, blank=True)
-    lgso       = models.FloatField(default=None, null=True, blank=True)
-    uglo       = models.FloatField(default=None, null=True, blank=True)
-    mgso       = models.FloatField(default=None, null=True, blank=True)
-    hgso       = models.FloatField(default=None, null=True, blank=True)
-    quarry     = models.FloatField(default=None, null=True, blank=True)
-    ballast    = models.FloatField(default=None, null=True, blank=True)
-    biomass    = models.FloatField(default=None, null=True, blank=True)
+    topsoil    = models.FloatField(default=0, null=True, blank=True)
+    ob         = models.FloatField(default=0, null=True, blank=True)
+    lglo       = models.FloatField(default=0, null=True, blank=True)
+    mglo       = models.FloatField(default=0, null=True, blank=True)
+    hglo       = models.FloatField(default=0, null=True, blank=True)
+    waste      = models.FloatField(default=0, null=True, blank=True)
+    mws        = models.FloatField(default=0, null=True, blank=True)
+    lgso       = models.FloatField(default=0, null=True, blank=True)
+    uglo       = models.FloatField(default=0, null=True, blank=True)
+    mgso       = models.FloatField(default=0, null=True, blank=True)
+    hgso       = models.FloatField(default=0, null=True, blank=True)
+    lim        = models.FloatField(default=0, null=True, blank=True)
+    sap        = models.FloatField(default=0, null=True, blank=True)
+    quarry     = models.FloatField(default=0, null=True, blank=True)
+    ballast    = models.FloatField(default=0, null=True, blank=True)
+    biomass    = models.FloatField(default=0, null=True, blank=True)
     ref_plan   = models.CharField(max_length=150, default=None, null=True, blank=True)
     task_id    = models.CharField(max_length=255, default=None, null=True, blank=True)
     id_user    = models.IntegerField(default=None, null=True, blank=True)
@@ -30,4 +32,10 @@ class planProductions(models.Model):
     class Meta:
         db_table  = 'plan_productions'
         app_label = 'kqms'
+
+    
+    indexes = [
+        models.Index(fields=['date_plan']),
+        models.Index(fields=['ref_plan'])
+    ]
 
