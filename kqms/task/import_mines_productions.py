@@ -187,7 +187,7 @@ def import_mine_productions(file_path, original_file_name):
                                 from_rl         = rl_from,
                                 to_rl           = rl_to,
                                 id_material     = id_material,
-                                ritase          = 1,
+                                ritase          = ritase,
                                 bcm             = bcm_factor,
                                 tonnage         = ton_factor,
                                 remarks         = remarks,
