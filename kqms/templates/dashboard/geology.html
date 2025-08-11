@@ -668,6 +668,7 @@
 
 
     });
+
     function loadOreSummary(filterType, year, month, week, dateStart, dateEnd) {
         const url = new URL("/kqms/dashboard/api/ore-summary/", window.location.origin);
 
@@ -723,12 +724,12 @@
                 chart2.updateOptions({
                     chart: { type: chartType },
                     stroke: {
-                        width: [0, 1.1],
+                        width: [1, 1],
                         curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
                     },
                     plotOptions: {
                         bar: {
-                            columnWidth: "50%",
+                            columnWidth: "60%",
                             borderRadius: 2
                         }
                     },
@@ -818,7 +819,7 @@
         //     }
         // },
         stroke: {
-            width: [0, 1.1],
+            width: [0, 1],
             // curve: ['straight', 'smooth'],
             curve: ['smooth', 'smooth'],
         },
@@ -904,9 +905,8 @@
                 enabled: true,
                 speed: 1000,
             },
-        }
-
-        // colors: ["rgba(132, 90, 223, 1)", '#23b7e5'],
+        },
+        colors: ['#f5b849', '#34d399'],
     };
 
     document.querySelector("#oreProductions").innerHTML = ""
@@ -1095,13 +1095,12 @@
                 document.getElementById("total-rkef").innerText = formatNumberShort(data.total_sap);
                 chart5.updateOptions({
                     series: [limPercent],
-                    colors: ["#23b7e5"],
+                    colors: ["#f5b849"],
                 });
                 chart6.updateOptions({
                     series: [sapPercent],
-                    colors: ["#f7b731"],
+                    colors: ["#34d399"],
                 });
-
             })
             .catch(error => {
                 console.error("Error fetching selling summary:", error);
@@ -1109,7 +1108,7 @@
     }
     /* Selling Summary Card */
 
-    /* Selling vs Plan Chart */
+    /* Selling Chart */
     function loadSellingChart(filterType, year, month, week, dateStart, dateEnd) {
         const url = new URL("kqms/dashboard/api/selling-chart/", window.location.origin);
         if (filterType) url.searchParams.append("filter_type", filterType);
@@ -1124,9 +1123,10 @@
             .then(data => {
                 const isMonthly = filterType === 'monthly';
                 // const chartType = isMonthly ? 'line' : 'line';
-                const chartType = isMonthly ? 'area' : 'bar';
-                const seriesActual = isMonthly ? 'area' : 'bar';
-                const seriesTarget = isMonthly ? 'area' : 'bar';
+                const chartType = isMonthly ? 'bar' : 'bar';
+                const seriesActual = isMonthly ? 'bar' : 'bar';
+                const seriesTarget = isMonthly ? 'bar' : 'bar';
+                const enableDataLabels = ['weekly', 'range'].includes(filterType);
 
                 // const chartType = isMonthly ? 'area' : 'bar';
                 // const seriesType = isMonthly ? 'area' : 'bar';
@@ -1134,30 +1134,39 @@
                 chartSelling.updateOptions({
                     chart: { type: chartType },
                     stroke: {
-                        width: [0, 3],
+                        width: [2, 2],
                         curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
                     },
                     plotOptions: {
                         bar: {
-                            columnWidth: "50%",
+                            columnWidth: "70%",
                             borderRadius: 2
                         }
                     },
-                    labels: data.x_data,
+                    dataLabels: {
+                        enabled: enableDataLabels,
+                        formatter: function (val) {
+                            return val.toFixed(1);
+                        },
+                        style: {
+                            fontSize: '10px'
+                        }
+                    },
+                    labels: data.summary.x_data,
 
                 });
 
                 chartSelling.updateSeries([
 
                     {
-                        name: 'Actual',
+                        name: 'Limonite',
                         type: seriesActual,
-                        data: data.y_data_actual
+                        data: data.summary.y_data_lim
                     },
                     {
-                        name: 'Target',
+                        name: 'Saprolite',
                         type: seriesTarget,
-                        data: data.y_data_plan
+                        data: data.summary.y_data_sap
                     },
                 ]);
             })
@@ -1245,7 +1254,7 @@
         },
         plotOptions: {
             bar: {
-                columnWidth: "50%",
+                columnWidth: "70%",
                 borderRadius: 2
             }
         },
@@ -1268,6 +1277,14 @@
             x: {
                 show: true,
             },
+            y: {
+                formatter: function (y) {
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(0);
+                    }
+                    return y;
+                }
+            }
         },
         noData: {
             text: "No data...",
@@ -1284,9 +1301,8 @@
                 enabled: true,
                 speed: 1000,
             },
-        }
-
-        // colors: ["rgba(132, 90, 223, 1)", '#23b7e5'],
+        },
+        colors: ['#f5b849', '#34d399'],
     };
     document.getElementById('selling-chart').innerHTML = '';
     var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), optionsSelling);
