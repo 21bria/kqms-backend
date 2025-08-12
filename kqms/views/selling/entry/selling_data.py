@@ -403,7 +403,7 @@ def export_sale_data_quick(request):
         'date_hauling': 'date_hauling',
         'time': 'time_hauling',
         'shift': 'shift',
-        'date_barging_load': None,
+        'date_barging_load': 'date_hauling',
         'barge_code': 'barge_code',
         'barge_load_loc': None, 
         'barge_unload_loc': None,
