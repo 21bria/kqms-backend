@@ -184,145 +184,6 @@ def total_selling(request):
         'TonnageSAP': sap_total,
     })
 
-@login_required    
-@csrf_exempt
-def export_sale_data(request):
-    # Ambil parameter dari request
-    from_date       = request.GET.get('startDate')
-    to_date         = request.GET.get('endDate')
-    materialFilter  = request.GET.get('materialFilter')
-    areaFilter      = request.GET.get('areaFilter')
-    pointFilter     = request.GET.get('pointFilter')
-    factoriesFilter = request.GET.get('factoriesFilter')
-    productFilter   = request.GET.get('productFilter')
-
-    print("Method:", request.method)
-    print("GET Params:", request.GET.dict())
-
-
-    # Buat file Excel
-    workbook = Workbook()
-    worksheet = workbook.active
-    worksheet.title = 'Selling Data'
-
-    # Header kolom Excel
-    header = [
-        'No',
-        'Date Hauling',
-        'Date Barge In',
-        'Date Barge Out',
-        'Barge Code',
-        'Shift',
-        'Dome',
-        'Stockpile',
-        'Material',
-        'Truck',
-        'Ritase',
-        'Tonnage',
-        'Ton Barge Load',
-        'Ton Barge Unload',
-        'Fill Adjust',
-        'Batch',
-        'Code Inc',
-        'Code Batch',
-        'Code Batch Pulp',
-        'Survey Order',
-        'Code Fix Batch',
-        'Code Lot',
-        'Factory',
-        'Type Selling',
-        'Nota',
-        'Sale Adjust',
-        'Sale Dome',
-    ]
-
-    # Tulis header
-    for col_num, column_title in enumerate(header, 1):
-        cell = worksheet.cell(row=1, column=col_num)
-        cell.value = column_title
-        cell.font = Font(bold=True)
-
-    # Field yang akan diambil dari model
-    columns = [
-        'date_hauling',
-        'date_barge_in',
-        'date_barge_out',
-        'barge_code',
-        'shift',
-        'dome',
-        'stockpile',
-        'material',
-        'unit_code',
-        'ritase',
-        'tonnage',
-        'ton_barge_load',
-        'ton_barge_unload',
-        'fill_adjust',
-        'batch',
-        'code_inc',
-        'code_batch',
-        'code_batch_pulp',
-        'surv_order',
-        'code_fix_batch',
-        'code_lot',
-        'factory_stock',
-        'type_selling',
-        'nota',
-        'sale_adjust',
-        'sale_dome',
-    ]
-
-
-
-    queryset = SellingDetailsBargingTempView.objects.all()
-
-    # Terapkan filter
-    if from_date and to_date:
-        try:
-            from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-            to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-            queryset = queryset.filter(date_hauling__range=[from_date, to_date])
-        except ValueError:
-            return HttpResponse("Format tanggal salah", status=400)
-
-    if materialFilter:
-        queryset = queryset.filter(material=materialFilter)
-    if areaFilter:
-        queryset = queryset.filter(stockpile=areaFilter)
-    if pointFilter:
-        queryset = queryset.filter(dome=pointFilter)
-    if factoriesFilter:
-        queryset = queryset.filter(factory_stock=factoriesFilter)
-    if productFilter:
-        queryset = queryset.filter(code_lot=productFilter)
-
-    # Baru terakhir values_list
-    queryset = queryset.values_list(*columns)
-
-    # Tulis data baris per baris
-    for row_num, (row_count, row) in enumerate(enumerate(queryset, 1), 1):
-        worksheet.cell(row=row_num + 1, column=1, value=row_count)
-        for col_num, cell_value in enumerate(row, 2):
-            worksheet.cell(row=row_num + 1, column=col_num).value = cell_value
-
-    # Atur lebar kolom agar otomatis
-    for col_num, column_title in enumerate(header, 1):
-        col_letter = get_column_letter(col_num)
-        max_length = len(column_title)
-        for row in worksheet.iter_rows(min_col=col_num, max_col=col_num):
-            for cell in row:
-                try:
-                    if cell.value and len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-        worksheet.column_dimensions[col_letter].width = max_length + 2
-
-    # Kirim file sebagai response
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="Selling_data.xlsx"'
-    workbook.save(response)
-    return response
 
 @login_required
 @csrf_exempt
@@ -502,3 +363,112 @@ def create_quick_selling(request):
 #             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
 #     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@login_required    
+@csrf_exempt
+def export_sale_data_quick(request):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font
+    from openpyxl.utils import get_column_letter
+    from datetime import datetime
+    from django.http import HttpResponse
+
+    # Header manual (tetap muncul walaupun data kosong)
+    header = [
+        'date_barging_in',
+        'date_hauling',
+        'time',
+        'shift',
+        'date_barging_load',
+        'barge_code',
+        'barge_load_loc',
+        'barge_unload_loc',
+        'no_truck',
+        'sale_code',
+        'material',
+        'stockpile',
+        'dome_ori',
+        'buyer',
+        'code_lot',
+        'tonnage',
+        'sub_lot',
+        'group',
+        'adjust_sale',
+        'date_barging_out',
+    ]
+
+    # Mapping header ke field model (kalau tidak ada di model, biarkan None)
+    header_field_map = {
+        'date_barging_in': None,
+        'date_hauling': 'date_hauling',
+        'time': 'time_hauling',
+        'shift': 'shift',
+        'date_barging_load': None,
+        'barge_code': 'barge_code',
+        'barge_load_loc': None, 
+        'barge_unload_loc': None,
+        'no_truck': 'unit_code',
+        'sale_code': 'type_selling',
+        'material': 'material',
+        'stockpile': 'stockpile',
+        'dome_ori': 'dome',
+        'buyer': None,
+        'code_lot': 'code_lot',
+        'tonnage': 'tonnage',
+        'sub_lot': 'code_sub',
+        'group': 'code_inc',
+        'adjust_sale': 'sale_adjust',
+        'date_barging_out': None
+    }
+
+    # Query data (ambil semua dulu supaya bisa isi manual)
+    queryset = SellingDetailsBargingTempView.objects.all()
+
+    # Filter tanggal
+    from_date = request.GET.get('startDate')
+    to_date = request.GET.get('endDate')
+    if from_date and to_date:
+        from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
+        to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
+        queryset = queryset.filter(date_hauling__range=[from_date, to_date])
+
+    if material := request.GET.get('materialFilter'):
+        queryset = queryset.filter(material=material)
+    if point := request.GET.get('pointFilter'):
+        queryset = queryset.filter(dome=point)
+    if product := request.GET.get('productFilter'):
+        queryset = queryset.filter(code_lot=product)
+
+    # Buat workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Selling Data Quick'
+
+    # Tulis header
+    for col_num, column_title in enumerate(header, 1):
+        cell = ws.cell(row=1, column=col_num, value=column_title)
+        cell.font = Font(bold=True)
+
+    # Tulis data
+    for row_idx, obj in enumerate(queryset, start=2):
+        for col_num, column_title in enumerate(header, start=1):
+            field_name = header_field_map.get(column_title)
+            value = getattr(obj, field_name) if field_name else None
+            ws.cell(row=row_idx, column=col_num, value=value)
+
+    # Auto width
+    for col_num, col_title in enumerate(header, 1):
+        col_letter = get_column_letter(col_num)
+        max_len = len(str(col_title))
+        for cell in ws[col_letter]:
+            if cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_len + 2
+
+    # Response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="Selling-data-quick.xlsx"'
+    wb.save(response)
+    return response

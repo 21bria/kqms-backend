@@ -1062,20 +1062,13 @@
             var startDate = $('#startDate').val();
             var endDate = $('#endDate').val();
             var materialFilter = $('#materialFilter').val();
-            var pointFilter = $('#pointFilter').val();
-            // var areaFilter = $('#areaFilter').val();
-            var factoriesFilter = $('#factoriesFilter').val();
             var productFilter = $('#productFilter').val();
 
             // Membuat URL untuk permintaan ekspor Excel
-            var exportUrl = "{% url 'export-selling-data' %}?startDate=" + startDate +
+            var exportUrl = "{% url 'export-selling-data-quick' %}?startDate=" + startDate +
                 "&endDate=" + endDate +
                 "&materialFilter=" + materialFilter +
-                "&pointFilter=" + pointFilter +
-                // "&areaFilter=" + areaFilter +
-                "&factoriesFilter=" + factoriesFilter +
                 "&productFilter=" + productFilter;
-
             // Redirect browser ke URL ekspor
             window.location.href = exportUrl;
         });
