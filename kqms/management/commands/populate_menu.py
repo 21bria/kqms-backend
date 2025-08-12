@@ -16,7 +16,7 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Main",
             order=1,
-            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
         
         # Dashboard
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             title="Dashboards",
             icon="bx bx-home",
             order=2,
-            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
         
         Menu.objects.create(
@@ -348,7 +348,7 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Selling",
             order=13,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','entry-selling']
         )
         selling = Menu.objects.create(
             title="Selling Data",
