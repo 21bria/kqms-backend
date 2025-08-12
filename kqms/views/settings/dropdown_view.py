@@ -10,6 +10,7 @@ from ...models.block_model import Block
 from ...models.mine_geologies import MineGeologies
 from ...models.selling_code import SellingCode
 from ...models.stock_factories import StockFactories
+from ...models.master_barge import BargeUnits,BargePort
 from ...models.ore_class import OreClass
 from ...models.selling_official import SellingSurveyor
 from ...models.vendors import Vendors
@@ -1572,5 +1573,53 @@ def get_factors(request):
 
         except Exception as e:
             return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def get_code_lot(request):
+    try:
+        query    = request.GET.get('q', '')
+        page     = int(request.GET.get('page', 1))
+        per_page = 10  # Jumlah item per halaman
+
+        # Filter berdasarkan query
+        data_get = SellingCode.objects.filter(product_code__icontains=query).order_by('product_code')
+        # Pagination
+        start   = (page - 1) * per_page
+        end     = start + per_page
+        results = data_get[start:end]
+        data = {
+            'results'   : [{'id': data_get.id, 'text': data_get.product_code} for data_get in results],
+            'pagination': {'more': len(data_get) > end}  
+        }
+        return JsonResponse(data, safe=False)
+    
+    except Exception as e:
+        # Log the error if necessary (optional)
+        print(f"Error occurred: {e}") 
+        # Return an error response
+        return JsonResponse({'error': 'An error occurred while fetching data.'}, status=500)
+
+def get_code_barge(request):
+    if request.method == 'GET':
+        try:
+            # Ambil semua data S
+            code = BargeUnits.objects.all()
+            # Buat list untuk menampung data setiap objek
+            data_list = []
+            # Looping data dan ambil atribut yang diinginkan
+            for data in code:
+                data_list.append({
+                    'id': data.id,
+                    'barge_code': data.barge_code,
+                })
+            # Buat respons JSON dengan list data
+            data = {
+                'list': data_list,
+            }
+
+            return JsonResponse(data)
+        except SampleMethod.DoesNotExist:
+            return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)

@@ -39,3 +39,27 @@ class SellingDetailsBargingView(models.Model):
         managed   = False
         db_table  = 'details_selling_barging'
         app_label = 'kqms'
+
+
+class SellingDetailsBargingTempView(models.Model):
+    date_hauling        = models.DateField(default=None, null=True, blank=True)
+    time_hauling        = models.TimeField(default=None, null=True, blank=True)
+    barge_code          = models.CharField(max_length=50, default=None, null=True, blank=True)
+    shift               = models.CharField(max_length=10, default=None, null=True, blank=True)
+    dome                = models.CharField(max_length=50, default=None, null=True, blank=True)
+    stockpile           = models.CharField(max_length=50, default=None, null=True, blank=True)
+    material            = models.CharField(max_length=50, default=None, null=True, blank=True)
+    unit_code           = models.CharField(max_length=15, default=None, null=True, blank=True)
+    tonnage             = models.FloatField(default=None, null=True, blank=True)
+    code_lot            = models.CharField(max_length=100, default=None, null=True, blank=True)
+    code_inc            = models.CharField(max_length=25, default=None, null=True, blank=True)
+    code_sub            = models.CharField(max_length=25, default=None, null=True, blank=True)
+    type_selling        = models.CharField(max_length=100, default=None, null=True, blank=True)
+    sale_adjust         = models.CharField(max_length=255, default=None, null=True, blank=True)
+    no_urut              = models.IntegerField(default=0, null=True, blank=True)
+    remarks             = models.CharField(max_length=255, default=None, null=True, blank=True)
+    
+    class Meta:
+        managed   = False
+        db_table  = 'details_selling_barging_temp'
+        app_label = 'kqms'

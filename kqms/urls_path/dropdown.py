@@ -91,5 +91,8 @@ urlpatterns = [
     path('get-hauler-factor/', get_factors, name='get-hauler-factor'), 
     # END Drop Down
     
+    # For Quick Selling Entry
+    path('selling/get-code/', get_code_lot, name='get-code-lot'), 
+    path('slling/get-barge/', get_code_barge, name='get-code-barge'), 
 
 ]

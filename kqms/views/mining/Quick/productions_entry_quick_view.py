@@ -132,7 +132,6 @@ class viewproductionsQuickCreate(View):
 
 @login_required
 @csrf_exempt
-
 def create_quick_production(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
@@ -154,17 +153,17 @@ def create_quick_production(request):
 
         # Pesan kesalahan validasi
         custom_messages = {
-            'date_production.required': 'Date harus diisi.',
-            'shift.required': 'Shift harus diisi.',
-            'digger.required': 'Loader harus diisi.',
-            'hauler_class.required': 'Hauler harus diisi.',
-            'sources_area.required': 'Source harus diisi.',
-            'loading_point.required': 'Loading point harus diisi.',
-            'dumping_point.required': 'Dumping point harus diisi.',
-            'category_mine.required': 'Category harus diisi.',
-            'id_material.required': 'Material harus diisi.',
-            'time_loading.required': 'Loading Time harus diisi.',
-            'ritase.required': 'Ritase harus diisi.',
+            'date_production.required'  : 'Date harus diisi.',
+            'shift.required'            : 'Shift harus diisi.',
+            'digger.required'           : 'Loader harus diisi.',
+            'hauler_class.required'     : 'Hauler harus diisi.',
+            'sources_area.required'     : 'Source harus diisi.',
+            'loading_point.required'    : 'Loading point harus diisi.',
+            'dumping_point.required'    : 'Dumping point harus diisi.',
+            'category_mine.required'    : 'Category harus diisi.',
+            'id_material.required'      : 'Material harus diisi.',
+            'time_loading.required'     : 'Loading Time harus diisi.',
+            'ritase.required'           : 'Ritase harus diisi.'
         }
 
         # Validasi input

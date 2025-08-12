@@ -17,6 +17,7 @@ from .sample_type import *
 from .sample_type_details import *
 from .selling_data import *
 from .selling_barging import *
+from .selling_barging_temp import *
 from .selling_official import *
 from .selling_plan import *
 from .selling_code import *

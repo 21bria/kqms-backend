@@ -7,6 +7,7 @@ from ..views.selling.split_sample.selling_split_range import *
 from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
+from ..views.selling.entry.selling_data import *
 
 
 urlpatterns = [
@@ -53,4 +54,8 @@ urlpatterns = [
     path('blending/get-next-code/', get_next_blend_code, name='get-blend-code'),
     path('blending/create/', create_blending_sale, name='create-blending-sale'),
 
+    # Create Quick
+    path('entry/page/quick/', sale_entry_page, name='selling-entry-quick-page'),
+    path('quick/list/', SellingTemp.as_view(), name='selling-quik-list'),
+    path('quick/create/', create_quick_selling, name='create-quik-sale'),
 ]
