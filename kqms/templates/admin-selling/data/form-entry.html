@@ -1,0 +1,405 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Quick Entry</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);"> Form
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">productions
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-8  col-span-12">
+                    <div class="box">
+                        <div class="box-body add-products !p-0">
+                            <form id="entryForm" name="entryForm">
+                                <div class="p-6">
+                                    <div class="grid grid-cols-12 md:gap-x-[3rem] gap-0">
+                                        <div
+                                            class="xxl:col-span-12 xl:col-span-12 lg:col-span-12 md:col-span-12 col-span-12">
+                                            <div class="grid grid-cols-12 gap-4">
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        id="date_hauling" name="date_hauling" value="{{today}}">
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Shift</label>
+                                                    <select id="shift" name="shift"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">Select</option>
+                                                        <option value="Day">Pagi</option>
+                                                        <option value="Night">Malam</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Times</label>
+                                                    <input type="text" class="form-control w-full !rounded-md"
+                                                        id="time_hauling" name="time_hauling" placeholder="hh:mm:ss"
+                                                        readonly>
+                                                    <label
+                                                        class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Input
+                                                        time for selling</label>
+                                                </div>
+
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Material</label>
+                                                    <select id="id_material" name="id_material"
+                                                        class="form-control w-full !rounded-md">
+                                                        <option value="">-- Select --</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Dome</label>
+                                                    <select id="id_pile" name="id_pile"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">--- Select ---</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Truck</label>
+                                                    </select>
+                                                    <input type="text" class="form-control w-full !rounded-md"
+                                                        id="unit_code" name="unit_code" placeholder="DT-0001">
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Sub Lot</label>
+                                                    <select id="code_sub" name="code_sub"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">Select</option>
+                                                        <option value="SL_01">SL_01</option>
+                                                        <option value="SL_02">SL_02</option>
+                                                        <option value="SL_03">SL_03</option>
+                                                        <option value="SL_04">SL_04</option>
+                                                        <option value="SL_05">SL_05</option>
+                                                    </select>
+
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Kode Lot</label>
+                                                    <select id="code_lot" name="code_lot"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">--- Select ---</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Tongkang</label>
+                                                    <select id="barge_code" name="barge_code"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">--- Select ---</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div
+                                    class="px-6 py-4 border-t border-dashed dark:border-defaultborder/10 sm:flex justify-end">
+                                    <!-- <button type="button" class="ti-btn ti-btn-primary !font-medium m-1">Add Product<i
+                                        class="bi bi-plus-lg ms-2"></i></button> -->
+                                    <button type="submit" id="saveBtn"
+                                        class="ti-btn bg-primary text-white !font-medium">Simpan
+                                        Data</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<!-- Save Data-->
+<script type="text/javascript">
+    // Fungsi untuk format waktu jadi hh:mm:ss
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+    $(document).ready(function () {
+        $('#time_hauling').val(getCurrentTime());
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        /* Insert Data */
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
+            $.ajax({
+                url: "{% url 'create-quik-sale' %}",
+                method: 'POST',
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Membersihkan formulir setelah sukses input
+                        $('#shift').val('').trigger('change');
+                        $('#time_hauling').val('').trigger('change');
+                        $('#id_material').val('').trigger('change');
+                        $('#id_pile').val('').trigger('change');
+                        $('#code_sub').val('').trigger('change');
+                        $('#unit_code').val('');
+                        $('#code_lot').val('').trigger('change');
+                        $('#barge_code').val('').trigger('change');
+
+                        //  Tunggu toast selesai, lalu redirect
+                        setTimeout(function () {
+                            window.location.href = "{% url 'selling-entry-quick-page' %}";
+                        }, 800);
+
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+
+
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+
+<!-- For select dropdown--->
+<script>
+    $(document).ready(function () {
+        var loader_get = 'Digger'
+        var hauler_get = 'Hauler'
+        $('#shift').select2({
+            width: '100%',
+        });
+
+        $('#code_sub').select2({
+            width: '100%',
+        });
+
+
+        // Khusus AJAX 
+        $.ajax({
+            url: "{% url 'material-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>';
+                $.each(data.materials, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                });
+                // $('#id_material').html(options).trigger('change');
+                $('#id_material').html(options).select2({
+                    width: '100%',
+                })
+            }
+        });
+
+        // Khusus AJAX pile
+        $('#id_pile').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term, page: params.page || 1 };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return { id: item.id, text: item.text };
+                        }),
+                        pagination: { more: data.pagination.more }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select EFO-',
+            allowClear: true,
+        });
+
+
+
+
+        $('#code_lot').select2({
+            ajax: {
+                url: "{% url 'get-code-lot' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select KWL-',
+            allowClear: true,
+        });
+
+        $.ajax({
+            url: "{% url 'get-code-barge' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>';
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.barge_code + '</option>';
+                });
+
+                $('#barge_code').html(options).select2({
+                    width: '100%',
+                })
+            }
+
+        });
+
+    }, 300);
+</script>
+
+
+
+
+</body>
+
+</html>

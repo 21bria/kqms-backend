@@ -29,6 +29,13 @@ def sale_entry_page(request):
     }
     return render(request, 'admin-selling/data/entry-list-selling.html',context)
 
+def form_entry_page(request):
+    today = datetime.today()
+    context = {
+        'today': today.strftime('%Y-%m-%d'),
+    }
+    return render(request, 'admin-selling/data/form-entry.html',context)
+
 class SellingTemp(View):
     def post(self, request):
         # Ambil semua data invoice yang valid

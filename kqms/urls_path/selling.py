@@ -57,6 +57,7 @@ urlpatterns = [
     # Create Quick
     path('entry/page/quick/', sale_entry_page, name='selling-entry-quick-page'),
     path('quick/list/', SellingTemp.as_view(), name='selling-quik-list'),
+    path('form/page/quick/', form_entry_page, name='selling-form-quick-page'),
     path('quick/create/', create_quick_selling, name='create-quik-sale'),
     path('export/daily/quick/', export_sale_data_quick, name='export-selling-data-quick'), 
 ]
