@@ -232,6 +232,7 @@ def create_quick_selling(request):
         code_sub     = request.POST.get('code_sub')
         code_lot     = request.POST.get('code_lot')
         barge_code   = request.POST.get('barge_code')
+        time_hauling = request.POST.get('time_hauling')
 
         # Ambil nama_material dari tabel Material
         material_obj = Material.objects.filter(id=id_material).first()
@@ -277,6 +278,7 @@ def create_quick_selling(request):
         with transaction.atomic():
             SellingBargingTemp.objects.create(
                 date_hauling  = date_hauling,
+                time_hauling  = time_hauling,
                 shift         = shift,
                 id_material   = id_material,
                 id_pile       = id_pile,

@@ -19,9 +19,7 @@
     {% include 'layout/sidebar.html' %}
     <!-- End::app-sidebar -->
 
-
     <div class="content">
-
         <!-- Start::main-content -->
         <div class="main-content">
             <!-- Page Header -->
@@ -225,17 +223,18 @@
     <div id="add-data" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
             <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"></h6>
-                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                 <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Add Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
                         data-hs-overlay="#add-data">
-                        <span class="sr-only">Close</span>
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
                 <form id="entryForm">
                     <!-- <div class="ti-modal-body !overflow-visible"> -->
-                         <div class="ti-modal-body overflow-y-auto px-4">
+                  <div class="ti-modal-body overflow-y-auto max-h-[70vh] px-4">
                         <div class="grid grid-cols-12 gap-4">
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Tgl Hauling</label>
@@ -300,9 +299,16 @@
                                 </select>
                             </div>
 
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Time</label>
+                                </select>
+                                <input type="text" class="form-control w-full !rounded-md" id="time_hauling"
+                                    name="time_hauling" placeholder="hh:mm:ss" readonly>
+                            </div>
+
                         </div>
                     </div>
-                    <div class="ti-modal-footer">
+                   <div class="ti-modal-footer sticky bottom-0 bg-white p-4 border-t">
                         <button type="submit" id="saveBtn" class="ti-btn bg-primary text-white !font-medium">Simpan
                             Data</button>
                     </div>
@@ -375,9 +381,20 @@
 
 <!-- Create Data -->
 <script>
+
+    // Fungsi untuk format waktu jadi hh:mm:ss
+    function getCurrentTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+    }
+
     $('#addNew').on('click', function () {
         window.HSOverlay.open('#add-data');
-
+        // Set waktu saat ini ke input
+        $('#time_hauling').val(getCurrentTime());
         setTimeout(function () {
             // Init semua select di modal
             $('#add-data select').each(function () {
@@ -570,7 +587,7 @@
                     name: 'stockpile',
                     searchable: true
                 },
- {
+                {
                     data: 'material',
                     name: 'material',
                     searchable: true
@@ -579,7 +596,7 @@
                     data: 'unit_code',
                     name: 'unit_code'
                 },
-                  {
+                {
                     data: 'tonnage',
                     name: 'tonnage',
                     render: function (data) {
@@ -606,7 +623,7 @@
                     data: 'type_selling',
                     name: 'type_selling'
                 },
-             
+
 
 
                 // {
@@ -755,8 +772,6 @@
                 }
             });
         });
-
-
     });
 </script>
 
@@ -1100,4 +1115,20 @@
         z-index: 9999;
         overflow: visible;
     }
+
+#add-data .ti-modal-body {
+    max-height: 70vh;                /* Biar tidak lebih tinggi dari layar */
+    overflow-y: scroll;               /* Scroll vertikal selalu tampil */
+    overflow-x: hidden;               /* Hilangkan scroll horizontal */
+    -webkit-overflow-scrolling: touch;/* Smooth di iOS */
+}
+
+#add-data .ti-modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+}
+
 </style>

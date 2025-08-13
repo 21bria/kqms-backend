@@ -6,7 +6,7 @@ class SellingBargingTemp(models.Model):
     code_lot            = models.CharField(max_length=150, default=None, null=True, blank=True)
     barge_code          = models.IntegerField(default=None, null=True, blank=True)
     date_hauling        = models.DateField(default=None, null=True, blank=True)
-    time_hauling        = models.TimeField(auto_now_add=True)
+    time_hauling        = models.TimeField(default=None, null=True, blank=True)
     shift               = models.CharField(max_length=10, default=None, null=True, blank=True)
     id_material         = models.IntegerField(default=None, null=True, blank=True)
     id_stockpile        = models.IntegerField(default=None, null=True, blank=True)
