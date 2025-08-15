@@ -1307,7 +1307,8 @@ def get_mineMaterials(request):
                         'LGSO','MGSO','HGSO','Quarry','Ballast','Biomass','Mud','Waste']
             # Ambil data dari model Material dan urutkan berdasarkan 'nama_material'
             # data_get = Material.objects.filter(nama_material__in=included).order_by('nama_material')
-            data_get = Material.objects.filter(nama_material__in=included)
+            # data_get = Material.objects.filter(nama_material__in=included)
+            data_get = Material.objects.all()
             
             # Ubah queryset menjadi list of dictionaries dengan format id dan text untuk Select2
             data = [{'id': item.id, 'text': item.nama_material} for item in data_get]

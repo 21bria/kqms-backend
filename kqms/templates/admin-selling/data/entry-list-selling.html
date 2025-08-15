@@ -499,9 +499,9 @@
             },
             success: function (data) {
                 // Data berhasil diterima dari server
-                totalOre = parseFloat(data.TotalTonnage);
-                totalLim = parseFloat(data.TonnageLIM);
-                totalSap = parseFloat(data.TonnageSAP);
+                totalOre = parseFloat(data.TotalRitase);
+                totalLim = parseFloat(data.RitaseLIM);
+                totalSap = parseFloat(data.RitaseSAP);
 
                 $("#total_ore").html(formatAngka(totalOre));
                 $("#total_lim").html(formatAngka(totalLim));

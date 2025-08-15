@@ -99,12 +99,12 @@ class sourceMinesLoading_List(View):
 @login_required        
 @csrf_exempt
 def get_minesLoading(request, id):
-    # allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = SourceMinesLoading.objects.get(id=id)
@@ -133,12 +133,12 @@ def get_minesLoading(request, id):
 
 @login_required
 def insert_minesLoading(request):
-    # allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control','entry-vendors']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
 
         try:
@@ -210,12 +210,12 @@ def insert_minesLoading(request):
 
 @login_required
 def update_minesLoading(request, id):
-    # allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Ambil data job yang ada berdasarkan id
@@ -287,12 +287,12 @@ def update_minesLoading(request, id):
 
 @login_required
 def delete_minesLoading(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

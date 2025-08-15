@@ -1,0 +1,170 @@
+<div class="grid grid-cols-12 gap-6">
+    <div class="xl:col-span-6 col-span-12">
+        <div class="box custom-box">
+            <div class="box-header">
+                <div class="box-title">
+                    Daily Barging
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="flex flex-wrap justify-between mb-[3rem]">
+                    <div class="me-[3rem] flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-primary/10 !text-primary"> DS</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="day_tonnage_bg">0.00</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Tonnage Day</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-light !text-defaulttextcolor">DS</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 font-semibold" id="day_ritase_bg">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Ritase Day</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-success/10 !text-success">NS</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-success font-semibold" id="night_tonnage_bg">0.00</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Tonnage Night</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-secondary/10 !text-secondary">NS</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-secondary font-semibold">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]" id="night_ritase_bg">Ritase
+                                Night</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-danger/10 !text-danger">TB</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-danger font-semibold">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]" id="total_tonnage_bg">Totals
+                                Barge</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NAV TABS JAM 07–18 -->
+                <nav class="flex flex-wrap xxxl:flex-nowrap justify-start sm:justify-between" aria-label="Tabs"
+                    role="tablist" id="barging-tabs">
+                    <!-- Loop dari 07 sampai 18 -->
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white active"
+                        id="tab-07-btn" data-hs-tab="#tab-07" aria-controls="tab-07">
+                        <span class="block mb-1">07</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-08-btn" data-hs-tab="#tab-08" aria-controls="tab-08">
+                        <span class="block mb-1">08</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-09-btn" data-hs-tab="#tab-09" aria-controls="tab-09">
+                        <span class="block mb-1">09</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-10-btn" data-hs-tab="#tab-10" aria-controls="tab-10">
+                        <span class="block mb-1">10</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-11-btn" data-hs-tab="#tab-11" aria-controls="tab-11">
+                        <span class="block mb-1">11</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-12-btn" data-hs-tab="#tab-12" aria-controls="tab-12">
+                        <span class="block mb-1">12</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-13-btn" data-hs-tab="#tab-13" aria-controls="tab-13">
+                        <span class="block mb-1">13</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-14-btn" data-hs-tab="#tab-14" aria-controls="tab-14">
+                        <span class="block mb-1">14</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-15-btn" data-hs-tab="#tab-15" aria-controls="tab-15">
+                        <span class="block mb-1">15</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-16-btn" data-hs-tab="#tab-16" aria-controls="tab-16">
+                        <span class="block mb-1">16</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-17-btn" data-hs-tab="#tab-17" aria-controls="tab-17">
+                        <span class="block mb-1">17</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                    <button type="button"
+                        class="xxxl:w-full hs-tab-active:bg-primary hs-tab-active:text-white py-3 px-2 block items-center gap-2 bg-transparent text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                        id="tab-18-btn" data-hs-tab="#tab-18" aria-controls="tab-18">
+                        <span class="block mb-1">18</span>
+                        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">Day</span>
+                    </button>
+                </nav>
+
+                <div class="tab-content pt-2 my-4" id="barging-tab-content">
+                    <!-- KONTEN TAB JAM 07–18 -->
+                    <div id="tab-07" class="hs-tab-content-barge block"></div>
+                    <div id="tab-08" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-09" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-10" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-11" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-12" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-13" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-14" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-15" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-16" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-17" class="hs-tab-content-barge hidden"></div>
+                    <div id="tab-18" class="hs-tab-content-barge hidden"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="xl:col-span-6 col-span-12">
+        <div class="box custom-box">
+            <div class="box-header justify-between">
+                <div class="box-title">
+                    Daily Barging Chart
+                </div>
+
+            </div>
+            <div class="box-body">
+                <div id="chartBarging"></div>
+            </div>
+        </div>
+    </div>
+</div>

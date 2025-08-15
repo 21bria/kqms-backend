@@ -140,7 +140,7 @@ class SellingTemp(View):
             'totalPages'     : total_pages,
         }
 
-@login_required()
+@login_required
 def total_selling(request):
     data = SellingDetailsBargingTempView.objects.all()
 
@@ -174,21 +174,27 @@ def total_selling(request):
     if productFilter:
         data = data.filter(code_lot=productFilter)
 
-    # Total semua tonase
+    # Total ritase
+    total_ritase = data.count()
+
+    # Total tonase
     total_ton = data.aggregate(total=Sum('tonnage'))['total'] or 0
 
-    # Total berdasarkan type_selling
-    lim_total = data.filter(material__iexact='LIM').aggregate(total=Sum('tonnage'))['total'] or 0
-    sap_total = data.filter(material__iexact='SAP').aggregate(total=Sum('tonnage'))['total'] or 0
+    # Tonase per material
+    lim_total_ton = data.filter(material__iexact='LIM').aggregate(total=Sum('tonnage'))['total'] or 0
+    sap_total_ton = data.filter(material__iexact='SAP').aggregate(total=Sum('tonnage'))['total'] or 0
 
-    # Jumlah data
-    qty = data.count()
+    # Ritase per material
+    lim_ritase = data.filter(material__iexact='LIM').count()
+    sap_ritase = data.filter(material__iexact='SAP').count()
 
     return JsonResponse({
-        'Qty': qty,
+        'TotalRitase' : total_ritase,
         'TotalTonnage': total_ton,
-        'TonnageLIM': lim_total,
-        'TonnageSAP': sap_total,
+        'RitaseLIM'   : lim_ritase,
+        'RitaseSAP'   : sap_ritase,
+        'TonnageLIM'  : lim_total_ton,
+        'TonnageSAP'  : sap_total_ton,
     })
 
 
@@ -294,7 +300,7 @@ def create_quick_selling(request):
                 code_sub      = code_sub,
                 code_lot      = code_lot,
                 barge_code    = barge_code,
-                tonnage       = 0,
+                tonnage       = 30.79,
                 no_urut       = no_urut,
                 type_selling  = type_selling,
                 sale_adjust   = sale_adjust,

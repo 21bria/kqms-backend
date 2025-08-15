@@ -797,10 +797,10 @@
                                 <!-- Category -->
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Category</label>
-                                    <select id="category" name="category" class="form-control w-full !rounded-md">
-                                        <option value="">Select</option>
+                                    <select id="category_mine" name="category_mine" class="form-control w-full !rounded-md">
+                                        <!-- <option value="">Select</option>
                                         <option value="Mining">Mining</option>
-                                        <option value="Project">Project</option>
+                                        <option value="Project">Project</option> -->
                                     </select>
                                 </div>
 
@@ -815,33 +815,9 @@
                                 </div>
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Time</label>
-                                    <select id="time_edit" name="time_edit" class="form-control w-full !rounded-md">
-                                        '<option value="07">07</option>'
-                                        '<option value="08">08</option>'
-                                        '<option value="09">09</option>'
-                                        '<option value="10">10</option>'
-                                        '<option value="11">11</option>'
-                                        '<option value="12">12</option>'
-                                        '<option value="13">13</option>'
-                                        '<option value="14">14</option>'
-                                        '<option value="15">15</option>'
-                                        '<option value="16">16</option>'
-                                        '<option value="17">17</option>'
-                                        '<option value="18">18</option>'
-                                        '<option value="19">19</option>'
-                                        '<option value="20">20</option>'
-                                        '<option value="22">22</option>'
-                                        '<option value="23">23</option>'
-                                        '<option value="00">00</option>'
-                                        '<option value="01">01</option>'
-                                        '<option value="02">02</option>'
-                                        '<option value="03">03</option>'
-                                        '<option value="04">04</option>'
-                                        '<option value="05">05</option>'
-                                        '<option value="06">06</option>'
-                                    </select>
+                                    <input type="time" id="time_edit" name="time_edit"
+                                        class="form-control w-full !rounded-md">
                                 </div>
-
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Digger</label>
                                     <select id="digger" name="digger" class="form-control w-full !rounded-md">
@@ -863,12 +839,12 @@
                                 </div>
 
                                 <!-- Source -->
-                                <div class="xl:col-span-2 col-span-12">
+                                <!-- <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Source</label>
                                     <select id="sources" name="sources" class="form-control w-full !rounded-md">
                                         <option value="">--- Select ---</option>
                                     </select>
-                                </div>
+                                </div> -->
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Loading point</label>
                                     <select id="loading_point" name="loading_point"
@@ -1022,43 +998,44 @@
                     '<td><input type="date" name="date_production[]" value="{{day_date}}" class="form-control w-full !rounded-md"></td>' +
                     '<td>' +
                     '<select name="shift[]" class="form-control w-full !rounded-md">' +
-                    '<option value="">---</option>' +
+                    '<option value="">--Select--</option>' +
                     '<option value="D">Day</option>' +
                     '<option value="N">Night</option>' +
                     '</select>' +
                     '</td>' +
-                    '<td>' +
-                    '<select name="time_loading[]" class="form-control w-full !rounded-md">' +
-                    '<option value="">---</option>' +
-                    '<option value="07">07</option>' +
-                    '<option value="08">08</option>' +
-                    '<option value="09">09</option>' +
-                    '<option value="10">10</option>' +
-                    '<option value="11">11</option>' +
-                    '<option value="12">12</option>' +
-                    '<option value="13">13</option>' +
-                    '<option value="14">14</option>' +
-                    '<option value="15">15</option>' +
-                    '<option value="16">16</option>' +
-                    '<option value="17">17</option>' +
-                    '<option value="18">18</option>' +
-                    '<option value="19">19</option>' +
-                    '<option value="20">20</option>' +
-                    '<option value="22">22</option>' +
-                    '<option value="23">23</option>' +
-                    '<option value="00">00</option>' +
-                    '<option value="01">01</option>' +
-                    '<option value="02">02</option>' +
-                    '<option value="03">03</option>' +
-                    '<option value="04">04</option>' +
-                    '<option value="05">05</option>' +
-                    '<option value="06">06</option>' +
-                    '</select>' +
-                    '</td>' +
+                    // '<td>' +
+                    // '<select name="time_loading[]" class="form-control w-full !rounded-md">' +
+                    // '<option value="">---</option>' +
+                    // '<option value="07">07</option>' +
+                    // '<option value="08">08</option>' +
+                    // '<option value="09">09</option>' +
+                    // '<option value="10">10</option>' +
+                    // '<option value="11">11</option>' +
+                    // '<option value="12">12</option>' +
+                    // '<option value="13">13</option>' +
+                    // '<option value="14">14</option>' +
+                    // '<option value="15">15</option>' +
+                    // '<option value="16">16</option>' +
+                    // '<option value="17">17</option>' +
+                    // '<option value="18">18</option>' +
+                    // '<option value="19">19</option>' +
+                    // '<option value="20">20</option>' +
+                    // '<option value="22">22</option>' +
+                    // '<option value="23">23</option>' +
+                    // '<option value="00">00</option>' +
+                    // '<option value="01">01</option>' +
+                    // '<option value="02">02</option>' +
+                    // '<option value="03">03</option>' +
+                    // '<option value="04">04</option>' +
+                    // '<option value="05">05</option>' +
+                    // '<option value="06">06</option>' +
+                    // '</select>' +
+                    // '</td>' +
+                    '<td><input type="time" class="form-control" name="time_loading[]"></td>' +
                     '<td><select class="form-select loader" name="loader[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select hauler" name="hauler[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select hauler_class" name="hauler_class[]"><option value="">---</option></select></td>' +
-                    '<td><select class="form-select sources_area" name="sources_area[]"><option value="">---</option></select></td>' +
+                    // '<td><select class="form-select sources_area" name="sources_area[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select loading_point" name="loading_point[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select dumping_point" name="dumping_point[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select dome_id" name="dome_id[]"><option value="">---</option></select></td>' +
@@ -1524,7 +1501,7 @@
                     { 'data': 'time_loading', 'name': 'time_loading', 'searchable': false },
                     { 'data': 'loader', 'name': 'loader', 'searchable': false },
                     { 'data': 'hauler', 'name': 'hauler', 'searchable': false },
-                    { 'data': 'sources_area', 'name': 'sources_area', 'searchable': true },
+                    // { 'data': 'sources_area', 'name': 'sources_area', 'searchable': true },
                     { 'data': 'loading_point', 'name': 'loading_point', 'searchable': false },
                     { 'data': 'dumping_point', 'name': 'dumping_point', 'searchable': true },
                     { 'data': 'dome_id', 'name': 'dome_id', 'searchable': false },
@@ -1682,11 +1659,11 @@
                 var digger = $('#digger').val();
                 var hauler = $('#hauler').val();
                 var hauler_class = $('#hauler_class').val();
-                var sources = $('#sources').val();
+                // var sources = $('#sources').val();
                 var loading_point = $('#loading_point').val();
                 var dumping_point = $('#dumping_point').val();
                 var dome_id = $('#dome_id').val();
-                var category_mine = $('#category').val();
+                var category_mine = $('#category_mine').val();
                 var id_material = $('#id_material').val();
                 var ritase = $('#ritase').val();
                 var tonnage = $('#tonnage').val();
@@ -1701,7 +1678,7 @@
                     digger: digger,
                     hauler: hauler,
                     hauler_class: hauler_class,
-                    sources: sources,
+                    // sources: sources,
                     loading_point: loading_point,
                     dumping_point: dumping_point,
                     dome_id: dome_id,
@@ -1831,7 +1808,7 @@
                             title: 'Deleted!',
                             text: 'Your file has been deleted.',
                             icon: 'success',
-                            width: 380,
+                            // width: 380,
                         })
                     }
                 })
@@ -1852,16 +1829,11 @@
 
             });
 
-            $('#time_edit').select2({
-                width: '100%',
-                dropdownParent: $('#edit-data .ti-modal-body')
+            // $('#category_mine').select2({
+            //     width: '100%',
+            //     dropdownParent: $('#edit-data .ti-modal-body')
 
-            });
-            $('#category').select2({
-                width: '100%',
-                dropdownParent: $('#edit-data .ti-modal-body')
-
-            });
+            // });
 
             $('#digger').select2({
                 ajax: {
@@ -2058,7 +2030,8 @@
                         options += '<option value="' + value.id + '">' + value.text + '</option>';
                     });
                     $('#category_mine').append(options).select2({
-                        width: '100%'
+                        width: '100%',
+                        dropdownParent: $('#edit-data .ti-modal-body')
                     });
                     $('#category_mine').trigger('change'); // Trigger agar Select2 membaca opsi baru
                 },
@@ -2102,48 +2075,7 @@
                 }
             });
 
-            // Inisialisasi event handler change untuk elemen shift
-            let defaultTimeLoading = null;  // simpan nilai time_loading sementara
 
-            // // event change untuk shift
-            $('#shift').change(function () {
-                var selectedShift = $(this).val();
-                var timeLoadingSelect = $('#time_edit');
-
-                timeLoadingSelect.empty();
-
-                if (selectedShift === 'D') {
-                    timeLoadingSelect.append('<option value="">---</option>');
-                    for (var i = 7; i <= 18; i++) {
-                        var value = i < 10 ? '0' + i : i.toString();
-                        timeLoadingSelect.append('<option value="' + value + '">' + value + '</option>');
-                    }
-                } else if (selectedShift === 'N') {
-                    timeLoadingSelect.append('<option value="">---</option>');
-                    for (var i = 19; i <= 23; i++) {
-                        timeLoadingSelect.append('<option value="' + i + '">' + i + '</option>');
-                    }
-                    for (var j = 0; j <= 6; j++) {
-                        var value = j < 10 ? '0' + j : j.toString();
-                        timeLoadingSelect.append('<option value="' + value + '">' + value + '</option>');
-                    }
-                } else {
-                    timeLoadingSelect.append('<option value="">---</option>');
-                }
-
-                console.log('defaultTimeLoading:', defaultTimeLoading);
-                console.log('options:', timeLoadingSelect.find('option').map((i, el) => el.value).get());
-
-                if (defaultTimeLoading !== null) {
-                    timeLoadingSelect.val(defaultTimeLoading);
-                    console.log('Set select value to:', defaultTimeLoading);
-                    defaultTimeLoading = null;
-                }
-            });
-
-
-
-            // Inisialisasi event handler change untuk elemen shift
             let tf_ton_value = 0;  // simpan tf_ton global sementara
 
             $('#hauler_class, #id_material').on('change', function () {
@@ -2217,12 +2149,14 @@
                         $('#id').val(response.id);
                         $('#date_production').val(response.date_production);
                         // $('#shift').val(response.shift).trigger('change');
-                        defaultTimeLoading = response.time_loading; // simpan dulu jam dari response
+                        // defaultTimeLoading = response.time_loading; // simpan dulu jam dari response
                         $('#shift').val(response.shift).trigger('change');  // trigger event change untuk build opsi dan set jam
 
-                        $('#time_edit').val(response.time_loading).trigger('change');
+                        // $('#time_edit').val(response.time_loading).trigger('change');
+                        $('#time_edit').val(response.time_loading);
+
                         $('#hauler_class').val(response.hauler_class).trigger('change');
-                        $('#category').val(response.category_mine).trigger('change');
+                        $('#category_mine').val(response.category_mine).trigger('change');
                         $('#id_material').val(response.id_material).trigger('change');
 
                         $('#vendorsEdit').val(response.vendors);
@@ -2241,7 +2175,6 @@
                         // Tambahkan opsi baru ke Select2
                         var newHauler = new Option(response.haulerName, response.hauler, true, true);
                         $('#hauler').append(newHauler).trigger('change');
-
 
                         $('#sources').val(response.sources).trigger('change');
                         // Tambahkan opsi baru ke Select2

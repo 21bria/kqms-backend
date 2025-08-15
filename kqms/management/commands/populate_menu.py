@@ -16,7 +16,7 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Main",
             order=1,
-            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling','entry-vendors']
         )
         
         # Dashboard
@@ -24,7 +24,7 @@ class Command(BaseCommand):
             title="Dashboards",
             icon="bx bx-home",
             order=2,
-            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling','entry-vendors']
         )
         
         Menu.objects.create(
@@ -40,7 +40,7 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Geology",
             order=3,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-vendors']
         )
         
         # Samples
@@ -188,7 +188,7 @@ class Command(BaseCommand):
             title="Productions",
             icon="bx bx-fingerprint",
             order=7,
-             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-vendors']
         )
         
         Menu.objects.create(
@@ -204,7 +204,7 @@ class Command(BaseCommand):
             title="List Data",
             parent=productions,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-vendors']
         )
         
         Menu.objects.create(
@@ -259,7 +259,8 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Mining",
             order=9,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
+
         )
         
         # Data Productions (Mining)
@@ -267,31 +268,24 @@ class Command(BaseCommand):
             title="Data Productions",
             icon="bx bx-box",
             order=10,
-             allowed_group_names=['superadmin','data-control','admin-mining']
-        )
-        Menu.objects.create(
-            title="Entry data",
-            url="mine-production-entry-page",
-            parent=mining_productions,
-            open_new_tab=True,
-            order=1,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
         
         Menu.objects.create(
-            title="Data Plan",
+            title="Daily Plan",
             url="mine-production-plan-page",
             parent=mining_productions,
-            order=2,
-            allowed_group_names=['superadmin','data-control','admin-mining','user-mining']
+            order=1,
+             allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
+
         )
         
         Menu.objects.create(
             title="Daily productions",
             url="mine-production-page",
             parent=mining_productions,
-            order=3,
-            allowed_group_names=['superadmin','data-control','admin-mining','user-mining']
+            order=2,
+            allowed_group_names=['superadmin','data-control','admin-mining','user-mining','entry-vendors']
         )
         
         # Forms
@@ -299,23 +293,25 @@ class Command(BaseCommand):
             title="Forms",
             icon="bx bx-file",
             order=11,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
         
         Menu.objects.create(
-            title="Form Quick",
-            url="mine-production-entry-quick-page",
+            title="Entry Data",
+            # url="mine-production-entry-quick-page",
+            url="mine-production-entry-page",
             parent=forms,
             order=1,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            open_new_tab=True,
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
         
         Menu.objects.create(
-            title="List Data",
-            url="mine-production-quick-page",
+            title="Summary Daily",
+            url="mine-summary-daily-page",
             parent=forms,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mining','user-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','user-mining','entry-vendors']
         )
         
         # Configuration (Mining)
@@ -481,12 +477,14 @@ class Command(BaseCommand):
             category_title="Report",
             order=17,
             allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa']
+            
         )
        
         achievements = Menu.objects.create(
             title="Achievements",
             icon="bx bx-table",
-            order=18
+            order=18,
+            allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
 
         Menu.objects.create(
@@ -573,6 +571,7 @@ class Command(BaseCommand):
             title="Inventory stock",
             icon="bx bx-chart",
             order=19,
+             allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
         Menu.objects.create(
             title="Data All",
@@ -621,7 +620,8 @@ class Command(BaseCommand):
         geology = Menu.objects.create(
             title="Geology",
             icon="bx bx-map",
-            order=20
+            order=20,
+             allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
         Menu.objects.create(
             title="Data Samples",
@@ -670,6 +670,7 @@ class Command(BaseCommand):
             icon="bx bx-bar-chart-square",
             order=21,
             # allowed_group_names=["superadmin", "admin-mgoqa"]
+             allowed_group_names=['superadmin','management','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab','user-mgoqa','entry-selling']
         )
        
         sample_dup_roa = Menu.objects.create(
@@ -838,7 +839,7 @@ class Command(BaseCommand):
             title="Master",
             icon="bx bx-store-alt",
             order=24,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','entry-vendors']
         )
 
         Menu.objects.create(
@@ -867,28 +868,28 @@ class Command(BaseCommand):
             url="source-loading-point-page",
             parent=master,
             order=4,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','entry-vendors']
         )
         Menu.objects.create(
             title="Dumping point",
             url="source-dumping-point-page",
             parent=master,
             order=5,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','entry-vendors']
         )
         Menu.objects.create(
             title="Dome",
             url="source-dome-point-page",
             parent=master,
             order=6,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','entry-vendors']
         )
         Menu.objects.create(
             title="Mine units",
             url="mine-units-page",
             parent=master,
             order=7,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','entry-vendors']
         )
         Menu.objects.create(
             title="Sample method",

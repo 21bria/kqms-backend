@@ -9,6 +9,7 @@ from ..views.mining.analyst_month_production_view import*
 from ..views.mining.analyst_year_production_view import*
 from ..views.mining.productions_entry import*
 from ..views.mining.Quick.productions_entry_quick_view import *
+from ..views.mining.mine_summary import *
 from ..views.mining.truck_factors import *
 from ..views.mining.volume_adjustment_view import *
 
@@ -43,6 +44,17 @@ urlpatterns = [
     path('mine-totals-quick/', total_mine_quick, name='mine-totals-quick'),
     path('mine-totals-quick/mining/', total_mining_quick, name='mine-totals-quick-mining'),
     path('mine-totals-quick/project/', total_project_quick, name='mine-totals-quick-projects'),
+
+    # Summary Daily
+    path('summary/daily/page/', mine_summary_page, name='mine-summary-daily-page'), 
+    path('summary/daily/', total_daily_summary, name='total-daily-summary'),
+    path('summary/daily/material/', total_daily_material, name='total-daily-material'),
+    path('summary/time/material/', total_time_material_by_hour, name='total-time-material'),
+    path('summary/hour/material/', total_material_by_hour, name='total-hour-material'),
+    # Daily Barging
+    path('summary/daily/material/barging/', total_daily_summary_barging, name='total-daily-summary-barging'),
+    path('summary/hour/material/barging/', total_time_barging_by_hour, name='total-hour-summary-barging'),
+    path('summary/hour/chart/barging/', total_barging_by_hour, name='total-hour-chart-barging'),
 
     # Plan Mine Productions
     path('mine-production-plan/page/', plan_mine_production_page, name='mine-production-plan-page'), 

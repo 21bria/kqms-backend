@@ -69,7 +69,7 @@
                                                         <option value="N">N</option>
                                                     </select>
                                                 </div>
-                                                <div class="xl:col-span-4 col-span-12">
+                                                <!-- <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Times</label>
                                                     <select id="time_loading" name="time_loading"
                                                         class="form-control w-full !rounded-md">
@@ -100,6 +100,10 @@
                                                     <label
                                                         class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Input
                                                         time for productions</label>
+                                                </div> -->
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label for="input-time" class="form-label">Time</label>
+                                                    <input type="time" class="form-control" id="input-time">
                                                 </div>
                                                 <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Category</label>
@@ -108,16 +112,17 @@
                                                         <option value="">-- Select --</option>
                                                     </select>
                                                 </div>
+
                                                 <div class="xl:col-span-4 col-span-12">
-                                                    <label class="form-label">Material</label>
-                                                    <select id="id_material" name="id_material"
+                                                    <label class="form-label">Loader</label>
+                                                    <select id="digger" name="digger"
                                                         class="form-control w-full !rounded-md">
                                                         <option value="">-- Select --</option>
                                                     </select>
                                                 </div>
                                                 <div class="xl:col-span-4 col-span-12">
-                                                    <label class="form-label">Loader</label>
-                                                    <select id="digger" name="digger"
+                                                    <label class="form-label">Hauler</label>
+                                                    <select id="hauler" name="hauler"
                                                         class="form-control w-full !rounded-md">
                                                         <option value="">-- Select --</option>
                                                     </select>
@@ -156,6 +161,13 @@
                                                     <label
                                                         class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Dome
                                                         for Ore</label>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Material</label>
+                                                    <select id="id_material" name="id_material"
+                                                        class="form-control w-full !rounded-md">
+                                                        <option value="">-- Select --</option>
+                                                    </select>
                                                 </div>
                                                 <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Ritase</label>
@@ -387,34 +399,62 @@
             allowClear: true
         });
 
-        $('#hauler').select2({
-            ajax: {
-                url: "{% url 'get-mine-units-entry'%}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        category: hauler_get,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            width: '100%',
-            allowClear: true
-        });
+        // $('#hauler').select2({
+        //     ajax: {
+        //         url: "{% url 'get-mine-units-entry'%}",
+        //         dataType: 'json',
+        //         delay: 250,
+        //         data: function (params) {
+        //             return {
+        //                 q: params.term,
+        //                 category: hauler_get,
+        //                 page: params.page || 1
+        //             };
+        //         },
+        //         processResults: function (data, params) {
+        //             params.page = params.page || 1;
+        //             return {
+        //                 results: data.results,
+        //                 pagination: {
+        //                     more: data.pagination.more
+        //                 }
+        //             };
+        //         },
+        //         cache: true
+        //     },
+        //     minimumInputLength: 2,
+        //     placeholder: 'Select data',
+        //     width: '100%',
+        //     allowClear: true
+        // });
+          $('#hauler').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-units-entry'%}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                                category: hauler_get,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select Data',
+                    // theme: 'tailwindcss-3',
+                });
 
         $('#loading_point').select2({
             ajax: {

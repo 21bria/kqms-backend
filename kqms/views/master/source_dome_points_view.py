@@ -102,12 +102,12 @@ class sourceDomePoint_List(View):
 @login_required 
 @csrf_exempt
 def get_sourceDomePoint(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = SourceMinesDome.objects.get(id=id)
@@ -140,12 +140,12 @@ def get_sourceDomePoint(request, id):
 
 @login_required
 def insert_sourceDomePoint(request):
-    # allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         pile_id     = request.POST.get('pile_id')
         remarks     = request.POST.get('remarks')
@@ -201,7 +201,7 @@ def insert_sourceDomePoint(request):
 
 @login_required    
 def update_sourceDomePoint(request, id):
-    allowed_groups = ['superadmin','admin-mgoqa','data-control','admin-mining']
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -269,12 +269,12 @@ def update_sourceDomePoint(request, id):
 
 @login_required
 def delete_sourceDomePoint(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

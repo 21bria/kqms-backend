@@ -131,7 +131,7 @@ class viewproductionsCreate(View):
 def create_production(request):
     if request.method == 'POST':
         try:
-            # Aturan validasi
+            # Aturan validasi (tetap)
             rules = {
                 'date_production[]' : ['required'],
                 'shift[]'           : ['required'],
@@ -139,13 +139,11 @@ def create_production(request):
                 'loader[]'          : ['required'],
                 'hauler[]'          : ['required'],
                 'hauler_class[]'    : ['required'],
-                'sources_area[]'    : ['required'],
                 'loading_point[]'   : ['required'],
                 'dumping_point[]'   : ['required'],
                 'category[]'        : ['required'],
                 'id_material[]'     : ['required'],
                 'time_loading[]'    : ['required'],
-                # 'vendors'           : ['required'],
             }
 
             custom_messages = {
@@ -155,19 +153,18 @@ def create_production(request):
                 'loader[].required'         : 'Loader harus diisi.',
                 'hauler[].required'         : 'Hauler harus diisi.',
                 'hauler_class[].required'   : 'Hauler Class harus diisi.',
-                'sources_area[].required'   : 'Source harus diisi.',
                 'loading_point[].required'  : 'Loading point harus diisi.',
                 'dumping_point[].required'  : 'Dumping point harus diisi.',
                 'category[].required'       : 'Category harus diisi.',
                 'id_material[].required'    : 'Material harus diisi.',
                 'time_loading[].required'   : 'Loading Time harus diisi.',
-                # 'vendors.required': 'Vendors harus diisi.'
             }
 
+            # VALIDASI: pakai getlist utk field []
             for field, field_rules in rules.items():
                 for rule in field_rules:
                     if rule == 'required':
-                        if not request.POST.get(field):
+                        if not request.POST.getlist(field):
                             return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
 
             with transaction.atomic():
@@ -177,7 +174,6 @@ def create_production(request):
                 loader          = request.POST.getlist('loader[]')
                 hauler          = request.POST.getlist('hauler[]')
                 hauler_class    = request.POST.getlist('hauler_class[]')
-                sources_area    = request.POST.getlist('sources_area[]')
                 loading_point   = request.POST.getlist('loading_point[]')
                 dumping_point   = request.POST.getlist('dumping_point[]')
                 dome_id         = request.POST.getlist('dome_id[]')
@@ -186,35 +182,47 @@ def create_production(request):
                 ritase          = request.POST.getlist('ritase[]')
                 tonnage         = request.POST.getlist('tonnage[]')
                 vendors         = request.POST.get('vendors')
-                area            = request.POST.get('area')
+                # area            = request.POST.get('area')
                 no_production   = request.POST.get('no_production')
 
-                # addition_bcm = dict(mineAdditionFactor.objects.values_list('validation', 'tf_bcm'))
-                # addition_ton = dict(mineAdditionFactor.objects.values_list('validation', 'tf_ton'))
-
-                # Buat dictionary addition_factor untuk menampung bcm dan ton dari tabel yang sama
-                addition_factor = {
-                    f"{item['validation']}": {'bcm': item['tf_bcm'], 'ton': item['tf_ton']}
-                    for item in mineAdditionFactor.objects.values('validation', 'tf_bcm', 'tf_ton')
-                }   
-
                 for idx in range(len(date_production)):
-                    combinedCode = date_production[idx] + category[idx] + (area[idx] if area else '') + (vendors if vendors else '') 
+                    # combinedCode = (date_production[idx] + category[idx] + (area or '') + (vendors or '')).replace(' ', '')
 
                     date_obj  = datetime.strptime(date_production[idx], '%Y-%m-%d') if date_production[idx] else None
                     left_date = date_obj.day if date_obj else None
 
-
-                    # Modifikasi hauler_class
-                    haulerClass = str(hauler[idx]) if (hauler[idx]) else ''
+                    # hauler_type
+                    haulerClass = str(hauler[idx]) if hauler[idx] else ''
                     if 'ADT' in haulerClass:
                         type_hauler = 'ADT'
                     elif 'DT' in haulerClass:
                         type_hauler = 'DT'
                     else:
-                        type_hauler = None  # Hauler tidak valid atau tidak termasuk 'ADT' atau 'DT' 
-                  
+                        type_hauler = None
 
+                    # Ambil ID numerik per index
+                    lp_id       = int(loading_point[idx]) if loading_point[idx] else None
+                    dp_id       = int(dumping_point[idx]) if dumping_point[idx] else None
+                    material_id = int(id_material[idx])   if id_material[idx]   else None
+                    dome_val    = int(dome_id[idx])       if (dome_id and dome_id[idx]) else None
+
+                    # Turunkan sources_area (ID) dari loading_point
+                    sources_area_val = None
+                    area_name = ''
+                    if lp_id is not None:
+                        try:
+                            loading_obj = SourceMinesLoading.objects.select_related('id_sources').get(id=lp_id)
+                            sources_area_val = loading_obj.id_sources_id or None   # ID untuk simpan ke FK
+                            area_name = loading_obj.id_sources.sources_area or ''  # NAMA untuk combinedCode
+                        except SourceMinesLoading.DoesNotExist:
+                            sources_area_val = None
+                            area_name = ''
+
+                    # REF CODE: pakai nama source dari loading_point
+                    combinedCode = f"{date_production[idx]}{category[idx]}{area_name}{vendors or ''}".replace(' ', '')
+
+
+                    # CREATE: pakai nama field asli (tanpa _id), tapi nilai harus integer
                     mineProductions.objects.create(
                         date_production = date_production[idx],
                         shift           = shift[idx],
@@ -222,22 +230,25 @@ def create_production(request):
                         loader          = loader[idx],
                         hauler          = hauler[idx],
                         hauler_class    = hauler_class[idx],
-                        sources_area    = sources_area[idx],
-                        loading_point   = loading_point[idx],
-                        dumping_point   = dumping_point[idx],
-                        dome_id         = dome_id[idx] if dome_id[idx] else None,  # Memastikan 'None' jika dome_id kosong
+
+                        sources_area    = sources_area_val,  # <-- integer (ID), bukan teks
+                        loading_point   = lp_id,             # <-- integer
+                        dumping_point   = dp_id,             # <-- integer
+                        id_material     = material_id,       # <-- integer
+                        dome_id         = dome_val,          # <-- integer / None
+
                         category_mine   = category[idx],
-                        id_material     = id_material[idx],
                         hauler_type     = type_hauler,
                         ref_materials   = combinedCode,
                         ritase          = ritase[idx],
                         bcm             = 0,
                         tonnage         = tonnage[idx],
-                        no_production   = no_production, 
-                        vendors         = vendors, 
-                        left_date       = left_date, 
+                        no_production   = no_production,
+                        vendors         = vendors,
+                        left_date       = left_date,
                         id_user         = request.user.id
                     )
+
 
             return JsonResponse({'success': True, 'message': 'Data berhasil disimpan.'})
 
@@ -250,6 +261,7 @@ def create_production(request):
     else:
         return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
+
 @login_required
 @require_http_methods(["POST"])
 def update_Production(request,id):
@@ -261,7 +273,7 @@ def update_Production(request,id):
             'time_loading'   : ['required'],
             'digger'         : ['required'],
             'hauler'         : ['required'],
-            'sources'        : ['required'],
+            # 'sources'        : ['required'],
             'loading_point'  : ['required'],
             'dumping_point'  : ['required'],
             'category_mine'  : ['required'],
@@ -276,7 +288,7 @@ def update_Production(request,id):
             'time_loading.required'   : 'Time harus diisi.',
             'digger.required'         : 'Digger harus diisi.',
             'hauler.required'         : 'Hauler harus diisi.',
-            'sources.required'        : 'Sources harus diisi.',
+            # 'sources.required'        : 'Sources harus diisi.',
             'loading_point.required'  : 'Loading point harus diisi.',
             'dumping_point.required'  : 'Dumping point harus diisi.',
             'category_mine.required'  : 'Category harus diisi.',
@@ -316,8 +328,7 @@ def update_Production(request,id):
         category     = request.POST.get('category_mine')
         area         = request.POST.get('area')
         vendor       = request.POST.get('vendors')
-        # refCodes     = f"{date}{category}{area}{vendor}"
-        refCodes     = f"{date}{category}{area}{vendor}".replace(" ", "") #Hapus krakter spasi
+  
 
         dome_id = request.POST.get('dome_id')
 
@@ -361,7 +372,25 @@ def update_Production(request,id):
             left_date = None 
 
         # Dapatkan data yang akan diupdate berdasarkan ID
-        data = mineProductions.objects.get(id=id)
+        data = mineProductions.objects.get(id=id)   
+                    
+        # Ambil sources_area otomatis dari loading_point
+        loading_point   = request.POST.get('loading_point')
+        # --- sources_area dari loading_point (FK) ---
+        sources_area_id = None
+        area_name = ''  # untuk nama sumber
+        if loading_point:
+            try:
+                loading_obj = SourceMinesLoading.objects.select_related('id_sources').get(id=int(loading_point))
+                sources_area_id = loading_obj.id_sources_id or None
+                area_name = loading_obj.id_sources.sources_area or ''  # <-- Ambil nama
+            except (ValueError, SourceMinesLoading.DoesNotExist):
+                sources_area_id = None
+                area_name = ''
+
+        
+           # refCodes     = f"{date}{category}{area}{vendor}"
+        refCodes     = f"{date}{category}{area_name}{vendor}".replace(" ", "") #Hapus krakter spasi
 
         # Lakukan update data dengan nilai baru
         data.date_production = date
@@ -369,8 +398,8 @@ def update_Production(request,id):
         data.shift           = request.POST.get('shift')
         data.loader          = request.POST.get('digger')
         data.hauler          = hauler
-        data.sources_area    = request.POST.get('sources')
-        data.loading_point   = request.POST.get('loading_point')
+        data.sources_area    = sources_area_id   
+        data.loading_point   = loading_point
         data.dumping_point   = request.POST.get('dumping_point')
         data.dome_id         = dome_id
         data.category_mine   = category
@@ -476,16 +505,17 @@ def getIdProduction(request):
                     haulerName = hauler.unit_code
 
             # Ambil jam dari time_loading yang formatnya datetime.time
-            time_loading_full = items.time_loading  # datetime.time(10, 20, 0)
+            # time_loading_full = items.time_loading  # datetime.time(10, 20, 0)
 
-            if time_loading_full:
-                time_loading_hour = time_loading_full.hour  # int, misal 8
-            else:
-                time_loading_hour = None
+            # if time_loading_full:
+            #     time_loading_hour = time_loading_full.hour  # int, misal 8
+            # else:
+            #     time_loading_hour = None
 
             data = {
                 'id'              : items.id,
                 'date_production' : items.date_production, 
+                'time_loading'    : items.time_loading, 
                 'shift'           : items.shift,
                 'loader'          : items.loader,
                 'diggerName'      : diggerName,
@@ -506,7 +536,7 @@ def getIdProduction(request):
                 'ritase'          : items.ritase,
                 'bcm'             : items.bcm,
                 'tonnage'         : items.tonnage,
-                'time_loading'    : f"{time_loading_hour:02d}" if time_loading_hour is not None else '',
+                # 'time_loading'    : f"{time_loading_hour:02d}" if time_loading_hour is not None else '',
                 'hauler_type'     : items.hauler_type,
                 'vendors'         : items.vendors,
                 'remarks'         : items.remarks

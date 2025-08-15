@@ -146,12 +146,12 @@ def insert_material(request):
 
 @login_required
 def update_material(request, id):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission to edit data.'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission to edit data.'}, 
+            status=403
+    )
 
     if request.method == 'POST':
         try:
@@ -182,7 +182,7 @@ def update_material(request, id):
 
 @login_required
 def delete_material(request):
-    allowed_groups = ['superadmin']
+    allowed_groups = ['superadmin','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission to delete data.'}, 
