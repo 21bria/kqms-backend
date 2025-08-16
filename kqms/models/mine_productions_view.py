@@ -6,6 +6,7 @@ class mineProductionsView(models.Model):
     shift           = models.CharField(max_length=10, default=None, null=True, blank=True)
     vendors         = models.CharField(max_length=25, default=None, null=True, blank=True)
     loader          = models.CharField(max_length=25, default=None, null=True, blank=True)
+    bucket          = models.IntegerField(default=0, null=True, blank=True)
     hauler          = models.CharField(max_length=25, default=None, null=True, blank=True)
     hauler_class    = models.CharField(max_length=25, default=None, null=True, blank=True)
     sources_area    = models.CharField(max_length=50, default=None, null=True, blank=True)
@@ -32,7 +33,6 @@ class mineProductionsView(models.Model):
     ref_material    = models.CharField(max_length=110, default=None, null=True, blank=True)
     ref_truck       = models.CharField(max_length=125, default=None, null=True, blank=True)
     id_user         = models.IntegerField(default=None, null=True, blank=True)
-
 
     class Meta:
         managed    = False

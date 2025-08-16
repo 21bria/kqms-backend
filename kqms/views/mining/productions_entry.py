@@ -101,9 +101,10 @@ class viewproductionsCreate(View):
                 "date_production"   : item.date_production,
                 "shift"             : item.shift,
                 "loader"            : item.loader,
+                "bucket"            : item.bucket,
                 "hauler"            : item.hauler,
                 "hauler_class"      : item.hauler_class,
-                "sources_area"       : item.sources_area,
+                "sources_area"      : item.sources_area,
                 "loading_point"     : item.loading_point,
                 "dumping_point"     : item.dumping_point,
                 "dome_id"           : item.dome_id,
@@ -137,6 +138,7 @@ def create_production(request):
                 'shift[]'           : ['required'],
                 'time_loading[]'    : ['required'],
                 'loader[]'          : ['required'],
+                'bucket[]'          : ['required'],
                 'hauler[]'          : ['required'],
                 'hauler_class[]'    : ['required'],
                 'loading_point[]'   : ['required'],
@@ -151,6 +153,7 @@ def create_production(request):
                 'shift[].required'          : 'Shift harus diisi.',
                 'time_loading[].required'   : 'Time harus diisi.',
                 'loader[].required'         : 'Loader harus diisi.',
+                'bucket[].required'         : 'Jumlah Bucket harus diisi.',
                 'hauler[].required'         : 'Hauler harus diisi.',
                 'hauler_class[].required'   : 'Hauler Class harus diisi.',
                 'loading_point[].required'  : 'Loading point harus diisi.',
@@ -172,6 +175,7 @@ def create_production(request):
                 shift           = request.POST.getlist('shift[]')
                 time_loading    = request.POST.getlist('time_loading[]')
                 loader          = request.POST.getlist('loader[]')
+                bucket          = request.POST.getlist('bucket[]')
                 hauler          = request.POST.getlist('hauler[]')
                 hauler_class    = request.POST.getlist('hauler_class[]')
                 loading_point   = request.POST.getlist('loading_point[]')
@@ -228,15 +232,14 @@ def create_production(request):
                         shift           = shift[idx],
                         time_loading    = time_loading[idx],
                         loader          = loader[idx],
+                        bucket          = bucket[idx],
                         hauler          = hauler[idx],
                         hauler_class    = hauler_class[idx],
-
                         sources_area    = sources_area_val,  # <-- integer (ID), bukan teks
                         loading_point   = lp_id,             # <-- integer
                         dumping_point   = dp_id,             # <-- integer
                         id_material     = material_id,       # <-- integer
                         dome_id         = dome_val,          # <-- integer / None
-
                         category_mine   = category[idx],
                         hauler_type     = type_hauler,
                         ref_materials   = combinedCode,
@@ -272,6 +275,7 @@ def update_Production(request,id):
             'shift'          : ['required'],
             'time_loading'   : ['required'],
             'digger'         : ['required'],
+            'bucket'         : ['required'],
             'hauler'         : ['required'],
             # 'sources'        : ['required'],
             'loading_point'  : ['required'],
@@ -287,6 +291,7 @@ def update_Production(request,id):
             'shift.required'          : 'Shift harus diisi.',
             'time_loading.required'   : 'Time harus diisi.',
             'digger.required'         : 'Digger harus diisi.',
+            'bucket.required'         : 'Jumlah bucket harus diisi.',
             'hauler.required'         : 'Hauler harus diisi.',
             # 'sources.required'        : 'Sources harus diisi.',
             'loading_point.required'  : 'Loading point harus diisi.',
@@ -397,6 +402,7 @@ def update_Production(request,id):
         data.vendors         = vendor
         data.shift           = request.POST.get('shift')
         data.loader          = request.POST.get('digger')
+        data.bucket          = request.POST.get('bucket')
         data.hauler          = hauler
         data.sources_area    = sources_area_id   
         data.loading_point   = loading_point
@@ -519,6 +525,7 @@ def getIdProduction(request):
                 'shift'           : items.shift,
                 'loader'          : items.loader,
                 'diggerName'      : diggerName,
+                'bucket'          : items.bucket,
                 'hauler'          : items.hauler,
                 'haulerName'      : haulerName,
                 'hauler_class'    : items.hauler_class,

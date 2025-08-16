@@ -824,6 +824,11 @@
                                         <option value="">--- Select ---</option>
                                     </select>
                                 </div>
+                                  <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Bucket</label>
+                                    <input type="number" id="bucket" name="bucket"
+                                        class="form-control w-full !rounded-md">
+                                </div>
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Hauler</label>
                                     <select id="hauler" name="hauler" class="form-control w-full !rounded-md">
@@ -1033,6 +1038,7 @@
                     // '</td>' +
                     '<td><input type="time" class="form-control" name="time_loading[]"></td>' +
                     '<td><select class="form-select loader" name="loader[]"><option value="">---</option></select></td>' +
+                     '<td><input type="number" class="form-control" name="bucket[]"></td>' +
                     '<td><select class="form-select hauler" name="hauler[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select hauler_class" name="hauler_class[]"><option value="">---</option></select></td>' +
                     // '<td><select class="form-select sources_area" name="sources_area[]"><option value="">---</option></select></td>' +
@@ -1500,6 +1506,7 @@
                     { 'data': 'shift', 'name': 'shift', 'searchable': true },
                     { 'data': 'time_loading', 'name': 'time_loading', 'searchable': false },
                     { 'data': 'loader', 'name': 'loader', 'searchable': false },
+                    { 'data': 'bucket', 'name': 'bucket', 'searchable': false },
                     { 'data': 'hauler', 'name': 'hauler', 'searchable': false },
                     // { 'data': 'sources_area', 'name': 'sources_area', 'searchable': true },
                     { 'data': 'loading_point', 'name': 'loading_point', 'searchable': false },
@@ -1585,6 +1592,7 @@
                             $("[name='category[]']").val('').trigger('change');
                             $("[name='id_material[]']").val('').trigger('change');
                             $("[name='time_loading[]']").val('').trigger('change');
+                            $("[name='bucket[]']").val('');
                             $("[name='ritase[]']").val('');
                             $("[name='tonnage[]']").val('');
                             // Hapus baris formulir yang baru ditambahkan
@@ -1657,6 +1665,7 @@
                 var shift = $('#shift').val();
                 var time_loading = $('#time_edit').val();
                 var digger = $('#digger').val();
+                var bucket = $('#bucket').val();
                 var hauler = $('#hauler').val();
                 var hauler_class = $('#hauler_class').val();
                 // var sources = $('#sources').val();
@@ -1676,6 +1685,7 @@
                     shift: shift,
                     time_loading: time_loading,
                     digger: digger,
+                    bucket: bucket,
                     hauler: hauler,
                     hauler_class: hauler_class,
                     // sources: sources,
@@ -2128,7 +2138,6 @@
                 inputArea.val(selectedText);
             });
 
-
         });
 
         /*--- Click to Edit Button ---*/
@@ -2160,10 +2169,10 @@
                         $('#id_material').val(response.id_material).trigger('change');
 
                         $('#vendorsEdit').val(response.vendors);
+                        $('#bucket').val(response.bucket);
                         $('#ritase').val(response.ritase);
                         $('#tonnage').val(response.tonnage);
                         $('#remarks').val(response.remarks);
-
 
                         // Pastikan Select2 di-clear terlebih dahulu
                         $('#digger').empty().trigger('change');

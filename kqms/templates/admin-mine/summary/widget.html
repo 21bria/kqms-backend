@@ -47,26 +47,31 @@
                 </ol>
             </div>
             <!-- Page Header Close -->
-            <div class="flex justify-end mb-2">
-                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
-                    <div class="grid grid-cols-12 gap-4">
+           <div class="flex justify-start md:justify-end mb-2">
+  <div class="flex items-end gap-4">
+    <!-- Date -->
+    <div class="w-[220px]">
+      <label class="form-label">Date</label>
+      <input type="date"
+        class="form-control w-full !rounded-md"
+        id="date_production"
+        name="date_production"
+        value="{{start_date}}">
+    </div>
 
-                        <div class=" lg:col-span-6 md:col-span-6 col-span-12">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-control w-full !rounded-md" id="date_production"
-                                name="date_production" value="{{start_date}}">
-                        </div>
-                        <div class=" lg:col-span-6 md:col-span-6 col-span-12">
-                            <label class="form-label">Shift</label>
-                            <select id="shift" name="shift" class="form-control w-full !rounded-md">
-                                <option value="D">Day</option>
-                                <option value="N">Night</option>
-                                <option value="">-- Select --</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Shift -->
+    <div class="w-[140px]">
+      <label class="form-label">Shift</label>
+      <select id="shift" name="shift" class="form-control w-full !rounded-md">
+        <option value="D">Day</option>
+        <option value="N">Night</option>
+        <option value="">-- Select --</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
             <!-- Start::row-1 -->
             <div class="grid grid-cols-12 gap-6 mt-3">
                 <div class="xl:col-span-9 col-span-12">
@@ -563,9 +568,9 @@
             if (index === 0) btn.classList.add('active');
 
             btn.innerHTML = `
-        <span class="block mb-1">${hour.toString().padStart(2, '0')}</span>
-        <span class="block mb-0 opacity-[0.7] text-[0.75rem]">${shift === 'D' ? 'Day' : 'Night'}</span>
-    `;
+                <span class="block mb-1">${hour.toString().padStart(2, '0')}</span>
+                <span class="block mb-0 opacity-[0.7] text-[0.75rem]">${shift === 'D' ? 'Day' : 'Night'}</span>
+            `;
 
             tabsContainer.appendChild(btn);
 
@@ -626,10 +631,10 @@
         let dateStr = date.toISOString().split('T')[0];
 
         // shift malam jam 0-6 → tanggal dikurangi 1
-        if (shift === 'N' && hour <= 6) {
-            date.setDate(date.getDate() - 1);
-            dateStr = date.toISOString().split('T')[0];
-        }
+        // if (shift === 'N' && hour <= 6) {
+        //     date.setDate(date.getDate() - 1);
+        //     dateStr = date.toISOString().split('T')[0];
+        // }
 
         fetch(`{% url "total-time-material" %}?date=${dateStr}&shift=${shift}&hour=${hour}`)
             .then(res => res.ok ? res.json() : Promise.reject(res.status))
@@ -688,7 +693,11 @@
         ul.innerHTML = '';
 
         if (!data.data || data.data.length === 0) {
-            ul.innerHTML = '<li><p class="text-sm text-gray-500">Tidak ada data</p></li>';
+            ul.innerHTML = `
+                    <li class="flex items-center justify-center">
+                        <p class="text-sm text-gray-500">Tidak ada data</p>
+                    </li>
+                `;
             return;
         }
 
@@ -722,15 +731,15 @@
         const liTotal = document.createElement('li');
         liTotal.innerHTML = `
         <div class="flex items-start justify-between py-2 font-semibold bg-gray-50 dark:bg-gray-800">
-            <div class="flex-grow">
-                <p class="mb-0 text-[.875rem]">Total</p>
+                <div class="flex-grow">
+                    <p class="mb-0 text-[.875rem]">Total</p>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[#8c9097] dark:text-white/50">${totalActual.toFixed(1)} WMT</span>
+                    <span class="text-sm text-gray-500">${totalAch.toFixed(2)}%</span>
+                </div>
             </div>
-            <div class="flex flex-col items-end">
-                <span class="text-[#8c9097] dark:text-white/50">${totalActual.toFixed(1)} WMT</span>
-                <span class="text-sm text-gray-500">${totalAch.toFixed(2)}%</span>
-            </div>
-        </div>
-    `;
+        `;
         ul.appendChild(liTotal);
     }
 
@@ -804,9 +813,9 @@
         if (!dateInputEl) return;
 
         let date = new Date(dateInputEl.value);
-        if (shift === 'N' && hour <= 6) {
-            date.setDate(date.getDate() - 1);
-        }
+        // if (shift === 'N' && hour <= 6) {
+        //     date.setDate(date.getDate() - 1);
+        // } //akan loncat periode berikut atau hari berikut
         const dateStr = date.toISOString().split('T')[0];
 
         const shiftVal = document.querySelector('#shift').value; // 'D' atau 'N'
@@ -832,10 +841,21 @@
         }
 
         // Kosongkan konten lama
+        // ul.innerHTML = '';
+
+        // if (!data.data || data.data.length === 0) {
+        //     ul.innerHTML = '<li><p class="text-sm text-gray-500">Tidak ada data</p></li>';
+        //     return;
+        // }
+
         ul.innerHTML = '';
 
         if (!data.data || data.data.length === 0) {
-            ul.innerHTML = '<li><p class="text-sm text-gray-500">Tidak ada data</p></li>';
+            ul.innerHTML = `
+                    <li class="flex items-center justify-center">
+                        <p class="text-sm text-gray-500">Tidak ada data</p>
+                    </li>
+                `;
             return;
         }
 

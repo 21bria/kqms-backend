@@ -266,7 +266,8 @@ def total_daily_material(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-    
+
+# Versi CTE??
 def total_time_material_by_hour(request):
     date  = request.GET.get('date')
     shift = request.GET.get('shift')

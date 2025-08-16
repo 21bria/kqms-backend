@@ -135,7 +135,7 @@
                     </button>
                 </nav>
 
-                <div class="tab-content pt-2 my-4" id="barging-tab-content">
+                <div class="tab-content pt-2 my-4 overflow-y-auto" id="barging-tab-content">
                     <!-- KONTEN TAB JAM 07–18 -->
                     <div id="tab-07" class="hs-tab-content-barge block"></div>
                     <div id="tab-08" class="hs-tab-content-barge hidden"></div>
@@ -168,3 +168,15 @@
         </div>
     </div>
 </div>
+
+
+<style>
+    #barging-tab-content .hs-tab-content-barge {
+        min-height: 160px;
+        /* tinggi minimal */
+        max-height: 160px;
+        /* biar nggak lebih tinggi dari chart */
+        overflow-y: auto;
+        /* aktifkan scroll vertikal */
+    }
+</style

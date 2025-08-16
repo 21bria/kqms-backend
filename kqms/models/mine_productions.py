@@ -22,6 +22,7 @@ class mineProductions(models.Model):
     from_rl         = models.CharField(max_length=15, default=None, null=True, blank=True)
     to_rl           = models.CharField(max_length=15, default=None, null=True, blank=True)
     id_material     = models.IntegerField(default=None, null=True, blank=True)
+    bucket          = models.IntegerField(default=0, null=True, blank=True)
     ritase          = models.IntegerField(default=None, null=True, blank=True)
     bcm             = models.FloatField(default=None, null=True, blank=True)
     tonnage         = models.FloatField(default=None, null=True, blank=True)
