@@ -46,49 +46,74 @@ def get_chart_detail_ob(request):
 
 def get_daily_detail_chart(filter_date):
     query = """ 
-             SELECT
-                t1.id,
-                t1.left_time,
-                COALESCE(SUM(t2.total_tonnage), 0)::numeric(10,2) AS total,
-                ROUND(COALESCE(SUM(DISTINCT t2.plan_data), 0)::numeric / 22, 2) AS plan_data
-            FROM tanggal_jam t1
-            LEFT JOIN (
-			    SELECT 
-			        t_load,
-			        SUM(CASE 
-					    WHEN nama_material IN ('OB') 
-					    THEN tonnage 
-					    ELSE 0 
-					END)::numeric AS total_tonnage,
-			        SUM(
-			            COALESCE(ob, 0)
-			        ) AS plan_data
-			    FROM mine_productions
-			    LEFT JOIN plan_productions 
-			        ON mine_productions.date_production = plan_productions.date_plan
-			    WHERE date_production=%s
-			    GROUP BY t_load
-			) t2 ON t1.left_time = t2.t_load
-            GROUP BY t1.id, t1.left_time
-            ORDER BY t1.id;
+             WITH working_hours AS (
+                SELECT
+                    hour_label,
+                    CASE
+                        WHEN hour_label >= 7 THEN hour_label
+                        ELSE hour_label + 24
+                    END AS sort_order
+                FROM generate_series(0, 23) AS hour_label
+            ),
+            hour_series AS (
+                SELECT 
+                    make_time(hour_label, 0, 0) AS raw_time,
+                    TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,
+                    hour_label,
+                    sort_order
+                FROM working_hours
+            ),
+            agg_data AS (
+                SELECT 
+                    LPAD(t_load::text, 2, '0') AS t_load_time,
+                    SUM(CASE WHEN nama_material IN ('OB') THEN tonnage ELSE 0 END)::numeric AS total_tonnage
+                FROM mine_productions mp
+                WHERE mp.date_production = %s::date
+                GROUP BY LPAD(t_load::text, 2, '0')
+            ),
+            plan_per_hour AS (
+                SELECT
+                    ROUND(SUM(COALESCE(ob,0))::numeric / 22, 3) AS plan_data
+                FROM plan_productions
+                WHERE date_plan = %s::date
+            )
+            SELECT
+                hs.hour_label AS id,
+                hs.left_time,
+                COALESCE(agg.total_tonnage, 0) AS total,
+                p.plan_data
+            FROM hour_series hs
+            LEFT JOIN agg_data agg ON hs.left_time = agg.t_load_time
+            CROSS JOIN plan_per_hour p
+            ORDER BY hs.sort_order;
     """
 
-    params = [filter_date]
+    params = [filter_date,filter_date]
 
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(query, params)
         data = cursor.fetchall()
 
     df = pd.DataFrame(data, columns=['id', 'left_time', 'total', 'plan_data'])
-    df['total'] = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
-    df['plan_data'] = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0).round(2)
-    df['achievement'] = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
+    df['total']         = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+    df['plan_data']     = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0)
+    df['achievement']   = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
+
+    # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total'].sum(), 2),
+        'plan'  : round(df['plan_data'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total'].sum() / df['plan_data'].sum() * 100), 2) if df['plan_data'].sum() > 0 else 0.0,
+        'avg': round(df['total'].mean(), 2)
+    }
+
 
     return JsonResponse({
-        'x_data': df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
-        'total_actual': df['total'].tolist(),
-        'total_plan': df['plan_data'].tolist(),
-        'achievement': df['achievement'].tolist(),
+        'x_data'       : df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
+        'total_actual' : df['total'].tolist(),
+        'total_plan'   : df['plan_data'].tolist(),
+        'achievement'  : df['achievement'].tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 def get_monthly_detail_chart(filter_year, filter_month):
@@ -134,16 +159,24 @@ def get_monthly_detail_chart(filter_year, filter_month):
     
     # Konversi ke float, pastikan tidak dalam string
     df['total_tonnage'] = pd.to_numeric(df['total_tonnage'], errors='coerce').fillna(0.0).round(2)
-    df['total_plan']    = pd.to_numeric(df['total_plan'], errors='coerce').fillna(0.0).round(2)
+    df['total_plan']    = pd.to_numeric(df['total_plan'], errors='coerce').fillna(0.0)
 
     # Optional: hitung achievement jika dibutuhkan
     df['achievement'] = df.apply( lambda row: round(float(row['total_tonnage']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
 
+   # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total_tonnage'].sum(), 2),
+        'plan'  : round(df['total_plan'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total_tonnage'].sum() / df['total_plan'].sum() * 100), 2) if df['total_plan'].sum() > 0 else 0.0,
+        'avg': round(df['total_tonnage'].mean(), 2)
+    }
+
     return JsonResponse({
-        'x_data': df['left_date'].tolist(),
-        'total_tonnage': df['total_tonnage'].astype(float).tolist(),
-        'total_plan': df['total_plan'].astype(float).tolist(),
-        # 'achievement': df['achievement'].astype(float).tolist()
+        'x_data'        : df['left_date'].tolist(),
+        'total_tonnage' : df['total_tonnage'].astype(float).tolist(),
+        'total_plan'    : df['total_plan'].astype(float).tolist(),
+        'grand_total'   : grand_total
     }, safe=False)
 
 def get_weekly_detail_chart(filter_week):
@@ -170,9 +203,9 @@ def get_weekly_detail_chart(filter_week):
         SELECT
             COALESCE(a.tanggal, p.tanggal) AS tanggal,
             COALESCE(a.nama_hari, p.nama_hari) AS hari,
-            ROUND(COALESCE(a.ob, 0), 2) AS ob,
-            ROUND(COALESCE(p.ob_plan, 0), 2) AS ob_plan,
-            ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
+            ROUND(COALESCE(a.ob, 0), 2) AS total,
+            ROUND(COALESCE(p.ob_plan, 0), 2) AS plan_data
+            --ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.tanggal = p.tanggal
         ORDER BY tanggal;
@@ -184,32 +217,26 @@ def get_weekly_detail_chart(filter_week):
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'tanggal', 'hari',
-        'ob', 'ob_plan', 'ob_ach'
-    ]
-
-    df = pd.DataFrame(data, columns=columns)
-
-    ob_cols = ['ob']
-    ob_plan_cols = [f + '_plan' for f in ob_cols]
-
     # Konversi kolom ke numerik (handle string atau null)
-    for col in ob_cols  :
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
+    df = pd.DataFrame(data, columns=['tanggal','hari','total', 'plan_data'])
+    df['total']         = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+    df['plan_data']     = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0)
+    df['achievement']   = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
 
-    df['ob']       = df[ob_cols].sum(axis=1)
-    df['ob_plan']  = df[ob_plan_cols].sum(axis=1)
-
-    df['total_actual'] = df['ob']
-    df['total_plan']   = df['ob_plan']
-    df['achievement'] = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+    # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total'].sum(), 2),
+        'plan'  : round(df['plan_data'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total'].sum() / df['plan_data'].sum() * 100), 2) if df['plan_data'].sum() > 0 else 0.0,
+        'avg': round(df['total'].mean(), 2)
+    }
 
     return JsonResponse({
         'x_data'       : df['hari'].astype(str).tolist(),
-        'total_actual' : df['total_actual'].astype(float).tolist(),
-        'total_plan'   : df['total_plan'].astype(float).tolist(),
+        'total_actual' : df['total'].astype(float).tolist(),
+        'total_plan'   : df['plan_data'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 def get_range_detail_chart(date_start, date_end):
@@ -232,9 +259,9 @@ def get_range_detail_chart(date_start, date_end):
         )
         SELECT
             COALESCE(a.tanggal, p.tanggal) AS tanggal,
-            ROUND(COALESCE(a.ob, 0), 2) AS ob,
-            ROUND(COALESCE(p.ob_plan, 0), 2) AS ob_plan,
-            ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
+            ROUND(COALESCE(a.ob, 0), 2) AS total,
+            ROUND(COALESCE(p.ob_plan, 0), 2) AS plan_data
+           -- ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.tanggal = p.tanggal
         ORDER BY tanggal;
@@ -246,34 +273,25 @@ def get_range_detail_chart(date_start, date_end):
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'tanggal',
-        'ob', 'ob_plan', 'ob_ach'
-    ]
+    df = pd.DataFrame(data, columns=['tanggal','total', 'plan_data'])
+    df['total']         = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+    df['plan_data']     = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0)
+    df['achievement']   = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
 
-    df = pd.DataFrame(data, columns=columns)
-
-    ob_cols = ['ob']
-    ob_plan_cols = [f + '_plan' for f in ob_cols]
-
-
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in ob_cols:
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
-
-    df['ob']       = df[ob_cols].sum(axis=1)
-    df['ob_plan']  = df[ob_plan_cols].sum(axis=1)
-
-
-    df['total_actual'] = df['ob'] 
-    df['total_plan']   = df['ob_plan']
-    df['achievement']  = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
-
+    # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total'].sum(), 2),
+        'plan'  : round(df['plan_data'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total'].sum() / df['plan_data'].sum() * 100), 2) if df['plan_data'].sum() > 0 else 0.0,
+        'avg': round(df['total'].mean(), 2)
+    }
+    
     return JsonResponse({
-        'x_data'        : df['tanggal'].astype(str).tolist(),
-        'total_actual' : df['total_actual'].astype(float).tolist(),
-        'total_plan'   : df['total_plan'].astype(float).tolist(),
+        'x_data'       : df['tanggal'].astype(str).tolist(),
+        'total_actual' : df['total'].astype(float).tolist(),
+        'total_plan'   : df['plan_data'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total,
     }, safe=False)
 
 def get_yearly_chart(yearly):
@@ -296,9 +314,9 @@ def get_yearly_chart(yearly):
         )
         SELECT
             COALESCE(a.bulan, p.bulan) AS bulan,
-            ROUND(COALESCE(a.ob, 0), 2) AS ob,
-            ROUND(COALESCE(p.ob_plan, 0), 2) AS ob_plan,
-            ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
+            ROUND(COALESCE(a.ob, 0), 2) AS total,
+            ROUND(COALESCE(p.ob_plan, 0), 2) AS plan_data
+            --ROUND(CASE WHEN p.ob_plan > 0 THEN (a.ob * 100.0 / p.ob_plan)::numeric ELSE 0 END, 2) AS ob_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.bulan = p.bulan
         ORDER BY bulan;
@@ -310,35 +328,49 @@ def get_yearly_chart(yearly):
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'bulan',
-        'ob', 'ob_plan', 'ob_ach'
-    ]
+    # columns = [
+    #     'bulan',
+    #     'ob', 'ob_plan', 'ob_ach'
+    # ]
 
-    df = pd.DataFrame(data, columns=columns)
+    # df = pd.DataFrame(data, columns=columns)
 
-    ob_cols = ['ob']
-    ob_plan_cols = [f + '_plan' for f in ob_cols]
+    # ob_cols = ['ob']
+    # ob_plan_cols = [f + '_plan' for f in ob_cols]
 
     # Konversi kolom ke numerik (handle string atau null)
-    for col in ob_cols:
-        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
+    # for col in ob_cols:
+    #     df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
-    df['ob']       = df[ob_cols].sum(axis=1)
-    df['ob_plan']  = df[ob_plan_cols].sum(axis=1)
+    # df['ob']       = df[ob_cols].sum(axis=1)
+    # df['ob_plan']  = df[ob_plan_cols].sum(axis=1)
 
-    df['total_actual'] = df['ob'] 
-    df['total_plan']   = df['ob_plan']
-    df['achievement'] = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+    # df['total_actual'] = df['ob'] 
+    # df['total_plan']   = df['ob_plan']
+    # df['achievement'] = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+
+    df = pd.DataFrame(data, columns=['bulan','total', 'plan_data'])
+    df['total']         = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+    df['plan_data']     = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0)
+    df['achievement']   = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
+
+    # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total'].sum(), 2),
+        'plan'  : round(df['plan_data'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total'].sum() / df['plan_data'].sum() * 100), 2) if df['plan_data'].sum() > 0 else 0.0,
+        'avg': round(df['total'].mean(), 2)
+    }
 
     # Define month names
     x_data = df['bulan'].apply(lambda x: datetime.strptime(x, '%Y-%m').strftime('%b %y')).tolist()
 
     return JsonResponse({
         'x_data'       : x_data,  # Contoh: ['Jan 25', 'Feb 25', ...]
-        'total_actual' : df['total_actual'].astype(float).tolist(),
-        'total_plan'   : df['total_plan'].astype(float).tolist(),
+        'total_actual' : df['total'].astype(float).tolist(),
+        'total_plan'   : df['plan_data'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 

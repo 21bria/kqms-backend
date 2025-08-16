@@ -5,6 +5,7 @@ from ...models.mine_productions import mineProductions
 from ...models.mine_productions_view import mineProductionsView
 from django.shortcuts import render
 from django.db.models import Count, Sum
+import pandas as pd
 from datetime import datetime
 from django.db import connections, DatabaseError
 from ...utils.db_utils import get_db_vendor
@@ -347,88 +348,88 @@ def total_time_material_by_hour(request):
         return JsonResponse({"error": str(e)}, status=500)
     
 def total_material_by_hour(request):
-    date  = request.GET.get('date')
-    shift = request.GET.get('shift')
+    date      = request.GET.get('date')
     db_vendor = connections['kqms_db'].vendor
-
     try:
-        if db_vendor != 'postgresql':
-            raise ValueError("Unsupported database vendor.")
+        if db_vendor == 'postgresql':
+            query = """ 
+              WITH working_hours AS (
+                    SELECT
+                        hour_label,
+                        CASE
+                            WHEN hour_label >= 7 THEN hour_label
+                            ELSE hour_label + 24
+                        END AS sort_order
+                    FROM generate_series(0, 23) AS hour_label
+                ),
+                hour_series AS (
+                    SELECT 
+                        make_time(hour_label, 0, 0) AS raw_time,
+                        TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,
+                        hour_label,
+                        sort_order
+                    FROM working_hours
+                ),
+                agg_data AS (
+                    SELECT 
+                        LPAD(t_load::text, 2, '0') AS t_load_time,
+                        -- total produksi aktual tanpa MWS
+                    SUM(tonnage) AS total_tonnage
+                    FROM mine_productions mp
+                    WHERE mp.date_production = %s::date
+                    GROUP BY LPAD(t_load::text, 2, '0')
+                ),
+                plan_per_hour AS (
+                    SELECT
+                        ROUND((
+                            SUM(
+                                COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +
+                                COALESCE(hglo, 0) + COALESCE(waste, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
+                                COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(lim, 0) + COALESCE(sap, 0) +  
+                                COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
+                            ) / 22
+                        )::numeric, 2) AS plan_data
+                    FROM plan_productions
+                    WHERE date_plan = %s::date
+                )
+                SELECT
+                    hs.hour_label AS id,
+                    hs.left_time,
+                    COALESCE(a.total_tonnage, 0)::numeric(10,2) AS total,
+                    p.plan_data
+                FROM hour_series hs
+                LEFT JOIN agg_data a ON hs.left_time = a.t_load_time
+                CROSS JOIN plan_per_hour p
+                ORDER BY hs.sort_order;
+            """
+        else:
+            raise ValueError("Unsupported vendor")
 
-        query = """
-        WITH working_hours AS (
-            SELECT
-                hour_label,
-                CASE
-                    WHEN hour_label >= 7 THEN hour_label
-                    ELSE hour_label + 24
-                END AS sort_order
-            FROM generate_series(0, 23) AS hour_label
-        ),
-        hour_series AS (
-            SELECT 
-                make_time(hour_label, 0, 0) AS raw_time,
-                TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,
-                hour_label,
-                sort_order
-            FROM working_hours
-        ),
-        agg_data AS (
-            SELECT 
-                TO_CHAR(make_time(t_load::int, 0, 0), 'HH24') AS t_load_time,
-                SUM(mp.tonnage)::numeric AS total_actual,
-                (SUM(
-                    COALESCE(pp.lim,0) + COALESCE(pp.sap,0) + COALESCE(pp.topsoil,0) +
-                    COALESCE(pp.ob,0) + COALESCE(pp.waste,0) +
-                    COALESCE(pp.quarry,0) + COALESCE(pp.ballast,0) + COALESCE(pp.biomass,0)
-                ) / 22)::numeric AS total_plan_per_hour
-            FROM mine_productions mp
-            LEFT JOIN plan_productions pp
-                ON mp.date_production = pp.date_plan
-            WHERE mp.date_production = %s
-            {}
-            GROUP BY t_load
-        )
-        SELECT
-            hs.hour_label AS id,
-            hs.left_time,
-            COALESCE(agg.total_actual, 0) AS total_actual,
-            COALESCE(agg.total_plan_per_hour, 0) AS total_plan_per_hour,
-            ROUND(
-                CASE WHEN agg.total_plan_per_hour > 0
-                     THEN (agg.total_actual / agg.total_plan_per_hour * 100)
-                     ELSE 0
-                END, 2
-            ) AS ach
-        FROM hour_series hs
-        LEFT JOIN agg_data agg ON hs.left_time = agg.t_load_time
-        ORDER BY hs.sort_order;
-        """
-
-        # jika shift ada, tambahkan kondisi AND
-        shift_filter = ""
-        params = [date]
-        if shift:
-            shift_filter = " AND mp.shift = %s"
-            params.append(shift)
-
-        query = query.format(shift_filter)
-
+        params = [date,date]
+    
         with connections['kqms_db'].cursor() as cursor:
             cursor.execute(query, params)
-            rows = cursor.fetchall()
+            data = cursor.fetchall()
+
+        df = pd.DataFrame(data, columns=['id', 'left_time', 'total', 'plan_data'])
+        df['total'] = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+        df['plan_data'] = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0).round(2)
+        df['achievement'] = df.apply(
+            lambda r: round((r['total'] / r['plan_data'] * 100), 2) if r['plan_data'] > 0 else 0.0,
+            axis=1
+        )
 
         result = []
-        for r in rows:
+        for _, r in df.iterrows():
             result.append({
-                "hour"          : int(r[0]),
-                "label"         : r[1],  # string HH24
-                "actual"        : float(r[2] or 0),
-                "plan_per_hour" : float(r[3] or 0),
-                "ach"           : float(r[4] or 0)
+                "hour": int(r['id']),
+                "label": r['left_time'],
+                "actual": float(r['total']),
+                "plan": float(r['plan_data']),
+                "ach": float(r['achievement']),
             })
 
-        return JsonResponse({"data": result})
+        return JsonResponse({"data": result}, safe=False)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

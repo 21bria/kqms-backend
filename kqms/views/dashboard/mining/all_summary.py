@@ -436,84 +436,48 @@ def get_daily_chart(filter_date):
                 ),
                 hour_series AS (
                     SELECT 
-                        TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,  -- hanya jam: '07', '08', dst.
-                        hour_label, 
-                        sort_order
-                    FROM working_hours
-                ),
-                agg_data AS (
-                    SELECT 
-                        TO_CHAR(make_time(t_load::int, 0, 0), 'HH24') AS t_load_time, -- harus sama formatnya untuk join
-                        SUM(tonnage) AS total_tonnage,
-                        SUM(
-                            COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +
-                            COALESCE(hglo, 0) + COALESCE(waste, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
-                            COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(lim, 0) + COALESCE(sap, 0) +  
-                            COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
-                        ) AS plan_data
-                    FROM mine_productions
-                    LEFT JOIN plan_productions 
-                        ON mine_productions.date_production = plan_productions.date_plan
-                    WHERE date_production = %s
-                    GROUP BY t_load
-                )
-                SELECT
-                    hs.hour_label AS id,
-                    hs.left_time,  -- sekarang hanya berupa jam seperti '07', '08', dst.
-                    COALESCE(SUM(agg.total_tonnage), 0)::numeric(10,2) AS total,
-                    ROUND(COALESCE(SUM(DISTINCT agg.plan_data), 0)::numeric / 22, 2) AS plan_data
-                FROM hour_series hs
-                LEFT JOIN agg_data agg ON hs.left_time = agg.t_load_time
-                GROUP BY hs.hour_label, hs.left_time, hs.sort_order
-                ORDER BY hs.sort_order;
-
-            """
-        elif db_vendor in [ 'mssql', 'microsoft']:
-            query = """
-                WITH working_hours AS (
-                    SELECT 
-                        hour_label = v.number,
-                        sort_order = CASE WHEN v.number >= 7 THEN v.number ELSE v.number + 24 END
-                    FROM master..spt_values v
-                    WHERE v.type = 'P' AND v.number BETWEEN 0 AND 23
-                ),
-                hour_series AS (
-                    SELECT 
-                        CAST(CAST(hour_label AS VARCHAR) + ':00:00' AS TIME) AS left_time,
+                        make_time(hour_label, 0, 0) AS raw_time,
+                        TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,
                         hour_label,
                         sort_order
                     FROM working_hours
                 ),
                 agg_data AS (
                     SELECT 
-                        CAST(CAST(CAST(t_load AS INT) AS VARCHAR) + ':00:00' AS TIME) AS t_load_time,
-                        SUM(tonnage) AS total_tonnage,
-                        SUM(
-                            ISNULL(topsoil, 0) + ISNULL(ob, 0) + ISNULL(lglo, 0) + ISNULL(mglo, 0) +
-                            ISNULL(hglo, 0) + ISNULL(waste, 0) + ISNULL(mws, 0) + ISNULL(lgso, 0) +
-                            ISNULL(mgso, 0) + ISNULL(hgso, 0) +  ISNULL(lim, 0) +  ISNULL(sap, 0) + 
-                            ISNULL(quarry, 0) + ISNULL(ballast, 0) + ISNULL(biomass, 0)
-                        ) AS plan_data
+                        LPAD(t_load::text, 2, '0') AS t_load_time,
+                        -- total produksi aktual tanpa MWS
+                    SUM(tonnage) AS total_tonnage
                     FROM mine_productions mp
-                    LEFT JOIN plan_productions pp ON mp.date_production = pp.date_plan
-                    WHERE date_production = %s
-                    GROUP BY t_load
+                    WHERE mp.date_production = %s::date
+                    GROUP BY LPAD(t_load::text, 2, '0')
+                ),
+                plan_per_hour AS (
+                    SELECT
+                        ROUND((
+                            SUM(
+                                COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +
+                                COALESCE(hglo, 0) + COALESCE(waste, 0) + COALESCE(mws, 0) + COALESCE(lgso, 0) +
+                                COALESCE(mgso, 0) + COALESCE(hgso, 0) + COALESCE(lim, 0) + COALESCE(sap, 0) +  
+                                COALESCE(quarry, 0) + COALESCE(ballast, 0) + COALESCE(biomass, 0)
+                            ) / 22
+                        )::numeric, 2) AS plan_data
+                    FROM plan_productions
+                    WHERE date_plan = %s::date
                 )
                 SELECT
-                    hs.hour_label AS time,
+                    hs.hour_label AS id,
                     hs.left_time,
-                    ISNULL(SUM(agg.total_tonnage), 0) AS total,
-                    ROUND(ISNULL(SUM(DISTINCT agg.plan_data), 0) / 22.0, 2) AS plan_data
+                    COALESCE(a.total_tonnage, 0)::numeric(10,2) AS total,
+                    p.plan_data
                 FROM hour_series hs
-                LEFT JOIN agg_data agg ON hs.left_time = agg.t_load_time
-                GROUP BY hs.hour_label, hs.left_time, hs.sort_order
-                ORDER BY hs.sort_order
+                LEFT JOIN agg_data a ON hs.left_time = a.t_load_time
+                CROSS JOIN plan_per_hour p
+                ORDER BY hs.sort_order;
             """
         else:
             raise ValueError("Unsupported vendor")
 
-
-        params = [filter_date]
+        params = [filter_date,filter_date]
 
         with connections['kqms_db'].cursor() as cursor:
             cursor.execute(query, params)

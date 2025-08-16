@@ -46,110 +46,152 @@ def get_chart_detail_quarry(request):
 
 def get_daily_detail_chart(filter_date):
     query = """ 
-             SELECT
-                t1.id,
-                t1.left_time,
-                COALESCE(SUM(t2.total_tonnage), 0)::numeric(10,2) AS total,
-                ROUND(COALESCE(SUM(DISTINCT t2.plan_data), 0)::numeric / 22, 2) AS plan_data
-            FROM tanggal_jam t1
-            LEFT JOIN (
-			    SELECT 
-			        t_load,
-			        SUM(CASE 
-					    WHEN nama_material IN ('Quarry') 
-					    THEN tonnage 
-					    ELSE 0 
-					END)::numeric AS total_tonnage,
-			        SUM(
-			            COALESCE(quarry, 0)
-			        ) AS plan_data
-			    FROM mine_productions
-			    LEFT JOIN plan_productions 
-			        ON mine_productions.date_production = plan_productions.date_plan
-			    WHERE date_production=%s
-			    GROUP BY t_load
-			) t2 ON t1.left_time = t2.t_load
-            GROUP BY t1.id, t1.left_time
-            ORDER BY t1.id;
+             WITH working_hours AS (
+                    SELECT
+                        hour_label,
+                        CASE
+                            WHEN hour_label >= 7 THEN hour_label
+                            ELSE hour_label + 24
+                        END AS sort_order
+                    FROM generate_series(0, 23) AS hour_label
+                ),
+                hour_series AS (
+                    SELECT 
+                        make_time(hour_label, 0, 0) AS raw_time,
+                        TO_CHAR(make_time(hour_label, 0, 0), 'HH24') AS left_time,
+                        hour_label,
+                        sort_order
+                    FROM working_hours
+                ),
+                agg_data AS (
+                    SELECT 
+                        LPAD(t_load::text, 2, '0') AS t_load_time,
+                        SUM(CASE WHEN nama_material IN ('Quarry') THEN tonnage ELSE 0 END)::numeric AS total_tonnage
+                    FROM mine_productions mp
+                    WHERE mp.date_production = %s::date
+                    GROUP BY LPAD(t_load::text, 2, '0')
+                ),
+                plan_per_hour AS (
+                    SELECT
+                        ROUND(SUM(COALESCE(quarry,0))::numeric / 22, 3) AS plan_data
+                    FROM plan_productions
+                    WHERE date_plan = %s::date
+                )
+                SELECT
+                    hs.hour_label AS id,
+                    hs.left_time,
+                    COALESCE(agg.total_tonnage, 0) AS total,
+                    p.plan_data
+                FROM hour_series hs
+                LEFT JOIN agg_data agg ON hs.left_time = agg.t_load_time
+                CROSS JOIN plan_per_hour p
+                ORDER BY hs.sort_order;
     """
-    params = [filter_date]
+    params = [filter_date,filter_date]
 
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(query, params)
         data = cursor.fetchall()
 
     df = pd.DataFrame(data, columns=['id', 'left_time', 'total', 'plan_data'])
-    df['total'] = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
-    df['plan_data'] = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0).round(2)
+    df['total']       = pd.to_numeric(df['total'], errors='coerce').fillna(0.0).round(2)
+    df['plan_data']   = pd.to_numeric(df['plan_data'], errors='coerce').fillna(0.0)
     df['achievement'] = df.apply( lambda row: round(float(row['total']) / float(row['plan_data']) * 100, 2) if float(row['plan_data']) > 0 else 0,axis=1)
 
+    # === Grand Total per tanggal ===
+    grand_total = {
+        'total' : round(df['total'].sum(), 2),
+        'plan'  : round(df['plan_data'].sum(), 2),  # sum dulu, baru round
+        'achievement': round((df['total'].sum() / df['plan_data'].sum() * 100), 2) if df['plan_data'].sum() > 0 else 0.0,
+        'avg': round(df['total'].mean(), 2)
+    }
+
+
     return JsonResponse({
-        'x_data': df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
-        'total_actual': df['total'].tolist(),
-        'total_plan': df['plan_data'].tolist(),
-        'achievement': df['achievement'].tolist(),
+        'x_data'        : df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
+        'total_actual'  : df['total'].tolist(),
+        'total_plan'    : df['plan_data'].tolist(),
+        'achievement'   : df['achievement'].tolist(),
+        'grand_total'   : grand_total
     }, safe=False)
 
 def get_monthly_detail_chart(filter_year, filter_month):
-     # Ambil jumlah hari terakhir dalam bulan
-    last_day = calendar.monthrange(int(filter_year), int(filter_month))[1]
-
     query = """
+    WITH day_series AS (
+        SELECT generate_series(
+            make_date(%s, %s, 1), 
+            (make_date(%s, %s, 1) + interval '1 month - 1 day')::date,
+            interval '1 day'
+        )::date AS left_date
+    ),
+    actual AS (
         SELECT 
-                t1.left_date,
-                ROUND(SUM(t2.tonnage)::numeric, 2) AS total_tonnage,
-                ROUND(COALESCE(tp.plan_data, 0)::numeric, 2) AS total_plan
-            FROM tanggal t1
-            LEFT JOIN (
-                SELECT 
-                    left_date,
-                    SUM(CASE 
-					    WHEN nama_material IN ('Quarry') 
-					    THEN tonnage 
-					    ELSE 0 
-					END)::numeric AS tonnage
-                FROM mine_productions
-                WHERE EXTRACT(MONTH FROM date_production) = %s
-                AND EXTRACT(YEAR FROM date_production) = %s
-                GROUP BY left_date
-            ) AS t2 ON t1.left_date = t2.left_date
-            LEFT JOIN (
-                SELECT 
-                    EXTRACT(DAY FROM date_plan)::int AS day_plan,
-                    SUM(
-                        COALESCE(quarry, 0)
-                    ) AS plan_data
-                FROM plan_productions
-                WHERE EXTRACT(MONTH FROM date_plan) = %s
-                AND EXTRACT(YEAR FROM date_plan) = %s
-                GROUP BY day_plan
-            ) AS tp ON t1.left_date = tp.day_plan
-        WHERE t1.left_date <= %s
-        GROUP BY t1.left_date, tp.plan_data
-        ORDER BY t1.left_date ASC;
-        """
+            DATE(date_production) AS prod_date,
+            SUM(CASE WHEN nama_material = 'Quarry' THEN tonnage ELSE 0 END)::numeric AS total_tonnage
+        FROM mine_productions
+        WHERE EXTRACT(MONTH FROM date_production) = %s
+          AND EXTRACT(YEAR FROM date_production) = %s
+        GROUP BY DATE(date_production)
+    ),
+    plan AS (
+        SELECT
+            DATE(date_plan) AS plan_date,
+            SUM(COALESCE(quarry, 0))::numeric AS total_plan
+        FROM plan_productions
+        WHERE EXTRACT(MONTH FROM date_plan) = %s
+          AND EXTRACT(YEAR FROM date_plan) = %s
+        GROUP BY DATE(date_plan)
+    )
+    SELECT
+        EXTRACT(DAY FROM ds.left_date)::int AS day,
+        ROUND(COALESCE(a.total_tonnage, 0), 2) AS total_tonnage,
+        ROUND(COALESCE(p.total_plan, 0), 2)   AS total_plan
+    FROM day_series ds
+    LEFT JOIN actual a ON ds.left_date = a.prod_date
+    LEFT JOIN plan p   ON ds.left_date = p.plan_date
+    ORDER BY ds.left_date;
+    """
 
-    params = [filter_month, filter_year, filter_month, filter_year, last_day]
+    params = [
+        filter_year, filter_month,   # awal bulan
+        filter_year, filter_month,   # akhir bulan
+        filter_month, filter_year,   # actual
+        filter_month, filter_year    # plan
+    ]
 
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    df = pd.DataFrame(data, columns=['left_date', 'total_tonnage', 'total_plan'])
-    
-    # Konversi ke float, pastikan tidak dalam string
-    df['total_tonnage'] = pd.to_numeric(df['total_tonnage'], errors='coerce').fillna(0.0).round(2)
-    df['total_plan']    = pd.to_numeric(df['total_plan'], errors='coerce').fillna(0.0).round(2)
+    df = pd.DataFrame(data, columns=['day', 'total_tonnage', 'total_plan'])
 
-    # Optional: hitung achievement jika dibutuhkan
-    # df['achievement'] = df.apply(lambda r: round(r['total_tonnage'] / r['total_plan'] * 100, 2) if r['total_plan'] > 0 else 0.0, axis=1)
-    df['achievement'] = df.apply( lambda row: round(float(row['total_tonnage']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+    # pastikan numeric
+    for col in ['total_tonnage', 'total_plan']:
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0).round(2)
+
+    # achievement harian
+    df['achievement'] = df.apply(
+        lambda r: round((r['total_tonnage'] / r['total_plan'] * 100), 2) if r['total_plan'] > 0 else 0.0,
+        axis=1
+    )
+
+    # === Grand Total ===
+    total_sum = df['total_tonnage'].sum()
+    plan_sum  = df['total_plan'].sum()
+
+    grand_total = {
+        'total': round(total_sum, 2),
+        'plan' : round(plan_sum, 2),
+        'achievement': round((total_sum / plan_sum * 100), 2) if plan_sum > 0 else 0.0,
+        'avg_per_day': round(df['total_tonnage'].mean(skipna=True), 2) if not df.empty else 0.0
+    }
 
     return JsonResponse({
-        'x_data': df['left_date'].tolist(),
+        'x_data'       : df['day'].astype(int).tolist(),
         'total_tonnage': df['total_tonnage'].astype(float).tolist(),
-        'total_plan': df['total_plan'].astype(float).tolist(),
-        # 'achievement': df['achievement'].astype(float).tolist()
+        'total_plan'   : df['total_plan'].astype(float).tolist(),
+        'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 def get_weekly_detail_chart(filter_week):
@@ -190,32 +232,38 @@ def get_weekly_detail_chart(filter_week):
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'tanggal', 'hari',
-        'quarry', 'quarry_plan', 'quarry_ach'
-    ]
-
+    columns = ['tanggal', 'hari', 'quarry', 'quarry_plan', 'quarry_ach']
     df = pd.DataFrame(data, columns=columns)
 
-    quarry_cols = ['quarry']
-    quarry_plan_cols = [f + '_plan' for f in quarry_cols]
-
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in quarry_cols  :
+    # konversi numeric
+    for col in ['quarry', 'quarry_plan']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
-    df['quarry']       = df[quarry_cols].sum(axis=1)
-    df['quarry_plan']  = df[quarry_plan_cols].sum(axis=1)
-
+    # total & achievement per hari
     df['total_actual'] = df['quarry']
     df['total_plan']   = df['quarry_plan']
-    df['achievement']  = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+    df['achievement']  = df.apply(
+        lambda r: round((r['total_actual'] / r['total_plan'] * 100), 2) if r['total_plan'] > 0 else 0.0,
+        axis=1
+    )
+
+    # === Grand Total Mingguan ===
+    total_sum = df['total_actual'].sum()
+    plan_sum  = df['total_plan'].sum()
+
+    grand_total = {
+        'total'       : round(total_sum, 2),
+        'plan'        : round(plan_sum, 2),
+        'achievement' : round((total_sum / plan_sum * 100), 2) if plan_sum > 0 else 0.0,
+        'avg_per_day' : round(df['total_actual'].mean(skipna=True), 2) if not df.empty else 0.0
+    }
 
     return JsonResponse({
         'x_data'       : df['hari'].astype(str).tolist(),
         'total_actual' : df['total_actual'].astype(float).tolist(),
         'total_plan'   : df['total_plan'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 def get_range_detail_chart(date_start, date_end):
@@ -240,7 +288,11 @@ def get_range_detail_chart(date_start, date_end):
             COALESCE(a.tanggal, p.tanggal) AS tanggal,
             ROUND(COALESCE(a.quarry, 0), 2) AS quarry,
             ROUND(COALESCE(p.quarry_plan, 0), 2) AS quarry_plan,
-            ROUND(CASE WHEN p.quarry_plan > 0 THEN (a.quarry * 100.0 / p.quarry_plan)::numeric ELSE 0 END, 2) AS quarry_ach
+            ROUND(
+                CASE WHEN p.quarry_plan > 0 
+                     THEN (a.quarry * 100.0 / p.quarry_plan)::numeric 
+                     ELSE 0 END, 2
+            ) AS quarry_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.tanggal = p.tanggal
         ORDER BY tanggal;
@@ -252,31 +304,38 @@ def get_range_detail_chart(date_start, date_end):
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'tanggal',
-        'quarry', 'quarry_plan', 'quarry_ach'
-    ]
-
+    columns = ['tanggal', 'quarry', 'quarry_plan', 'quarry_ach']
     df = pd.DataFrame(data, columns=columns)
-    quarry_cols = ['quarry']
-    quarry_plan_cols = [f + '_plan' for f in quarry_cols]
 
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in quarry_cols:
+    # konversi numeric
+    for col in ['quarry', 'quarry_plan']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
-    df['quarry']       = df[quarry_cols].sum(axis=1)
-    df['quarry_plan']  = df[quarry_plan_cols].sum(axis=1)
-
-    df['total_actual'] = df['quarry'] 
+    # total per hari
+    df['total_actual'] = df['quarry']
     df['total_plan']   = df['quarry_plan']
-    df['achievement'] = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
+    df['achievement']  = df.apply(
+        lambda r: round((r['total_actual'] / r['total_plan'] * 100), 2) if r['total_plan'] > 0 else 0.0,
+        axis=1
+    )
+
+    # === Grand Total range ===
+    total_sum = df['total_actual'].sum()
+    plan_sum  = df['total_plan'].sum()
+
+    grand_total = {
+        'total'       : round(total_sum, 2),
+        'plan'        : round(plan_sum, 2),
+        'achievement' : round((total_sum / plan_sum * 100), 2) if plan_sum > 0 else 0.0,
+        'avg_per_day' : round(df['total_actual'].mean(skipna=True), 2) if not df.empty else 0.0
+    }
 
     return JsonResponse({
-        'x_data'        : df['tanggal'].astype(str).tolist(),
+        'x_data'       : df['tanggal'].astype(str).tolist(),
         'total_actual' : df['total_actual'].astype(float).tolist(),
         'total_plan'   : df['total_plan'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
 
 def get_yearly_chart(yearly):
@@ -301,47 +360,59 @@ def get_yearly_chart(yearly):
             COALESCE(a.bulan, p.bulan) AS bulan,
             ROUND(COALESCE(a.quarry, 0), 2) AS quarry,
             ROUND(COALESCE(p.quarry_plan, 0), 2) AS quarry_plan,
-            ROUND(CASE WHEN p.quarry_plan > 0 THEN (a.quarry * 100.0 / p.quarry_plan)::numeric ELSE 0 END, 2) AS quarry_ach
+            ROUND(
+                CASE WHEN p.quarry_plan > 0 
+                     THEN (a.quarry * 100.0 / p.quarry_plan)::numeric 
+                     ELSE 0 END, 2
+            ) AS quarry_ach
         FROM actual a
         FULL OUTER JOIN plan p ON a.bulan = p.bulan
         ORDER BY bulan;
     """
 
-    params = [yearly,yearly]
+    params = [yearly, yearly]
 
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(query, params)
         data = cursor.fetchall()
 
-    columns = [
-        'bulan',
-        'quarry', 'quarry_plan', 'quarry_ach'
-    ]
-
+    columns = ['bulan', 'quarry', 'quarry_plan', 'quarry_ach']
     df = pd.DataFrame(data, columns=columns)
 
-    quarry_cols = ['quarry']
-    quarry_plan_cols = [f + '_plan' for f in quarry_cols]
-
-    # Konversi kolom ke numerik (handle string atau null)
-    for col in quarry_cols:
+    # Konversi kolom ke numeric
+    for col in ['quarry', 'quarry_plan']:
         df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(float)
 
-    df['quarry']       = df[quarry_cols].sum(axis=1)
-    df['quarry_plan']  = df[quarry_plan_cols].sum(axis=1)
-
-    df['total_actual'] = df['quarry'] 
+    # total per bulan
+    df['total_actual'] = df['quarry']
     df['total_plan']   = df['quarry_plan']
-    df['achievement'] = df.apply( lambda row: round(float(row['total_actual']) / float(row['total_plan']) * 100, 2) if float(row['total_plan']) > 0 else 0,axis=1)
-    # Define month names
+    df['achievement']  = df.apply(
+        lambda r: round((r['total_actual'] / r['total_plan'] * 100), 2) if r['total_plan'] > 0 else 0.0,
+        axis=1
+    )
+
+    # Format bulan → Jan 25, Feb 25, dst
     x_data = df['bulan'].apply(lambda x: datetime.strptime(x, '%Y-%m').strftime('%b %y')).tolist()
 
+    # === Grand Total tahunan ===
+    total_sum = df['total_actual'].sum()
+    plan_sum  = df['total_plan'].sum()
+
+    grand_total = {
+        'total'       : round(total_sum, 2),
+        'plan'        : round(plan_sum, 2),
+        'achievement' : round((total_sum / plan_sum * 100), 2) if plan_sum > 0 else 0.0,
+        'avg_per_month': round(df['total_actual'].mean(skipna=True), 2) if not df.empty else 0.0
+    }
+
     return JsonResponse({
-        'x_data'       : x_data,  # Contoh: ['Jan 25', 'Feb 25', ...]
+        'x_data'       : x_data,  # ['Jan 25', 'Feb 25', ...]
         'total_actual' : df['total_actual'].astype(float).tolist(),
         'total_plan'   : df['total_plan'].astype(float).tolist(),
         'achievement'  : df['achievement'].astype(float).tolist(),
+        'grand_total'  : grand_total
     }, safe=False)
+
 
 
 

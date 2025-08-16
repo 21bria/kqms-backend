@@ -895,7 +895,7 @@
                         x: item.label,
                         y: item.actual,
                         goals: [
-                            { name: 'Plan', value: item.plan_per_hour, strokeHeight: 5, strokeColor: '#e6533c' }
+                            { name: 'Plan', value: item.plan, strokeHeight: 3, strokeColor: '#e6533c' }
                         ]
                     }));
 
@@ -915,7 +915,7 @@
                                 gradientToColors: ['#00E396'],
                                 inverseColors: false,
                                 opacityFrom: 0.9,
-                                opacityTo: 0.7,
+                                opacityTo: 0.6,
                                 stops: [0, 100]
                             }
                         },
@@ -954,7 +954,6 @@
             .catch(err => console.error(err));
     }
 
-
     var options = {
         series: [],
         chart: {
@@ -975,7 +974,7 @@
                 gradientToColors: ['#00E396'], // warna akhir
                 inverseColors: false,
                 opacityFrom: 0.9,
-                opacityTo: 0.7,
+                opacityTo: 0.5,
                 stops: [0, 100]
             }
         },
