@@ -54,7 +54,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">List truck factors</h5>
+                            <h5 class="box-title">Truck factors</h5>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
@@ -74,8 +74,8 @@
                                             <th width="3%">No</th>
                                             <th>Type Truck</th>
                                             <th>Material</th>
-                                            <th>Bcm</th>
-                                            <th>Tonnage</th>
+                                            <th class="text-danger">Bucket Capacity</th>
+                                            <th class="text-danger">Density (LCM)</th>
                                             <th>Remarks</th>
                                             <th width="5%">Action</th>
                                         </tr>
@@ -89,15 +89,13 @@
                 </div>
             </div>
             <!-- End::row-1 -->
-
-
         </div>
         <!-- Start::main-content -->
 
     </div>
 
     <!-- Start::add modal -->
-    <div id="add-data" class="hs-overlay hidden ti-modal"tabindex="-1">
+    <div id="add-data" class="hs-overlay hidden ti-modal" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
@@ -121,8 +119,8 @@
                                         <th scope="col" width="2%">#</th>
                                         <th scope="col" width="10%" class="text-danger">Type Truck</th>
                                         <th scope="col" width="10%" class="text-danger">Material</th>
-                                        <th scope="col" width="10%" class="text-danger">Bcm</th>
-                                        <th scope="col" width="10%" class="text-danger">Tonnage</th>
+                                        <th scope="col" width="10%" class="text-danger">Bucket Capacity</th>
+                                        <th scope="col" width="10%" class="text-danger">Density (LCM)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -142,7 +140,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -168,8 +165,8 @@
                                     <tr>
                                         <th scope="col" width="20%" class="text-danger">Type Truck</th>
                                         <th scope="col" width="11%" class="text-danger">Material</th>
-                                        <th scope="col" width="15%" class="text-danger">Bcm</th>
-                                        <th scope="col" width="10%" class="text-danger">Tonnagge</th>
+                                         <th scope="col" width="10%" class="text-danger">Bucket Capacity</th>
+                                        <th scope="col" width="10%" class="text-danger">Density (LCM)</th>
                                         <th scope="col" width="17%" class="text-danger">Remarks</th>
                                     </tr>
                                 </thead>
@@ -178,7 +175,7 @@
                                         <input type="hidden" name="id" id="id">
                                         <td>
                                             <div>
-                                                <input type="text" name="type_truck" id="type_truck"
+                                                <input type="text" name="type_unit" id="type_unit"
                                                     class="form-control text-black" data-row="0">
                                             </div>
                                         </td>
@@ -190,12 +187,14 @@
                                         </td>
                                         <td>
                                             <div>
-                                                <input type="number" name="tf_bcm" id="tf_bcm" class="form-control",placeholder="0">
+                                                <input type="number" name="bucket_capacity" id="bucket_capacity"
+                                                    class="form-control" ,placeholder="0">
                                             </div>
                                         </td>
                                         <td>
                                             <div>
-                                                <input type="text" name="tf_ton" id="tf_ton" class="form-control"placeholder="0.0">
+                                                <input type="text" name="density_lcm" id="density_lcm"
+                                                    class="form-control" placeholder="0.0">
                                             </div>
                                         </td>
                                         <td>
@@ -279,8 +278,8 @@
                     }
                 }, // Kolom nomor otomatis
                 {
-                    data: 'type_truck',
-                    name: 'type_truck',
+                    data: 'type_unit',
+                    name: 'type_unit',
                 },
 
                 {
@@ -289,8 +288,8 @@
                 },
 
                 {
-                    data: 'tf_bcm',
-                    name: 'tf_bcm',
+                    data: 'bucket_capacity',
+                    name: 'bucket_capacity',
                     render: function (data) {
                         return parseFloat(data).toFixed(2);
                     },
@@ -298,8 +297,8 @@
                     orderable: false,
                 },
                 {
-                    data: 'tf_ton',
-                    name: 'tf_ton',
+                    data: 'density_lcm',
+                    name: 'density_lcm',
                     render: function (data) {
                         return parseFloat(data).toFixed(2);
                     },
@@ -357,17 +356,17 @@
         /* Update Data*/
         $('#updateButton').click(function () {
             var id = $('#id').val();
-            var type_truck = $('#type_truck').val();
+            var type_unit = $('#type_unit').val();
             var material = $('#material').val();
-            var tf_bcm = $('#tf_bcm').val();
-            var tf_ton = $('#tf_ton').val();
+            var bucket_capacity = $('#bucket_capacity').val();
+            var density_lcm = $('#density_lcm').val();
             var remarks = $('#remarks').val();
 
             var updatedData = {
-                type_truck: type_truck,
+                type_unit: type_unit,
                 material: material,
-                tf_bcm: tf_bcm,
-                tf_ton: tf_ton,
+                bucket_capacity: bucket_capacity,
+                density_lcm: density_lcm,
                 remarks: remarks
             };
             var url = '/kqms/mining/mine-production/truck-factors/update/' + id + '/';
@@ -378,10 +377,10 @@
                 success: function (response) {
                     if (response.success) {
                         $('#id').val('');
-                        $('#type_truck').val('');
+                        $('#type_unit').val('');
                         $('#material').val('').trigger('change');
-                        $('#tf_bcm').val('');
-                        $('#tf_ton').val('');
+                        $('#bucket_capacity').val('');
+                        $('#density_lcm').val('');
                         $('#remarks').val('');
                         window.HSOverlay.close('#edit-data');
                         // Tampilkan notifikasi sukses
@@ -476,10 +475,10 @@
                             padding: '2em',
                         });
 
-                        $("[name='type_truck[]']").val('');
+                        $("[name='type_unit[]']").val('');
                         $("[name='material[]']").val('').trigger('change');
-                        $("[name='tf_bcm[]']").val('');
-                        $("[name='tf_ton[]']").val('');
+                        $("[name='bucket_capacity[]']").val('');
+                        $("[name='density_lcm[]']").val('');
                         $('#factorsTable tbody tr:last').remove();
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
@@ -549,7 +548,7 @@
                 confirmButtonColor: 'btn btn-success',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Delete',
-                width: 380,
+                // width: 380,
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -591,9 +590,9 @@
                 options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
             });
             $('#material').append(options).select2({
-                    width: '100%',
-                    dropdownParent: $('#edit-data .ti-modal-body')
-                });
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+            });
         }
     });
 
@@ -613,16 +612,16 @@
                     window.HSOverlay.open('#edit-data');
                     // Mengisi formulir dengan data yang diterima
                     $('#id').val(response.id);
-                    $('#type_truck').val(response.type_truck);
+                    $('#type_unit').val(response.type_unit);
                     $('#material').val(response.material).trigger('change');
-                    $('#tf_bcm').val(parseFloat(response.tf_bcm).toFixed(2));
-                    $('#tf_ton').val(parseFloat(response.tf_ton).toFixed(2));
+                    $('#bucket_capacity').val(parseFloat(response.bucket_capacity).toFixed(2));
+                    $('#density_lcm').val(parseFloat(response.density_lcm).toFixed(2));
                     // $('#check_duplicated').val(response.check_duplicated);
                     $('#remarks').val(response.remarks);
                 } else {
                     alert(
                         'Data tidak ditemukan'
-                    ); 
+                    );
                 }
             },
             error: function (xhr, status, error) {
@@ -671,14 +670,14 @@
                 '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
                 '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
                 '</i></button></td></div>' +
-                '<td><input type="text" name="type_truck[]" value="" class="form-control w-full !rounded-md"></td>' +
+                '<td><input type="text" name="type_unit[]" value="" class="form-control w-full !rounded-md"></td>' +
                 '<td>' +
                 '<select name="material[]" class="form-select" style="width: 100%;">' +
                 '<option value="">-- Select --</option>' +
                 '</select>' +
                 '</td>' +
-                '<td><input type="number" class="form-control w-full !rounded-md" name="tf_bcm[]"></td>' +
-                '<td><input type="number" class="form-control w-full !rounded-md" name="tf_ton[]"></td>' +
+                '<td><input type="text" class="form-control w-full !rounded-md" name="bucket_capacity[]"></td>' +
+                '<td><input type="text" class="form-control w-full !rounded-md" name="density_lcm[]"></td>' +
                 '</tr>';
 
             $('#factorsTable tbody').append(newRow);

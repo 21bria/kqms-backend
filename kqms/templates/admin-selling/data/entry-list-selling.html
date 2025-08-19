@@ -133,7 +133,8 @@
                                             <th class="bg-soft-secondary">Sub Lot</th>
                                             <th class="bg-soft-secondary">Barge Code</th>
                                             <th class="bg-soft-secondary">Type</th>
-                                            <!-- <th class="bg-soft-secondary"></th> -->
+                                            <th class="bg-soft-secondary">Sort</th>
+                                            <th class="bg-soft-secondary"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -219,14 +220,124 @@
         </div>
     </div>
 
-    <!-- Create Data -->
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal">
+        <div class="hs-overlay-open:mt-7  ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold">Edit data</h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold !text-defaulttextcolor"
+                        data-hs-overlay="#edit-data">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body px-4">
+                    <div class="p-2">
+                        <div class="grid grid-cols-1 gap-0">
+                            <div class="xxl:col-span-12 xl:col-span-12 lg:col-span-12 md:col-span-12 col-span-12">
+                                <div class="grid grid-cols-12 gap-4">
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control w-full !rounded-md" id="date_hauling"
+                                            name="date_hauling" value="{{today}}">
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Shift</label>
+                                        <select id="shift" name="shift" class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">Select</option>
+                                            <option value="Day">Pagi</option>
+                                            <option value="Night">Malam</option>
+                                        </select>
+                                    </div>
 
-    <!-- Start::add modal -->
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Material</label>
+                                        <select id="id_material" name="id_material"
+                                            class="form-control w-full !rounded-md">
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Dome</label>
+                                        <select id="id_pile" name="id_pile"
+                                            class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">--- Select ---</option>
+                                        </select>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Truck</label>
+                                        </select>
+                                        <input type="text" class="form-control w-full !rounded-md" id="unit_code"
+                                            name="unit_code" placeholder="DT-0001">
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Sub Lot</label>
+                                        <select id="code_sub" name="code_sub"
+                                            class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">Select</option>
+                                            <option value="SL_01">SL_01</option>
+                                            <option value="SL_02">SL_02</option>
+                                            <option value="SL_03">SL_03</option>
+                                            <option value="SL_04">SL_04</option>
+                                            <option value="SL_05">SL_05</option>
+                                        </select>
 
-    <!-- Global Toast Container -->
-    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Kode Lot</label>
+                                        <select id="code_lot" name="code_lot"
+                                            class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">--- Select ---</option>
+                                        </select>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Tongkang</label>
+                                        <select id="barge_code" name="barge_code"
+                                            class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">--- Select ---</option>
+                                        </select>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Times</label>
+                                        <input type="time" class="form-control w-full !rounded-md" id="time_hauling"
+                                            name="time_hauling" placeholder="hh:mm:ss" >
+                                        <label
+                                            class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Input
+                                            time for selling</label>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <label class="form-label">Sub Auto</label>
+                                        <input type="text" class="form-control w-full !rounded-md" id="sub_auto"
+                                            name="sub_auto" placeholder="SL" readonly>
+                                        <label
+                                            class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Input
+                                            Automatic Sublot by system</label>
+                                    </div>
+                                    <div class="xl:col-span-6 col-span-12">
+                                        <input type="hidden" class="form-control w-full !rounded-md" id="id" name="id">
 
-    <!-- End::add task modal -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-secondary-full align-middle"
+                        data-hs-overlay="#edit-data">
+                        Close
+                    </button>
+                    <button type="button" id="updateButton" class="ti-btn bg-primary text-white !font-medium">Save
+                        Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End::edit task modal -->
+
+
     <!-- Footer Start -->
     {% include 'layout/footer.html' %}
     <!-- Footer End -->
@@ -287,7 +398,6 @@
 <!-- Create Data -->
 <script>
     // Fungsi untuk format waktu jadi hh:mm:s
-
     $('#addNew').on('click', function () {
         window.location.href = "{% url 'selling-form-quick-page' %}";
     });
@@ -371,8 +481,10 @@
                 },
                 {
                     data: 'unit_code',
-                    name: 'unit_code'
+                    name: 'unit_code',
+                     searchable: true
                 },
+               
                 {
                     data: 'tonnage',
                     name: 'tonnage',
@@ -400,38 +512,40 @@
                     data: 'type_selling',
                     name: 'type_selling'
                 },
-
-
-
-                // {
-                //     'data': null,
-                //     'name': 'action',
-                //     'orderable': false,
-                //     'searchable': false,
-                //     'render': function (data, type, row) {
-                //         return `
-                //             <div  class="flex gap-2 items-center" >
-                //                 <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                //                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
-                //                         <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                //                         <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                //                     </svg>
-                //                 </a>
-                //                 <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
-                //                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
-                //                         <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                //                         <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                //                     </svg>
-                //                 </a>
-                //             </div>
-                //         `;
-                //     }
-                // },
+ {
+                    data: 'no_urut',
+                    name: 'no_urut',
+                     searchable: false
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                            <div  class="flex gap-2 items-center" >
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </a>
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        `;
+                    }
+                },
 
             ],
             // Mengatur default sort pada kolom secara desc
             order: [
-                [1, 'desc']
+                [0, 'desc']
             ],
 
         });
@@ -459,7 +573,140 @@
 
         call_TotaOre();
 
-       
+        /* Update*/
+        $('#updateButton').click(function () {
+            var id = $('#id').val();
+            var date_hauling = $('#date_hauling').val();
+            var shift = $('#shift').val();
+            var time_hauling = $('#time_hauling').val();
+            var id_material = $('#id_material').val();
+            var id_pile = $('#id_pile').val();
+            var unit_code = $('#unit_code').val();
+            var code_sub = $('#code_sub').val();
+            var code_lot = $('#code_lot').val();
+            var barge_code = $('#barge_code').val();
+
+            var updatedData = {
+                date_hauling: date_hauling,
+                shift: shift,
+                time_hauling: time_hauling,
+                id_material: id_material,
+                id_pile: id_pile,
+                unit_code: unit_code,
+                code_sub: code_sub,
+                code_lot: code_lot,
+                barge_code: barge_code
+            };
+
+            var url = '/kqms/selling/quick/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id').val('');
+                        $('#date_hauling').val('');
+                        $('#shift').val('').trigger('change');
+                        $('#time_hauling').val('');
+                        $('#id_material').val('').trigger('change');
+                        $('#id_pile').val('').trigger('change');
+                        $('#unit_code').val('');
+                        $('#code_sub').val('')
+                        $('#code_lot').val()
+                        $('#increment').val('');
+                        $('#barge_code').val('').trigger('change');
+
+                        // Tutup modal (gunakan HSOverlay jika pakai Tailwind UI HS)
+                        window.HSOverlay.close('#edit-data');
+
+                        //  Tampilkan SweetAlert
+                        Swal.fire({
+                            title: response.message,
+                            icon: "success",
+                            timer: 3000,
+                            // showConfirmButton: false,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK',
+                        });
+
+                        // Kirim permintaan AJAX ke server
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    if (xhr.status === 422) {
+                        showToast(xhr.responseJSON.message, 'danger');
+                    } else if (xhr.status === 400) {
+                        showToast(xhr.responseJSON.error, 'danger');
+                    } else {
+                        showToast('Terjadi kesalahan server', 'danger');
+                    }
+
+                }
+
+
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "selling-quick-delete" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: { id: id },
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted!',
+                                data.message,
+                                'success'
+                            );
+                            // Refresh table or remove row
+                            table.draw();
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                Swal.fire(
+                                    'Access Denied!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else if (xhr.status === 404) {
+                                Swal.fire(
+                                    'Not Found!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
     });
 </script>
 
@@ -514,18 +761,18 @@
         });
     }
 
-
-
 </script>
 
 <script>
     $(document).ready(function () {
+        // $(".ti-form-select").select2({
+        //     width: '100%',
+        //     // dropdownParent: $('#search-modal'),
+        //     dropdownParent: $('#search-modal .ti-modal-body')
+        // });
+        $('#sellingPoint').hide();
+        var lastSelectedMethodId = null;
 
-        $(".ti-form-select").select2({
-            width: '100%',
-            // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#search-modal .ti-modal-body')
-        });
 
         //opsi Select2
         $.ajax({
@@ -548,76 +795,6 @@
                 })
 
             }
-        });
-
-        $('#areaFilter').select2({
-            width: '100%',
-            // // 
-            dropdownParent: $('#search-modal .ti-modal-body'),
-            ajax: {
-                url: "{% url 'get-mine-dumping-point' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: $.map(data.results, function (item) {
-                            return {
-                                id: item.text,
-                                text: item.text
-                            };
-                        }),
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select stockpile',
-            allowClear: true,
-        });
-
-        $('#pointFilter').select2({
-            width: '100%',
-            // //
-            dropdownParent: $('#search-modal .ti-modal-body'),
-            ajax: {
-                url: "{% url 'get-mine-dome' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: $.map(data.results, function (item) {
-                            return {
-                                id: item.text,
-                                text: item.text
-                            };
-                        }),
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select dome',
-            allowClear: true,
         });
 
         $('#areaFilter').select2({
@@ -745,6 +922,197 @@
         });
 
     });
+</script>
+
+<!-- For Edit -->
+<script>
+    $(document).ready(function () {
+        $('#shift').select2({
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body')
+        });
+        $('#shift').select2({
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body')
+        });
+
+        $('#code_sub').select2({
+            width: '100%',
+            dropdownParent: $('#edit-data .ti-modal-body')
+        });
+
+
+        // Khusus AJAX 
+        $.ajax({
+            url: "{% url 'material-id-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value
+                        .nama_material +
+                        '</option>';
+                });
+                // Set options in the Select2 element
+                // $('#id_material').append(options);
+                $('#id_material').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                });
+            }
+        });
+
+        // Khusus AJAX pile
+        $('#id_pile').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term, page: params.page || 1 };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return { id: item.id, text: item.text };
+                        }),
+                        pagination: { more: data.pagination.more }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select EFO-',
+            allowClear: true,
+            dropdownParent: $('#edit-data .ti-modal-body')
+        });
+
+        $('#code_lot').select2({
+            ajax: {
+                url: "{% url 'get-code-lot' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select KWL-',
+            allowClear: true,
+            dropdownParent: $('#edit-data .ti-modal-body')
+        });
+
+        $.ajax({
+            url: "{% url 'get-code-barge' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.barge_code + '</option>';
+                });
+
+                $('#barge_code').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                })
+            }
+
+        });
+
+        /*--- Click to Edit Button ---*/
+        $('body').on('click', '.editData', function () {
+            var id = $(this).data('id');
+            /* Hide */
+            $('#validasiError').hide();
+            var url = '/kqms/selling/quick/get/' + id + '/';
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
+                        window.HSOverlay.open('#edit-data');
+
+                        $('#id').val(response.id);
+                        $('#date_hauling').val(response.date_hauling);
+                        $('#shift').val(response.shift).trigger('change');
+
+                        // Load Materials
+                        $('#id_material').val(response.id_material).trigger('change');
+
+                        // Load Product Code
+                        $('#code_lot').val(response.code_lot).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newCode = new Option(response.code_name, response.code_lot, true, true);
+                        $('#code_lot').append(newCode).trigger('change');
+
+                        $('#unit_code').val(response.unit_code);
+                        $('#sub_auto').val(response.code_sub_auto);
+                        $('#code_sub').val(response.code_sub).trigger('change');
+
+                        var responseTime = response.time_hauling;
+                        // Ini akan mengambil bagian jam (00:00:00)
+                        var jam = responseTime.substring(0, 8);
+                        $('#time_hauling').val(jam);
+
+                        $('#barge_code').val(response.barge_code).trigger('change');
+
+                        // $('#id_pile').val(response.id_pile).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        // var newDome = new Option(response.dome, response.id_pile, true, true);
+                        // $('#id_pile').append(newDome).trigger('change');
+
+                        $('#id_pile').val(response.id_pile).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newDome = new Option(response.dome, response.id_pile, true, true);
+                        $('#id_pile').append(newDome).trigger('change');
+
+
+                        console.log('ini type', response.type)
+                    } else {
+                        alert(
+                            'Data tidak ditemukan'
+                        ); // Atau tindakan lain jika data tidak ditemukan
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        // title: 'Opps!',
+                        title: xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Opps!',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        padding: '2em',
+                    });
+                }
+            });
+
+        });
+
+    });
+
 </script>
 
 <!-- Exports to Excel -->

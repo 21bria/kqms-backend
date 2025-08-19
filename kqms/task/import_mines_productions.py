@@ -60,7 +60,6 @@ def parse_time_hauling(raw_value):
     return None
 
 
-
 @shared_task(name='kqms.task.import_mines_productions.import_mine_productions')
 def import_mine_productions(file_path, original_file_name):
     df = pd.read_excel(file_path)
@@ -78,13 +77,14 @@ def import_mine_productions(file_path, original_file_name):
     df['Date Production'] = df['Date Production'].dt.date
 
     # Buat dictionary dari Tabel untuk pencarian ID berdasarkan nama
-    source_dict    = dict(SourceMines.objects.values_list('sources_area', 'id'))
-    loading_dict   = dict(SourceMinesLoading.objects.values_list('loading_point', 'id'))
-    dumping_dict   = dict(SourceMinesDumping.objects.values_list('dumping_point', 'id'))
-    dome_dict      = dict(SourceMinesDome.objects.values_list('pile_id', 'id'))
-    material_dict  = dict(Material.objects.values_list('nama_material', 'id'))
-    addition_bcm   = dict(mineAdditionFactor.objects.values_list('validation', 'tf_bcm'))
-    addition_ton   = dict(mineAdditionFactor.objects.values_list('validation', 'tf_ton'))
+    # source_dict      = dict(SourceMines.objects.values_list('sources_area', 'id'))
+    loading_dict     = dict(SourceMinesLoading.objects.values_list('loading_point', 'id'))
+    dumping_dict     = dict(SourceMinesDumping.objects.values_list('dumping_point', 'id'))
+    dome_dict        = dict(SourceMinesDome.objects.values_list('pile_id', 'id'))
+    material_dict    = dict(Material.objects.values_list('nama_material', 'id'))
+    addition_bucket  = dict(mineAdditionFactor.objects.values_list('validation', 'bucket_capacity'))
+    addition_density = dict(mineAdditionFactor.objects.values_list('validation', 'density_lcm'))
+
 
     # Mulai transaksi untuk memastikan rollback jika terjadi error
     try:
@@ -96,9 +96,10 @@ def import_mine_productions(file_path, original_file_name):
                 vendors         = row['Vendors']
                 shift           = row['Shift']
                 loader          = row['Loader']
+                parsing         = row['Parsing']
+                hauler_class    = row['Loader Class']
                 hauler          = row['Hauler']
-                hauler_class    = row['Hauler Class']
-                source          = row['Sources']
+                # source          = row['Sources']
                 loading_point   = row['Loading Point']
                 dumping_point   = row['Dumping Point']
                 dome_id         = row['Pile Id']
@@ -124,29 +125,38 @@ def import_mine_productions(file_path, original_file_name):
                 remarks       = None if pd.isna(remarks) else remarks
 
                 # Cari ID dari Model berdasarkan nama
-                id_source   = source_dict.get(source, 1)  
+                # id_source   = source_dict.get(source, 1)  
+                id_source   = None  
                 id_loading  = loading_dict.get(loading_point, 1)  
                 id_dumping  = dumping_dict.get(dumping_point, 1)  
-                id_dome     = dome_dict.get(dome_id, 1)  
+                id_dome     = dome_dict.get(dome_id, None)  
                 # id_block    = block_dict.get(block, None)  
                 id_material = material_dict.get(nama_material, None) 
 
                 hauler_class_str  = str(hauler_class or "")
                 nama_material_str = str(nama_material or "")
 
-                addition_key = f"{hauler_class_str.strip()}{vendors.strip()}{nama_material_str.strip()}"
-                bcm_factor = addition_bcm.get(addition_key, 0)
-                ton_factor = addition_ton.get(addition_key, 0)
+                # addition_key = f"{hauler_class_str.strip()}{vendors.strip()}{nama_material_str.strip()}"
+                
+                addition_key = f"{hauler_class_str.strip()}{nama_material_str.strip()}"
+
+                bucket_capacity = addition_bucket.get(addition_key, 0)
+                density_lcm     = addition_density.get(addition_key, 0)
+
+                # hitung tonnage sesuai formula
+                tonnage = (float(parsing or 0) * float(ritase or 0) * float(bucket_capacity or 0) * float(density_lcm or 0))
+
 
                 # Modifikasi hauler
                 type_hauler = None
-                if isinstance(hauler_class, str):
-                    if 'ADT' in hauler_class:
-                        type_hauler = 'ADT'
-                    elif 'Dump Truck' in hauler_class:
-                        type_hauler = 'DT'
+                # if isinstance(hauler_class, str):
+                #     if 'ADT' in hauler_class:
+                #         type_hauler = 'ADT'
+                #     elif 'Dump Truck' in hauler_class:
+                #         type_hauler = 'DT'
 
-                ref_plan = f"{date_pds}{category_mine}{source}{vendors}".replace(" ", "")
+                # ref_plan = f"{date_pds}{category_mine}{source}{vendors}".replace(" ", "")
+                ref_plan = f"{date_pds}{category_mine}{vendors}".replace(" ", "")
 
                 if date_pds:  # Pastikan tanggal bukan None
                     date_str  = date_pds.strftime('%Y-%m-%d')
@@ -175,8 +185,9 @@ def import_mine_productions(file_path, original_file_name):
                                 vendors         = vendors,
                                 shift           = shift,
                                 loader          = loader,
-                                hauler          = hauler,
+                                bucket          = parsing,
                                 hauler_class    = hauler_class,
+                                hauler          = hauler,
                                 sources_area    = id_source,
                                 loading_point   = id_loading,
                                 dumping_point   = id_dumping,
@@ -188,8 +199,8 @@ def import_mine_productions(file_path, original_file_name):
                                 to_rl           = rl_to,
                                 id_material     = id_material,
                                 ritase          = ritase,
-                                bcm             = bcm_factor,
-                                tonnage         = ton_factor,
+                                bcm             = 0,
+                                tonnage         = tonnage,
                                 remarks         = remarks,
                                 hauler_type     = type_hauler,
                                 ref_materials   = ref_plan,

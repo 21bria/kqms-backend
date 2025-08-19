@@ -1224,26 +1224,31 @@ def get_mine_dome(request):
     try:    
         query    = request.GET.get('q', '')
         page     = int(request.GET.get('page', 1))
-        per_page = 10  # Jumlah item per halaman
+        per_page = 10  # jumlah item per halaman
 
         # Filter berdasarkan query
-        data_get = SourceMinesDome.objects.filter(pile_id__icontains=query).order_by('pile_id')
+        qs = SourceMinesDome.objects.filter(
+            pile_id__icontains=query
+        ).order_by('pile_id')
+
         # Pagination
         start   = (page - 1) * per_page
         end     = start + per_page
-        results = data_get[start:end]
+        results = qs[start:end]
+
         data = {
-            'results'   : [{'id': data_get.id, 'text': data_get.pile_id} for data_get in results],
-            'pagination': {'more': len(data_get) > end}  
+            'results': [
+                {'id': dome.id, 'text': dome.pile_id}  # ✅ id integer, text kode
+                for dome in results
+            ],
+            'pagination': {'more': qs.count() > end}
         }
-        return JsonResponse(data, safe=False)
-    
+        return JsonResponse(data)
+
     except Exception as e:
-        # Log the error if necessary (optional)
-        print(f"Error occurred: {e}") 
-        # Return an error response
+        print(f"Error occurred: {e}")
         return JsonResponse({'error': 'An error occurred while fetching data.'}, status=500)
-    
+
 def get_materials(request):
     try:
         query    = request.GET.get('q', '')
@@ -1517,9 +1522,9 @@ def get_haluer_class(request):
         try:
             # Buat SQL raw query dengan LEFT JOIN
             sql_query = """
-                SELECT DISTINCT type_truck
+                SELECT DISTINCT type_unit
                 FROM mine_addition_factor
-                ORDER BY type_truck ASC;
+                ORDER BY type_unit ASC;
             """
 
              # Eksekusi query
@@ -1528,7 +1533,7 @@ def get_haluer_class(request):
                 result = cursor.fetchall()
 
             # Ubah hasil query menjadi list of dictionaries
-            data = [{'type_truck': row[0]} for row in result]
+            data = [{'type_unit': row[0]} for row in result]
 
             # Buat respons JSON dengan list data
             response_data = {
@@ -1551,9 +1556,9 @@ def get_factors(request):
 
         try:
             sql_query = """
-                SELECT DISTINCT tf_bcm, tf_ton, type_truck
+                SELECT DISTINCT bucket_capacity, density_lcm, type_unit
                 FROM mine_addition_factor
-                WHERE type_truck = %s AND material = %s
+                WHERE type_unit = %s AND material = %s
             """
             params = [hauler, material]
 
@@ -1565,9 +1570,9 @@ def get_factors(request):
             data = []
             for row in result:
                 data.append({
-                    'tf_bcm': row[0],
-                    'tf_ton': row[1],
-                    'type_truck': row[2],
+                    'bucket_capacity': row[0],
+                    'density_lcm'    : row[1],
+                    'type_unit'      : row[2],
                 })
 
             return JsonResponse({'list': data}, status=200)

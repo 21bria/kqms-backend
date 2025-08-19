@@ -797,7 +797,8 @@
                                 <!-- Category -->
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Category</label>
-                                    <select id="category_mine" name="category_mine" class="form-control w-full !rounded-md">
+                                    <select id="category_mine" name="category_mine"
+                                        class="form-control w-full !rounded-md">
                                         <!-- <option value="">Select</option>
                                         <option value="Mining">Mining</option>
                                         <option value="Project">Project</option> -->
@@ -824,21 +825,21 @@
                                         <option value="">--- Select ---</option>
                                     </select>
                                 </div>
-                                  <div class="xl:col-span-2 col-span-12">
+                                <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Bucket</label>
                                     <input type="number" id="bucket" name="bucket"
                                         class="form-control w-full !rounded-md">
                                 </div>
                                 <div class="xl:col-span-2 col-span-12">
-                                    <label class="form-label">Hauler</label>
-                                    <select id="hauler" name="hauler" class="form-control w-full !rounded-md">
+                                    <label class="form-label">Loader Class</label>
+                                    <select id="hauler_class" name="hauler_class"
+                                        class="form-control w-full !rounded-md">
                                         <option value="">--- Select ---</option>
                                     </select>
                                 </div>
                                 <div class="xl:col-span-2 col-span-12">
-                                    <label class="form-label">Hauler Class</label>
-                                    <select id="hauler_class" name="hauler_class"
-                                        class="form-control w-full !rounded-md">
+                                    <label class="form-label">Hauler</label>
+                                    <select id="hauler" name="hauler" class="form-control w-full !rounded-md">
                                         <option value="">--- Select ---</option>
                                     </select>
                                 </div>
@@ -891,7 +892,6 @@
                                     <input readonly type="text" id="tonnage" name="tonnage"
                                         class="form-control w-full !rounded-md">
                                 </div>
-
 
                                 <div class="xl:col-span-2 col-span-12">
                                     <label class="form-label">Vendors</label>
@@ -969,7 +969,6 @@
 
         //Number Only Decimal
         $(document).on('keyup', '#from_rl,#to_rl', function (e) {
-
             var regex = /[^\d.]|\.(?=.*\.)/g;
             var subst = "";
 
@@ -1038,9 +1037,9 @@
                     // '</td>' +
                     '<td><input type="time" class="form-control" name="time_loading[]"></td>' +
                     '<td><select class="form-select loader" name="loader[]"><option value="">---</option></select></td>' +
-                     '<td><input type="number" class="form-control" name="bucket[]"></td>' +
-                    '<td><select class="form-select hauler" name="hauler[]"><option value="">---</option></select></td>' +
+                    '<td><input type="number" class="form-control" name="bucket[]"></td>' +
                     '<td><select class="form-select hauler_class" name="hauler_class[]"><option value="">---</option></select></td>' +
+                    '<td><select class="form-select hauler" name="hauler[]"><option value="">---</option></select></td>' +
                     // '<td><select class="form-select sources_area" name="sources_area[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select loading_point" name="loading_point[]"><option value="">---</option></select></td>' +
                     '<td><select class="form-select dumping_point" name="dumping_point[]"><option value="">---</option></select></td>' +
@@ -1089,7 +1088,6 @@
                 $(this).closest('tr').remove();
 
             });
-
 
             // Fungsi untuk menginisialisasi Select2 pada setiap elemen select
             function initializeSelect2(element) {
@@ -1350,8 +1348,8 @@
                         processResults: function (data) {
                             var results = data.list.map(function (item) {
                                 return {
-                                    id: item.type_truck,
-                                    text: item.type_truck
+                                    id: item.type_unit,
+                                    text: item.type_unit
                                 };
                             });
                             return {
@@ -1412,23 +1410,28 @@
                             success: function (response) {
                                 if (response.list.length > 0) {
                                     const data = response.list[0];
-                                    tf_ton_value = parseFloat(data.tf_ton) || 0;
+                                    bucket_capacity = parseFloat(data.bucket_capacity) || 0;
+                                    density_lcm = parseFloat(data.density_lcm) || 0;
 
                                     // Hitung ulang tonnage jika ritase sudah ada
                                     const ritase = parseFloat(element.find('input[name="ritase[]"]').val()) || 0;
-                                    element.find('input[name="tonnage[]"]').val((ritase * tf_ton_value).toFixed(2));
+                                    const parsing = parseFloat(element.find('input[name="bucket[]"]').val()) || 0;
+                                    element.find('input[name="tonnage[]"]').val((parsing * ritase * bucket_capacity * density_lcm).toFixed(2));
                                 } else {
-                                    tf_ton_value = 0;
+                                    bucket_capacity = 0;
+                                    density_lcm = 0;
                                     element.find('input[name="tonnage[]"]').val('');
                                 }
                             },
                             error: function () {
-                                tf_ton_value = 0;
+                                bucket_capacity = 0;
+                                density_lcm = 0;
                                 element.find('input[name="tonnage[]"]').val('');
                             }
                         });
                     } else {
-                        tf_ton_value = 0;
+                        bucket_capacity = 0;
+                        density_lcm = 0;
                         element.find('input[name="tonnage[]"]').val('');
                     }
                 });
@@ -1436,7 +1439,14 @@
                 // Event input ritase, hitung ulang tonnage
                 element.find('input[name="ritase[]"]').on('input', function () {
                     const ritase = parseFloat($(this).val()) || 0;
-                    const ton = (ritase * tf_ton_value).toFixed(2);
+                    const parsing = parseFloat(element.find('input[name="bucket[]"]').val()) || 0;
+                    const ton = (ritase * parsing * bucket_capacity * density_lcm).toFixed(2);
+                    element.find('input[name="tonnage[]"]').val(ton);
+                });
+                element.find('input[name="bucket[]"]').on('input', function () {
+                    const parsing = parseFloat($(this).val()) || 0;
+                    const ritase = parseFloat(element.find('input[name="ritase[]"]').val()) || 0;
+                    const ton = (ritase * parsing * bucket_capacity * density_lcm).toFixed(2);
                     element.find('input[name="tonnage[]"]').val(ton);
                 });
 
@@ -1839,12 +1849,6 @@
 
             });
 
-            // $('#category_mine').select2({
-            //     width: '100%',
-            //     dropdownParent: $('#edit-data .ti-modal-body')
-
-            // });
-
             $('#digger').select2({
                 ajax: {
                     url: "{% url 'get-mine-units-entry'%}",
@@ -2058,7 +2062,7 @@
                     var options = '';
                     // Loop melalui data.results untuk menambahkan opsi Select2
                     $.each(data.list, function (index, value) {
-                        options += '<option value="' + value.type_truck + '">' + value.type_truck + '</option>';
+                        options += '<option value="' + value.type_unit + '">' + value.type_unit + '</option>';
                     });
                     $('#hauler_class').append(options).select2({
                         width: '100%'
@@ -2086,7 +2090,8 @@
             });
 
 
-            let tf_ton_value = 0;  // simpan tf_ton global sementara
+            let bucket_capacity = 0;  // simpan tf_ton global sementara
+            let density_lcm = 0;  // simpan tf_ton global sementara
 
             $('#hauler_class, #id_material').on('change', function () {
                 const hauler = $('#hauler_class').val();
@@ -2106,19 +2111,22 @@
                             if (response.list.length > 0) {
                                 const data = response.list[0];
 
-                                tf_ton_value = parseFloat(data.tf_ton) || 0;  // simpan untuk dikali dengan ritase
-
+                                bucket_capacity = parseFloat(data.bucket_capacity) || 0;
+                                density_lcm = parseFloat(data.density_lcm) || 0;
                                 // Isi ton langsung jika ritase sudah diisi sebelumnya
                                 const ritase = parseFloat($('#ritase').val()) || 0;
-                                $('#tonnage').val((ritase * tf_ton_value).toFixed(2));
+                                const parsing = parseFloat($('#bucket').val()) || 0;
+                                $('#tonnage').val((parsing * ritase * bucket_capacity * density_lcm).toFixed(2));
                             } else {
-                                tf_ton_value = 0;
+                                bucket_capacity = 0;
+                                density_lcm = 0;
                                 $('#tonnage').val('');
                             }
                         },
                         error: function (xhr) {
                             console.error('Gagal ambil data:', xhr.responseText);
-                            tf_ton_value = 0;
+                            bucket_capacity = 0;
+                            density_lcm = 0;
                             $('#tonnage').val('');
                         }
                     });
@@ -2127,7 +2135,14 @@
             // Ketika ritase diketik, hitung ulang ton
             $('#ritase').on('input', function () {
                 const ritase = parseFloat($(this).val()) || 0;
-                const ton = (ritase * tf_ton_value).toFixed(2);
+                const parsing = parseFloat($('#bucket').val()) || 0;
+                const ton = (parsing * ritase * bucket_capacity * density_lcm).toFixed(2);
+                $('#tonnage').val(ton);
+            });
+            $('#bucket').on('input', function () {
+                const parsing = parseFloat($(this).val()) || 0;
+                const ritase = parseFloat($('#ritase').val()) || 0;
+                const ton = (parsing * ritase * bucket_capacity * density_lcm).toFixed(2);
                 $('#tonnage').val(ton);
             });
 

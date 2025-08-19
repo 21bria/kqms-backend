@@ -1,0 +1,4 @@
+1. Reset sequence setelah import / delete manual
+
+Kalau PostgreSQL:
+SELECT setval('mine_addition_factor_id_seq', (SELECT COALESCE(MAX(id), 1) FROM mine_addition_factor)+1, false);

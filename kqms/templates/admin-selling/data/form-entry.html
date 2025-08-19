@@ -71,14 +71,12 @@
                                                 </div>
                                                 <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Times</label>
-                                                    <input type="text" class="form-control w-full !rounded-md"
-                                                        id="time_hauling" name="time_hauling" placeholder="hh:mm:ss"
-                                                        readonly>
+                                                    <input type="time" class="form-control w-full !rounded-md"
+                                                        id="time_hauling" name="time_hauling" placeholder="hh:mm:ss">
                                                     <label
                                                         class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">*Input
                                                         time for selling</label>
                                                 </div>
-
                                                 <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Material</label>
                                                     <select id="id_material" name="id_material"
@@ -92,6 +90,9 @@
                                                         class="ti-form-select rounded-sm !py-2 !px-3t">
                                                         <option value="">--- Select ---</option>
                                                     </select>
+                                                    <label
+                                                        class="form-label mt-1 text-[0.75rem] opacity-[0.5] !text-[#8c9097] dark:text-white/50 !mb-0">
+                                                        *KWL / KWS untuk direct</label>
                                                 </div>
                                                 <div class="xl:col-span-4 col-span-12">
                                                     <label class="form-label">Truck</label>
@@ -128,7 +129,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div
@@ -175,6 +175,7 @@
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         return `${hours}:${minutes}:${seconds}`;
+        // return `${hours}:${minutes}`;
     }
     $(document).ready(function () {
         $('#time_hauling').val(getCurrentTime());
@@ -396,9 +397,6 @@
 
     }, 300);
 </script>
-
-
-
 
 </body>
 

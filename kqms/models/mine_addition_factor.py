@@ -2,17 +2,18 @@ from django.db import models
 from .source_model import SourceMines,SourceMinesLoading
 
 class mineAdditionFactor(models.Model):
-    type_truck  = models.CharField(max_length=100,default=None,null=True,blank=True)
-    material    = models.CharField(max_length=25,default=None, null=True, blank=True)
-    tf_bcm      = models.FloatField(default=None, null=True, blank=True)
-    tf_ton      = models.FloatField(default=None, null=True, blank=True)
-    validation  = models.CharField(max_length=100, default=None, null=True, blank=True)
-    remarks     = models.CharField(max_length=255, default=None, null=True, blank=True)
+    type_unit       = models.CharField(max_length=100,default=None,null=True,blank=True)
+    material        = models.CharField(max_length=25,default=None, null=True, blank=True)
+    density_bcm     = models.FloatField(default=None, null=True, blank=True)
+    density_lcm     = models.FloatField(default=None, null=True, blank=True)
+    bucket_capacity = models.FloatField(default=None, null=True, blank=True)
+    validation      = models.CharField(max_length=100, default=None, null=True, blank=True)
+    remarks         = models.CharField(max_length=255, default=None, null=True, blank=True)
     # created_at  = models.DateTimeField(auto_now_add=True)
     # updated_at  = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-       return f"{self.type_truck}{self.material}"
+       return f"{self.type_unit}{self.material}"
 
     class Meta:
         db_table  = 'mine_addition_factor'

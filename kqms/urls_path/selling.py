@@ -60,4 +60,7 @@ urlpatterns = [
     path('form/page/quick/', form_entry_page, name='selling-form-quick-page'),
     path('quick/create/', create_quick_selling, name='create-quik-sale'),
     path('export/daily/quick/', export_sale_data_quick, name='export-selling-data-quick'), 
+    path('quick/get/<uuid:id>/', get_sale_quick, name='sale-quik-get'),
+    path('quick/update/<uuid:id>/', update_quick_selling, name='sale-quick-update'),
+    path('quick/delete/', delete_selling_temp, name='selling-quick-delete'),
 ]
