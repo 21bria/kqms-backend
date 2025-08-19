@@ -462,10 +462,17 @@ class Command(BaseCommand):
         )
         
         Menu.objects.create(
-            title="Selling",
+            title="Quick Page",
             url="selling-entry-quick-page",
             parent=forms,
             order=1,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
+        )
+        Menu.objects.create(
+            title="Summary Daily",
+            url="selling-daily-quick-summary-page",
+            parent=forms,
+            order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
         )
 

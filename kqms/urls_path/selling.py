@@ -8,6 +8,7 @@ from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
 from ..views.selling.entry.selling_data import *
+from ..views.selling.entry.daily_summary import *
 
 
 urlpatterns = [
@@ -63,4 +64,9 @@ urlpatterns = [
     path('quick/get/<uuid:id>/', get_sale_quick, name='sale-quik-get'),
     path('quick/update/<uuid:id>/', update_quick_selling, name='sale-quick-update'),
     path('quick/delete/', delete_selling_temp, name='selling-quick-delete'),
+
+    # Daily summary
+    path('daily/quick/summary/', daily_selling_summary_page, name='selling-daily-quick-summary-page'),
+    path('daily/quick/summary/data/', total_daily_summary_quick, name='selling-daily-quick-summary'),
+    path('daily/quick/summary/sublot/', total_daily_sublot, name='sublot-daily-quick-summary'),
 ]
