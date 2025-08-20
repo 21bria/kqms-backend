@@ -95,12 +95,12 @@ class domeFinishList(View):
 
 @csrf_exempt
 def get_dome_finish(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             item = domeStatusFinishView.objects.get(id=id)
@@ -121,89 +121,91 @@ def get_dome_finish(request, id):
 
 @login_required
 def insert_dome_finish(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
-    if request.method == 'POST':
-        try:
-            # Aturan validasi
-            rules = {
-                'id_dome': ['required']
-            }
+    allowed_groups = ['superadmin', 'data-control', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'},
+            status=403
+        )
 
-            # Pesan kesalahan validasi yang disesuaikan
-            custom_messages = {
-                'id_dome.required': 'Dome is required.'
-            }
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
-            # Validasi request
-            for field, field_rules in rules.items():
-                for rule in field_rules:
-                    if rule == 'required':
-                        if not request.POST.get(field):
-                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
+    try:
+        # === Aturan validasi ===
+        rules = {
+            'id_dome': ['required'],
+            'tonnage_dome': ['required'],
+            # 'description': ['required'],  # kalau mau opsional → hapus 'required'
+        }
 
-            # Dapatkan data dari request dengan default nilai
-            id_dome      = request.POST.get('id_dome')
-            tonnage_dome = request.POST.get('tonnage_dome')
-            description  = request.POST.get('description')
+        custom_messages = {
+            'id_dome.required': 'Dome is required.',
+            'tonnage_dome.required': 'Tonnage is required.',
+            # 'description.required': 'Description is required.',
+        }
 
-            status_dome='Finished'
+        # === Proses validasi ===
+        for field, field_rules in rules.items():
+            for rule in field_rules:
+                if rule == 'required' and not request.POST.get(field):
+                    return JsonResponse(
+                        {'error': custom_messages.get(f'{field}.required', f'{field} is required.')},
+                        status=400
+                    )
 
-            # Pastikan semua nilai yang diperlukan ada sebelum diubah
-            if any(v is None for v in [id_dome, tonnage_dome, description]):
-                return JsonResponse({'error': 'Semua field harus diisi.'}, status=400)
+        # === Ambil data ===
+        id_dome      = request.POST.get('id_dome')
+        tonnage_dome = request.POST.get('tonnage_dome')
+        description  = request.POST.get('description')
 
-            # Gunakan transaksi database untuk memastikan integritas data
-            with transaction.atomic():
-                cek_data = f"{id_dome}{status_dome}"
+        cek_data = f"{id_dome}_FINISHED".upper()
 
-                if domeStatusFinish.objects.filter(cek_duplicated=cek_data).exists():
-                    return JsonResponse({'error': f'Data already exists.'}, status=400)
+        with transaction.atomic():
+            existing = domeStatusFinish.objects.filter(cek_duplicated=cek_data).first()
 
-                # Simpan data baru
+            if existing:
+                # Kalau sudah ada → ubah jadi Closed
+                existing.status_dome = "Closed"
+                existing.save(update_fields=["status_dome"])
+
+                OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Closed")
+                SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Closed")
+                SellingProductions.objects.filter(id_pile=int(id_dome)).update(sale_dome="Closed")
+
+                return JsonResponse({'success': True, 'message': 'Data sudah ada, status diubah menjadi Closed.'})
+
+            else:
+                # Kalau belum ada → simpan baru
                 domeStatusFinish.objects.create(
                     id_dome=int(id_dome),
                     tonnage_dome=float(tonnage_dome),
-                    status_dome=status_dome,
+                    status_dome="Finished",
                     description=description,
                     cek_duplicated=cek_data,
                 )
 
-                # Update OreProduction
-                OreProductions.objects.filter(id_pile=id_dome).update(status_dome=status_dome)
+                OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Finished")
+                SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Finished")
+                SellingProductions.objects.filter(id_pile=int(id_dome)).update(sale_dome="Finished")
 
-                # Update Selling Data
-                SellingProductions.objects.filter(id=id_dome).update(sale_dome=status_dome)
+                return JsonResponse({'success': True, 'message': 'Data berhasil disimpan dengan status Finished.'})
 
-                # Update SourceMinesDome
-                SourceMinesDome.objects.filter(id=id_dome).update(dome_finish=status_dome)
+    except IntegrityError as e:
+        return JsonResponse({'error': 'Kesalahan integritas database', 'message': str(e)}, status=400)
+    except ValidationError as e:
+        return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
 
-            # Kembalikan respons JSON sukses
-            return JsonResponse({'success': True, 'message': 'Data berhasil disimpan.'})
-
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
-
-        except ValidationError as e:
-            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
-
-        except Exception as e:
-            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
-    
 @login_required
 def update_dome_finish(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             rules = {
@@ -259,12 +261,12 @@ def update_dome_finish(request, id):
 
 @login_required
 def delete_dome_finish(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:
