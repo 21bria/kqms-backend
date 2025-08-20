@@ -9,6 +9,7 @@ from ..views.settings.data_control.dome_status_finish_view import *
 from ..views.settings.remove.remove_waybill_view import *
 from ..views.settings.remove.remove_mral_view import *
 from ..views.settings.remove.remove_roa_view import *
+from ..views.settings.remove.remove_mine_data import *
 
 
 urlpatterns = [
@@ -83,5 +84,10 @@ urlpatterns = [
     path('remove-roa/', remove_roa_page, name='remove-roa-page'), 
     path('remove-roa-list/', roaDataView.as_view(), name='remove-roa-list'),
     path('remove-roa/delete/', delete_roa_number, name='delete-group-roa'), 
+
+    # Remove data Mines
+    path('remove-mine/', remove_mine_bulk_page, name='remove-mine-page'), 
+    path('remove-mine-list/', mineRemoveView.as_view(), name='remove-mine-list'),
+    path('remove-mine/delete/', delete_mine_bulk, name='delete-bulk-mine'), 
 ]
     

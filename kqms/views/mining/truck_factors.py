@@ -99,6 +99,12 @@ class dataTruckFactors(View):
 @login_required
 @csrf_exempt
 def create_truck_factors(request):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'POST':
         try:
             # Aturan validasi
@@ -178,6 +184,12 @@ def create_truck_factors(request):
 
 @login_required
 def getIdTruckFactors(request):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'GET':
         try:
             get_id   = request.GET.get('id')
@@ -200,6 +212,12 @@ def getIdTruckFactors(request):
 @login_required
 @require_http_methods(["POST"])
 def update_truck_factors(request, id):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     try:
         # Aturan validasi
         rules = {
@@ -279,6 +297,12 @@ def update_truck_factors(request, id):
 
 @login_required
 def delete_truck_factors(request):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

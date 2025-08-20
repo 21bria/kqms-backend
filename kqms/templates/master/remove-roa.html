@@ -95,6 +95,13 @@
                                     <tbody>
                                     </tbody>
                                 </table>
+                                 <div class=" mt-5" id="btn_clear">
+                                    <div class="flex flex-wrap items-left justify-start gap-2">
+                                        <button type="button" id="applyRemoveBtn"
+                                            class="ti-btn ti-btn-danger !rounded-lg ti-btn-wave">Remove
+                                            data</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -268,7 +275,7 @@
                 } else {
                     Swal.fire({
                         title: 'Are you sure?',
-                        text: "Waybill : " + " " + id,
+                        text: "ROA : " + " " + id,
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: 'btn btn-success',

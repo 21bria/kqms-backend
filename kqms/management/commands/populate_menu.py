@@ -319,7 +319,7 @@ class Command(BaseCommand):
             title="Configuration",
             icon="bx bx-medal",
             order=12,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
         
         Menu.objects.create(
@@ -327,7 +327,7 @@ class Command(BaseCommand):
             url="mine-production-truck-factor-page",
             parent=mining_config,
             order=1,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
         
         Menu.objects.create(
@@ -335,7 +335,14 @@ class Command(BaseCommand):
             url="mine-production-volume-adjustment-page",
             parent=mining_config,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
+        )
+        Menu.objects.create(
+            title="Delete bulk",
+            url="remove-mine-page",
+            parent=mining_config,
+            order=3,
+            allowed_group_names=['superadmin','data-control','admin-mining','entry-vendors']
         )
 
         # Kategori Selling

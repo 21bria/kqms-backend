@@ -140,6 +140,12 @@ class volumeAdjustmentList(View):
 @login_required        
 @csrf_exempt
 def getIdVolumeAdjusment(request):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'GET':
         id_get  = request.GET.get('id')
 
@@ -670,6 +676,12 @@ def update_volume_adjustment(request, id):
 
 @login_required
 def delete_volume_adjustment(request):
+    allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:
