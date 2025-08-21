@@ -68,6 +68,7 @@ class SellingTemp(View):
                 Q(code_lot__icontains=search) 
             )
        
+        data = data.filter(status=0)
 
         # Filter berdasarkan parameter dari request
         from_date       = request.POST.get('startDate')

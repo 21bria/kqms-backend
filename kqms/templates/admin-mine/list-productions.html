@@ -128,7 +128,7 @@
                                             <th class="bg-soft-secondary" width="5%">Shift</th>
                                             <th class="bg-soft-secondary">Loader</th>
                                             <th class="bg-soft-secondary">Hauler</th>
-                                            <th class="bg-soft-secondary">Sources</th>
+                                            <!-- <th class="bg-soft-secondary">Sources</th> -->
                                             <th class="bg-soft-secondary">Loading Point</th>
                                             <th class="bg-soft-secondary">Dumping Point</th>
                                             <th class="bg-soft-secondary">Dome Id</th>
@@ -148,7 +148,7 @@
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary" width="5%"></th>
-                                            <th class="bg-soft-secondary"></th>
+                                            <!-- <th class="bg-soft-secondary"></th> -->
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
                                             <th class="bg-soft-secondary"></th>
@@ -593,11 +593,11 @@
                     searchable: true
                 },
 
-                {
-                    data: 'sources_area',
-                    name: 'sources_area',
-                    searchable: true
-                },
+                // {
+                //     data: 'sources_area',
+                //     name: 'sources_area',
+                //     searchable: true
+                // },
                 {
                     data: 'loading_point',
                     name: 'loading_point',
@@ -686,6 +686,13 @@
                             i : 0;
                 };
                 // computing column Total the complete result 
+                var col_12 = api
+                    .column(12)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
                 var col_13 = api
                     .column(13)
                     .data()
@@ -693,20 +700,13 @@
                         return intVal(a) + intVal(b);
                     }, 0);
 
-                var col_14 = api
-                    .column(14)
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-
                 // Membulatkan col_14 ke dua angka desimal
-                col_14 = col_14.toFixed(2);
+                col_12 = col_12.toFixed(2);
                 col_13 = col_13.toFixed(2);
 
                 // Update footer by showing the total with the reference of the column index   
+                $(api.column(12).footer()).html(col_12.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                 $(api.column(13).footer()).html(col_13.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $(api.column(14).footer()).html(col_14.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
                 // Format ke 2 angka desimal dan ribuan
                 // var formatNumber = function (num) {

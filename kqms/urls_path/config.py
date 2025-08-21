@@ -10,6 +10,7 @@ from ..views.settings.remove.remove_waybill_view import *
 from ..views.settings.remove.remove_mral_view import *
 from ..views.settings.remove.remove_roa_view import *
 from ..views.settings.remove.remove_mine_data import *
+from ..views.settings.remove.remove_selling_quik import *
 
 
 urlpatterns = [
@@ -89,5 +90,10 @@ urlpatterns = [
     path('remove-mine/', remove_mine_bulk_page, name='remove-mine-page'), 
     path('remove-mine-list/', mineRemoveView.as_view(), name='remove-mine-list'),
     path('remove-mine/delete/', delete_mine_bulk, name='delete-bulk-mine'), 
+
+    # Temporary Quick Update status 1 ore 0
+    path('update/seling-temp/status/', remove_selling_temp_page, name='remove-selling-temp-page'), 
+    path('update/seling-temp/list/', saleTempRemoveView.as_view(), name='remove-selling-temp-list'),
+    path('update/seling-temp/', update_sale_temp_bulk, name='update-sale-temp-bulk'), 
 ]
     

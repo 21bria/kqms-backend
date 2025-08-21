@@ -482,6 +482,13 @@ class Command(BaseCommand):
             order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
         )
+        Menu.objects.create(
+            title="Delete temp.",
+            url="remove-selling-temp-page",
+            parent=forms,
+            order=3,
+            allowed_group_names=['superadmin','data-control','admin-selling','admin-mgoqa']
+        )
 
         
         #Kategori Report &amp; Charts
