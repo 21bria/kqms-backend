@@ -17,7 +17,6 @@ from ....models.selling_data import SellingProductions
 from ....models.source_model import SourceMinesDome
 from ....utils.utils import clean_string
 
-
 @login_required
 def dome_finish_page(request):
     return render(request, 'master/list-finish-dome.html')

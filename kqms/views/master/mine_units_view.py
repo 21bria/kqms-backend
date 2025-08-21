@@ -76,12 +76,13 @@ class MineUnits_List(View):
         data = [
             {
                 "id": item.id,
-                "unit_code": item.unit_code,
+                "unit_code" : item.unit_code,
                 "unit_model": item.unit_model,
-                "unit_type": item.unit_type,
-                "supports": item.supports,
-                "status": item.status,
-                "category": item.category,
+                "unit_class": item.unit_class,
+                "supports"  : item.supports,
+                "status"    : item.status,
+                "category"  : item.category,
+                "brand"     : item.brand,
                 "vendor_name": item.vendor_name
             } for item in object_list
         ]
@@ -109,7 +110,8 @@ def get_MineUnits(request, id):
                 'id'         : job.id,
                 'unit_code'  : clean_string(job.unit_code), 
                 'unit_model' : clean_string(job.unit_model),
-                'unit_type'  : clean_string(job.unit_type),
+                'unit_class' : clean_string(job.unit_class),
+                'brand'      : clean_string(job.brand),
                 'id_category': job.id_category,
                 'id_vendor'  : job.id_vendor,
                 'supports'   : clean_string(job.supports),
@@ -174,9 +176,9 @@ def insert_MineUnits(request):
                 # Dapatkan data dari request
                 unit_code   = request.POST.get('unit_code')
                 unit_model  = request.POST.get('unit_model')
-                unit_type   = request.POST.get('unit_type')
+                unit_class  = request.POST.get('unit_class')
                 # category    = request.POST.get('category')
-                # vendor      = request.POST.getlist('vendor')
+                brand       = request.POST.getlist('brand')
                 category    = request.POST.get('category')
                 vendor      = request.POST.get('vendor')
                 supports    = request.POST.get('supports')
@@ -190,7 +192,8 @@ def insert_MineUnits(request):
                 MineUnits.objects.create(
                     unit_code=unit_code,
                     unit_model=unit_model,
-                    unit_type=unit_type,
+                    unit_class=unit_class,
+                    brand=brand,
                     id_category=int(category),  # Pastikan ini integer
                     id_vendor=int(vendor),      # Pastikan ini intege
                     supports=supports,
@@ -270,7 +273,8 @@ def update_MineUnits(request, id):
             # Lakukan update data dengan nilai baru
             data.unit_code   = unit_code
             data.unit_model  = request.POST.get('unit_model')
-            data.unit_type   = request.POST.get('unit_type')
+            data.unit_class  = request.POST.get('unit_class')
+            data.brand       = request.POST.get('brand')
             data.id_category = request.POST.get('category')
             data.id_vendor   = request.POST.get('vendor')
             data.supports    = request.POST.get('supports')

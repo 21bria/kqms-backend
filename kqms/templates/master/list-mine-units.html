@@ -71,11 +71,12 @@
                                         <tr>
                                             <th width="5%">No</th>
                                             <th width="10%">Unit Code</th>
-                                            <th>Unit Model</th>
+                                            <th width="7%">Unit Model</th>
                                             <th width="7%">Unit Type</th>
-                                            <th width="7%">Support</th>
+                                             <th width="7%">Brand</th>
                                             <th width="7%">Category</th>
                                             <th width="7%">Vendor</th>
+                                            <th width="7%">Support</th>
                                             <th width="7%">Active</th>
                                             <th width="7%">Action</th>
                                         </tr>
@@ -123,28 +124,34 @@
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Units Type</label>
-                                <input type="text" id="unit_type" name="unit_type"
+                                <label class="form-label">Unit Class</label>
+                                <input type="text" id="unit_class" name="unit_class"
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Brand</label>
+                                <input type="text" id="brand" name="brand"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-3 col-span-12">
                                 <label class="form-label">Units Category</label>
                                 <select class="form-control w-full !rounded-md" id="category" name="category">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Vendors</label>
-                                <select class="form-control w-full !rounded-md" id="vendor" name="vendor">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
+                         
+                            <div class="xl:col-span-3 col-span-12">
                                 <label class="form-label">Support</label>
                                 <select class="form-control w-full !rounded-md" id="supports" name="supports">
                                     <option value="">Select</option>
                                     <option value="General">General</option>
                                     <option value="Selling">Selling</option>
+                                </select>
+                            </div>
+                               <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Vendors</label>
+                                <select class="form-control w-full !rounded-md" id="vendor" name="vendor">
+                                    <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
@@ -202,28 +209,34 @@
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Units Type</label>
-                                <input type="text" id="unit_type_edit" name="unit_type_edit"
+                                <label class="form-label">Unit Class</label>
+                                <input type="text" id="unit_class_edit" name="unit_class_edit"
                                     class="form-control w-full !rounded-md">
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
+                             <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Brand</label>
+                                <input type="text" id="brand_edit" name="brand_edit"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-3 col-span-12">
                                 <label class="form-label">Units Category</label>
                                 <select class="form-control w-full !rounded-md" id="category_edit" name="category_edit">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Vendors</label>
-                                <select class="form-control w-full !rounded-md" id="vendor_edit" name="vendor_edit">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
+                         
+                            <div class="xl:col-span-3 col-span-12">
                                 <label class="form-label">Support</label>
                                 <select class="form-control w-full !rounded-md" id="supports_edit" name="supports_edit">
                                     <option value="">Select</option>
                                     <option value="General">General</option>
                                     <option value="Selling">Selling</option>
+                                </select>
+                            </div>
+                               <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Vendors</label>
+                                <select class="form-control w-full !rounded-md" id="vendor_edit" name="vendor_edit">
+                                    <option value="">Select</option>
                                 </select>
                             </div>
                         </div>
@@ -357,13 +370,14 @@
                     name: 'unit_model'
                 },
                 {
-                    data: 'unit_type',
-                    name: 'unit_type'
+                    data: 'unit_class',
+                    name: 'unit_class'
                 },
                 {
-                    data: 'supports',
-                    name: 'supports'
+                    data: 'brand',
+                    name: 'brand'
                 },
+               
                 {
                     data: 'category',
                     name: 'category'
@@ -371,6 +385,10 @@
                 {
                     data: 'vendor_name',
                     name: 'vendor_name'
+                },
+                 {
+                    data: 'supports',
+                    name: 'supports'
                 },
                 {
                     data: 'status',
@@ -451,7 +469,8 @@
                         // Membersihkan formulir setelah sukses input
                         $('#unit_code').val('');
                         $('#unit_model').val('');
-                        $('#unit_type').val('');
+                        $('#unit_class').val('');
+                        $('#brand').val('');
                         $('#category').val('').trigger('change');
                         $('#vendor').val('').trigger('change');
                         $('#supports').val('').trigger('change');
@@ -528,7 +547,8 @@
                 data: {
                     unit_code: $('#unit_code_edit').val(),
                     unit_model: $('#unit_model_edit').val(),
-                    unit_type: $('#unit_type_edit').val(),
+                    unit_class: $('#unit_class_edit').val(),
+                    brand: $('#brand_edit').val(),
                     category: $('#category_edit').val(),
                     vendor: $('#vendor_edit').val(),
                     supports: $('#supports_edit').val(),
@@ -554,7 +574,8 @@
                         // Membersihkan formulir setelah sukses input
                         $('#unit_code_edit').val('');
                         $('#unit_model_edit').val('');
-                        $('#unit_type_edit').val('');
+                        $('#unit_class_edit').val('');
+                        $('#brand_edit').val('');
                         $('#category_edit').val('').trigger('change');
                         $('#vendor_edit').val('').trigger('change');
                         $('#supports_edit').val('').trigger('change');
@@ -690,7 +711,8 @@
                     $('#id').val(response.id);
                     $('#unit_code_edit').val(response.unit_code);
                     $('#unit_model_edit').val(response.unit_model);
-                    $('#unit_type_edit').val(response.unit_type);
+                    $('#unit_class_edit').val(response.unit_class);
+                    $('#brand_edit').val(response.brand);
                     $('#category_edit').val(response.id_category).trigger('change');
                     $('#vendor_edit').val(response.id_vendor).trigger('change');
                     $('#supports_edit').val(response.supports.trim()).trigger('change');

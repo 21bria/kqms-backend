@@ -3,7 +3,8 @@ from django.db import models
 class MineUnits(models.Model):
     unit_code   = models.CharField(max_length=25, unique=True)
     unit_model  = models.CharField(max_length=50, default=None, null=True, blank=True)
-    unit_type   = models.CharField(max_length=50, default=None, null=True, blank=True)
+    unit_class  = models.CharField(max_length=50, default=None, null=True, blank=True)
+    brand       = models.CharField(max_length=150, default=None, null=True, blank=True)
     id_category = models.IntegerField(default=None, null=True, blank=True)
     id_vendor   = models.IntegerField(default=None, null=True, blank=True)
     supports    = models.CharField(max_length=50, default=None, null=True, blank=True)
@@ -22,7 +23,8 @@ class MineUnits(models.Model):
 class mineUnitsView(models.Model):
     unit_code   = models.CharField(max_length=25, default=None, null=True, blank=True)
     unit_model  = models.CharField(max_length=50, default=None, null=True, blank=True)
-    unit_type   = models.CharField(max_length=50, default=None, null=True, blank=True)
+    unit_class  = models.CharField(max_length=50, default=None, null=True, blank=True)
+    brand       = models.CharField(max_length=150, default=None, null=True, blank=True)
     supports    = models.CharField(max_length=25, default=None, null=True, blank=True)
     category    = models.CharField(max_length=50, default=None, null=True, blank=True)
     vendor_name = models.CharField(max_length=25, default=None, null=True, blank=True)
