@@ -351,13 +351,13 @@ class Command(BaseCommand):
             is_category=True,
             category_title="Selling",
             order=13,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','entry-selling','admin-mining']
         )
         selling = Menu.objects.create(
             title="Selling Data",
             icon="bx bx-grid-alt",
             order=14,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
 
         Menu.objects.create(
@@ -365,14 +365,14 @@ class Command(BaseCommand):
             url="selling-barge-page",
             parent=selling,
             order=1,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
         Menu.objects.create(
             title="Selling Plan",
             url="sale-plan-page",
             parent=selling,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
         Menu.objects.create(
             title="Samples Split",
