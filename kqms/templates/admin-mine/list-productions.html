@@ -48,7 +48,6 @@
             </div>
             <!-- Page Header Close -->
 
-
             <!-- Start::row-1 -->
             <div class="grid grid-cols-12 gap-6">
                 <div class="col-span-12">
@@ -59,8 +58,8 @@
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
                                 <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
-                                    <button id="exportFilter" type="button"
-                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button>
+                                    <!-- <button id="exportFilter" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Export</button> -->
                                     <button id="openFilter" type="button"
                                         class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
                                     <a id="reload" href="#"
@@ -172,7 +171,6 @@
             </div>
             <!-- End::row-1 -->
 
-
         </div>
         <!-- Start::main-content -->
 
@@ -213,32 +211,32 @@
                                 </div>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="batch_status">Batch Status</label> -->
+                                <label class="form-label">Category</label>
                                 <select id="category" name="category" class="ti-form-select w-full !rounded-md">
                                     <option value="">-- Select --</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="material_filter">Materials</label> -->
+                                 <label class="form-label">Materials</label>
                                 <select id="material_filter" name="material_filter"
                                     class="ti-form-select  w-full !rounded-md ">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="source_filter">Source</label> -->
+                            <!-- <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Sources</label>
                                 <select id="sources_area" name="sources_area" class="ti-form-select w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="area_filter">Stockpile</label> -->
+                                 <label class="form-label">Loading Point</label>
                                 <select id="loadingPoint" name="loadingPoint" class="ti-form-select w-full !rounded-md">
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <!-- <label for="point_filter">Dome</label> -->
+                                <label class="form-label">Dumping point</label>
                                 <select id="dumpingPoint" name="dumpingPoint"
                                     class="ti-form-select  w-full !rounded-md">
                                     <option value="">--- Select ---</option>
@@ -742,6 +740,27 @@
 
         });
 
+        // Export Data
+        $('#exportButton').click(function () {
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var material_filter = $('#material_filter').val();
+            var loadingPoint = $('#loadingPoint').val();
+            var dumpingPoint = $('#dumpingPoint').val();
+            var category = $('#category').val();
+
+            // Membuat URL untuk permintaan ekspor Excel
+            var exportUrl = "{% url 'export-mines-data' %}?startDate=" + startDate +
+                "&endDate=" + endDate +
+                "&material_filter=" + material_filter +
+                "&loadingPoint=" + loadingPoint +
+                "&dumpingPoint=" + dumpingPoint +
+                "&category=" + category;
+
+            // Redirect browser ke URL ekspor
+            window.location.href = exportUrl;
+        });
+
         call_TotalPDS();
 
     });
@@ -770,6 +789,7 @@
         var loading_filter = $('#loadingPoint').val();
         var dumping_filter = $('#dumpingPoint').val();
         var dome_filter = $('#pile_id').val();
+
         $.ajax({
             type: 'GET',
             url: url,
@@ -791,6 +811,7 @@
                 console.log('Gagal mengambil data dari server.');
             },
         });
+
         $.ajax({
             type: 'GET',
             url: url_mining,
@@ -852,8 +873,8 @@
     $(document).ready(function () {
         $('#openFilter').click(function () {
             window.HSOverlay.open('#search-modal');
-            $('#exportButton').hide();
-            $('#applyFilterBtn').show();
+            // $('#exportButton').hide();
+            // $('#applyFilterBtn').show();
         });
 
         $.ajax({

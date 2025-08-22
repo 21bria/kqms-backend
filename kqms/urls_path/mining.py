@@ -18,6 +18,7 @@ urlpatterns = [
     # Mine Production Data
     path('mine-production/page/', mine_production_page, name='mine-production-page'), 
     path('mine-production/list/', viewMineProduction.as_view(), name='mine-production-list'),
+    path('export/daily/', export_mines_data, name='export-mines-data'), 
     path('mine-totals-pds/', total_mine_pds, name='mine-totals-pds'),
     path('mine-totals-pds/mining/', total_pds_mining, name='mine-totals-pds-mining'),
     path('mine-totals-pds/project/', total_pds_project, name='mine-totals-pds-projects'),

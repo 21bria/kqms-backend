@@ -14,7 +14,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font
 from datetime import datetime
 from openpyxl.utils import get_column_letter
-
+from django.db.models import Case, When, Value, IntegerField
 
 @login_required
 def sale_details_page(request):
@@ -290,6 +290,17 @@ def export_sale_data(request):
         queryset = queryset.filter(factory_stock=factoriesFilter)
     if productFilter:
         queryset = queryset.filter(code_lot=productFilter)
+
+    # Tambah sorting
+    queryset = queryset.annotate(
+        shift_order=Case(
+            When(shift="Day", then=Value(1)),
+            When(shift="Night", then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField(),
+        )
+    ).order_by('-date_hauling', 'shift_order')
+
 
     # Baru terakhir values_list
     queryset = queryset.values_list(*columns)

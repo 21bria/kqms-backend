@@ -1,8 +1,6 @@
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-# from ...models.ore_productions_model import OreProductions
-# from ...models.ore_production_model import OreProductionsView
 from ...models.mine_productions_view import mineProductionsView
 from django.shortcuts import render
 from django.db.models import Q
@@ -16,6 +14,7 @@ from django.views import View
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
+from django.db.models import Case, When, Value, IntegerField
 
 
 def format_angka(jumlah):
@@ -27,6 +26,16 @@ def format_angka(jumlah):
         return f"{jumlah / 1_000:.2f} K"
     else:
         return str(jumlah)
+    
+@login_required
+def mine_production_page(request):
+    today = datetime.today()
+    first_day_of_month = today.replace(day=1)  # Tanggal awal bulan berjalan
+    context = {
+        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
+        'end_date'   : today.strftime('%Y-%m-%d'),
+    }
+    return render(request, 'admin-mine/list-productions.html',context)
 
 class viewMineProduction(View):
 
@@ -282,7 +291,6 @@ def total_pds_project(request):
     })
 
 
-
 # @login_required
 # def delete_data_mine(request):
 #     if request.method == 'DELETE':
@@ -297,12 +305,137 @@ def total_pds_project(request):
 #     else:
 #         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
-@login_required
-def mine_production_page(request):
-    today = datetime.today()
-    first_day_of_month = today.replace(day=1)  # Tanggal awal bulan berjalan
-    context = {
-        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
-        'end_date'   : today.strftime('%Y-%m-%d'),
-    }
-    return render(request, 'admin-mine/list-productions.html',context)
+@login_required    
+@csrf_exempt
+def export_mines_data(request):
+    # Ambil parameter dari request
+    startDate       = request.GET.get('startDate')
+    endDate         = request.GET.get('endDate')
+    material_filter = request.GET.get('material_filter')
+    sources_area    = request.GET.get('sources_area')
+    loading_point   = request.GET.get('loading_point')
+    dumping_point   = request.GET.get('dumping_point')
+    dome_id         = request.GET.get('dome_id')
+    category_mine   = request.GET.get('category_mine')
+
+
+    # Buat file Excel
+    workbook = Workbook()
+    worksheet = workbook.active
+    worksheet.title = 'Selling Data'
+
+    # Header kolom Excel
+    header = [
+        'No',
+        'Date Productions',
+        'Shift',
+        'Time',
+        'Digger',
+        'Parsing',
+        'Hauler',
+        'Loading Point',
+        'Dumping Point',
+        'Dome',
+        'Category',
+        'Block',
+        'Material',
+        'Ritase',
+        'Tonnage',
+        'Remarks',
+        'Vendors'
+    ]
+
+    # Tulis header
+    for col_num, column_title in enumerate(header, 1):
+        cell = worksheet.cell(row=1, column=col_num)
+        cell.value = column_title
+        cell.font = Font(bold=True)
+
+    # Field yang akan diambil dari model
+    columns = [
+        'date_production',
+        'shift',
+        'time_loading',
+        'loader',
+        'bucket',
+        'hauler',
+        'loading_point',
+        'dumping_point',
+        'dome_id',
+        'category_mine',
+        'mine_block',
+        'nama_material',
+        'ritase',
+        'tonnage',
+        'remarks',
+        'vendors'
+    ]
+
+    queryset = mineProductionsView.objects.all()
+
+    # Terapkan filter
+    if startDate and endDate:
+        try:
+            startDate = datetime.strptime(startDate, '%Y-%m-%d').date()
+            endDate   = datetime.strptime(endDate, '%Y-%m-%d').date()
+            queryset  = queryset.filter(date_production__range=[startDate, endDate])
+        except ValueError:
+            return HttpResponse("Format tanggal salah", status=400)
+
+    if material_filter:
+        queryset = queryset.filter(nama_material=material_filter)
+
+    if sources_area:
+        queryset = queryset.filter(sources_area=sources_area)
+
+    if loading_point:
+        queryset = queryset.filter(loading_point=loading_point)
+
+    if dumping_point:
+        queryset = queryset.filter(dumping_point=dumping_point)
+
+    if dome_id:
+        queryset = queryset.filter(dome_id=dome_id)
+
+    if category_mine:
+        queryset = queryset.filter(category_mine=category_mine)
+
+    # Tambah sorting
+    queryset = queryset.annotate(
+        shift_order=Case(
+            When(shift="D", then=Value(1)),
+            When(shift="N", then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField(),
+        )
+    ).order_by('-date_production', 'shift_order')
+
+
+    # Baru terakhir values_list
+    queryset = queryset.values_list(*columns)
+
+    # Tulis data baris per baris
+    for row_num, (row_count, row) in enumerate(enumerate(queryset, 1), 1):
+        worksheet.cell(row=row_num + 1, column=1, value=row_count)
+        for col_num, cell_value in enumerate(row, 2):
+            worksheet.cell(row=row_num + 1, column=col_num).value = cell_value
+
+    # Atur lebar kolom agar otomatis
+    for col_num, column_title in enumerate(header, 1):
+        col_letter = get_column_letter(col_num)
+        max_length = len(column_title)
+        for row in worksheet.iter_rows(min_col=col_num, max_col=col_num):
+            for cell in row:
+                try:
+                    if cell.value and len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+        worksheet.column_dimensions[col_letter].width = max_length + 2
+
+    # Kirim file sebagai response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="Mine Productions.xlsx"'
+    workbook.save(response)
+    return response
+
