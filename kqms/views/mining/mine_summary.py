@@ -83,7 +83,7 @@ def total_daily_summary(request):
             query = """
                 SELECT 
                     shift,
-                    COUNT(ritase) AS ritase,
+                    SUM(ritase) AS ritase,
                     SUM(tonnage) AS actual_data,
                     SUM(
                         COALESCE(topsoil, 0) + COALESCE(ob, 0) + COALESCE(lglo, 0) + COALESCE(mglo, 0) +

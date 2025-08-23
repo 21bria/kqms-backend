@@ -20,6 +20,7 @@ from .selling_barging import *
 from .selling_barging_temp import *
 from .selling_official import *
 from .selling_plan import *
+from .selling_plan_barging import *
 from .selling_code import *
 from .stock_factories import *
 from .task_model import *

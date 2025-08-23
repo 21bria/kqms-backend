@@ -430,7 +430,10 @@
         call_TotalBarging();
 
         // Panggil ulang saat tanggal atau shift berubah
-        $('#date_production').on('change', call_TotalPDS, call_TotalBarging);
+        $('#date_production').on('change', function () {
+            call_TotalPDS();
+            call_TotalBarging();
+        });
         $('#date_production, #shift').on('change', function () {
             call_TotalMaterial();
             refreshHourChart();

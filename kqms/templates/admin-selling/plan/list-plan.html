@@ -76,10 +76,15 @@
                                             <th width="3%">No</th>
                                             <th>Date Plan</th>
                                             <th>Material</th>
-                                            <th>Ni</th>
-                                            <th>Plan</th>
-                                            <th>Created</th>
-                                            <th width="5%">Action</th>
+                                            <th scope="col" width="10%">Tonnage</th>
+                                            <th scope="col" width="10%">Ni</th>
+                                            <th scope="col" width="10%">Co</th>
+                                            <th scope="col" width="10%">Fe</th>
+                                            <th scope="col" width="10%">SiO2</th>
+                                            <th scope="col" width="10%">MgO</th>
+                                            <th scope="col" width="10%">Al2O3</th>
+                                            <th scope="col" width="10%">SM</th>
+                                            <!-- <th width="5%">Action</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -92,10 +97,20 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
                                         </tr>
                                     </tfoot>
                                     </tbody>
                                 </table>
+                                <div class=" mt-1">
+                                    <div class="flex flex-wrap items-left justify-start gap-2">
+                                        <button type="button" id="applyRemoveBtn"
+                                            class="ti-btn ti-btn-danger !rounded-lg ti-btn-wave">Remove data</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -107,6 +122,7 @@
         <!-- Start::main-content -->
 
     </div>
+
     <!-- ========== Search Modal ========== -->
     <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
@@ -184,140 +200,155 @@
                                         <th scope="col" width="10%" class="text-danger">Date</th>
                                         <th scope="col" width="10%" class="text-danger">Materials</th>
                                         <th scope="col" width="15%" class="text-danger">Tonnage</th>
-                                        <th scope="col" width="10%" class="text-danger">Ni_Plan</th>
+                                        <th scope="col" width="10%" class="text-danger">Ni</th>
+                                        <th scope="col" width="10%" class="text-danger">Co</th>
+                                        <th scope="col" width="10%" class="text-danger">Fe</th>
+                                        <th scope="col" width="10%" class="text-danger">SiO2</th>
+                                        <th scope="col" width="10%" class="text-danger">MgO</th>
+                                        <th scope="col" width="10%" class="text-danger">Al2O3</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>
+                                            </button>
+                                            <button type="button"
+                                                class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                                    class="h-5 w-5">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                                </i></button>
                                         </td>
-                                        <td>
-                                            <div>
-                                                <input type="date" name="plan_date[]" value=""
-                                                    class="form-control text-black" placeholder="Sample Date">
-
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <select name="type_ore[]"
-                                                    class="form-control w-full !rounded-md !bg-light">
-                                                    <option value="">-- Select -- </option>
-                                                    <option value="LIM">LIM</option>
-                                                    <option value="SAP">SAP</option>
-                                                </select>
-                                        </td>
-
-                                        <td>
-                                            <div>
-                                                <input type="number" name="tonnage_plan[]"
-                                                    class="form-control w-full !rounded-md" placeholder="0">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <input type="text" name="plan_ni[]"
-                                                    class="form-control w-full !rounded-md" placeholder="0.0">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
                         </div>
-                        <div class="ti-modal-footer">
-                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
-                                id="addRow">
-                                Add Item
-                            </button>
-                            <button type="submit" id="save"
-                                class="ti-btn bg-primary text-white !font-medium">Submit</button>
-                        </div>
-                    </form>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="month" name="plan_date[]" value="" class="form-control text-black"
+                                    placeholder="Sample Date">
+
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <select name="type_ore[]" class="form-control w-full !rounded-md !bg-light">
+                                    <option value="">-- -- </option>
+                                    <option value="LIM">LIM</option>
+                                    <option value="SAP">SAP</option>
+                                </select>
+                        </td>
+
+                        <td>
+                            <div>
+                                <input type="number" name="tonnage_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="ni_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="co_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="fe_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="sio2_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="mgo_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="text" name="al2o3_plan[]" class="form-control w-full !rounded-md"
+                                    placeholder="0.0">
+                            </div>
+                        </td>
+                        </tr>
+                        </tbody>
+                        </table>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Start::edit modal -->
-    <div id="edit-data" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-4xl lg:w-full m-3 lg:!mx-auto">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"></h6>
-                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
-                        data-hs-overlay="#edit-data">
-                        <span class="sr-only">Close</span>
-                        <i class="ri-close-line"></i>
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle" id="addRow">
+                        Add Item
                     </button>
+                    <button type="submit" id="save" class="ti-btn bg-primary text-white !font-medium">Submit</button>
                 </div>
-                <div class="ti-modal-body !overflow-visible">
-                    <form>
-                        <div class="table-responsive">
-                            <table id="editplanTable" class="table table-nowrap table-sm" style="width: 100%">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" width="10%" class="text-danger">Date</th>
-                                        <th scope="col" width="10%" class="text-danger">Materials</th>
-                                        <th scope="col" width="15%" class="text-danger">Tonnage</th>
-                                        <th scope="col" width="10%" class="text-danger">Ni_Plan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <input type="hidden" name="id" id="id">
-                                        <td>
-                                            <div>
-                                                <input type="date" name="plan_date" id="plan_date"
-                                                    class="form-control text-black" placeholder="Sample Date">
-
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <select name="type_ore" id="type_ore"
-                                                    class="form-control w-full !rounded-md !bg-light">
-                                                    <option value="">-- Select -- </option>
-                                                    <option value="LIM">LIM</option>
-                                                    <option value="SAP">SAP</option>
-                                                </select>
-                                        </td>
-
-                                        <td>
-                                            <div>
-                                                <input type="number" name="tonnage_plan" id="tonnage_plan"
-                                                    class="form-control w-full !rounded-md" placeholder="0">
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                <input type="text" name="ni_plan" id="ni_plan"
-                                                    class="form-control w-full !rounded-md" placeholder="0.0">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="ti-modal-footer">
-                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
-                                id="updateButton">
-                                Update
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Start::edit modal -->
+<div id="delete-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+    <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+        <div class="ti-modal-content">
+            <div class="ti-modal-header">
+                <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                    id="mail-ComposeLabel"></h6>
+                <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                    data-hs-overlay="#delete-modal">
+                    <span class="sr-only">Close</span>
+                    <i class="ri-close-line"></i>
+                </button>
+            </div>
+            <form>
+                <div class="ti-modal-body !overflow-visible">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="form-label">Date Month</label>
+                            <div class="input-group">
+                                <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                        class="ri-calendar-line"></i> </div>
+                                <input type="month" class="form-control" id="month_date" name="month_date"
+                                    placeholder="Choose date">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="form-label">Materials</label>
+                            <select id="materials" name="materials" class="ti-form-select rounded-sm !py-2 !px-3t">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="ti-modal-footer">
+                    <button type="button" id="applyDeleteBtn"
+                        class="ti-btn bg-danger text-white !font-medium">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
-    <!-- Global Toast Container -->
-    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+<!-- Global Toast Container -->
+<div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
 
-    <!-- End::add task modal -->
-    <!-- Footer Start -->
-    {% include 'layout/footer.html' %}
-    <!-- Footer End -->
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
 
 </div>
 
@@ -403,7 +434,7 @@
                 "data": function (data) {
                     data.startDate = $('#startDate').val();
                     data.endDate = $('#endDate').val();
-                    data.oreFilter = $('#oreFilter').val();
+                    data.materialFilter = $('#materialFilter').val();
                     return data;
                 },
             },
@@ -426,10 +457,6 @@
                     name: 'type_ore'
                 },
                 {
-                    data: 'ni_plan',
-                    name: 'ni_plan'
-                },
-                {
                     data: 'tonnage_plan',
                     name: 'tonnage_plan',
                     render: function (data) {
@@ -439,40 +466,41 @@
                     orderable: false,
                 },
                 {
-                    data: 'created_at',
-                    name: 'created_at',
-                    searchable: true
+                    data: 'ni_plan',
+                    name: 'ni_plan'
+                },
+                {
+                    data: 'co_plan',
+                    name: 'co_plan'
+                },
+                {
+                    data: 'fe_plan',
+                    name: 'fe_plan'
+                },
+                {
+                    data: 'sio2_plan',
+                    name: 'sio2_plan'
+                },
+                {
+                    data: 'mgo_plan',
+                    name: 'mgo_plan'
+                },
+                {
+                    data: 'al2o3_plan',
+                    name: 'al2o3_plan'
                 },
 
                 {
-                    'data': null,
-                    'name': 'action',
-                    'orderable': false,
-                    'searchable': false,
-                    'render': function (data, type, row) {
-                        return `
-                            <div  class="flex gap-2 items-center" >
-                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
-                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </a>
-                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
-                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        `;
-                    }
+                    data: 'sm_plan',
+                    name: 'sm_plan',
+                    render: function (data) {
+                        return parseFloat(data).toFixed(3);
+                    },
                 },
-
             ],
             // Mengatur default sort pada kolom secara desc
             order: [
-                [1, 'desc']
+                [0, 'desc']
             ],
             // Menambahkan opsi footerCallback
             "footerCallback": function (row, data, start, end, display) {
@@ -486,22 +514,22 @@
                             i : 0;
                 };
                 // computing column Total the complete result 
-                var col_4 = api
-                    .column(4)
+                var col_3 = api
+                    .column(3)
                     .data()
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
 
-                col_4 = col_4.toFixed(2);
+                col_3 = col_3.toFixed(2);
 
                 // Update footer by showing the total with the reference of the column index   
-                $(api.column(4).footer()).html(col_4.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $(api.column(3).footer()).html(col_3.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
 
             },
         });
-        // $('.th_hide').show();
+        $('.th_hide').show();
         /*--Filter Modal and Apply Filter---*/
         $('#applyFilterBtn').click(function () {
             table.ajax.reload();
@@ -510,14 +538,9 @@
 
         /*  Reset */
         $('#reload').on('click', function () {
-            // Reset tanggal ke default, jika ada nilai default di context Python
-            $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
-            $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
-            $('#batch_status').val('').trigger('change');
-            $('#source_filter').val('').trigger('change');
-            $('#area_filter').val('').trigger('change');
-            $('#point_filter').val('').trigger('change');
-            $('#material_filter').val('').trigger('change');
+            $('#startDate').val('{{ start_date }}');
+            $('#endDate').val('{{ end_date }}');
+            $('#materialFilter').val('').trigger('change');
             table.ajax.reload(); //just reload table
         });
 
@@ -550,7 +573,12 @@
                         $("[name='plan_date[]']").val('');
                         $("[name='type_ore[]']").val('').trigger('change');
                         $("[name='tonnage_plan[]']").val('');
-                        $("[name='plan_ni[]']").val('');
+                        $("[name='ni_plan[]']").val('');
+                        $("[name='co_plan[]']").val('');
+                        $("[name='fe_plan[]']").val('');
+                        $("[name='sio2_plan[]']").val('');
+                        $("[name='al2o3_plan[]']").val('');
+                        $("[name='mgo_plan[]']").val('');
                         $('#planTable tbody tr:last').remove();
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
@@ -610,161 +638,78 @@
             });
         });
 
-        /* Update Data*/
-        $('#updateButton').click(function () {
-            var id = $('#id').val();
-            var plan_date = $('#plan_date').val();
-            var type_ore = $('#type_ore').val();
-            var type_selling = $('#type_selling').val();
-            var tonnage_plan = $('#tonnage_plan').val();
-            var ni_plan = $('#ni_plan').val();
-            var description = $('#description').val();
-
-            var updatedData = {
-                plan_date: plan_date,
-                type_ore: type_ore,
-                tonnage_plan: tonnage_plan,
-                ni_plan: ni_plan,
-                description: description
-            };
-            var url = '/kqms/selling/plan/update/' + id + '/';
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: updatedData,
-                success: function (response) {
-                    if (response.success) {
-                        $('#id').val('');
-                        $('#plan_date').val('');
-                        $('#type_ore').val('').trigger('change');
-                        // $('#type_selling').val('').trigger('change');
-                        $('#tonnage_plan').val('');
-                        $('#ni_plan').val('');
-                        $('#description').val('');
-                         window.HSOverlay.close('#edit-data');
-                        // Tampilkan notifikasi sukses
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'success',
-                            html: response.message,
-                            padding: '2em',
-                        });
-                        table.clear().draw();
-                        // table.ajax.reload(); //just reload table
-
-                    } else {
-                        // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
-                        alert('Terjadi kesalahan: ' + response.message);
-                    }
-                },
-                error: function (xhr, textStatus, status, errorThrown, error) {
-                    if (xhr.status === 422) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-
-                    if (xhr.status === 400) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.error,
-                            padding: '2em',
-                        });
-                    }
-                    else {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-                }
-
-            });
+        /*--- Delete Modal ---*/
+        $('#applyRemoveBtn').click(function () {
+            window.HSOverlay.open('#delete-modal');
         });
-
         /*--- Delete ---*/
-        $('#data_table').on('click', '.deleteData', function () {
-            var id = $(this).data('id');
-            var url = '{% url "delete-sale-plan" %}?id=' + id;
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: 'btn btn-success',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Delete it!',
-                // width: 320,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: "DELETE",
-                        dataType: 'json',
-                        data: { id: id },
-                        success: function (data) {
-                            Swal.fire(
-                                'Deleted!',
-                                data.message,
-                                'success'
-                            );
-                            // Refresh table or remove row
-                            table.draw();
-                        },
-                        error: function (xhr) {
-                            if (xhr.status === 403) {
+        $('#applyDeleteBtn').click(function () {
+            var month_date = $('#month_date').val();
+            var materials = $('#materials').val();
+            var url = '{% url "delete-sale-plan" %}';
+            if (month_date == '') {
+                $("#month_date").focus();
+                return false;
+            }
+            else {
+                window.HSOverlay.close('#delete-modal');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete :" + " " + month_date ,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                    // width: 320,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            contentType: 'application/json',
+                            data: JSON.stringify(
+                                {
+                                    month_date: month_date,
+                                    materials: materials
+                                }
+
+                            ), // Sending data in the body
+                            success: function (data) {
                                 Swal.fire(
-                                    'Access Denied!',
-                                    xhr.responseJSON.message,
-                                    'error'
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
                                 );
-                            } else if (xhr.status === 404) {
-                                Swal.fire(
-                                    'Not Found!',
-                                    xhr.responseJSON.message,
-                                    'error'
-                                );
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    'Something went wrong.',
-                                    'error'
-                                );
+                                table.draw();
+                                $('#btn_clear').hide(); // 
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
                             }
-                        }
-                    });
-                }
-            })
+                        });
+                    }
+                })
+            }
+
         });
 
     });
@@ -777,20 +722,39 @@
     });
 
     $(document).ready(function () {
+        //Number Only Decimal
+        $(document).on('input',
+            'input[name="ni_plan[]"], input[name="co_plan[]"], input[name="fe_plan[]"], input[name="sio2_plan[]"], input[name="mgo_plan[]"], input[name="mgo_plan[]"]',
+            function () {
+                var regex = /[^\d.]|\.(?=.*\.)/g;
+                var str = $(this).val();
+                var result = str.replace(regex, "");
+                $(this).val(result);
+            });
+
         // Add new row
         $('#addRow').on('click', function () {
             var newRow = '<tr>' +
-                '<td><button type="button" class="btn btn-danger btn-flat btn-sm removeRow"><i class="mdi mdi-minus me-1"></i></button></td>' +
-                '<td><input type="date" name="plan_date[]" value="" class="form-control text-black" placeholder="Sample Date"></td>' +
+                '<td></button>' +
+                '<button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
+                '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                '</i></button></div></td>' +
+                '<td><input type="month" name="plan_date[]" value="" class="form-control text-black" ></td>' +
                 '<td>' +
                 '<select name="type_ore[]" class="form-control w-full !rounded-md !bg-light">' +
-                '<option value="">-- Select --</option>' +
+                '<option value="">-- --</option>' +
                 '<option value="LIM">LIM</option>' +
                 '<option value="SAP">SAP</option>' +
                 '</select>' +
                 '</td>' +
                 '<td><input type="number" class="form-control" name="tonnage_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="plan_ni[]"></td>' +
+                '<td><input type="text" class="form-control" name="ni_plan[]"></td>' +
+                '<td><input type="text" class="form-control" name="co_plan[]"></td>' +
+                '<td><input type="text" class="form-control" name="fe_plan[]"></td>' +
+                '<td><input type="text" class="form-control" name="sio2_plan[]"></td>' +
+                '<td><input type="text" class="form-control" name="mgo_plan[]"></td>' +
+                '<td><input type="text" class="form-control" name="al2o3_plan[]"></td>' +
                 '</tr>';
 
             $('#planTable tbody').append(newRow);
@@ -860,7 +824,12 @@
         $(".ti-form-select").select2({
             width: '100%',
             // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#search-modal, .ti-modal-body')
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+        $(".ti-form-select").select2({
+            width: '100%',
+            // dropdownParent: $('#search-modal'),
+            dropdownParent: $('#delete-modal .ti-modal-body')
         });
 
         //opsi Select2
@@ -877,10 +846,31 @@
                 });
 
                 // Isi ke select + inisialisasi select2
-                $('#materialFilter').html(options).select2({
+                $('#materialFilter,#materials').html(options).select2({
                     width: '100%',
                     // dropdownParent: $('#search-modal'),
-                    dropdownParent: $('#search-modal .ti-modal-body')
+                    dropdownParent: $('#search-modal,#delete-modal .ti-modal-body')
+                })
+
+            }
+        });
+        $.ajax({
+            url: "{% url 'material-dropdown' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>'; // Tambah opsi default di awal
+
+                // Loop data material
+                $.each(data.materials, function (key, value) {
+                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
+                });
+
+                // Isi ke select + inisialisasi select2
+                $('#materials').html(options).select2({
+                    width: '100%',
+                    // dropdownParent: $('#search-modal'),
+                    dropdownParent: $('#delete-modal .ti-modal-body')
                 })
 
             }

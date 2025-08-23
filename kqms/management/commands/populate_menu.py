@@ -465,7 +465,7 @@ class Command(BaseCommand):
             title="Forms Entry",
             icon="bx bx-file",
             order=16,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         
         Menu.objects.create(
@@ -473,14 +473,14 @@ class Command(BaseCommand):
             url="selling-entry-quick-page",
             parent=forms,
             order=1,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         Menu.objects.create(
             title="Summary Daily",
             url="selling-daily-quick-summary-page",
             parent=forms,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         Menu.objects.create(
             title="Delete temp.",
