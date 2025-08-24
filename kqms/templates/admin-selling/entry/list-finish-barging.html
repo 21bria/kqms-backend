@@ -1,0 +1,559 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Barging Completed</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Barging Completed
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Data Adjustment barging</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="addNew" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Add New</button>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="10%">Arrival</th>
+                                             <th width="7%">Code Lot</th>
+                                            <th width="10%">Ritase Ori</th>
+                                            <th width="7%">Tonnage Ori</th>
+                                            <th width="7%">Adjustment</th>
+                                            <th width="7%">Departure</th>
+                                            <th width="10%">Description</th>
+                                            <th width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Start::add modal -->
+    <div id="add-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Finished dome
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#add-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                        <div class="hs-accordion-group">
+                            <div class="accordion customized-accordion accordions-items-seperate"
+                                id="customizedAccordion">
+                                <div class="hs-accordion-group">
+                                    <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                        id="hs-basic-heading31">
+                                        <button
+                                            class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                            aria-controls="hs-basic-collapse31" type="button">
+                                            KQMS Info#
+                                            <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                            <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+                                        <div id="hs-basic-collapse11"
+                                            class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                            aria-labelledby="hs-basic-heading11">
+                                            <div class="accordion-body">
+                                                <strong>Note :</strong>
+                                                Form untuk update Tonnage "Draft" dengan final Tonnage "Barging
+                                                Surveyor"
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="entryForm" name="entryForm">
+                        <div class="grid grid-cols-12 gap-4 mt-3">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Code Lot</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="code_lot" name="code_lot">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-3 col-span-12">
+                                <label class="form-label">Ritase</label>
+                                <input type="number" class="form-control" id="ritase_ori" name="ritase_ori"
+                                    placeholder="0" readonly>
+                            </div>
+                            <div class="xl:col-span-3 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="number" class="form-control" id="tonnage_ori" name="tonnage_ori"
+                                    placeholder="0" readonly>
+                            </div>
+
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Arrival date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="date" class="form-control" id="date_arrival" name="date_arrival"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Departure date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="date" class="form-control" id="date_departure" name="date_departure"
+                                        placeholder="Choose date" ]>
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Jetty</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="jetty_departure"
+                                    name="jetty_departure">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Tonnage Adjustment</label>
+                                <input type="number" class="form-control" id="tonnage_adjust" name="tonnage_adjust"
+                                    placeholder="0">
+                            </div>
+                        </div>
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="description" name="description" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#add-data">
+                                Cancel
+                            </button>
+                            <button type="button" id="saveBtn"
+                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%', // Sesuaikan lebar dengan kontainer
+            // dropdownParent: document.getElementById("filterModal")
+        });
+
+        $.ajax({
+            url: "{% url 'get-jetty-in' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '<option value="">-- Select --</option>'; // Tambah opsi default di awal
+
+                // Loop data material
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.port_name + '">' + value.port_name + '</option>';
+                });
+
+                // Isi ke select + inisialisasi select2
+                $('#jetty_departure').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#add-data .ti-modal-body')
+                })
+
+            }
+        });
+
+        $('#code_lot').select2({
+            ajax: {
+                url: "{% url 'get-sale-code-product' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select data',
+            allowClear: true,
+        });
+
+
+
+        $('#code_lot').change(function () {
+            var codeLot = $(this).val();  // string, misalnya "LOT-ABC"
+            var url = '/kqms/config/barging-finish-status-get/tonnage/' + codeLot + '/';
+            $('#ritase_ori').val('');
+            $('#tonnage_ori').val('');
+            $.ajax({
+                url: url,
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    if (data.list && data.list.length > 0) {
+                        var item = data.list[0];
+                        $('#ritase_ori').val(item.ritase);
+                        $('#tonnage_ori').val(item.tonnage);
+                    } else {
+                        console.warn("No data found in the response");
+                    }
+                }
+            });
+        });
+
+
+        /*-- Render DataTable --*/
+        let url = '{% url "barging-finish-status-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'date_arrival',
+                    name: 'date_arrival'
+                },
+                {
+                    data: 'code_lot',
+                    name: 'code_lot'
+                },
+                {
+                    data: 'ritase_ori',
+                    name: 'ritase_ori'
+                },
+                {
+                    data: 'tonnage_ori',
+                    name: 'tonnage_ori'
+                },
+                {
+                    data: 'tonnage_adjust',
+                    name: 'tonnage_adjust'
+                },
+                {
+                    data: 'date_departure',
+                    name: 'date_departure'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
+                },
+
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                            <div  class="flex gap-2 items-center" >
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                         `;
+                    }
+                }
+
+            ],
+
+        });
+
+        /*--- Click New to Button ---*/
+        $('#addNew').click(function () {
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
+            $.ajax({
+                url: "{% url 'insert-barging-finish-status' %}",
+                method: 'POST',
+                data: formData,
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+                        // Membersihkan formulir setelah sukses input
+                        $('#code_lot').val('').trigger('change');
+                        $('#ritase_ori').val('');
+                        $('#tonnage_ori').val('');
+                        $('#date_arrival').val('');
+                        $('#date_departure').val('');
+                        $('#jetty_departure').val('').trigger('change');
+                        $('#tonnage_adjust').val('');
+                        $('#description').val('');
+                        
+                        window.HSOverlay.close('#add-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
+                    } else {
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
+                    }
+                },
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+            });
+        });
+
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-barging-finish-status" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: {
+                            id: id,
+                        },
+                        success: function (data) {
+                            table.draw();
+
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        icon: 'success',
+                    })
+                }
+            })
+        });
+
+    });
+</script>
+
+
+
+</body>
+
+</html>

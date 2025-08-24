@@ -72,6 +72,10 @@
                                             <th width="5%">No</th>
                                             <th width="10%">Name</th>
                                             <th width="7%">Type</th>
+                                            <th width="7%">T-Factors</th>
+                                            <th width="7%">Close SubLot</th>
+                                            <th width="7%">Close Group</th>
+                                            <th width="7%">Ritase Group</th>
                                             <th>Description</th>
                                             <th width="7%">Active</th>
                                             <th width="7%">Action</th>
@@ -110,21 +114,44 @@
                         <input type="hidden" name="action" id="action" value="create">
                         <div class="grid grid-cols-12 gap-4">
                             <!-- Date -->
-                            <div class="xl:col-span-8 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Selling Code</label>
                                 <input type="text" id="product_code" name="product_code"
                                     class="form-control w-full !rounded-md">
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-3 col-span-12">
                                 <label class="form-label">Type</label>
                                 <select class="form-control w-full !rounded-md" id="type" name="type">
                                     <option value="">Select</option>
                                     <option value="LIS">LIS</option>
                                     <option value="SAS">SAS</option>
                                 </select>
-                                <p id="methodError" class="text-danger mt-1" style="display: none;"></p>
                             </div>
-
+                            <div class="xl:col-span-3 col-span-12">
+                                <label class="form-label">Truck Factors</label>
+                                <input type="number" id="truck_factors" name="truck_factors"
+                                    class="form-control w-full !rounded-md" value="28">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Sub-Lot Close</label>
+                                <select class="form-control w-full !rounded-md" id="sublot_close" name="sublot_close">
+                                    <option value="SL_05">SL_05</option>
+                                    <option value="SL_04-">SL_04</option>
+                                    <option value="SL_03-">SL_03</option>
+                                    <option value="SL_02-">SL_02</option>
+                                    <option value="SL_01-">SL_01</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Group close</label>
+                                <input type="number" id="group_close" name="group_close"
+                                    class="form-control w-full !rounded-md" value="5">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Ritase Group</label>
+                                <input type="number" id="ritase_max" name="ritase_max"
+                                    class="form-control w-full !rounded-md" value="20">
+                            </div>
                         </div>
 
                         <!-- Description -->
@@ -173,7 +200,7 @@
                                 <input type="text" id="edit_product_code" name="edit_product_code"
                                     class="form-control w-full !rounded-md">
                             </div>
-                            <div class="xl:col-span-2 col-span-12">
+                            <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Type</label>
                                 <select class="form-control w-full !rounded-md" id="edit_type" name="edit_type">
                                     <option value="">Select</option>
@@ -181,14 +208,41 @@
                                     <option value="SAS">SAS</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-2 col-span-12">
+
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Sub-Lot Close</label>
+                                <select class="form-control w-full !rounded-md" id="edit_sublot_close"
+                                    name="edit_sublot_close">
+                                    <option value="">Select</option>
+                                    <option value="SL_05">SL_05</option>
+                                    <option value="SL_04-">SL_04</option>
+                                    <option value="SL_03-">SL_03</option>
+                                    <option value="SL_02-">SL_02</option>
+                                    <option value="SL_01-">SL_01</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Group close</label>
+                                <input type="number" id="edit_group_close" name="edit_group_close"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Ritase Group</label>
+                                <input type="number" id="edit_ritase_max" name="edit_ritase_max"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Truck Factors</label>
+                                <input type="number" id="edit_truck_factors" name="edit_truck_factors"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Active</label>
                                 <select class="form-control w-full !rounded-md" id="active" name="active">
                                     <option value="">Select</option>
                                     <option value="1">Yes</option>
                                     <option value="0">No</option>
                                 </select>
-                                <p id="methodError" class="text-danger mt-1" style="display: none;"></p>
                             </div>
                         </div>
 
@@ -283,6 +337,22 @@
                 {
                     data: 'type',
                     name: 'type'
+                },
+                {
+                    data: 'truck_factors',
+                    name: 'truck_factors'
+                },
+                {
+                    data: 'sublot_close',
+                    name: 'sublot_close'
+                },
+                {
+                    data: 'group_close',
+                    name: 'group_close'
+                },
+                {
+                    data: 'ritase_max',
+                    name: 'ritase_max'
                 },
                 {
                     data: 'description',
@@ -409,6 +479,15 @@
         $('body').on('click', '.editData', function () {
             var id = $(this).data('id');
 
+            $('#edit_product_code').val('');
+            $('#edit_description').val('');
+            $('#edit_type').val('').trigger('change');
+            $('#edit_sublot_close').val('').trigger('change');
+            $('#edit_truck_factors').val('');
+            $('#edit_group_close').val('');
+            $('#edit_ritase_max').val('');
+            $('#active').val('').trigger('change');
+
             var url = '/kqms/master/sale-code/get_id/' + id + '/';
             $.ajax({
                 type: "GET",
@@ -423,6 +502,10 @@
                         $('#edit_product_code').val(response.product_code);
                         $('#edit_description').val(response.description);
                         $('#edit_type').val(response.type.trim()).trigger('change');
+                        $('#edit_sublot_close').val(response.sublot_close.trim()).trigger('change');
+                        $('#edit_truck_factors').val(response.truck_factors);
+                        $('#edit_group_close').val(response.group_close);
+                        $('#edit_ritase_max').val(response.ritase_max);
                         $('#active').val(response.active).trigger('change');
                         $('#edit_duplicateError').hide();
                         $('#edit_typeError').hide();
@@ -472,17 +555,23 @@
                     product_code: $('#edit_product_code').val(),
                     type: $('#edit_type').val(),
                     active: $('#active').val(),
-                    description: $('#edit_description').val()
+                    description: $('#edit_description').val(),
+                    truck_factors: $('#edit_truck_factors').val(),
+                    sublot_close: $('#edit_sublot_close').val(),
+                    group_close: $('#edit_group_close').val(),
+                    ritase_max: $('#edit_ritase_max').val()
                 },
                 success: function (data) {
                     if (data) {
-                        $('#edit_type').val('').trigger('change');
+                        $('#id').val('');
                         $('#edit_type').val('').trigger('change');
                         $('#active').val('');
                         $('#edit_description').val('');
                         $('#edit_product_code').val('');
-                        $('#id').val('');
-                        $('#typeError').hide();
+                        $('#edit_sublot_close').val('').trigger('change');
+                        $('#edit_truck_factors').val('');
+                        $('#edit_group_close').val('');
+                        $('#edit_ritase_max').val('');
                         $('#error-entry').hide();
                         $('#editmethodError').hide();
                         window.HSOverlay.close('#edit-data');
@@ -500,17 +589,14 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    $('#typeError').hide();
-                    $('#error-entry').hide();
-                    $('#editmethodError').hide();
                     if (xhr.status === 400) {
                         const errors = xhr.responseJSON.message;
                         let errorMessages = '';
 
-                        // Loop untuk membuat daftar error
-                        for (const [field, message] of Object.entries(errors)) {
-                            errorMessages += `<p><strong>${field}:</strong> ${message}</p>`;
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessages = `<p><strong>Error:</strong> ${xhr.responseJSON.error}</p>`;
                         }
+
 
                         const toast = window.Swal.mixin({
                             toast: true,
@@ -521,7 +607,7 @@
                         });
                         toast.fire({
                             icon: 'error',
-                            html: errorMessages, // Tampilkan pesan error secara rinci
+                            html: errorMessages,
                             padding: '2em',
                         });
                     } else if (xhr.status === 403) {
@@ -540,7 +626,6 @@
 
                     } else {
                         // Other errors
-                        // alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
                         let message = 'Internal server error';
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             message = xhr.responseJSON.message;

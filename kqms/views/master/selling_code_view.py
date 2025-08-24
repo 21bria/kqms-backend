@@ -13,7 +13,6 @@ from ...utils.utils import clean_string
 
 @login_required
 def code_page(request):
-
     return render(request, 'master/list-selling-code.html') 
 
 class SaleCodeList(View):
@@ -73,11 +72,15 @@ class SaleCodeList(View):
 
         data = [
             {
-                "id"          :item.id,
-                "product_code": item.product_code,
-                "description" : item.description,
-                "active"     : item.active,
-                "type"        : item.type
+                "id"            : item.id,
+                "product_code"  : item.product_code,
+                "description"   : item.description,
+                "active"        : item.active,
+                "type"          : item.type,
+                "truck_factors" : item.truck_factors,
+                "sublot_close"  : item.sublot_close,
+                "group_close"   : item.group_close,
+                "ritase_max"    : item.ritase_max,
             } for item in object_list
         ]
 
@@ -102,18 +105,21 @@ def get_code(request, id):
             job = SellingCode.objects.get(id=id)
             data = {
                 'id': job.id,
-                'product_code': clean_string(job.product_code), 
-                'description' : clean_string(job.description),
-                'active'      : clean_string(job.active), 
-                'type'        : clean_string(job.type), 
-                'created_at'  : job.created_at
+                'product_code' : clean_string(job.product_code), 
+                'description'  : clean_string(job.description),
+                'active'       : clean_string(job.active), 
+                'type'         : clean_string(job.type), 
+                'truck_factors': job.truck_factors, 
+                'sublot_close' : clean_string(job.sublot_close), 
+                'group_close'  : job.group_close, 
+                'ritase_max'   : job.ritase_max, 
+                'created_at'   : job.created_at
             }
             return JsonResponse(data)
         except SellingCode.DoesNotExist:
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
-
 
 @login_required
 def insert_code(request):
@@ -129,13 +135,21 @@ def insert_code(request):
 
     # Aturan dan pesan validasi
     rules = {
-        'product_code': ['required'],
-        'type': ['required'],
+        'product_code'  : ['required'],
+        'type'          : ['required'],
+        'truck_factors' : ['required'],
+        'sublot_close'  : ['required'],
+        'group_close'   : ['required'],
+        'ritase_max'    : ['required']
     }
 
     custom_messages = {
-        'product_code.required': 'Code is required.',
-        'type.required': 'Type is required.',
+        'product_code.required' : 'Code is required.',
+        'type.required'         : 'Type is required.',
+        'truck_factors.required': 'Truck Factors is required.',
+        'sublot_close.required' : 'Sublot is required.',
+        'group_close.required'  : 'Group is required.',
+        'ritase_max.required'   : 'Ritase is required.',
     }
 
     # Validasi input
@@ -148,6 +162,10 @@ def insert_code(request):
 
     product_code    = cleaned_data['product_code']
     type_code       = cleaned_data['type']
+    truck_factors   = request.POST.get('truck_factors')
+    sublot_close    = cleaned_data['sublot_close']
+    group_close     = cleaned_data['group_close']
+    ritase_max      = cleaned_data['ritase_max']
     description     = request.POST.get('description', '').strip()
     active = 1
 
@@ -159,9 +177,13 @@ def insert_code(request):
     try:
         new_code = SellingCode.objects.create(
             product_code=product_code,
+            type=type_code,
             description=description,
-            active=active,
-            type=type_code
+            truck_factors=truck_factors,
+            sublot_close=sublot_close,
+            group_close=group_close,
+            ritase_max=ritase_max,
+            active=active
         )
         return JsonResponse({
             'status': 'success',
@@ -195,14 +217,25 @@ def update_code(request, id):
 
     try:
         rules = {
-            'product_code': ['required'],
-            'type': ['required'],
+            'product_code'  : ['required'],
+            'type'          : ['required'],
+            'truck_factors' : ['required'],
+            'sublot_close'  : ['required'],
+            'group_close'   : ['required'],
+            'ritase_max'    : ['required'],
+            'active'        : ['required']
         }
 
         custom_messages = {
-            'product_code.required': 'Code is required.',
-            'type.required': 'Type is required.',
+            'product_code.required' : 'Code is required.',
+            'type.required'         : 'Type is required.',
+            'truck_factors.required': 'Truck Factors is required.',
+            'sublot_close.required' : 'Sublot is required.',
+            'group_close.required'  : 'Group is required.',
+            'ritase_max.required'   : 'Ritase is required.',
+            'active.required'       : 'Active is required.',
         }
+
 
         cleaned_data = {}
         for field, field_rules in rules.items():
@@ -219,20 +252,29 @@ def update_code(request, id):
             return JsonResponse({'error': 'Product code already exists.'}, status=400)
 
         # Update field
-        job.product_code = cleaned_data['product_code']
-        job.description  = request.POST.get('description', '').strip()
-        job.type         = cleaned_data['type']
-        active_value    = request.POST.get('active')
-        job.active      = int(active_value) if active_value is not None else 1
+        job.product_code  = cleaned_data['product_code']
+        job.description   = request.POST.get('description', '').strip()
+        job.type          = cleaned_data['type']
+        job.truck_factors = request.POST.get('truck_factors')
+        job.sublot_close  = request.POST.get('sublot_close')
+        job.group_close   = request.POST.get('group_close')
+        job.ritase_max    = request.POST.get('ritase_max')
+        active_value      = request.POST.get('active')
+        job.active        = int(active_value) if active_value is not None else 1
+        
         job.save()
 
         return JsonResponse({
-            'id'         : job.id,
-            'product_code': job.product_code,
-            'description' : job.description,
-            'active'      : job.active,
-            'type'        : job.type,
-            'created_at'  : job.created_at
+            'id'            : job.id,
+            'product_code'  : job.product_code,
+            'description'   : job.description,
+            'active'        : job.active,
+            'type'          : job.type,
+            'truck_factors' : job.truck_factors,
+            'sublot_close'  : job.sublot_close,
+            'group_close'   : job.group_close,
+            'ritase_max'    : job.ritase_max,
+            'created_at'    : job.created_at
         })
 
     except SellingCode.DoesNotExist:
@@ -244,7 +286,7 @@ def update_code(request, id):
 
 @login_required
 def delete_code(request):
-    allowed_groups = ['superadmin']
+    allowed_groups = ['superadmin','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 

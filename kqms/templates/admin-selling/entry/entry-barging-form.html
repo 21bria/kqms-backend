@@ -1,0 +1,2039 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<!-- <html lang="en" dir="ltr" data-nav-layout="vertical" class="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close"> -->
+<html lang="en" dir="ltr" data-nav-layout="horizontal" class="light" data-header-styles="light" data-menu-styles="light"
+    loader="enable" data-nav-style="menu-click">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> KQMS </title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="description"
+        content="Professional and sustainable nickel mining with a strong focus on quality management systems and environmental responsibility.">
+    <meta name="keywords"
+        content="nickel mining, nickel extraction, sustainable mining, mining quality management, nickel industry, mining operations, mineral exploration, nickel ore, esg mining, mining safety, nickel processing, mining company">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/brand-logos/colorful.png' %}">
+
+    <!-- Main JS -->
+    <script src="{% static 'assets/js/main.js' %}"></script>
+
+    <!-- Style Css -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <!-- Simplebar Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/simplebar/simplebar.min.css' %}">
+
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/@simonwep/pickr/themes/nano.min.css' %}">
+
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/@simonwep/pickr/themes/nano.min.css' %}">
+
+    <!-- Tabulator Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/tabulator-tables/css/tabulator.min.css' %}">
+
+    <!-- Choices Css -->
+    <link rel="stylesheet" href="{% static 'assets/libs/choices.js/public/assets/styles/choices.min.css' %}">
+
+    <!-- dataTables -->
+    <link href="{% static 'assets/libs/datatables/dataTables.tailwindcss.css'%}" rel="stylesheet">
+    <link href="{% static 'assets/libs/datatables/datatables.min.css'%}" rel="stylesheet">
+    <link href="{% static 'assets/libs/datatables/responsive.dataTables.min.css'%}" rel="stylesheet">
+
+    <!-- Select2 -->
+    <link rel="stylesheet" href="{% static 'assets/libs/select2/css/tailwindcss/select2.min.css'%}">
+    <link rel="stylesheet"
+        href="{% static 'assets/libs/select2/css/tailwindcss/select2-tailwindcss-theme-plain.min.css'%}">
+
+    <!-- CSS SweetAlert2 -->
+    <link rel="stylesheet" href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}">
+
+    <!-- JS SweetAlert2 -->
+    <script src="{% static 'assets/libs/sweetalert2/sweetalert2.all.min.js' %}"></script>
+
+</head>
+
+<style>
+    [data-nav-layout=horizontal] .content {
+        inset-inline-start: 0px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-top: 0.4rem !important;
+        min-height: calc(100vh - 10.5rem) !important;
+        width: 100% !important;
+    }
+
+    /* Custom DataTable pagination agar sesuai Tailwind */
+    /* Tambahkan jarak bawah keseluruhan */
+    .dataTables_wrapper {
+        padding-bottom: 1.5rem;
+        /* atau coba 2rem jika masih terlalu mepet */
+    }
+
+    /* Atau khusus bagian pagination */
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 1rem;
+        margin-bottom: 2rem;
+        /* jarak bawah */
+    }
+
+    /* Tombol Pagination */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 0.5rem 0.75rem;
+        margin: 0 0.10rem;
+        border-radius: 0.375rem;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        color: #374151;
+        font-weight: 500;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button {
+        background-color: #1f2937;
+        /* bg-gray-800 */
+        border-color: #374151;
+        /* border-gray-700 */
+        color: #d1d5db;
+        /* text-gray-300 */
+    }
+
+    /* Tombol aktif */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #6366f1;
+        color: white !important;
+        border-color: #6366f1;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background-color: #818cf8;
+        /* indigo-400 */
+        border-color: #818cf8;
+        color: #1e293b !important;
+        /* slate-800 */
+    }
+
+    /* Hover */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #e0e7ff;
+        border-color: #6366f1;
+        color: #111827 !important;
+    }
+
+    .dark .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background-color: #4b5563;
+        color: #f9fafb !important;
+    }
+
+    /* Filter input dan select dropdown */
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+        border: 1px solid #e5e7eb;
+        padding: 0.375rem 0.5rem;
+        border-radius: 0.375rem;
+        background-color: white;
+        color: #111827;
+    }
+
+    .dark .dataTables_wrapper .dataTables_filter input,
+    .dark .dataTables_wrapper .dataTables_length select {
+        background-color: #1f2937;
+        /* gray-800 */
+        border-color: #374151;
+        color: #f3f4f6;
+        /* gray-100 */
+    }
+
+    /* Label select & search */
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter {
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+
+    .dark .dataTables_wrapper .dataTables_length label,
+    .dark .dataTables_wrapper .dataTables_filter {
+        color: #d1d5db;
+    }
+
+    /* Margin bawah & atas */
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1rem;
+        text-align: right;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        margin-bottom: 1rem;
+    }
+
+    .dataTables_wrapper .dataTables_length label {
+        font-size: 0;
+        /* Sembunyikan semua teks */
+    }
+
+    .dataTables_wrapper .dataTables_length label select {
+        font-size: 0.875rem;
+        /* Kembalikan ukuran font dropdown */
+    }
+
+    .custom-popup {
+        padding: 1.5rem !important;
+        border-radius: 1rem !important;
+        background-color: #2f3052 !important;
+        color: #ffffff !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .custom-icon {
+        border: 4px solid #ff6b6b !important;
+        border-radius: 50% !important;
+        padding: 0.5rem !important;
+        background: rgba(255, 107, 107, 0.1) !important;
+        color: #ff6b6b !important;
+        font-size: 2.5rem !important;
+    }
+
+    .custom-title {
+        font-size: 1.1rem !important;
+        font-weight: 500 !important;
+        margin-top: 0.75rem;
+    }
+
+    #toast-container {
+        position: fixed;
+        top: 1.25rem;
+        /* top-5 */
+        right: 1.25rem;
+        /* right-5 */
+        z-index: 9999;
+
+    }
+
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    .swal2-popup {
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px !important;
+        box-sizing: border-box;
+    }
+
+    .dark .swal2-popup {
+        background: #0e1726;
+    }
+
+    .dark .swal2-popup .swal2-title {
+        color: #888ea8;
+    }
+
+    .swal2-popup .swal2-title {
+        display: block;
+        margin: 0 !important;
+        width: 100%;
+        color: #3b3f5c;
+        font-size: 24px;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-title) {
+        padding-right: 2.5rem !important;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-title) {
+        padding-left: 2.5rem !important;
+    }
+
+    .swal2-popup .swal2-styled {
+        box-shadow: 0 5px 20px 0 #0000001a !important;
+        letter-spacing: 1px;
+        font-size: 14px !important;
+        line-height: 20px !important;
+        transition: all 0.3s ease-out;
+        -webkit-transition: all 0.3s ease-out;
+        margin: 0 5px;
+        padding: 8px 20px;
+        border-radius: 6px;
+    }
+
+    .swal2-popup .swal2-styled.swal2-cancel {
+        background-color: #fff !important;
+        color: #4361ee;
+        border: 1px solid #e8e8e8;
+        box-shadow: none;
+        padding: 7px 20px;
+    }
+
+    .dark .swal2-popup .swal2-styled.swal2-cancel {
+        background-color: #3b3f5c !important;
+        color: #e0e6ed;
+        border-color: #3b3f5c;
+    }
+
+    .swal2-popup .swal2-styled.swal2-confirm {
+        background-color: #4361ee;
+    }
+
+    .swal2-popup .swal2-styled.swal2-confirm:focus {
+        box-shadow: none !important;
+    }
+
+    .swal2-popup .swal2-html-container {
+        margin: 0 !important;
+        color: #e95f2b;
+        font-weight: 300;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-html-container) {
+        padding-right: 2.5rem !important;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-html-container) {
+        padding-left: 2.5rem !important;
+    }
+
+    .swal2-popup .swal2-close {
+        position: absolute;
+        top: 16px;
+        transition: color 0.1s ease-out;
+        font-family: serif;
+    }
+
+    :is([dir="ltr"] .swal2-popup .swal2-close) {
+        right: 1rem;
+    }
+
+    :is([dir="rtl"] .swal2-popup .swal2-close) {
+        left: 1rem;
+    }
+
+    .dark .swal2-popup .swal2-close {
+        color: #888ea8;
+    }
+
+    .swal2-popup.swal2-toast {
+        flex-direction: row;
+        align-items: center;
+        width: auto !important;
+        box-shadow: 0 0 0.625em #d9d9d9;
+        padding: 2em;
+        overflow-y: hidden;
+        display: flex !important;
+    }
+
+    .swal2-popup.swal2-toast.swal2-show {
+        animation: showSweetToast 0.5s;
+    }
+
+    .swal2-popup pre {
+        color: #009688;
+    }
+
+    .swal2-icon {
+        position: relative;
+        box-sizing: initial;
+        justify-content: center;
+        width: 5em;
+        height: 5em;
+        margin: 1.25em auto 1.875em;
+        border-radius: 50%;
+        border: 0.25em solid #000;
+        font-family: inherit;
+        line-height: 5em;
+        cursor: default;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    .swal2-icon:not(.swal2-error):not(.swal2-success) {
+        width: 2em !important;
+        line-height: 119px !important;
+        height: 2em !important;
+        margin: 0.25em auto 0.875em !important;
+    }
+
+    .swal2-icon.swal2-error {
+        border: 5px solid #f1f2f3 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+    }
+
+    .swal2-icon.swal2-warning {
+        color: #fb4 !important;
+    }
+
+    .swal2-icon.swal2-info,
+    .swal2-icon.swal2-warning {
+        border: 5px solid #f1f2f3 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+        font-size: 60px;
+        line-height: 80px;
+        text-align: center;
+    }
+
+    .swal2-icon.swal2-info {
+        color: #4361ee !important;
+    }
+
+    .swal2-icon.swal2-question {
+        color: #805dca !important;
+        border-style: solid;
+        border-width: 4px !important;
+        border-color: #0000 !important;
+        box-shadow: 0 3px 25px 0 #716aca33;
+        font-size: 60px;
+        line-height: 80px;
+        text-align: center;
+    }
+
+    .dark .swal2-icon.swal2-error,
+    .dark .swal2-icon.swal2-info,
+    .dark .swal2-icon.swal2-question,
+    .dark .swal2-icon.swal2-warning {
+        border-color: #888ea8 !important;
+        box-shadow: none !important;
+    }
+
+    .swal2-iconswal2-success [class^="swal2-success-line"][class$="tip"] {
+        top: 2.875em;
+        left: 0.875em;
+        width: 1.5625em;
+        transform: rotate(45deg);
+    }
+
+    .swal2-icon.swal2-success swal2-success [class^="swal2-success-line"][class$="long"] {
+        top: 2.375em;
+        right: 0.5em;
+        width: 2.9375em;
+        transform: rotate(-45deg);
+    }
+
+    .swal2-icon.swal2-success .swal2-success-fix {
+        position: absolute;
+        top: 0.5em;
+        left: 1.625em;
+        width: 0.4375em;
+        height: 5.625em;
+        transform: rotate(-45deg);
+        z-index: 1;
+    }
+
+    .swal2-icon.swal2-success .swal2-success-ring {
+        position: absolute;
+        top: -0.25em;
+        left: -0.25em;
+        width: 100%;
+        height: 100%;
+        border: 0.25em solid #a5dc864d;
+        border-radius: 50%;
+        z-index: 2;
+        box-sizing: initial;
+    }
+
+    .swal2-icon.swal2-success [class^="swal2-success-circular-line"][class$="right"] {
+        top: -0.6875em;
+        left: 1.875em;
+        transform: rotate(-45deg);
+        transform-origin: 0 3.75em;
+        border-radius: 0 7.5em 7.5em 0;
+    }
+
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step {
+        background: #25d5e4 !important;
+    }
+
+    .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+        background: #ebedf2 !important;
+    }
+
+    .dark .swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step {
+        background: #3b3f5c !important;
+        color: #888ea8 !important;
+    }
+
+    .dark .swal2-progress-steps .swal2-progress-step {
+        color: #e0e6ed;
+    }
+
+    .swal2-icon-content {
+        font-size: 5.75rem !important;
+    }
+
+    .swal2-show {
+        animation: swal2-show 0.3s;
+    }
+
+    .swal2-modal.background-modal .swal2-title {
+        color: #fff !important;
+    }
+
+    .dark .swal2-input {
+        background-color: #1b2e4b;
+        border-color: #253b5c;
+        color: #888ea8;
+    }
+
+    .dark .swal2-footer {
+        border-color: #888ea8;
+    }
+
+    .swal2-image {
+        margin-bottom: 32px !important;
+    }
+
+    .sweet-alerts.swal2-popup .swal2-html-container {
+        margin-top: 1rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    :is([dir="ltr"] .sweet-alerts.swal2-popup .swal2-title) {
+        padding-right: 1.5rem !important;
+    }
+
+    :is([dir="rtl"] .sweet-alerts.swal2-popup .swal2-title) {
+        padding-left: 1.5rem !important;
+    }
+
+    /* Select 2 */
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Styling untuk Select2 container */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Styling untuk Select2 selection */
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 12px !important;
+        background-color: #fff !important;
+    }
+
+    /* Styling untuk rendered text (teks yang dipilih) */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+        line-height: normal !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    /* Styling untuk placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af !important;
+    }
+
+    /* Styling untuk tombol clear (X) */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+        text-align: center !important;
+        line-height: 18px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+
+    /* Styling untuk dropdown arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 8px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #6b7280 transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
+        height: 0 !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        width: 0 !important;
+    }
+
+    /* Styling untuk dropdown */
+    .select2-dropdown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Styling untuk search box di dropdown */
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+    }
+
+    /* Styling untuk options */
+    .select2-results__option {
+        padding: 8px 12px !important;
+        color: #374151 !important;
+    }
+
+    .select2-results__option--highlighted {
+        background-color: #6466f1 !important;
+        color: white !important;
+    }
+
+    /* Styling untuk container dengan allowClear */
+    .select2-container--default.select2-container--allowclear .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        /* Beri ruang untuk tombol clear dan arrow */
+    }
+
+    /* Styling khusus untuk multiple select jika diperlukan */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #6466f1 !important;
+        border: 1px solid #6466f1 !important;
+        border-radius: 4px !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        margin: 2px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 6px !important;
+        font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fecaca !important;
+    }
+
+    /* Styling untuk focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6466f1 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Styling untuk disabled state */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #f9fafb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+    }
+</style>
+
+<body>
+    <!-- ========== Switcher  ========== -->
+    {% include 'layout/switcher.html' %}
+    <!-- ========== END Switcher  ========== -->
+
+    <!-- Loader -->
+    <div id="loader">
+        <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+    </div>
+    <!-- Loader -->
+    <div class="page">
+        <div class="content">
+            <!-- Start::main-content -->
+            <div class="main-content">
+                <!-- Page Header -->
+                <div class="block justify-between page-header md:flex">
+                    <div>
+                        <h3
+                            class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                            Barging</h3>
+                    </div>
+                    <ol class="flex items-center whitespace-nowrap min-w-0">
+                        <li class="text-[0.813rem] ps-[0.5rem]">
+                            <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                                href="javascript:void(0);">
+                                Form
+                                <i
+                                    class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                            </a>
+                        </li>
+                        <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50"
+                            aria-current="page">Ore
+                        </li>
+                    </ol>
+                </div>
+                <!-- Page Header Close -->
+
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-6">
+                    <div class="col-span-12">
+                        <div class="box">
+                            <div class="box-header">
+                                <h5 class="box-title">Entry data</h5>
+                            </div>
+                            <div class="box-body">
+                                <form id="multiRowForm" class="mt-5">
+                                    <div class="flex justify-start">
+                                        <div class="w-64">
+                                            <label for="hs-trailing-button-add-on-with-icon"
+                                                class="sr-only">Label</label>
+                                            <div class="flex rounded-sm">
+                                                <input type="text" id="no_production" name='no_production'
+                                                    value="BG-{{ no_entry }}"
+                                                    class=" ti-form-control w-full !rounded-md rounded-none rounded-s-sm focus:z-10 w-full">
+                                                <button aria-label="button" type="button" id="applyFilterBtn"
+                                                    class="inline-flex flex-shrink-0 justify-center items-center h-[2.875rem] w-[2.875rem] rounded-e-sm border border-transparent font-semibold bg-primary text-white hover:bg-primary focus:z-10 focus:outline-none focus:ring-0 focus:ring-primary transition-all text-sm">
+                                                    <svg class="h-3 w-3" xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% include 'admin-selling/entry/table-from.html' %}
+                                    <!-- button -->
+                                    <div
+                                        class="mb-6 mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
+                                        <a href="javascript:void(0)" id="addRow"
+                                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave"> Add item
+                                        </a>
+                                        <button type="submit" id="save"
+                                            class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Save data
+                                        </button>
+                                    </div>
+                                </form>
+                                <!-- Tabel view -->
+                                {% include 'admin-selling/entry/table-view.html' %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End::row-1 -->
+            </div>
+            <!-- Start::main-content -->
+        </div>
+
+
+        <!-- Start::edit modal -->
+        <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+            <!-- <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 max-w-7xl w-full ease-out"> -->
+            <div class="hs-overlay-open:mt-7 ti-modal-box mt-10 !max-w-full !w-full !m-0 ease-out">
+                <div class="ti-modal-content">
+                    <div class="ti-modal-header">
+                        <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                            Edit Productions
+                        </h6>
+                        <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                            data-hs-overlay="#edit-data">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+                    <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                        <form class="min-w-0">
+
+                            <input type="hidden" name="id" id="id">
+                            <div class="grid grid-cols-12 gap-4">
+                                <!-- Date -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Date</label>
+                                    <input id="date_production" type="date" name="date_production"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Category -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Category</label>
+                                    <select id="category_mine" name="category_mine"
+                                        class="form-control w-full !rounded-md">
+                                        <!-- <option value="">Select</option>
+                                        <option value="Mining">Mining</option>
+                                        <option value="Project">Project</option> -->
+                                    </select>
+                                </div>
+
+                                <!-- Shift -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Shift</label>
+                                    <select id="shift" name="shift" class="form-control w-full !rounded-md">
+                                        <option value="">Select</option>
+                                        <option value="D">D</option>
+                                        <option value="N">N</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Time</label>
+                                    <input type="time" id="time_edit" name="time_edit"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Digger</label>
+                                    <select id="digger" name="digger" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Bucket</label>
+                                    <input type="number" id="bucket" name="bucket"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Loader Class</label>
+                                    <select id="hauler_class" name="hauler_class"
+                                        class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Hauler</label>
+                                    <select id="hauler" name="hauler" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+
+                                <!-- Source -->
+                                <!-- <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Source</label>
+                                    <select id="sources" name="sources" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div> -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Loading point</label>
+                                    <select id="loading_point" name="loading_point"
+                                        class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Dumping point</label>
+                                    <select id="dumping_point" name="dumping_point"
+                                        class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Dome</label>
+                                    <select id="dome_id" name="dome_id" class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Layer -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Material</label>
+                                    <select id="id_material" name="id_material" class="form-control w-full !rounded-md">
+                                        <option value="">--- Select ---</option>
+                                    </select>
+                                </div>
+                                <!-- Ritase -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Ritase</label>
+                                    <input type="number" id="ritase" name="ritase"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <!-- Tonnage -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Tonnage</label>
+                                    <input readonly type="text" id="tonnage" name="tonnage"
+                                        class="form-control w-full !rounded-md">
+                                </div>
+
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">Vendors</label>
+                                    <select id="vendorsEdit" name="vendorsEdit" class="form-control w-full !rounded-md">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+
+                                <!-- No Production -->
+                                <div class="xl:col-span-2 col-span-12">
+                                    <label class="form-label">No. Production</label>
+                                    <input type="text" id="no_production_edit" name="no_production_edit"
+                                        class="form-control w-full !rounded-md" disabled>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mt-4">
+                                <label class="form-label">Description</label>
+                                <textarea id="remarks" name="remarks" rows="3"
+                                    class="form-control w-full !rounded-md resize-none"
+                                    placeholder="Enter Description"></textarea>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-6 flex justify-end gap-2">
+                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                    data-hs-overlay="#edit-data">
+                                    Cancel
+                                </button>
+                                <button type="button" value="edit" id="updateButton"
+                                    class="ti-btn bg-primary text-white">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Toast Container -->
+        <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+
+        <!-- End::add task modal -->
+        <!-- Footer Start -->
+        {% include 'layout/footer.html' %}
+        <!-- Footer End -->
+
+    </div>
+
+    <!-- Back To Top -->
+    <div class="scrollToTop">
+        <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+    </div>
+
+    <div id="responsive-overlay"></div>
+
+    <!-- Call JS -->
+    {% include 'layout/js.html' %}
+
+    <script type="text/javascript">
+        function toggleModal(modalID) {
+            document.getElementById(modalID).classList.toggle("hidden");
+        }
+        $(document).on("focus", ".select2", function (e) {
+            if (e.originalEvent) {
+                var s2element = $(this).siblings("select:enabled");
+                s2element.select2("open");
+                // Set focus back to select2 element on closing.
+                s2element.on("select2:closing", function () {
+                    if (s2element.val()) s2element.select2("focus");
+                });
+            }
+        });
+
+        //Number Only Decimal
+        $(document).on('keyup', '#from_rl,#to_rl', function (e) {
+            var regex = /[^\d.]|\.(?=.*\.)/g;
+            var subst = "";
+
+            var str = $(this).val();
+            var result = str.replace(regex, subst);
+            $(this).val(result);
+
+        });
+    </script>
+
+    <!-- For Table list form -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Inisialisasi Select2 pada row pertama
+            initializeSelect2($('#prudctionsTable tbody tr:first'));
+            $('#addRow').on('click', function () {
+                // Periksa dan hapus baris kosong jika ada
+                if ($('#prudctionsTable tbody tr').length === 1 && $('#prudctionsTable tbody tr:first').find('div').text().trim() === 'Please add rows') {
+                    $('#prudctionsTable tbody tr:first').remove();  // Menghapus baris kosong
+                }
+                var newRow = '<tr>' +
+                    '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="copyRow ti-btn ti-btn-icon bg-success/10 text-success hover:bg-success hover:text-white !rounded-full ti-btn-wave">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor"' +
+                    'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 shrink-0 ltr:mr-2 rtl:ml-2">' +
+                    '<line x1="12" y1="5" x2="12" y2="19"></line> <line x1="5" y1="12" x2="19" y2="12"></line></svg>' +
+                    '</i></button>' +
+                    '<button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
+                    '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                    '</i></button></td></div>' +
+                    '<td><input type="date" name="date_hauling[]" value="{{today}}" class="form-control w-full !rounded-md"></td>' +
+                    '<td>' +
+                    '<select name="shift[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- --</option>' +
+                    '<option value="Day">Day</option>' +
+                    '<option value="Night">Night</option>' +
+                    '</select>' +
+                    '</td>' +
+                    '<td><input type="time" class="form-control" name="time_loading[]"></td>' +
+                    '<td><select class="form-select id_pile" name="id_pile[]"><option value="">---</option></select></td>' +
+                    '<td><select class="form-select material" name="id_material[]"><option value="">---</option></select></td>' +
+                    '<td><select class="form-select barge_code" name="barge_code[]"><option value="">---</option></select></td>' +
+                    '<td><select class="form-select code_lot" name="code_lot[]"><option value="">---</option></select></td>' +
+                    '<td>' +
+                    '<select name="code_sub[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- --</option>' +
+                    '<option value="SL_01">SL_01</option>' +
+                    '<option value="SL_02">SL_02</option>' +
+                    '<option value="SL_03">SL_03</option>' +
+                    '<option value="SL_04">SL_04</option>' +
+                    '<option value="SL_05">SL_05</option>' +
+                    '</select>' +
+                    '</td>' +
+                    '<td><input type="number" class="form-control" name="code_inc[]"></td>' +
+                    '<td>' +
+                    '<select name="sale_adjust[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- --</option>' +
+                    '<option value="HPAL">HPAL</option>' +
+                    '<option value="RKEF">RKEF</option>' +
+                    '</select>' +
+                    '</td>' +
+                    '<td>' +
+                    '<select name="direct[]" class="form-control w-full !rounded-md">' +
+                    '<option value="">-- --</option>' +
+                    '<option value="No">No</option>' +
+                    '<option value="Yes">Yes</option>' +
+                    '</select>' +
+                    '</td>' +
+                    '</tr>';
+                $('#prudctionsTable tbody').append(newRow);
+                var newRowElement = $('#prudctionsTable tbody tr:last');
+                initializeSelect2(newRowElement);
+            });
+
+            $('#prudctionsTable').on('click', '.copyRow', function () {
+                var currentRow = $(this).closest('tr');
+
+                currentRow.find('select').each(function () {
+                    $(this).select2('destroy'); // Destroy Select2
+                });
+
+                var clonedRow = currentRow.clone();  // Clone row
+
+                // Salin nilai dari input dan select dari currentRow ke clonedRow
+                clonedRow.find('input, select').each(function (index) {
+                    var currentElement = currentRow.find('input, select').eq(index); // Ambil elemen berdasarkan index
+                    var clonedElement = $(this); // Elemen pada row yang di-clone
+
+                    // Jika elemen adalah input atau select, salin nilainya
+                    if (clonedElement.is('input')) {
+                        clonedElement.val(currentElement.val()); // Salin value input
+                    } else if (clonedElement.is('select')) {
+                        clonedElement.val(currentElement.val()).trigger('change'); // Salin value select dan trigger Select2 jika ada
+                    }
+                });
+                // Re-inisialisasi Select2 pada row yang asli dan yang di-clone
+                $('#prudctionsTable tbody').append(clonedRow);
+
+                initializeSelect2(currentRow);
+                initializeSelect2(clonedRow);
+            });
+
+            // Tombol Remove Row: Menghapus row
+            $('#prudctionsTable').on('click', '.removeRow', function () {
+                $(this).closest('tr').remove();
+
+            });
+
+            // Fungsi untuk menginisialisasi Select2 pada setiap elemen select
+            function initializeSelect2(element) {
+                element.find('select').select2({
+                    width: '100%',
+                });
+
+                $('.material').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-materials' %}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select Data',
+                    theme: 'tailwindcss-3',
+                });
+
+                $('.category').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-plan-category'%}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: $.map(data, function (item) {
+                                    return {
+                                        id: item.id,
+                                        text: item.text
+                                    };
+                                })
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select Data',
+                    theme: 'tailwindcss-3',
+                });
+
+                $('.code_lot').select2({
+                    ajax: {
+                        url: "{% url 'get-code-lot' %}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: $.map(data.results, function (item) {
+                                    return {
+                                        id: item.text,
+                                        text: item.text
+                                    };
+                                }),
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    minimumInputLength: 2,
+                    placeholder: 'Select KW ??',
+                    allowClear: true,
+                    theme: 'tailwindcss-3',
+                });
+
+                $('.barge_code').select2({
+                    ajax: {
+                        url: "{% url 'get-barge-code'%}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select BG ??',
+                    theme: 'tailwindcss-3',
+                });
+
+                $('.id_pile').select2({
+                    ajax: {
+                        url: "{% url 'get-mine-dome'%}",
+                        dataType: 'json',
+                        delay: 250,  // Menunda request AJAX agar tidak terlalu sering
+                        data: function (params) {
+                            return {
+                                q: params.term,  // Term dari input pencarian
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function (data, params) {
+                            params.page = params.page || 1;
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        cache: true
+                    },
+                    allowClear: true,
+                    minimumInputLength: 2,
+                    placeholder: 'Select Data',
+                    theme: 'tailwindcss-3',
+                });
+
+            }
+
+        });
+    </script>
+
+    <!-- get list Data & CRUD-->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            /*-- Pass Header Token ---*/
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $(".form-select").select2({
+                width: '100%',
+            });
+            table = $('#data_table').DataTable().clear().destroy();
+            /*-- Render DataTable --*/
+            let url = '{% url "barging-list-temp" %}';
+            var table = $('#data_table').DataTable({
+                'processing': true,
+                'serverSide': true,
+                'responsive': true,
+                'autoWidth': true,
+                language: {
+                    paginate: {
+                        previous: "«",
+                        next: "»"
+                    }
+                },
+                "ajax": {
+                    "url": url,
+                    "type": "POST",
+                    dataType: 'json',
+                    "data": function (data) {
+                        data.no_production = $('#no_production').val();
+                        return data;
+                    },
+                },
+                columns: [
+                    // {
+                    //     data: null,
+                    //     searchable: false,
+                    //     orderable: false,
+                    //     render: function (data, type, row, meta) {
+                    //         return meta.row + meta.settings._iDisplayStart + 1;
+                    //     }
+                    // }, // Kolom nomor otomatis
+  {
+                        'data': null,
+                        'name': 'action',
+                        'orderable': false,
+                        'searchable': false,
+                        'render': function (data, type, row) {
+                            return `
+                                     <div  class="flex gap-2 items-center" >
+                                             <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    `;
+                        }
+                    },
+                    { 'data': 'date_hauling', 'name': 'date_hauling', 'searchable': true },
+                    { 'data': 'shift', 'name': 'shift', 'searchable': true },
+                    { 'data': 'time_hauling', 'name': 'time_hauling', 'searchable': false },
+                    { 'data': 'dome', 'name': 'dome', 'searchable': true },
+                    { 'data': 'material', 'name': 'material', 'searchable': true },
+                    { 'data': 'barge_code', 'name': 'barge_code', 'searchable': true },
+                    { 'data': 'code_lot', 'name': 'code_lot', 'searchable': false },
+                    { 'data': 'code_sub', 'name': 'code_sub', 'searchable': false },
+                    { 'data': 'code_inc', 'name': 'code_inc', 'searchable': true },
+                    { 'data': 'ritase', 'name': 'ritase', 'searchable': false },
+                    { 'data': 'tonnage', 'name': 'tonnage', 'searchable': false },
+                    { 'data': 'sale_adjust', 'name': 'sale_adjust', 'searchable': false },
+                    { 'data': 'direct', 'name': 'direct', 'searchable': false },
+                  
+                       {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+
+                ],
+                // Mengatur default sort pada kolom secara desc
+                order: [
+                    [1, 'desc']
+                ],
+
+             // Menambahkan opsi footerCallback
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(),
+                        data;
+                    // converting to interger to find total
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    // computing column Total the complete result 
+
+                    var col_10 = api
+                        .column(10)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                    var col_11 = api
+                        .column(11)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer by showing the total with the reference of the column index   
+                    $(api.column(10).footer()).html(col_10.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","));
+                    $(api.column(11).footer()).html(col_11.toString().replace(
+                        /\B(?=(\d{3})+(?!\d))/g,
+                        ","));
+
+                },
+
+            });
+            $('.th_hide').show();
+            /*--Filter Modal and Apply Filter---*/
+            $('#applyFilterBtn').click(function () {
+                var no_production = $('#no_production').val();
+                table.ajax.reload();
+            });
+
+            /* Insert Data */
+            $('#multiRowForm').submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+                $.ajax({
+                    method: 'POST',
+                    url: "{% url 'create-barging-data' %}",
+                    data: formData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                // title: 'Insert successfully',
+                                html: response.message,
+                                padding: '2em',
+                            });
+
+                            // Membersihkan formulir setelah sukses input
+                            $("[name='date_hauling[]']").val('');
+                            $("[name='shift[]']").val('').trigger('change');
+                            $("[name='loader[]']").val('').trigger('change');
+                            $("[name='hauler[]']").val('').trigger('change');
+                            $("[name='hauler_class[]']").val('').trigger('change');
+                            $("[name='sources_area[]']").val('').trigger('change');
+                            $("[name='laoading_point[]']").val('').trigger('change');
+                            $("[name='dumping_point[]']").val('').trigger('change');
+                            $("[name='id_pile[]']").val('').trigger('change');
+                            $("[name='category[]']").val('').trigger('change');
+                            $("[name='id_material[]']").val('').trigger('change');
+                            $("[name='time_loading[]']").val('').trigger('change');
+                            $("[name='bucket[]']").val('');
+                            $("[name='ritase[]']").val('');
+                            $("[name='tonnage[]']").val('');
+                            // Hapus baris formulir yang baru ditambahkan
+                            $('#prudctionsTable tbody tr:last').remove();
+                            var no_production = $('#no_production').val();
+                            // Kirim permintaan AJAX ke server dengan filter
+                            // $('#data_table').DataTable().clear().destroy();
+                            $('#data_table').DataTable().clear().draw();
+                            // load_data(no_production);
+                        } else {
+                            // Handle kesalahan validasi atau kesalahan lainnya
+                            alert('Terjadi kesalahan: ' + response.messages);
+                        }
+                    },
+                    error: function (xhr, status, errorThrown, error) {
+
+                        if (xhr.status === 400) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                html: xhr.responseJSON.error,
+                                padding: '2em',
+                            });
+                        }
+                        else if (xhr.status === 422) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+
+                        else {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+                    }
+
+                });
+            });
+
+            /* Update*/
+            $('#updateButton').click(function () {
+                var id = $('#id').val();
+                var date_production = $('#date_production').val();
+                var shift = $('#shift').val();
+                var time_loading = $('#time_edit').val();
+                var digger = $('#digger').val();
+                var bucket = $('#bucket').val();
+                var hauler = $('#hauler').val();
+                var hauler_class = $('#hauler_class').val();
+                // var sources = $('#sources').val();
+                var loading_point = $('#loading_point').val();
+                var dumping_point = $('#dumping_point').val();
+                var dome_id = $('#dome_id').val();
+                var category_mine = $('#category_mine').val();
+                var id_material = $('#id_material').val();
+                var ritase = $('#ritase').val();
+                var tonnage = $('#tonnage').val();
+                var area = $('#area').val();
+                var vendors = $('#vendorsEdit').val();
+                var remarks = $('#remarks').val();
+
+                var updatedData = {
+                    date_production: date_production,
+                    shift: shift,
+                    time_loading: time_loading,
+                    digger: digger,
+                    bucket: bucket,
+                    hauler: hauler,
+                    hauler_class: hauler_class,
+                    // sources: sources,
+                    loading_point: loading_point,
+                    dumping_point: dumping_point,
+                    dome_id: dome_id,
+                    category_mine: category_mine,
+                    id_material: id_material,
+                    ritase: ritase,
+                    tonnage: tonnage,
+                    area: area,
+                    vendors: vendors,
+                    remarks: remarks
+                };
+                var url = '/kqms/mining/mine-production/update/' + id + '/';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST', // Anda bisa menggunakan 'POST' atau 'PUT' sesuai preferensi
+                    data: updatedData,
+                    success: function (response) {
+                        if (response.success) {
+                            window.HSOverlay.close('#edit-data');
+                            // Tampilkan notifikasi sukses
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'success',
+                                // title: 'Update successfully',
+                                html: response.message,
+                                padding: '2em',
+                            });
+
+                            // Kirim permintaan AJAX ke server dengan filter
+                            $('#data_table').DataTable().clear().draw();
+                            // load_data()
+                        } else {
+                            // Penanganan kesalahan jika validasi gagal atau kesalahan lainnya
+                            alert('Terjadi kesalahan: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, textStatus, status, errorThrown, error) {
+                        if (xhr.status === 422) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+
+                        if (xhr.status === 400) {
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.error,
+                                padding: '2em',
+                            });
+                        }
+                        else {
+                            // alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
+                            const toast = window.Swal.mixin({
+                                toast: true,
+                                position: 'top',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                padding: '2em',
+                            });
+                            toast.fire({
+                                icon: 'error',
+                                // title: 'Update successfully',
+                                html: xhr.responseJSON.message,
+                                padding: '2em',
+                            });
+                        }
+                    }
+
+                });
+            });
+
+            /*--- Delete ---*/
+            $('#data_table').on('click', '.deleteData', function () {
+                var id = $(this).data('id');
+                var url = '{% url "barging-delete-temp" %}?id=' + id;
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            dataType: 'json',
+                            data: {
+                                id: id,
+                            },
+                            success: function (data) {
+                                table.draw();
+
+                            },
+                            error: function (data) {
+                                console.log('Error:', data);
+                            }
+                        });
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Your file has been deleted.',
+                            icon: 'success',
+                            // width: 380,
+                        })
+                    }
+                })
+            });
+
+        });
+    </script>
+
+    <!-- For Edit Row--->
+    <script>
+        $(document).ready(function () {
+            var loader_get = 'Digger'
+            var hauler_get = 'Hauler'
+
+            $('#shift').select2({
+                width: '100%',
+                dropdownParent: $('#edit-data .ti-modal-body')
+
+            });
+
+            $('#digger').select2({
+                ajax: {
+                    url: "{% url 'get-mine-units-entry'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            category: loader_get,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $('#hauler').select2({
+                ajax: {
+                    url: "{% url 'get-mine-units-entry'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            category: hauler_get,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $('#sources').select2({
+                ajax: {
+                    url: "{% url 'get-mine-source'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $('#loading_point').select2({
+                ajax: {
+                    url: "{% url 'get-mine-loading-point'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $('#dumping_point').select2({
+                ajax: {
+                    url: "{% url 'get-mine-dumping-point'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $('#dome_id').select2({
+                ajax: {
+                    url: "{% url 'get-mine-dome'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2,
+                placeholder: 'Select data',
+                allowClear: true
+            });
+
+            $.ajax({
+                url: "{% url 'get-materials-mine' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    // Loop melalui data.results untuk menambahkan opsi Select2
+                    $.each(data.results, function (index, value) {
+                        options += '<option value="' + value.id + '">' + value.text + '</option>';
+                    });
+                    $('#id_material').append(options).select2({
+                        width: '100%'
+                    });
+                    $('#id_material').trigger('change'); // Trigger agar Select2 membaca opsi baru
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error: ", error);
+                }
+            });
+
+            $.ajax({
+                url: "{% url 'get-mine-category' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    // Loop melalui data.results untuk menambahkan opsi Select2
+                    $.each(data.results, function (index, value) {
+                        options += '<option value="' + value.id + '">' + value.text + '</option>';
+                    });
+                    $('#category_mine').append(options).select2({
+                        width: '100%',
+                        dropdownParent: $('#edit-data .ti-modal-body')
+                    });
+                    $('#category_mine').trigger('change'); // Trigger agar Select2 membaca opsi baru
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error: ", error);
+                }
+            });
+
+            $.ajax({
+                url: "{% url 'get-hauler-class' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    // Loop melalui data.results untuk menambahkan opsi Select2
+                    $.each(data.list, function (index, value) {
+                        options += '<option value="' + value.type_unit + '">' + value.type_unit + '</option>';
+                    });
+                    $('#hauler_class').append(options).select2({
+                        width: '100%'
+                    });
+                    $('#hauler_class').trigger('change'); // Trigger agar Select2 membaca opsi baru
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error: ", error);
+                }
+            });
+
+            $.ajax({
+                url: "{% url 'get-mine-vendors' %}",
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var options = '';
+                    $.each(data.list, function (key, value) {
+                        options += '<option value="' + value.code + '">' + value.vendor_name + '</option>';
+                    });
+                    $('#vendorsEdit').append(options).select2({
+                        width: '100%'
+                    });
+                }
+            });
+
+
+            let bucket_capacity = 0;  // simpan tf_ton global sementara
+            let density_lcm = 0;  // simpan tf_ton global sementara
+
+            $('#hauler_class, #id_material').on('change', function () {
+                const hauler = $('#hauler_class').val();
+                const materialText = $('#id_material option:selected').text();
+
+                if (hauler && materialText) {
+                    $.ajax({
+                        url: "{% url 'get-hauler-factor' %}",
+                        type: 'GET',
+                        data: {
+                            hauler_class: hauler,
+                            material: materialText.trim()
+                        },
+                        success: function (response) {
+                            console.log('Data diterima:', response);
+
+                            if (response.list.length > 0) {
+                                const data = response.list[0];
+
+                                bucket_capacity = parseFloat(data.bucket_capacity) || 0;
+                                density_lcm = parseFloat(data.density_lcm) || 0;
+                                // Isi ton langsung jika ritase sudah diisi sebelumnya
+                                const ritase = parseFloat($('#ritase').val()) || 0;
+                                const parsing = parseFloat($('#bucket').val()) || 0;
+                                $('#tonnage').val((parsing * ritase * bucket_capacity * density_lcm).toFixed(2));
+                            } else {
+                                bucket_capacity = 0;
+                                density_lcm = 0;
+                                $('#tonnage').val('');
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error('Gagal ambil data:', xhr.responseText);
+                            bucket_capacity = 0;
+                            density_lcm = 0;
+                            $('#tonnage').val('');
+                        }
+                    });
+                }
+            });
+            // Ketika ritase diketik, hitung ulang ton
+            $('#ritase').on('input', function () {
+                const ritase = parseFloat($(this).val()) || 0;
+                const parsing = parseFloat($('#bucket').val()) || 0;
+                const ton = (parsing * ritase * bucket_capacity * density_lcm).toFixed(2);
+                $('#tonnage').val(ton);
+            });
+            $('#bucket').on('input', function () {
+                const parsing = parseFloat($(this).val()) || 0;
+                const ritase = parseFloat($('#ritase').val()) || 0;
+                const ton = (parsing * ritase * bucket_capacity * density_lcm).toFixed(2);
+                $('#tonnage').val(ton);
+            });
+
+            $('#sources').change(function (e) {
+                var selectedSource = $(this);
+                var inputArea = $('#area');
+                var selectedText = selectedSource.find(':selected').text();
+                inputArea.val(selectedText);
+            });
+
+        });
+
+        /*--- Click to Edit Button ---*/
+        $('body').on('click', '.editData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "mine-production-get" %}';
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: {
+                    id: id,
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
+                        window.HSOverlay.open('#edit-data');
+                        // Mengisi formulir dengan data yang diterima
+                        $('#id').val(response.id);
+                        $('#date_production').val(response.date_production);
+                        // $('#shift').val(response.shift).trigger('change');
+                        // defaultTimeLoading = response.time_loading; // simpan dulu jam dari response
+                        $('#shift').val(response.shift).trigger('change');  // trigger event change untuk build opsi dan set jam
+
+                        // $('#time_edit').val(response.time_loading).trigger('change');
+                        $('#time_edit').val(response.time_loading);
+
+                        $('#hauler_class').val(response.hauler_class).trigger('change');
+                        $('#category_mine').val(response.category_mine).trigger('change');
+                        $('#id_material').val(response.id_material).trigger('change');
+
+                        $('#vendorsEdit').val(response.vendors);
+                        $('#bucket').val(response.bucket);
+                        $('#ritase').val(response.ritase);
+                        $('#tonnage').val(response.tonnage);
+                        $('#remarks').val(response.remarks);
+
+                        // Pastikan Select2 di-clear terlebih dahulu
+                        $('#digger').empty().trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newDigger = new Option(response.diggerName, response.loader, true, true);
+                        $('#digger').append(newDigger).trigger('change');
+
+                        $('#hauler').empty().trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newHauler = new Option(response.haulerName, response.hauler, true, true);
+                        $('#hauler').append(newHauler).trigger('change');
+
+                        $('#sources').val(response.sources).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newSource = new Option(response.sources_area, response.sources, true, true);
+                        $('#sources').append(newSource).trigger('change');
+
+                        $('#loading_point').val(response.loading_point).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newStokpile = new Option(response.loadingPoint, response.loading_point, true, true);
+                        $('#loading_point').append(newStokpile).trigger('change');
+
+                        $('#dumping_point').val(response.dumping_point).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newDumping = new Option(response.dumpingPoint, response.dumping_point, true, true);
+                        $('#dumping_point').append(newDumping).trigger('change');
+
+                        $('#dome_id').val(response.dome_id).trigger('change');
+                        // Tambahkan opsi baru ke Select2
+                        var newDome = new Option(response.domePoint, response.dome_id, true, true);
+                        $('#dome_id').append(newDome).trigger('change');
+
+                    } else {
+                        alert(
+                            'Data tidak ditemukan'
+                        );
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('Terjadi kesalahan: ' + error); // Handle kesalahan AJAX
+                }
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>

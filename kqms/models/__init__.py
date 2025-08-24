@@ -23,6 +23,7 @@ from .selling_plan import *
 from .selling_plan_barging import *
 from .selling_code import *
 from .stock_factories import *
+from .selling_barging_adjust import *
 from .task_model import *
 from .vendors import *
 from .waybill_model import *

@@ -129,10 +129,11 @@ class SellingDetails(View):
                 "code_lot"        : item.code_lot,
                 "batch"           : item.batch,
                 "code_inc"        : item.code_inc,
+                "ritase"          : item.ritase,
                 "tonnage"         : item.tonnage,
                 "sale_adjust"     : item.sale_adjust,
                 "date_barge_out"  : item.date_barge_out,
-                "factory_stock"   : item.factory_stock,
+                "status_barging"  : item.status_barging,
             } for item in object_list
         ]
 

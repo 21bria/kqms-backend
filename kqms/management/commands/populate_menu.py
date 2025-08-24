@@ -468,29 +468,51 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         
+        # Menu.objects.create(
+        #     title="Quick Page",
+        #     url="selling-entry-quick-page",
+        #     parent=forms,
+        #     order=1,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        # )
+        # Menu.objects.create(
+        #     title="Summary Daily",
+        #     url="selling-daily-quick-summary-page",
+        #     parent=forms,
+        #     order=2,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        # )
+        # Menu.objects.create(
+        #     title="Delete temp.",
+        #     url="remove-selling-temp-page",
+        #     parent=forms,
+        #     order=3,
+        #     allowed_group_names=['superadmin','data-control','admin-selling','admin-mgoqa']
+        # )
         Menu.objects.create(
-            title="Quick Page",
-            url="selling-entry-quick-page",
+            title="Entry Barging",
+            url="barging-entry-page",
             parent=forms,
             order=1,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+            open_new_tab=True,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
         Menu.objects.create(
             title="Summary Daily",
-            url="selling-daily-quick-summary-page",
+            url="barging-daily-summary-page",
             parent=forms,
             order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
         Menu.objects.create(
-            title="Delete temp.",
-            url="remove-selling-temp-page",
+            title="Adjustment Barging",
+            url="barging-finish-status-page",
             parent=forms,
             order=3,
-            allowed_group_names=['superadmin','data-control','admin-selling','admin-mgoqa']
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
+      
 
-        
         #Kategori Report &amp; Charts
         reporting = Menu.objects.create(
             title="Report &amp; Charts",

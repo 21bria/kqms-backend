@@ -6,6 +6,7 @@ from ..views.settings.data_control.merge_dome_view import *
 from ..views.settings.data_control.merge_stockpile_view import *
 from ..views.settings.data_control.dome_status_view import *
 from ..views.settings.data_control.dome_status_finish_view import *
+from ..views.settings.data_control.barging_finish_view import *
 from ..views.settings.remove.remove_waybill_view import *
 from ..views.settings.remove.remove_mral_view import *
 from ..views.settings.remove.remove_roa_view import *
@@ -72,6 +73,13 @@ urlpatterns = [
     path('dome-finish-status/get-id/<int:id>/', get_dome_finish, name='get-dome-finish-status'),
     path('dome-finish-status/update/<int:id>/', update_dome_finish, name='update-dome-finish-status'),
     path('dome-finish-status/delete/', delete_dome_finish, name='delete-dome-finish-status'), 
+
+    # Set Barging Finish        
+    path('barging-finish-status/', barging_finish_page, name='barging-finish-status-page'), 
+    path('barging-finish-status-list/', bargingFinishList.as_view(), name='barging-finish-status-list'),
+    path('barging-finish-status/insert/', insert_barging_finish, name='insert-barging-finish-status'), 
+    path('barging-finish-status/delete/', delete_barging_finish, name='delete-barging-finish-status'), 
+    path('barging-finish-status-get/tonnage/<str:code_lot>/', get_tonnage_lot,name='barging-finish-status-get-tonnage'),
 
     # Table Remove Group Data
     path('remove-waybills/', remove_waybills_page, name='remove-waybills-page'), 

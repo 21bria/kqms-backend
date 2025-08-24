@@ -121,21 +121,21 @@
                                     <thead>
                                         <tr>
                                             <th class="bg-soft-secondary" width="5%">No</th>
-                                            <th class="bg-soft-secondary">Date Barging</th>
+                                            <th class="bg-soft-secondary">Arrival</th>
                                             <th class="bg-soft-secondary">Date Hauling</th>
                                             <th class="bg-soft-secondary">Shift</th>
                                             <th class="bg-soft-secondary">Barge Code</th>
                                             <th class="bg-soft-secondary">Stockpile</th>
                                             <th class="bg-soft-secondary">Dome</th>
-                                            <th class="bg-soft-secondary">Truck</th>
                                             <th class="bg-soft-secondary">Materials</th>
                                             <th class="bg-soft-secondary">Code Lot</th>
                                             <th class="bg-soft-secondary">Sub Lot</th>
-                                            <th class="bg-soft-secondary">Inc</th>
+                                            <th class="bg-soft-secondary">Group</th>
+                                            <th class="bg-soft-secondary">Ritase</th>
                                             <th class="bg-soft-secondary">Tonnage</th>
                                             <th class="bg-soft-secondary">Adjust</th>
-                                            <th class="bg-soft-secondary">UnLoad</th>
-                                            <th class="bg-soft-secondary">Factory</th>
+                                            <th class="bg-soft-secondary">Departure</th>
+                                            <th class="bg-soft-secondary">Status</th>
                                             <!-- <th class="bg-soft-secondary">#</th> -->
                                         </tr>
                                     </thead>
@@ -391,10 +391,7 @@
                     name: 'dome',
                     searchable: true
                 },
-                {
-                    data: 'unit_code',
-                    name: 'unit_code'
-                },
+            
                 {
                     data: 'material',
                     name: 'material',
@@ -412,6 +409,10 @@
                     data: 'code_inc',
                     name: 'code_inc'
                 },
+                    {
+                    data: 'ritase',
+                    name: 'ritase'
+                },
                 {
                     data: 'tonnage',
                     name: 'tonnage',
@@ -428,9 +429,9 @@
                     name: 'date_barge_out'
                 },
                 {
-                    data: 'factory_stock',
-                    name: 'factory_stock',
-                    searchable: true
+                    data: 'status_barging',
+                    name: 'status_barging',
+                    searchable: false
                 },
 
 

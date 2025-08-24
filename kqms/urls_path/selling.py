@@ -7,6 +7,7 @@ from ..views.selling.split_sample.selling_split_range import *
 from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
+from ..views.selling.entry.barging_data import *
 from ..views.selling.entry.selling_data import *
 from ..views.selling.entry.daily_summary import *
 
@@ -30,6 +31,7 @@ urlpatterns = [
     path('plan/get-id/<uuid:id>/', getIdPlanSale, name='get-id-sale-plan'), 
     path('plan/update/<uuid:id>/', update_sale_plan, name='update-sale-plan'),
     path('plan/delete/', delete_sale_plan, name='delete-sale-plan'),
+
 
     # Official
     path('official-page/', sale_official_page, name='sale-official-page'),
@@ -64,6 +66,12 @@ urlpatterns = [
     path('quick/get/<uuid:id>/', get_sale_quick, name='sale-quik-get'),
     path('quick/update/<uuid:id>/', update_quick_selling, name='sale-quick-update'),
     path('quick/delete/', delete_selling_temp, name='selling-quick-delete'),
+
+    # Create Barging
+    path('entry/page/barging/', barging_entry_page, name='barging-entry-page'),
+    path('barging/list/', BargingTemp.as_view(), name='barging-list-temp'),
+    path('barging/create/', create_barging_data, name='create-barging-data'),
+    path('barging/delete/', delete_barging_temp, name='barging-delete-temp'),
 
     # Daily summary
     path('daily/quick/summary/', daily_selling_summary_page, name='selling-daily-quick-summary-page'),

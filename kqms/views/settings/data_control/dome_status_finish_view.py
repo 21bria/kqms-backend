@@ -13,7 +13,7 @@ from django.db.models import Q
 from ....models.dome_setup import domeStatusFinish
 from ....models.dome_setup_view import domeStatusFinishView
 from ....models.ore_productions import OreProductions
-from ....models.selling_data import SellingProductions
+from ....models.selling_barging import SellingBarging
 from ....models.source_model import SourceMinesDome
 from ....utils.utils import clean_string
 
@@ -170,7 +170,7 @@ def insert_dome_finish(request):
 
                 OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Closed")
                 SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Closed")
-                SellingProductions.objects.filter(id_pile=int(id_dome)).update(sale_dome="Closed")
+                SellingBarging.objects.filter(id_pile=int(id_dome)).update(sale_dome="Closed")
 
                 return JsonResponse({'success': True, 'message': 'Data sudah ada, status diubah menjadi Closed.'})
 
@@ -186,7 +186,7 @@ def insert_dome_finish(request):
 
                 OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Finished")
                 SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Finished")
-                SellingProductions.objects.filter(id_pile=int(id_dome)).update(sale_dome="Finished")
+                SellingBarging.objects.filter(id_pile=int(id_dome)).update(sale_dome="Finished")
 
                 return JsonResponse({'success': True, 'message': 'Data berhasil disimpan dengan status Finished.'})
 
@@ -243,7 +243,7 @@ def update_dome_finish(request, id):
                 )
 
             # Update Selling Data
-            SellingProductions.objects.filter(id=id_dome).update(sale_dome=status_dome)
+            SellingBarging.objects.filter(id=id_dome).update(sale_dome=status_dome)
 
             # Update SourceMinesDome
             SourceMinesDome.objects.filter(id=id_dome).update(dome_finish=status_dome)

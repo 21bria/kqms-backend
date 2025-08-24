@@ -1606,6 +1606,30 @@ def get_code_lot(request):
         # Return an error response
         return JsonResponse({'error': 'An error occurred while fetching data.'}, status=500)
 
+def get_barge_code(request):
+    try:
+        query    = request.GET.get('q', '')
+        page     = int(request.GET.get('page', 1))
+        per_page = 10  # Jumlah item per halaman
+
+        # Filter berdasarkan query
+        data_get = BargeUnits.objects.filter(barge_code__icontains=query).order_by('barge_code')
+        # Pagination
+        start   = (page - 1) * per_page
+        end     = start + per_page
+        results = data_get[start:end]
+        data = {
+            'results'   : [{'id': data_get.id, 'text': data_get.barge_code} for data_get in results],
+            'pagination': {'more': len(data_get) > end}  
+        }
+        return JsonResponse(data, safe=False)
+    
+    except Exception as e:
+        # Log the error if necessary (optional)
+        print(f"Error occurred: {e}") 
+        # Return an error response
+        return JsonResponse({'error': 'An error occurred while fetching data.'}, status=500)
+
 def get_code_barge(request):
     if request.method == 'GET':
         try:
@@ -1626,6 +1650,25 @@ def get_code_barge(request):
 
             return JsonResponse(data)
         except SampleMethod.DoesNotExist:
+            return JsonResponse({'error': 'Data not found'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def get_jetty_in(request):
+    if request.method == 'GET':
+        try:
+            # Ambil hanya data dengan port_type = "Load"
+            code = BargePort.objects.filter(port_type="Load")
+
+            data_list = []
+            for data in code:
+                data_list.append({
+                    'id': data.id,
+                    'port_name': data.port_name,
+                })
+
+            return JsonResponse({'list': data_list})
+        except BargePort.DoesNotExist:
             return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)

@@ -93,6 +93,8 @@ urlpatterns = [
     
     # For Quick Selling Entry
     path('selling/get-code/', get_code_lot, name='get-code-lot'), 
+    path('selling/get/barge-code', get_barge_code, name='get-barge-code'), 
     path('slling/get-barge/', get_code_barge, name='get-code-barge'), 
+    path('slling/get-jetty/', get_jetty_in, name='get-jetty-in'), 
 
 ]
