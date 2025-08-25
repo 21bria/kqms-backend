@@ -87,8 +87,8 @@ def import_selling(file_path, original_file_name):
 
             # Buat kode batch
             code_batch_in     = f"{type_selling}{id_material}{code_lot}{batch}"
-            code_batch_ex     = f"{type_selling}Split_CAR{id_material}{code_lot}{batch}"
-            code_batch_pulp   = f"{type_selling}Split_CAR{code_lot}{batch}"
+            code_batch_ex     = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
+            code_batch_pulp   = f"{type_selling}{code_lot}Split_CAR{batch}"
           
 
             list_new.append(SellingBarging(
@@ -108,7 +108,7 @@ def import_selling(file_path, original_file_name):
                 id_factory          = id_factory,
                 tonnage             = row.get('tonnage'),
                 batch               = batch,
-                nota                = None,
+                # nota                = None,
                 code_inc            = row.get('group'),
                 code_sub            = batch,
                 code_batch_in       = code_batch_in,
