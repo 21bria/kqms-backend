@@ -676,6 +676,15 @@
         color: #9ca3af !important;
         cursor: not-allowed !important;
     }
+
+/* default di luar modal (table) */
+.select2-container { z-index: 1050 !important; }
+.select2-dropdown { z-index: 1060 !important; }
+
+/* di dalam modal */
+.modal .select2-container { z-index: 2000 !important; }
+.modal .select2-dropdown { z-index: 2100 !important; }
+
 </style>
 
 <body>
@@ -977,6 +986,7 @@
             $(this).val(result);
 
         });
+ 
     </script>
 
     <!-- For Table list form -->
@@ -1007,34 +1017,6 @@
                     '<option value="N">Night</option>' +
                     '</select>' +
                     '</td>' +
-                    // '<td>' +
-                    // '<select name="time_loading[]" class="form-control w-full !rounded-md">' +
-                    // '<option value="">---</option>' +
-                    // '<option value="07">07</option>' +
-                    // '<option value="08">08</option>' +
-                    // '<option value="09">09</option>' +
-                    // '<option value="10">10</option>' +
-                    // '<option value="11">11</option>' +
-                    // '<option value="12">12</option>' +
-                    // '<option value="13">13</option>' +
-                    // '<option value="14">14</option>' +
-                    // '<option value="15">15</option>' +
-                    // '<option value="16">16</option>' +
-                    // '<option value="17">17</option>' +
-                    // '<option value="18">18</option>' +
-                    // '<option value="19">19</option>' +
-                    // '<option value="20">20</option>' +
-                    // '<option value="22">22</option>' +
-                    // '<option value="23">23</option>' +
-                    // '<option value="00">00</option>' +
-                    // '<option value="01">01</option>' +
-                    // '<option value="02">02</option>' +
-                    // '<option value="03">03</option>' +
-                    // '<option value="04">04</option>' +
-                    // '<option value="05">05</option>' +
-                    // '<option value="06">06</option>' +
-                    // '</select>' +
-                    // '</td>' +
                     '<td><input type="time" class="form-control" name="time_loading[]"></td>' +
                     '<td><select class="form-select loader" name="loader[]"><option value="">---</option></select></td>' +
                     '<td><input type="number" class="form-control" name="bucket[]"></td>' +
@@ -1088,11 +1070,17 @@
                 $(this).closest('tr').remove();
 
             });
+            $('#prudctionsTable').find('select').select2({
+                width: '100%',
+                theme: 'tailwindcss-3',
+                dropdownParent: $(document.body)  // biar tidak terpotong scroll
+            });
 
             // Fungsi untuk menginisialisasi Select2 pada setiap elemen select
             function initializeSelect2(element) {
                 element.find('select').select2({
                     width: '100%',
+                    dropdownParent: $(document.body)
                 });
 
                 // Inisialisasi event handler change untuk elemen sources_area[]
@@ -1135,6 +1123,7 @@
                     minimumInputLength: 2,
                     placeholder: 'Select Data',
                     theme: 'tailwindcss-3',
+                    dropdownParent: $(document.body)
                 });
 
                 $('.category').select2({
@@ -1362,6 +1351,7 @@
                     minimumInputLength: 2,
                     placeholder: 'Select Data',
                     theme: 'tailwindcss-3',
+                    dropdownParent: $(document.body)
                 });
 
 

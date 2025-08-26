@@ -1,0 +1,758 @@
+{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Barging</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Widgets
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Summary
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="flex justify-start md:justify-end mb-2">
+                <div id="filter-box"
+                    class="relative z-40 flex flex-col md:flex-row md:items-end gap-4 w-full md:w-auto">
+                    <!-- Date -->
+                    <div class="w-[220px]">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control w-full !rounded-md" id="date_production"
+                            name="date_production" value="{{end_date}}">
+                    </div>
+
+                    <!-- Shift -->
+                    <div class="w-[140px]">
+                        <label class="form-label">Shift</label>
+                        <select id="shift" name="shift" class="form-control w-full !rounded-md">
+                            <option value="D">Day</option>
+                            <option value="N">Night</option>
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+
+                    <!-- Lot Code -->
+                    <div>
+                        <label class="form-label">Lot Code</label>
+                        <select id="code_lot" name="code_lot" class="form-control w-full !rounded-md">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6 mt-3">
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box custom-box">
+                        <div class="box-body !p-0">
+                            <div class="grid grid-cols-12 gap-x-6">
+                                <div
+                                    class="xl:col-span-3 col-span-12 border-e border-dashed dark:border-defaultborder/10">
+                                    <div class="flex flex-wrap items-start p-6">
+                                        <div class="me-4 leading-none">
+                                            <span class="avatar avatar-md !rounded-full !bg-primary shadow-sm">
+                                                <i class="ri-line-chart-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h5 class="font-semibold" id="tonnage_day">0.0</h5>
+                                            <p class="text-[#8c9097] dark:text-white/50 mb-0 text-[0.75rem]">Tonnage Day
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success/10 text-success"><i
+                                                    class="ri-arrow-up-s-line align-middle me-1 inline-block"
+                                                    id="ach_day"></i>0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="xl:col-span-3 col-span-12 border-e border-dashed dark:border-defaultborder/10">
+                                    <div class="flex flex-wrap items-start p-6">
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-secondary shadow-sm">
+                                                <i class="ri-line-chart-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h5 class="font-semibold" id="ritase_day">0.00</h5>
+                                            <p class="text-[#8c9097] dark:text-white/50 mb-0 text-[0.75rem]">Ritase Day
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-danger/10 text-danger"><i
+                                                    class="ri-arrow-down-s-line align-middle me-1"></i>0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="xl:col-span-3 col-span-12 border-e border-dashed dark:border-defaultborder/10">
+                                    <div class="flex flex-wrap items-start p-6">
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-success shadow-sm">
+                                                <i class="ri-line-chart-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h5 class="font-semibold" id="tonnage_night">0.00</h5>
+                                            <p class="text-[#8c9097] dark:text-white/50 mb-0 text-[0.75rem]">Tonnage
+                                                Night</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success/10 text-success"><i
+                                                    class="ri-arrow-up-s-line align-middle me-1 inline-block"
+                                                    id="ach_night"></i>0%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-3 col-span-12 ">
+                                    <div class="flex flex-wrap items-start p-6">
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-warning shadow-sm">
+                                                <i class="ri-line-chart-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <h5 class="font-semibold" id="ritase_night">0</h5>
+                                            <p class="text-[#8c9097] dark:text-white/50 mb-0 text-[0.75rem]">Ritase
+                                                Night</p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-success/10 text-success"><i
+                                                    class="ri-arrow-up-s-line align-middle me-1 inline-block"></i>Total</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-3 col-span-12">
+                    <div class="box custom-box box-bg-primary text-white">
+                        <div class="box-body !p-0">
+                            <div class="flex items-start p-6 flex-wrap">
+                                <div class="me-4 leading-none">
+                                    <span
+                                        class="avatar avatar-md !rounded-full bg-white dark:bg-bodybg !text-primary shadow-sm">
+                                        <i class="ti ti-coin text-[1.125rem]"></i>
+                                    </span>
+                                </div>
+                                <div class="flex-grow">
+                                    <h5 class="font-semibold mb-1 !text-white" id="total_movements">0.00</h5>
+                                    <p class="opacity-[0.7] mb-0 text-[0.75rem] !text-white">Totals Barging</p>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success text-white">
+                                        <i class="ri-arrow-up-s-line align-middle me-1 inline-block"
+                                            id="ach_movements"></i>0%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End::row-1 -->
+
+            <!-- Start::row-5 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid !border-t-primary !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span
+                                    class="avatar avatar-md bg-primary shadow-sm !rounded-full mb-2 text-white dark:text-white">
+                                    01
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2">Sub Lot (01)</p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="sub_01">0.0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_sub_01">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid !border-t-secondary !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span
+                                    class="avatar avatar-md bg-secondary shadow-sm !rounded-full mb-2 text-white dark:text-white">
+                                    02
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2">Sub Lot (02)</p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="sub_02">0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_sub_02">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid border-t-success !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span
+                                    class="avatar avatar-md bg-success shadow-sm !rounded-full mb-2 text-white dark:text-white">
+                                    03
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2">Sub Lot (03)</p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="sub_03">0.0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_sub_03">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid border-t-info !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span
+                                    class="avatar avatar-md bg-info shadow-sm !rounded-full mb-2 text-white dark:text-white">
+                                    04
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2">Sub Lot (04)</p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="sub_04">0.0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_sub_04">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid border-t-warning !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span
+                                    class="avatar avatar-md bg-warning shadow-sm !rounded-full mb-2 text-white dark:text-white">
+                                    05
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2">Sub Lot (05)</p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="sub_05">0.0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_sub_05">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-2 col-span-12">
+                    <div class="box custom-box border-t-[0.188rem] border-solid border-t-danger !rounded-none">
+                        <div class="box-body">
+                            <div class="text-center">
+                                <span class="avatar avatar-md bg-danger shadow-sm !rounded-full mb-2">
+                                    <i class="ri-profile-line text-[1rem] text-white"></i>
+                                </span>
+                                <p class="text-[.875rem] font-semibold mb-2" id="sublot_name">Totals </p>
+                                <div class="flex items-center justify-center flex-wrap">
+                                    <h5 class="mb-0 font-semibold" id="total_sublot">0.0</h5>
+                                    <span class="badge bg-success/10 text-success rounded-full ms-1"> | </span>
+                                    <span class="text-success rounded-full ms-1">
+                                        <h5 class="mb-0 font-semibold" id="ton_total_sublot">0.0</h5>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-5 -->
+
+            <!-- Start:: row-6 -->
+            {% include 'admin-selling/summary/time-barging.html' %}
+            <!-- End:: row-6 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Inisialisasi flatpickr
+        flatpickr("#date_production", { dateFormat: "Y-m-d" });
+        $('#shift').select2({
+            width: '100%',
+            dropdownParent: $(document.body)
+        });
+
+        $('#code_lot').select2({
+            ajax: {
+                url: "{% url 'get-code-lot' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select KWL-',
+            allowClear: true,
+            // theme: 'tailwindcss-3',
+            dropdownParent: $(document.body)
+        });
+
+
+        // AJAX CSRF setup
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
+        });
+        // Fungsi untuk ambil value filter dan panggil chart
+        function refreshHourChart() {
+            const date = $('#date_production').val();
+            const shift = $('#shift').val();
+            if (date && shift) {
+                updateBargingChart(date, shift);
+            }
+        }
+
+        // Panggil pertama kali saat page load
+        updateBargingChart();
+
+        // Panggil summary dan material saat page load
+        call_TotalSubLot();
+        call_TotalBarging();
+
+        // Panggil ulang saat tanggal atau shift berubah
+        $('#date_production').on('change', call_TotalBarging);
+        $('#code_lot').on('change', call_TotalSubLot);
+        $('#date_production, #shift,#code_lot').on('change', function () {
+            const date = $('#date_production').val();
+            const shift = $('#shift').val();
+            updateBargingChart(date, shift);
+        });
+
+    });
+
+    // Fungsi format angka
+    function formatAngka(jumlah) {
+        if (jumlah >= 1_000_000_000) return (jumlah / 1_000_000_000).toFixed(3) + ' B';
+        if (jumlah >= 1_000_000) return (jumlah / 1_000_000).toFixed(3) + ' M';
+        if (jumlah >= 1_000) return (jumlah / 1_000).toFixed(3) + ' K';
+        return jumlah.toString();
+    }
+
+    // Fungsi Total Barging
+    function call_TotalBarging() {
+        let url = '{% url "daily-barging-summary" %}';
+        let date = $('#date_production').val();
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: { date_production: date },
+            success: function (data) {
+                $("#total_movements").text(data.total.Total.toLocaleString());
+
+                let shiftDay = data.by_shift.find(s => s.Shift === "Day") || { Ritase_Total: 0, Limonite: 0, Saprolite: 0, Total: 0 };
+                let shiftNight = data.by_shift.find(s => s.Shift === "Night") || { Ritase_Total: 0, Limonite: 0, Saprolite: 0, Total: 0 };
+
+                $("#tonnage_day").text(shiftDay.Total.toLocaleString());
+                $("#ritase_day").text(shiftDay.Ritase_Total.toLocaleString());
+
+                $("#tonnage_night").text(shiftNight.Total.toLocaleString());
+                $("#ritase_night").text(shiftNight.Ritase_Total.toLocaleString());
+
+            },
+            error: function () { console.log('Gagal mengambil data dari server.'); }
+        });
+    }
+
+    // Fungsi Total Sub Lot
+    function call_TotalSubLot() {
+        let url = '{% url "sublot-daily-barging-summary" %}';
+        let date = $('#date_production').val();
+        let code_lot = $('#code_lot').val();
+
+        // let code_lot = 'KWS-00002';
+
+        const shiftVal = document.querySelector('#shift').value; // 'D' atau 'N'
+        const shift = shiftVal === 'D' ? 'Day' : shiftVal === 'N' ? 'Night' : '';
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: {
+                // date: date,
+                // shift: shift,
+                code_lot: code_lot
+            },
+            success: function (data) {
+                if (data.sublots) {
+                    $('#sub_01').text(parseFloat(data.sublots.SL_01.actual).toFixed(0));
+                    $('#sub_02').text(parseFloat(data.sublots.SL_02.actual).toFixed(0));
+                    $('#sub_03').text(parseFloat(data.sublots.SL_03.actual).toFixed(0));
+                    $('#sub_04').text(parseFloat(data.sublots.SL_04.actual).toFixed(0));
+                    $('#sub_05').text(parseFloat(data.sublots.SL_05.actual).toFixed(0));
+                    $('#total_sublot').text(parseFloat(data.sublots.total.actual).toFixed(0));
+                    $('#ton_sub_01').text(parseFloat(data.sublots.SL_01_ton.actual).toFixed(1));
+                    $('#ton_sub_02').text(parseFloat(data.sublots.SL_02_ton.actual).toFixed(1));
+                    $('#ton_sub_03').text(parseFloat(data.sublots.SL_03_ton.actual).toFixed(1));
+                    $('#ton_sub_04').text(parseFloat(data.sublots.SL_04_ton.actual).toFixed(1));
+                    $('#ton_sub_05').text(parseFloat(data.sublots.SL_05_ton.actual).toFixed(1));
+                    $('#ton_total_sublot').text(data.sublots.total_ton.actual);
+                }
+
+            },
+            error: function () { console.log('Gagal mengambil data dari server.'); }
+        });
+    }
+
+    const dayShiftHours = Array.from({ length: 12 }, (_, i) => i + 7); // 7-18
+    const nightShiftHours = Array.from({ length: 5 }, (_, i) => i + 19).concat(Array.from({ length: 7 }, (_, i) => i));
+
+
+    // Barging
+    function generateBargingTabs(shift) {
+        const tabsContainer = document.getElementById('barging-tabs');
+        const contentContainer = document.getElementById('barging-tab-content');
+
+        // Kosongkan dulu kontainer
+        tabsContainer.innerHTML = '';
+        contentContainer.innerHTML = '';
+
+        const hours = shift === 'D' ? dayShiftHours : nightShiftHours;
+
+        hours.forEach((hour, index) => {
+            // Buat tombol tab
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.id = `tab-${hour.toString().padStart(2, '0')}-btn-barge`;
+            btn.dataset.hsTab = `#tab-${hour.toString().padStart(2, '0')}-barge`;
+            btn.setAttribute('aria-controls', `tab-${hour.toString().padStart(2, '0')}-barge`);
+            btn.setAttribute('role', 'tab');
+            btn.className = 'xxxl:w-full py-3 px-2 text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary';
+            if (index === 0) btn.classList.add('active');
+
+            btn.innerHTML = `
+            <span class="block mb-1">${hour.toString().padStart(2, '0')}</span>
+            <span class="block mb-0 opacity-[0.7] text-[0.75rem]">${shift === 'D' ? 'Day' : 'Night'}</span>
+        `;
+            tabsContainer.appendChild(btn);
+
+            // Buat konten tab
+            const div = document.createElement('div');
+            div.id = `tab-${hour.toString().padStart(2, '0')}-barge`;
+            div.setAttribute('role', 'tabpanel');
+            div.setAttribute('aria-labelledby', btn.id);
+            div.className = 'hs-tab-content-barge hidden';
+            contentContainer.appendChild(div);
+
+            // Event klik tab
+            btn.addEventListener('click', () => {
+                // Sembunyikan semua tab dan kosongkan konten lama
+                document.querySelectorAll('.hs-tab-content-barge').forEach(t => {
+                    t.classList.add('hidden');
+                    t.innerHTML = ''; // <-- pastikan dibersihkan
+                });
+
+                // Tampilkan tab yang diklik
+                div.classList.remove('hidden');
+
+                // Hapus active pada tombol lain
+                document.querySelectorAll('[data-hs-tab]').forEach(b => b.classList.remove('active', 'bg-primary', 'text-white'));
+                btn.classList.add('active', 'bg-primary', 'text-white');
+
+                // Load data untuk jam ini
+                loadBargingDataForHour(hour, shift, div.id);
+            });
+
+        });
+
+        // Klik tab pertama otomatis
+        if (hours.length > 0) {
+            tabsContainer.querySelector('button').click();
+        }
+    }
+
+    // Panggil data per jam
+    function loadBargingDataForHour(hour, shift, tabId) {
+        const dateInputEl = document.querySelector('#date_production');
+        if (!dateInputEl) return;
+
+        let date = new Date(dateInputEl.value);
+        // if (shift === 'N' && hour <= 6) {
+        //     date.setDate(date.getDate() - 1);
+        // } //akan loncat periode berikut atau hari berikut
+        const dateStr = date.toISOString().split('T')[0];
+
+        const shiftVal = document.querySelector('#shift').value; // 'D' atau 'N'
+        const shiftDb = shiftVal === 'D' ? 'Day' : shiftVal === 'N' ? 'Night' : '';
+
+        fetch(`{% url "total-hours-summary-barging" %}?date=${dateStr}&shift=${shiftDb}&hour=${hour}`)
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(data => renderBargingList(data, `#${tabId}`))
+            .catch(err => console.error('Error fetching data:', err));
+    }
+
+    // Render data ke tab
+    function renderBargingList(data, tabId) {
+        const container = document.querySelector(tabId);
+        if (!container) return;
+
+        // Buat ul jika belum ada
+        let ul = container.querySelector('ul');
+        if (!ul) {
+            ul = document.createElement('ul');
+            ul.classList.add('list-unstyled', 'mb-0', 'upcoming-events-list');
+            container.appendChild(ul);
+        }
+
+        ul.innerHTML = '';
+
+        if (!data.data || data.data.length === 0) {
+            ul.innerHTML = `
+                    <li class="flex items-center justify-center">
+                        <p class="text-sm text-gray-500">Tidak ada data</p>
+                    </li>
+                `;
+            return;
+        }
+
+        // Tambahkan item baru
+        data.data.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+            <div class="flex items-start justify-between py-1 border-b border-gray-100">
+                <div class="flex-grow">
+                    <p class="mb-0 text-[.875rem]">${item.material}</p>
+                    ${item.rit ? `<p class="mb-0 text-[#8c9097] dark:text-white/50">${item.rit} Rit</p>` : ''}
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[#8c9097] dark:text-white/50">${item.actual.toFixed(1)} WMT</span>
+                </div>
+            </div>
+        `;
+            ul.appendChild(li);
+        });
+    }
+
+    // Jalankan saat DOM siap
+    document.addEventListener('DOMContentLoaded', () => {
+        const shiftInputEl = document.querySelector('#shift');
+        if (shiftInputEl) {
+            generateBargingTabs(shiftInputEl.value);
+            shiftInputEl.addEventListener('change', () => {
+                generateBargingTabs(shiftInputEl.value);
+            });
+        }
+    });
+
+</script>
+
+<script>
+    function updateBargingChart(date, shift) {
+        const shiftHours = {
+            D: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], // Day shift 07–18
+            N: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]      // Night shift 19–06
+        };
+
+        const url = `{% url 'total-hours-chart-barging' %}?date=${date}&shift=${shift}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.data) return;
+
+                // filter sesuai shift
+                const filtered = data.data.filter(item => shiftHours[shift].includes(item.hour));
+
+                const categories = filtered.map(item => item.label);
+                const limSeries = filtered.map(item => item.lim);
+                const sapSeries = filtered.map(item => item.sap);
+
+                const options = {
+                    series: [
+                        { name: 'LIM', data: limSeries },
+                        { name: 'SAP', data: sapSeries }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        stacked: true
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '60%',
+                        },
+                    },
+                    xaxis: { categories },
+                    yaxis: {
+                        title: { text: 'Tonnage (WMT)' },
+                        labels: {
+                            formatter: val => val.toLocaleString()
+                        }
+                    },
+
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left'
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: val => val.toLocaleString() + ' WMT'
+                        }
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'light',
+                            type: "vertical",
+                            shadeIntensity: 0.1,
+                            inverseColors: false,
+                            opacityFrom: 0.8,
+                            opacityTo: 0.6,
+                            stops: [0, 100, 90]
+                        }
+                    },
+
+                    noData: {
+                        text: "No data...",
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: "easeinout",
+                        speed: 2000,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 250,
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 1000,
+                        },
+                    },
+                    colors: ['#f5b849', '#34d399'],
+                };
+
+                if (window.bargingChart) {
+                    window.bargingChart.updateOptions(options);
+                    window.bargingChart.updateSeries(options.series);
+                } else {
+                    window.bargingChart = new ApexCharts(document.querySelector("#chartBarging"), options);
+                    window.bargingChart.render();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // Contoh panggilan
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateEl = document.querySelector('#date_production');
+        const shiftEl = document.querySelector('#shift');
+        if (dateEl && shiftEl) {
+            updateBargingChart(dateEl.value, shiftEl.value);
+
+            // update saat ganti tanggal atau shift
+            dateEl.addEventListener('change', () => updateBargingChart(dateEl.value, shiftEl.value));
+            shiftEl.addEventListener('change', () => updateBargingChart(dateEl.value, shiftEl.value));
+        }
+    });
+</script>
+<style>
+  /* pastikan dropdown select2 selalu di atas datepicker / modal */
+.select2-container {
+  z-index: 1050 !important;
+}
+.select2-dropdown {
+  z-index: 1060 !important;
+  position: absolute !important;
+}
+
+/* kalau parent punya overflow hidden, buka */
+#filter-box {
+  overflow: visible !important;
+}
+
+</style>

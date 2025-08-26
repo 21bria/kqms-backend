@@ -16,7 +16,7 @@ class SellingBarging(models.Model):
     id_pile             = models.IntegerField(default=None, null=True, blank=True)
     unit_code	        = models.CharField(max_length=50,default=None, null=True, blank=True)
     tonnage             = models.FloatField(default=0, null=True, blank=True)
-    ritase_group        = models.IntegerField(default=0, null=True, blank=True)
+    ritase_group        = models.IntegerField(default=1, null=True, blank=True)
     ton_barge_load      = models.FloatField(default=0, null=True, blank=True)
     ton_barge_unload    = models.FloatField(default=0, null=True, blank=True)
     fill_adjust         = models.FloatField(default=0, null=True, blank=True)

@@ -45,9 +45,9 @@ def import_selling(file_path, original_file_name):
     df['date_hauling']     = pd.to_datetime(df['date_hauling'], errors='coerce').dt.date
     df['date_barging_out'] = pd.to_datetime(df['date_barging_out'], errors='coerce').dt.date
     df['date_barging_load']= pd.to_datetime(df['date_barging_load'], errors='coerce').dt.date
-    # df['time']             = pd.to_datetime(df['time'], errors='coerce').dt.time
-    df['time']              = pd.to_datetime(df['time'], errors='coerce')
-    df['time']              = df['time'].apply(lambda x: x.time() if pd.notna(x) else None)
+    # df['time']              = pd.to_datetime(df['time'], errors='coerce')
+    # df['time']              = df['time'].apply(lambda x: x.time() if pd.notna(x) else None)
+    df['time'] = pd.to_datetime(df['time'], format='%H:%M:%S').dt.time
     # Lookup dictionaries
     material_dict   = dict(Material.objects.annotate(trimmed=Trim('nama_material')).values_list('trimmed', 'id'))
     pile_dict       = dict(SourceMinesDome.objects.annotate(trimmed=Trim('pile_id')).values_list('trimmed', 'id'))

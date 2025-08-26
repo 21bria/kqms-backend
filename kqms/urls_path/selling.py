@@ -10,6 +10,7 @@ from ..views.selling.blending.create_data import *
 from ..views.selling.entry.barging_data import *
 from ..views.selling.entry.selling_data import *
 from ..views.selling.entry.daily_summary import *
+from ..views.selling.entry.daily_summary_barging import *
 
 
 urlpatterns = [
@@ -73,8 +74,17 @@ urlpatterns = [
     path('barging/create/', create_barging_data, name='create-barging-data'),
     path('barging/delete/', delete_barging_temp, name='barging-delete-temp'),
 
-    # Daily summary
-    path('daily/quick/summary/', daily_selling_summary_page, name='selling-daily-quick-summary-page'),
-    path('daily/quick/summary/data/', total_daily_summary_quick, name='selling-daily-quick-summary'),
-    path('daily/quick/summary/sublot/', total_daily_sublot, name='sublot-daily-quick-summary'),
+    # Daily summary temp
+    path('daily/quick/summary/',daily_selling_summary_page, name='selling-daily-quick-summary-page'),
+    path('daily/quick/summary/data/',total_daily_summary_quick, name='selling-daily-quick-summary'),
+    path('daily/quick/summary/sublot/',total_daily_sublot, name='sublot-daily-quick-summary'),
+
+    # Daily barging summary
+    path('daily/barging/summary/',daily_barging_summary_page, name='barging-daily-summary-page'),
+    path('daily/barging/summary/data/',total_daily_summary_barging, name='daily-barging-summary'),
+    path('daily/barging/summary/sublot/',total_daily_barging_sublot, name='sublot-daily-barging-summary'),
+    path('summary/hours/material/barging/', total_time_barging_by_hours, name='total-hours-summary-barging'),
+    path('summary/housr/chart/barging/', total_barging_by_hours, name='total-hours-chart-barging'),
+
+   
 ]
