@@ -511,6 +511,35 @@ class Command(BaseCommand):
             order=3,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
+
+        # By Quick
+        data_quick_barging = Menu.objects.create(
+            title="Quick Entry Barging",
+            parent=forms,
+            order=4,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        )
+        Menu.objects.create(
+            title="Entry barging",
+            url="selling-entry-quick-page",
+            parent=data_quick_barging,
+            order=1,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        )
+        Menu.objects.create(
+            title="Data roa",
+            url="selling-daily-quick-summary-page",
+            parent=data_quick_barging,
+            order=2,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        )
+        Menu.objects.create(
+            title="Delete temp.",
+            url="remove-selling-temp-page",
+            parent=data_quick_barging,
+            order=3,
+            allowed_group_names=['superadmin','data-control','admin-selling','admin-mgoqa']
+        )
       
 
         #Kategori Report &amp; Charts
