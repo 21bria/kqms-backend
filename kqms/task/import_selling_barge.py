@@ -31,7 +31,19 @@ def clean_numeric(value):
     except Exception as e:
         print(f"Error processing value: {value}, Error: {e}")
         return 0  # Kembalikan 0 jika terjadi error
-
+    
+def safe_parse_time(val):
+    if pd.isna(val):
+        return None
+    val = str(val).strip()
+    for fmt in ("%H:%M", "%H:%M:%S", "%H:%M:%S.%f"):
+        try:
+            parsed = datetime.strptime(val, fmt).time()
+            # buang detik & microseconds
+            return parsed.replace(second=0, microsecond=0)
+        except ValueError:
+            continue
+    return None
 
 @shared_task(name='kqms.task.import_selling_barge.import_selling')
 def import_selling(file_path, original_file_name):
@@ -47,7 +59,9 @@ def import_selling(file_path, original_file_name):
     df['date_barging_load']= pd.to_datetime(df['date_barging_load'], errors='coerce').dt.date
     # df['time']              = pd.to_datetime(df['time'], errors='coerce')
     # df['time']              = df['time'].apply(lambda x: x.time() if pd.notna(x) else None)
-    df['time'] = pd.to_datetime(df['time'], format='%H:%M:%S').dt.time
+    
+    df['time'] = df['time'].apply(safe_parse_time)  # type: ignore
+
     # Lookup dictionaries
     material_dict   = dict(Material.objects.annotate(trimmed=Trim('nama_material')).values_list('trimmed', 'id'))
     pile_dict       = dict(SourceMinesDome.objects.annotate(trimmed=Trim('pile_id')).values_list('trimmed', 'id'))
