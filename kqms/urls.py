@@ -22,6 +22,8 @@ urlpatterns = [
     path('report/', include('kqms.urls_path.report')),
     path('task/', include('kqms.urls_path.task')),
     path('users/', include('kqms.urls_path.users')),
+    path('excel/', include('kqms.urls_path.excel')),
+
 
     # Get Dummy Data
     path('generate-dummy-ore/', generate_dummy_ore, name='generate_dummy_ore'),

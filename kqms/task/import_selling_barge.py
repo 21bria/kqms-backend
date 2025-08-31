@@ -119,6 +119,7 @@ def import_selling(file_path, original_file_name):
                 code_lot            = code_lot,
                 date_barge_out      = row['date_barging_out'],
                 sale_adjust         = row['adjust_sale'],
+                direct              = row['direct'],
                 sale_dome           = 'Continue',
             ))
             successful_imports += 1

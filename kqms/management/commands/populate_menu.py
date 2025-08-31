@@ -527,7 +527,7 @@ class Command(BaseCommand):
              allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         Menu.objects.create(
-            title="Data roa",
+            title="Summary Quick",
             url="selling-daily-quick-summary-page",
             parent=data_quick_barging,
             order=2,
