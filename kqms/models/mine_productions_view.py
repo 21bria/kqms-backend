@@ -32,6 +32,7 @@ class mineProductionsView(models.Model):
     hauler_type     = models.CharField(max_length=15, default=None, null=True, blank=True)
     ref_material    = models.CharField(max_length=110, default=None, null=True, blank=True)
     ref_truck       = models.CharField(max_length=125, default=None, null=True, blank=True)
+    direct          = models.CharField(max_length=25,default=None, null=True, blank=True)
     id_user         = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:

@@ -27,6 +27,7 @@ class OreProductionsView(models.Model):
     sample_number  = models.CharField(max_length=25, default=None, null=True, blank=True)
     no_production  = models.CharField(max_length=25, default=None, null=True, blank=True)
     username       = models.CharField(max_length=150, default=None, null=True, blank=True)
+    direct         = models.CharField(max_length=25,default=None, null=True, blank=True)
     created_at     = models.DateTimeField(default=None, null=True, blank=True)
     
     class Meta:

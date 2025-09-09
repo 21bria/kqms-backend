@@ -299,7 +299,7 @@
 
             <!-- Start:: row-7 -->
             <!-- 'admin-mine/summary/time-barging.html' -->
-            {% include 'admin-mine/summary/data-recon.html' %}
+               {% include 'admin-mine/summary/data-recon.html' %}
             <!-- End:: row-7 -->
 
 
@@ -360,120 +360,36 @@
         $.ajaxSetup({
             headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
         });
-
-        // --- Fungsi Populate Table ---
-        function populateTable(data) {
-            const tbody = $('#data-body');
-            let currentShift = '';
-            let currentArea = '';
-
-            function formatNumber(value) {
-                return value != null ? Math.round(value * 100) / 100 : 0;
-            }
-
-            tbody.empty();
-
-            if (!data || data.length === 0) {
-                tbody.append('<tr><td colspan="8" class="text-center">No data available</td></tr>');
-                return;
-            }
-
-            data.forEach(item => {
-                if (item.area !== currentArea) {
-                    const areaHeaderRow = $('<tr>');
-                    const areaHeaderCell = $('<th>')
-                        .attr('colspan', 8)
-                        .addClass('area-header')
-                        .text(item.area);
-                    areaHeaderRow.append(areaHeaderCell);
-                    tbody.append(areaHeaderRow);
-                    currentArea = item.area;
-                }
-
-                const shiftText = item.shift === 'N' ? 'Night' : item.shift === 'D' ? 'Day' : item.shift;
-
-                if (shiftText !== currentShift) {
-                    const shiftHeaderRow = $('<tr>');
-                    const shiftHeaderCell = $('<th>')
-                        .attr('colspan', 8)
-                        .addClass('shift-header ' + (shiftText === 'Night' ? 'shift-n' : ''))
-                        .text(shiftText);
-                    shiftHeaderRow.append(shiftHeaderCell);
-                    tbody.append(shiftHeaderRow);
-                    currentShift = shiftText;
-                }
-
-                const row = $('<tr>').html(`
-                    <td>${item.material}</td>
-                    <td>${item.selling_direct}</td>
-                    <td>${formatNumber(item.gc_total_ritase)}</td>
-                    <td>${formatNumber(item.gc_total_tonnage)}</td>
-                    <td>${formatNumber(item.mining_total_ritase)}</td>
-                    <td>${formatNumber(item.mining_total_tonnage)}</td>
-                    <td class="${item.ritase_difference !== 0 ? 'negative-difference' : ''}">
-                        ${formatNumber(item.ritase_difference)}
-                    </td>
-                    <td class="${item.tonnage_difference !== 0 ? 'negative-difference' : ''}">
-                        ${formatNumber(item.tonnage_difference)}
-                    </td>
-                `);
-                tbody.append(row);
-            });
-
-            // tampilkan tanggal di header dari data pertama
-            $('#filterDateValue').text(data[0].date);
-        }
-
-        // --- Fungsi ambil data Rekonsiliasi ---
-        function call_Reconciliation() {
-            let date = $('#date_production').val();
-            $.ajax({
-                url: '{% url "get-productions-daily" %}',
-                method: 'GET',
-                data: { filter_date: date },
-                success: function (response) {
-                    // isi tabel detail
-                    populateTable(response.data);
-
-                    // isi card summary
-                    if (response.summary) {
-                        $('#tonnage_gc').text(response.summary.gc_total_tonnage.toLocaleString());
-                        $('#ritase_gc').text(response.summary.gc_total_ritase.toLocaleString());
-                        $('#tonnage_mining').text(response.summary.mining_total_tonnage.toLocaleString());
-                        $('#ritase_mining').text(response.summary.mining_total_ritase.toLocaleString());
-                        $('#tonnage_diff').text(response.summary.tonnage_difference.toLocaleString());
-                        $('#ritase_diff').text(response.summary.ritase_difference.toLocaleString());
-                    }
-                },
-                error: function (err) {
-                    console.error("Error fetch reconciliation:", err);
-                }
-            });
-        }
         // Fungsi untuk ambil value filter dan panggil chart
         function refreshHourChart() {
             const date = $('#date_production').val();
             const shift = $('#shift').val();
             if (date && shift) {
                 updateHourChart(date, shift);
+                updateBargingChart(date, shift);
             }
         }
 
         // Panggil pertama kali saat page load
         refreshHourChart();
-        call_Reconciliation();
+        updateBargingChart();
+
         // Panggil summary dan material saat page load
         call_TotalPDS();
         call_TotalMaterial();
+        call_TotalBarging();
 
         // Panggil ulang saat tanggal atau shift berubah
-        $('#date_production, #shift').on('change', function () {
+        $('#date_production').on('change', function () {
             call_TotalPDS();
-            call_Reconciliation();
+            call_TotalBarging();
+        });
+        $('#date_production, #shift').on('change', function () {
             call_TotalMaterial();
             refreshHourChart();
             const date = $('#date_production').val();
             const shift = $('#shift').val();
+            updateBargingChart(date, shift);
         });
 
     });
@@ -510,6 +426,32 @@
                 $("#tonnage_night").text(shiftN.Actual.toLocaleString());
                 $("#ach_night").text(shiftN.Plan > 0 ? ((shiftN.Actual / shiftN.Plan) * 100).toFixed(2) + "%" : "0%");
                 $("#ritase_night").text(shiftN.Qty.toLocaleString());
+            },
+            error: function () { console.log('Gagal mengambil data dari server.'); }
+        });
+    }
+
+    // Fungsi Total Barging
+    function call_TotalBarging() {
+        let url = '{% url "total-daily-summary-barging" %}';
+        let date = $('#date_production').val();
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: { date_production: date },
+            success: function (data) {
+                $("#total_tonnage_bg").text(data.total.Total.toLocaleString());
+
+                let shiftDay = data.by_shift.find(s => s.Shift === "Day") || { Ritase_Total: 0, Limonite: 0, Saprolite: 0, Total: 0 };
+                let shiftNight = data.by_shift.find(s => s.Shift === "Night") || { Ritase_Total: 0, Limonite: 0, Saprolite: 0, Total: 0 };
+
+                $("#day_tonnage_bg").text(shiftDay.Total.toLocaleString());
+                $("#day_ritase_bg").text(shiftDay.Ritase_Total.toLocaleString());
+
+                $("#night_tonnage_bg").text(shiftNight.Total.toLocaleString());
+                $("#night_ritase_bg").text(shiftNight.Ritase_Total.toLocaleString());
+
             },
             error: function () { console.log('Gagal mengambil data dari server.'); }
         });
@@ -752,8 +694,149 @@
     }
 
 
-    // Rekonsile
+    // Barging
+    function generateBargingTabs(shift) {
+        const tabsContainer = document.getElementById('barging-tabs');
+        const contentContainer = document.getElementById('barging-tab-content');
 
+        // Kosongkan dulu kontainer
+        tabsContainer.innerHTML = '';
+        contentContainer.innerHTML = '';
+
+        const hours = shift === 'D' ? dayShiftHours : nightShiftHours;
+
+        hours.forEach((hour, index) => {
+            // Buat tombol tab
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.id = `tab-${hour.toString().padStart(2, '0')}-btn-barge`;
+            btn.dataset.hsTab = `#tab-${hour.toString().padStart(2, '0')}-barge`;
+            btn.setAttribute('aria-controls', `tab-${hour.toString().padStart(2, '0')}-barge`);
+            btn.setAttribute('role', 'tab');
+            btn.className = 'xxxl:w-full py-3 px-2 text-sm font-medium text-center text-defaulttextcolor rounded-sm hover:text-primary';
+            if (index === 0) btn.classList.add('active');
+
+            btn.innerHTML = `
+            <span class="block mb-1">${hour.toString().padStart(2, '0')}</span>
+            <span class="block mb-0 opacity-[0.7] text-[0.75rem]">${shift === 'D' ? 'Day' : 'Night'}</span>
+        `;
+            tabsContainer.appendChild(btn);
+
+            // Buat konten tab
+            const div = document.createElement('div');
+            div.id = `tab-${hour.toString().padStart(2, '0')}-barge`;
+            div.setAttribute('role', 'tabpanel');
+            div.setAttribute('aria-labelledby', btn.id);
+            div.className = 'hs-tab-content-barge hidden';
+            contentContainer.appendChild(div);
+
+            // Event klik tab
+            btn.addEventListener('click', () => {
+                // Sembunyikan semua tab dan kosongkan konten lama
+                document.querySelectorAll('.hs-tab-content-barge').forEach(t => {
+                    t.classList.add('hidden');
+                    t.innerHTML = ''; // <-- pastikan dibersihkan
+                });
+
+                // Tampilkan tab yang diklik
+                div.classList.remove('hidden');
+
+                // Hapus active pada tombol lain
+                document.querySelectorAll('[data-hs-tab]').forEach(b => b.classList.remove('active', 'bg-primary', 'text-white'));
+                btn.classList.add('active', 'bg-primary', 'text-white');
+
+                // Load data untuk jam ini
+                loadBargingDataForHour(hour, shift, div.id);
+            });
+
+        });
+
+        // Klik tab pertama otomatis
+        if (hours.length > 0) {
+            tabsContainer.querySelector('button').click();
+        }
+    }
+
+    // Panggil data per jam
+    function loadBargingDataForHour(hour, shift, tabId) {
+        const dateInputEl = document.querySelector('#date_production');
+        if (!dateInputEl) return;
+
+        let date = new Date(dateInputEl.value);
+        // if (shift === 'N' && hour <= 6) {
+        //     date.setDate(date.getDate() - 1);
+        // } //akan loncat periode berikut atau hari berikut
+        const dateStr = date.toISOString().split('T')[0];
+
+        const shiftVal = document.querySelector('#shift').value; // 'D' atau 'N'
+        const shiftDb = shiftVal === 'D' ? 'Day' : shiftVal === 'N' ? 'Night' : '';
+
+        fetch(`{% url "total-hour-summary-barging" %}?date=${dateStr}&shift=${shiftDb}&hour=${hour}`)
+            .then(res => res.ok ? res.json() : Promise.reject(res.status))
+            .then(data => renderBargingList(data, `#${tabId}`))
+            .catch(err => console.error('Error fetching data:', err));
+    }
+
+    // Render data ke tab
+    function renderBargingList(data, tabId) {
+        const container = document.querySelector(tabId);
+        if (!container) return;
+
+        // Buat ul jika belum ada
+        let ul = container.querySelector('ul');
+        if (!ul) {
+            ul = document.createElement('ul');
+            ul.classList.add('list-unstyled', 'mb-0', 'upcoming-events-list');
+            container.appendChild(ul);
+        }
+
+        // Kosongkan konten lama
+        // ul.innerHTML = '';
+
+        // if (!data.data || data.data.length === 0) {
+        //     ul.innerHTML = '<li><p class="text-sm text-gray-500">Tidak ada data</p></li>';
+        //     return;
+        // }
+
+        ul.innerHTML = '';
+
+        if (!data.data || data.data.length === 0) {
+            ul.innerHTML = `
+                    <li class="flex items-center justify-center">
+                        <p class="text-sm text-gray-500">Tidak ada data</p>
+                    </li>
+                `;
+            return;
+        }
+
+        // Tambahkan item baru
+        data.data.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+            <div class="flex items-start justify-between py-1 border-b border-gray-100">
+                <div class="flex-grow">
+                    <p class="mb-0 text-[.875rem]">${item.material}</p>
+                    ${item.rit ? `<p class="mb-0 text-[#8c9097] dark:text-white/50">${item.rit} Rit</p>` : ''}
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-[#8c9097] dark:text-white/50">${item.actual.toFixed(1)} WMT</span>
+                </div>
+            </div>
+        `;
+            ul.appendChild(li);
+        });
+    }
+
+    // Jalankan saat DOM siap
+    document.addEventListener('DOMContentLoaded', () => {
+        const shiftInputEl = document.querySelector('#shift');
+        if (shiftInputEl) {
+            generateBargingTabs(shiftInputEl.value);
+            shiftInputEl.addEventListener('change', () => {
+                generateBargingTabs(shiftInputEl.value);
+            });
+        }
+    });
 
 </script>
 
@@ -883,6 +966,117 @@
     chart.render();
 </script>
 
+
+<script>
+    function updateBargingChart(date, shift) {
+        const shiftHours = {
+            D: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], // Day shift 07–18
+            N: [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]      // Night shift 19–06
+        };
+
+        const url = `{% url 'total-hour-chart-barging' %}?date=${date}&shift=${shift}`;
+
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.data) return;
+
+                // filter sesuai shift
+                const filtered = data.data.filter(item => shiftHours[shift].includes(item.hour));
+
+                const categories = filtered.map(item => item.label);
+                const limSeries = filtered.map(item => item.lim);
+                const sapSeries = filtered.map(item => item.sap);
+
+                const options = {
+                    series: [
+                        { name: 'LIM', data: limSeries },
+                        { name: 'SAP', data: sapSeries }
+                    ],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        stacked: true
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: '60%',
+                        },
+                    },
+                    xaxis: { categories },
+                    yaxis: {
+                        title: { text: 'Tonnage (WMT)' },
+                        labels: {
+                            formatter: val => val.toLocaleString()
+                        }
+                    },
+
+                    legend: {
+                        position: 'top',
+                        horizontalAlign: 'left'
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: val => val.toLocaleString() + ' WMT'
+                        }
+                    },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'light',
+                            type: "vertical",
+                            shadeIntensity: 0.1,
+                            inverseColors: false,
+                            opacityFrom: 0.8,
+                            opacityTo: 0.6,
+                            stops: [0, 100, 90]
+                        }
+                    },
+
+                    noData: {
+                        text: "No data...",
+                    },
+                    animations: {
+                        enabled: true,
+                        easing: "easeinout",
+                        speed: 2000,
+                        animateGradually: {
+                            enabled: true,
+                            delay: 250,
+                        },
+                        dynamicAnimation: {
+                            enabled: true,
+                            speed: 1000,
+                        },
+                    },
+                    colors: ['#f5b849', '#34d399'],
+                };
+
+                if (window.bargingChart) {
+                    window.bargingChart.updateOptions(options);
+                    window.bargingChart.updateSeries(options.series);
+                } else {
+                    window.bargingChart = new ApexCharts(document.querySelector("#chartBarging"), options);
+                    window.bargingChart.render();
+                }
+            })
+            .catch(err => console.error(err));
+    }
+
+    // Contoh panggilan
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateEl = document.querySelector('#date_production');
+        const shiftEl = document.querySelector('#shift');
+        if (dateEl && shiftEl) {
+            updateBargingChart(dateEl.value, shiftEl.value);
+
+            // update saat ganti tanggal atau shift
+            dateEl.addEventListener('change', () => updateBargingChart(dateEl.value, shiftEl.value));
+            shiftEl.addEventListener('change', () => updateBargingChart(dateEl.value, shiftEl.value));
+        }
+    });
+</script>
 
 </body>
 

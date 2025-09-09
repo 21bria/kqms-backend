@@ -1,0 +1,193 @@
+<div class="grid grid-cols-12 gap-6">
+    <div class="xl:col-span-12 col-span-12">
+        <div class="box custom-box">
+            <div class="box-header">
+                <div class="box-title">
+                    Daily Reconcile
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="flex flex-wrap justify-between mb-[3rem]">
+                    <div class="me-[3rem] flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-primary/10 !text-primary">GC</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-primary font-semibold" id="tonnage_gc">0.00</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Tonnage GC</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-light !text-defaulttextcolor">GC</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 font-semibold" id="ritase_gc">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Ritase GC</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-success/10 !text-success">MN</span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-success font-semibold" id="tonnage_mining">0.00</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Tonnage Mining</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-secondary/10 !text-secondary">MN</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-secondary font-semibold" id="ritase_mining">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Ritase Mining</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-danger/10 !text-danger">DR</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="tonnage_diff">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Tonnage Difference</span>
+                        </div>
+                    </div>
+                    <div class="me-4 flex items-center">
+                        <div class="me-2">
+                            <span class="avatar !rounded-full bg-danger/10 !text-danger">DR</i></span>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-[1.125rem] mb-0 text-danger font-semibold" id="ritase_diff">0</p>
+                            <span class="text-[#8c9097] dark:text-white/50 text-[0.75rem]">Ritase Difference</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="mt-5 table-responsive">
+                    <table id="data-table" cellspacing="0" cellpadding="5">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" colspan="2" class="left-align">Sources</th>
+                                <th colspan="2" class="center-align">Grade Control</th>
+                                <th colspan="2" class="center-align">Mining</th>
+                                <th colspan="2" class="center-align">Difference</th>
+                            </tr>
+                            <tr>
+                                <th class="center-align">Ritase</th>
+                                <th class="center-align">Tonnage</th>
+                                <th class="center-align">Ritase</th>
+                                <th class="center-align">Tonnage</th>
+                                <th class="center-align">Ritase Diff</th>
+                                <th class="center-align">Tonnage Diff</th>
+                            </tr>
+
+                        </thead>
+                        <tbody id="data-body">
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<Style>
+    #data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+
+    #data-table th {
+        padding: 8px;
+        text-align: left;
+    }
+
+    #data-table th.left-align {
+        padding: 12px;
+        text-align: left;
+        /* Hanya untuk header 'Sources' */
+    }
+
+    #data-table th.center-align {
+        text-align: center;
+        /* Hanya untuk header yang perlu di tengah */
+    }
+
+    #data-table td {
+        padding: 8px;
+        text-align: center;
+        /* Rata tengah untuk sel data */
+    }
+
+    .shift-header,
+    .area-header {
+        text-align: left;
+        /* Rata kiri untuk header shift dan area */
+        padding: 8px;
+        /* Tambahkan padding jika diperlukan */
+    }
+
+    .shift-header {
+        background-color: #fef5e6;
+        /* Warna header untuk shift D */
+        font-weight: bold;
+    }
+
+    .shift-header.shift-n {
+        background-color: #eceffd;
+        /* Warna header untuk shift N */
+    }
+
+    .area-header {
+        text-align: left;
+        /* Rata kiri untuk header area */
+        background-color: #f2f2f2;
+        /* Light grey untuk area headers */
+        font-weight: bold;
+    }
+
+
+    .negative-difference {
+        background-color: #ffcccc;
+        /* Contoh: warna latar belakang merah muda */
+        color: #ff0000;
+        /* Contoh: warna teks merah */
+    }
+
+
+
+    strong {
+        font-weight: bold;
+        /* color: #007bff; */
+        /* Contoh warna biru */
+        background-color: #f0f8ff;
+        /* Contoh latar belakang */
+        padding: 2px;
+        border-radius: 3px;
+    }
+
+
+    thead>tr:nth-child(1)>th:nth-child(1) {
+        background-color: #ecf5fc;
+    }
+
+    thead>tr:nth-child(1)>th:nth-child(2) {
+        background-color: #fbebf0;
+    }
+
+    thead>tr:nth-child(1)>th:nth-child(3) {
+        background-color: #fef0e6;
+    }
+
+    thead>tr:nth-child(1)>th:nth-child(4) {
+        background-color: #e7f6f2;
+    }
+</Style>

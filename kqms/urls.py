@@ -19,6 +19,7 @@ urlpatterns = [
     path('selling/', include('kqms.urls_path.selling')),
     path('master/', include('kqms.urls_path.master')),
     path('config/', include('kqms.urls_path.config')),
+    path('recon/', include('kqms.urls_path.recon')),
     path('report/', include('kqms.urls_path.report')),
     path('task/', include('kqms.urls_path.task')),
     path('users/', include('kqms.urls_path.users')),
