@@ -9,6 +9,9 @@ python manage.py migrate django_celery_beat
 python manage.py makemigrations kqms
 python manage.py migrate --database=kqms_db
 
+python manage.py migrate --database=kqms_db --fake-initial
+
+
 ======git========
 # make changes to a repo and git add
 git add .

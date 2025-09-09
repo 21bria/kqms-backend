@@ -109,20 +109,20 @@ class volumeAdjustmentList(View):
 
         data = [
             {
-                "id"            : item.id,
-                "date_start"    : item.date_start,
-                "date_end"      : item.date_end,
-                "category"      : item.category,
-                "vendors"       : item.vendors,
-                "sources_area"  : item.sources_area,
-                "loading_point" : item.loading_point,
-                "type_truck"    : item.type_truck,
-                "material"      : item.material,
-                "bcm_original"  : item.bcm_original,
-                "ton_original"  : item.ton_original,
-                "bcm_updated"   : item.bcm_updated,
-                "ton_updated"   : item.ton_updated,
-                "status"        : item.status
+                "id"                : item.id,
+                "date_start"        : item.date_start,
+                "date_end"          : item.date_end,
+                "category"          : item.category,
+                "vendors"           : item.vendors,
+                "sources_area"      : item.sources_area,
+                "loading_point"     : item.loading_point,
+                "type_truck"        : item.type_truck,
+                "material"          : item.material,
+                "bucket_original"   : item.bucket_original,
+                "ton_original"      : item.ton_original,
+                "bucket_updated"    : item.bucket_updated,
+                "ton_updated"       : item.ton_updated,
+                "status"            : item.status
                 
             } for item in object_list
         ]
@@ -186,9 +186,9 @@ def getIdVolumeAdjusment(request):
                 'sources'      : clean_string(sources_area),
                 'loading_id'   : items.loading_point,
                 'loading_point': clean_string(loading_point),
-                'bcm_original' : items.bcm_original,
+                'bucket_original' : items.bucket_original,
                 'ton_original' : items.ton_original,
-                'bcm_updated'  : items.bcm_updated,
+                'bucket_updated'  : items.bucket_updated,
                 'ton_updated'  : items.ton_updated,
                 'status'       : clean_string(items.status), 
                 'remarks'      : items.remarks
@@ -238,10 +238,51 @@ def get_category_mine_volume(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+def get_direct_mine_volume(request):
+    tgl_pertama  = request.GET.get('startDate')
+    tgl_terakhir = request.GET.get('endDate')
+    category     = request.GET.get('category')
+
+    if request.method == 'GET':
+        try:
+            sql_query = """
+                SELECT 
+                    TRIM(direct) as direct
+                FROM 
+                    productions_mines as t1
+                WHERE 
+                    date_production BETWEEN %s AND %s AND category_mine = %s
+                GROUP BY 
+                    direct
+                ORDER BY 
+                    direct ASC;
+            """
+            params = [tgl_pertama, tgl_terakhir,category]
+             # Eksekusi query
+            with connections['kqms_db'].cursor() as cursor:
+                cursor.execute(sql_query,params)
+                result = cursor.fetchall()
+           
+            list=[]
+            # Ubah hasil query menjadi list of dictionaries
+            list = [{'direct': row[0]} for row in result]
+
+            # Buat respons JSON dengan list data
+            response_data = {
+                'list': list,
+            }
+
+            return JsonResponse(response_data)
+        except mineProductions.DoesNotExist:
+            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 def get_vendors_mine_volume(request):
     tgl_pertama  = request.GET.get('startDate')
     tgl_terakhir = request.GET.get('endDate')
     category     = request.GET.get('category')
+    direct       = request.GET.get('direct')
 
     if request.method == 'GET':
         try:
@@ -252,12 +293,13 @@ def get_vendors_mine_volume(request):
                     productions_mines as t1
                 WHERE 
                     date_production BETWEEN %s AND %s AND category_mine = %s
+                    AND direct = %s
                 GROUP BY 
                     vendors
                 ORDER BY 
                     vendors ASC;
             """
-            params = [tgl_pertama, tgl_terakhir,category]
+            params = [tgl_pertama, tgl_terakhir,category,direct]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -282,6 +324,7 @@ def get_sources_mine_volume(request):
     tgl_pertama  = request.GET.get('startDate')
     tgl_terakhir = request.GET.get('endDate')
     category     = request.GET.get('category')
+    direct       = request.GET.get('direct')
     vendors      = request.GET.get('vendors')
 
     if request.method == 'GET':
@@ -293,12 +336,12 @@ def get_sources_mine_volume(request):
                 LEFT JOIN mine_sources as t2 ON t2.id=t1.sources_area 
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
-                    AND t1.category_mine=%s AND t1.vendors=%s
+                    AND t1.category_mine=%s AND t1.direct=%s  AND t1.vendors=%s
                 GROUP BY 
                     t2.id,t2.sources_area
                 ORDER BY t2.id,t2.sources_area ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,vendors]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -323,8 +366,8 @@ def get_loading_mine_volume(request):
     tgl_pertama  = request.GET.get('startDate')
     tgl_terakhir = request.GET.get('endDate')
     category     = request.GET.get('category')
+    direct       = request.GET.get('direct')
     vendors      = request.GET.get('vendors')
-    sources      = request.GET.get('sources')
 
     if request.method == 'GET':
         try:
@@ -333,17 +376,16 @@ def get_loading_mine_volume(request):
                     t3.id as id_loading,
                     TRIM(t3.loading_point) as loading_point
                 FROM productions_mines as t1
-                LEFT JOIN mine_sources as t2 ON t2.id=t1.sources_area 
                 LEFT JOIN mine_sources_point_loading as t3 ON t3.id = t1.loading_point
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
-                    AND t1.category_mine=%s AND t1.vendors=%s AND t2.id=%s
+                    AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s
                 GROUP BY 
                    t3.id,t3.loading_point
                 ORDER BY
                     t3.id,t3.loading_point ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,vendors,sources]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -368,6 +410,7 @@ def get_hauler_class_volume(request):
     tgl_pertama   = request.GET.get('startDate')
     tgl_terakhir  = request.GET.get('endDate')
     category      = request.GET.get('category')
+    direct        = request.GET.get('direct')
     vendors       = request.GET.get('vendors')
     sources       = request.GET.get('sources')
     loading_point = request.GET.get('loading_point')
@@ -378,17 +421,16 @@ def get_hauler_class_volume(request):
                 SELECT 
                    TRIM(hauler_class) as hauler_class
                 FROM productions_mines as t1
-                LEFT JOIN mine_sources as t2 ON t2.id=t1.sources_area 
-                LEFT JOIN mine_sources_point_loading as t3 ON t3.id = t1.loading_point
+                LEFT JOIN mine_sources_point_loading as t2 ON t2.id = t1.loading_point
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
-                    AND t1.category_mine=%s AND t1.vendors=%s AND t2.id=%s AND t3.id=%s
+                    AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s AND t2.id=%s 
                 GROUP BY 
                   hauler_class
                 ORDER BY
                    hauler_class ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,vendors,sources,loading_point]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors,loading_point]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -410,34 +452,35 @@ def get_hauler_class_volume(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_material_volume(request):
-    tgl_pertama  = request.GET.get('startDate')
-    tgl_terakhir = request.GET.get('endDate')
-    category     = request.GET.get('category')
-    vendors      = request.GET.get('vendors')
-    sources      = request.GET.get('sources')
-    loading_point = request.GET.get('loading_point')
-    hauler_class  = request.GET.get('hauler_class')
+    tgl_pertama     = request.GET.get('startDate')
+    tgl_terakhir    = request.GET.get('endDate')
+    category        = request.GET.get('category')
+    direct          = request.GET.get('direct')
+    vendors         = request.GET.get('vendors')
+    sources         = request.GET.get('sources')
+    loading_point   = request.GET.get('loading_point')
+    hauler_class    = request.GET.get('hauler_class')
 
     if request.method == 'GET':
         try:
             sql_query = """
                 SELECT 
-                    t4.id as id_material,
-                    TRIM(t4.nama_material) as nama_material,
-                    bcm,tonnage
+                    t3.id as id_material,
+                    TRIM(t3.nama_material) as nama_material,
+                    bucket,tonnage
                 FROM productions_mines as t1
-                LEFT JOIN mine_sources as t2 ON t2.id=t1.sources_area 
-                LEFT JOIN mine_sources_point_loading as t3 ON t3.id = t1.loading_point
-                LEFT JOIN materials as t4 ON t4.id=t1.id_material
+                LEFT JOIN mine_sources_point_loading as t2 ON t2.id = t1.loading_point
+                LEFT JOIN materials as t3 ON t3.id=t1.id_material
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
-                    AND t1.category_mine=%s AND t1.vendors=%s AND t2.id=%s AND t3.id=%s AND t1.hauler_class=%s
+                    AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s 
+                    AND t2.id=%s  AND t1.hauler_class=%s
                 GROUP BY 
-                  t4.id,t4.nama_material,bcm,tonnage
+                  t3.id,t3.nama_material,bucket,tonnage
                 ORDER BY
-                   t4.nama_material ASC
+                   t3.nama_material ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,vendors,sources,loading_point,hauler_class]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors,loading_point,hauler_class]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -445,7 +488,7 @@ def get_material_volume(request):
            
             list=[]
             # Ubah hasil query menjadi list of dictionaries
-            list = [{'id_material': row[0],'nama_material': row[1],'bcm': row[2],'tonnage': row[3]} for row in result]
+            list = [{'id_material': row[0],'nama_material': row[1],'bucket': row[2],'tonnage': row[3]} for row in result]
 
             # Buat respons JSON dengan list data
             response_data = {
@@ -459,14 +502,14 @@ def get_material_volume(request):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 def get_volume_data(request):
-    tgl_pertama  = request.GET.get('startDate')
-    tgl_terakhir = request.GET.get('endDate')
-    category     = request.GET.get('category')
-    vendors      = request.GET.get('vendors')
-    sources      = request.GET.get('sources')
-    loading_point = request.GET.get('loading_point')
-    hauler_class  = request.GET.get('hauler_class')
-    nama_material = request.GET.getlist('nama_material')  # Tangkap sebagai list
+    tgl_pertama     = request.GET.get('startDate')
+    tgl_terakhir    = request.GET.get('endDate')
+    category        = request.GET.get('category')
+    vendors         = request.GET.get('vendors')
+    sources         = request.GET.get('sources')
+    loading_point   = request.GET.get('loading_point')
+    hauler_class    = request.GET.get('hauler_class')
+    nama_material   = request.GET.getlist('nama_material')  # Tangkap sebagai list
 
     if request.method == 'GET':
         try:
@@ -474,7 +517,7 @@ def get_volume_data(request):
                   SELECT 
                     t4.id as id_material,
                     t4.nama_material,
-                    bcm, tonnage
+                    bucket, tonnage
                 FROM productions_mines as t1
                 LEFT JOIN mine_sources as t2 ON t2.id=t1.sources_area 
                 LEFT JOIN mine_sources_point_loading as t3 ON t3.id=t1.loading_point
@@ -482,15 +525,15 @@ def get_volume_data(request):
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
                     AND t1.category_mine=%s AND t1.vendors=%s 
-                    AND t2.id=%s AND t3.id=%s AND t1.hauler_class=%s
+                    AND t3.id=%s AND t1.hauler_class=%s
                     {material_filter}
                 GROUP BY 
-                    t4.id, t4.nama_material, bcm, tonnage
+                    t4.id, t4.nama_material, bucket, tonnage
                 ORDER BY
                     t4.nama_material ASC
             """
  
-            params = [tgl_pertama, tgl_terakhir,category,vendors,sources,loading_point,hauler_class]
+            params = [tgl_pertama, tgl_terakhir,category,vendors,loading_point,hauler_class]
            
             # Tambahkan filter `IN` untuk `nama_material`
             if nama_material:
@@ -525,8 +568,15 @@ def insert_volume_adjustment(request):
         try:
             data = json.loads(request.body)
 
-            # Validasi input
-            required_fields = ['date_start', 'date_end', 'category', 'vendors', 'sources', 'loading_point', 'hauler_class', 'materials']
+            # === Validasi input utama ===
+            required_fields = [
+                'date_start', 'date_end',
+                'category','direct',
+                'vendors',
+                'loading_point',
+                'hauler_class',
+                'materials'
+            ]
             for field in required_fields:
                 if field not in data or not data[field]:
                     return JsonResponse({'error': f'{field} is required'}, status=400)
@@ -535,67 +585,69 @@ def insert_volume_adjustment(request):
             if not materials:
                 return JsonResponse({'error': 'Materials data is empty'}, status=400)
 
-            with transaction.atomic():
-                reference_tf = f"{data['date_start']}{data['date_end']}{data['category']}{data['vendors']}{data['sources']}{data['loading_point']}{data['hauler_class']}"
+            # === Validasi tiap material ===
+            for idx, material in enumerate(materials, start=1):
+                if 'bucket_original' not in material or 'bucket_updated' not in material:
+                    return JsonResponse({'error': f'bucket_original and bucket_updated are required in material row {idx}'}, status=400)
 
-                # Cek apakah data sudah ada??
-                # if volumeTruckFactorAdjustment.objects.filter(reference_tf=reference_tf).exists():
+            with transaction.atomic():
+                # Reference check (tanpa bucket, karena bucket ada di level material)
+                reference_tf = f"{data['date_start']}{data['date_end']}{data['category']}{data['vendors']}{data['loading_point']}{data['hauler_class']}"
+
                 if volumeTruckFactorAdjustment.objects.filter(
                     date_start__gte=data['date_start'],
                     date_end__lte=data['date_end'],
                     category=data['category'],
                     vendors=data['vendors'],
-                    sources=data['sources'],
                     loading_point=data['loading_point'],
                     type_truck=data['hauler_class']
-                    ).exists():
-                     return JsonResponse({'error': f'{reference_tf} already exists'}, status=422)
+                ).exists():
+                    return JsonResponse({'error': f'{reference_tf} already exists'}, status=422)
 
-                # Insert atau update data material
+                # === Insert / update adjustment per material ===
                 for material in materials:
-                    nama_material = material.get('nama_material')
-                    bcm_original  = material.get('bcm_original')
-                    ton_original  = material.get('ton_original')
-                    bcm_updated   = material.get('bcm_updated')
-                    ton_updated   = material.get('ton_updated')
+                    nama_material    = material.get('nama_material')
+                    bucket_original  = material.get('bucket_original')
+                    ton_original     = material.get('ton_original')
+                    bucket_updated   = material.get('bucket_updated')
+                    ton_updated      = material.get('ton_updated')
 
-                    # Update atau insert volumeTruckFactorAdjustment
-                    obj, created = volumeTruckFactorAdjustment.objects.update_or_create(
-                        material = nama_material,
+                    volumeTruckFactorAdjustment.objects.update_or_create(
+                        material=nama_material,
+                        bucket_updated=bucket_updated,   # kunci unik tambahan
                         defaults={
-                            'date_start': data['date_start'],
-                            'date_end': data['date_end'],
-                            'category': data['category'],
-                            'vendors': data['vendors'],
-                            'sources': int(data['sources']),
-                            'loading_point': int(data['loading_point']),
-                            'type_truck': data['hauler_class'],
-                            'bcm_original': bcm_original,
-                            'ton_original': ton_original,
-                            'bcm_updated': bcm_updated,
-                            'ton_updated': ton_updated,
-                            'status': 'adjustment'
+                            'date_start'     : data['date_start'],
+                            'date_end'       : data['date_end'],
+                            'category'       : data['category'],
+                            'vendors'        : data['vendors'],
+                            'loading_point'  : int(data['loading_point']),
+                            'type_truck'     : data['hauler_class'],
+                            'bucket_original': bucket_original,
+                            'ton_original'   : ton_original,
+                            'ton_updated'    : ton_updated,
+                            'status'         : 'adjustment'
                         }
                     )
 
-                # Update tabel produksi jika diperlukan
-                bcm_updated = float(materials[0]['bcm_updated'])  # Contoh: gunakan nilai pertama
-                ton_updated = float(materials[0]['ton_updated'])
+                    # === Update produksi sesuai bucket_original → pindah ke bucket_updated ===
+                    productions = mineProductions.objects.filter(
+                        date_production__gte=data['date_start'],
+                        date_production__lte=data['date_end'],
+                        category_mine=data['category'],
+                        direct=data['direct'],
+                        vendors=data['vendors'],
+                        hauler_class=data['hauler_class'],
+                        sources_area=data.get('sources'),
+                        loading_point=data['loading_point'],
+                        bucket=bucket_original
+                    )
 
-                mineProductions.objects.filter(
-                    date_production__gte=data['date_start'],
-                    date_production__lte=data['date_end'],
-                    category_mine=data['category'],
-                    vendors=data['vendors'],
-                    hauler_class=data['hauler_class'],
-                    sources_area=data['sources'],
-                    loading_point=data['loading_point']
-                ).update(
-                    bcm     = bcm_updated,
-                    tonnage = ton_updated,
-                    remarks = 'volume adjustment'
-                )
-
+                    for prod in productions:
+                        ton_calculated = float(prod.ritase) * float(ton_updated or 0)
+                        prod.bucket  = bucket_updated
+                        prod.tonnage = ton_calculated
+                        prod.remarks = 'volume adjustment'
+                        prod.save(update_fields=['bucket', 'tonnage', 'remarks'])
 
             return JsonResponse({'success': True, 'message': 'Data berhasil disimpan.'})
 
@@ -603,7 +655,7 @@ def insert_volume_adjustment(request):
             return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
-   
+
 @login_required
 def update_volume_adjustment(request, id):
     if request.method == 'POST':
@@ -618,9 +670,9 @@ def update_volume_adjustment(request, id):
                 'loading_point' : 'loading_point is required.',
                 'material'      : 'Material is required.',
                 'type_truck'    : 'Type Truck is required.',
-                'bcm_original'  : 'Bcm Original is required.',
+                'bucket_original'  : 'Bcm Original is required.',
                 'ton_original'  : 'Tonnage Original is required.',
-                # 'bcm_updated'   : 'Bcm Updated is required.',
+                # 'bucket_updated'   : 'Bcm Updated is required.',
                 # 'ton_updated'   : 'Tonnage Updated is required.',
             }
 
@@ -630,16 +682,16 @@ def update_volume_adjustment(request, id):
                     return JsonResponse({'error': message}, status=400)
 
             # Ambil data dari request
-            date_start    = request.POST['date_start']
-            date_end      = request.POST['date_end']
-            category      = request.POST['category']
-            vendors       = request.POST['vendors']
-            sources       = int(request.POST['sources'])
-            loading_point = int(request.POST['loading_point'])
-            material      = int(request.POST['material'])
-            type_truck    = request.POST['type_truck']
-            bcm_original  = float(request.POST['bcm_original'])
-            ton_original  = float(request.POST['ton_original'])
+            date_start       = request.POST['date_start']
+            date_end         = request.POST['date_end']
+            category         = request.POST['category']
+            vendors          = request.POST['vendors']
+            sources          = int(request.POST['sources'])
+            loading_point    = int(request.POST['loading_point'])
+            material         = int(request.POST['material'])
+            type_truck       = request.POST['type_truck']
+            bucket_original  = float(request.POST['bucket_original'])
+            ton_original     = float(request.POST['ton_original'])
 
             # Dapatkan objek yang akan diupdate
             data = get_object_or_404(volumeTruckFactorAdjustment, id=id)
@@ -658,7 +710,7 @@ def update_volume_adjustment(request, id):
                     loading_point=loading_point,
                     id_material=material
             ).update(
-                    bcm     = bcm_original,
+                    bcm     = bucket_original,
                     tonnage = ton_original,
                     remarks = 'volume restore'
             )

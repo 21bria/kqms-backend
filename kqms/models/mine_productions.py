@@ -31,6 +31,7 @@ class mineProductions(models.Model):
     ref_materials   = models.CharField(max_length=150, default=None, null=True, blank=True)
     no_production   = models.CharField(max_length=150, default=None, null=True, blank=True)
     task_id         = models.CharField(max_length=255, default=None, null=True, blank=True)
+    direct          = models.CharField(max_length=15, default='No', null=True, blank=True)
     left_date       = models.IntegerField(default=None, null=True, blank=True)
     id_user         = models.IntegerField(default=None, null=True, blank=True)
     created_at      = models.DateTimeField(auto_now_add=True)

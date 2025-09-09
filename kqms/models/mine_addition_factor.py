@@ -21,46 +21,53 @@ class mineAdditionFactor(models.Model):
 
 
 class volumeTruckFactorAdjustment(models.Model):
-    date_start    = models.DateField(default=None,null=True,blank=True)
-    date_end      = models.DateField(default=None,null=True,blank=True)
-    category      = models.CharField(max_length=25,default=None,null=True,blank=True)
-    vendors       = models.CharField(max_length=50,default=None,null=True,blank=True)
-    sources       = models.BigIntegerField(default=None,null=True,blank=True)
-    loading_point = models.BigIntegerField(default=None,null=True,blank=True)
-    # sources       = models.ForeignKey(SourceMines, on_delete=models.CASCADE, db_column='sources', null=True, blank=True)
-    # loading_point = models.ForeignKey(SourceMinesLoading, on_delete=models.CASCADE, db_column='loading_point', null=True, blank=True)
-    type_truck    = models.CharField(max_length=50,default=None,null=True,blank=True)
-    material      = models.CharField(max_length=25,default=None,null=True,blank=True)
-    bcm_original  = models.FloatField(default=None,null=True,blank=True)
-    ton_original  = models.FloatField(default=None,null=True,blank=True)
-    bcm_updated   = models.FloatField(default=None,null=True,blank=True)
-    ton_updated   = models.FloatField(default=None,null=True,blank=True)
-    status        = models.CharField(max_length=50,blank=True,default=None,null=True)
-    remarks       = models.CharField(max_length=255,blank=True,default=None,null=True)
-    created_at    = models.DateTimeField(auto_now_add=True)
-    updated_at    = models.DateTimeField(auto_now_add=True)
-
+    date_start      = models.DateField(default=None,null=True,blank=True)
+    date_end        = models.DateField(default=None,null=True,blank=True)
+    category        = models.CharField(max_length=25,default=None,null=True,blank=True)
+    vendors         = models.CharField(max_length=50,default=None,null=True,blank=True)
+    sources         = models.BigIntegerField(default=None,null=True,blank=True)
+    loading_point   = models.BigIntegerField(default=None,null=True,blank=True)
+    type_truck      = models.CharField(max_length=50,default=None,null=True,blank=True)
+    material        = models.CharField(max_length=25,default=None,null=True,blank=True)
+    bucket_original = models.IntegerField(default=None,null=True,blank=True)
+    bcm_original    = models.FloatField(default=None,null=True,blank=True)
+    ton_original    = models.FloatField(default=None,null=True,blank=True)
+    bucket_updated  = models.FloatField(default=None,null=True,blank=True)
+    bcm_updated     = models.FloatField(default=None,null=True,blank=True)
+    ton_updated     = models.FloatField(default=None,null=True,blank=True)
+    status          = models.CharField(max_length=50,blank=True,default=None,null=True)
+    remarks         = models.CharField(max_length=255,blank=True,default=None,null=True)
+    created_at      = models.DateTimeField(auto_now_add=True)
+    updated_at      = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table  ='mine_volume_factors_adjustment'
         app_label = 'kqms'
+        unique_together = (
+        'date_start', 'date_end',
+        'category', 'vendors',
+        'loading_point', 'type_truck',
+        'material', 'bucket_updated'
+    )
 
 
 class mineVolumeAdjustment(models.Model):
-    date_start    = models.DateField(default=None,null=True,blank=True)
-    date_end      = models.DateField(default=None,null=True,blank=True)
-    category      = models.CharField(max_length=25,default=None,null=True,blank=True)
-    vendors       = models.CharField(max_length=50,default=None,null=True,blank=True)
-    sources_area  = models.CharField(max_length=250,default=None,null=True,blank=True)
-    loading_point = models.CharField(max_length=250,default=None,null=True,blank=True)
-    type_truck    = models.CharField(max_length=50,default=None,null=True,blank=True)
-    material      = models.CharField(max_length=25,default=None,null=True,blank=True)
-    bcm_original  = models.FloatField(default=None,null=True,blank=True)
-    ton_original  = models.FloatField(default=None,null=True,blank=True)
-    bcm_updated   = models.FloatField(default=None,null=True,blank=True)
-    ton_updated   = models.FloatField(default=None,null=True,blank=True)
-    status        = models.CharField(max_length=50,blank=True,default=None,null=True)
-    remarks       = models.CharField(max_length=255,blank=True,default=None,null=True)
+    date_start      = models.DateField(default=None,null=True,blank=True)
+    date_end        = models.DateField(default=None,null=True,blank=True)
+    category        = models.CharField(max_length=25,default=None,null=True,blank=True)
+    vendors         = models.CharField(max_length=50,default=None,null=True,blank=True)
+    sources_area    = models.CharField(max_length=250,default=None,null=True,blank=True)
+    loading_point   = models.CharField(max_length=250,default=None,null=True,blank=True)
+    type_truck      = models.CharField(max_length=50,default=None,null=True,blank=True)
+    material        = models.CharField(max_length=25,default=None,null=True,blank=True)
+    bucket_original = models.FloatField(default=None,null=True,blank=True)
+    bcm_original    = models.FloatField(default=None,null=True,blank=True)
+    ton_original    = models.FloatField(default=None,null=True,blank=True)
+    bucket_updated  = models.FloatField(default=None,null=True,blank=True)
+    bcm_updated     = models.FloatField(default=None,null=True,blank=True)
+    ton_updated     = models.FloatField(default=None,null=True,blank=True)
+    status          = models.CharField(max_length=50,blank=True,default=None,null=True)
+    remarks         = models.CharField(max_length=255,blank=True,default=None,null=True)
 
     class Meta:
         managed   = False

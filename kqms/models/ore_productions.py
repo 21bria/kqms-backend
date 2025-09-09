@@ -38,7 +38,7 @@ class OreProductions(models.Model):
     status_approval     = models.CharField(max_length=50, default=None, null=True, blank=True)
     category            = models.CharField(max_length=10, default=None, null=True, blank=True)
     hauler_plan         = models.CharField(max_length=30, default=None, null=True, blank=True)
-    fleet               = models.CharField(max_length=25, default=None, null=True, blank=True)
+    direct              = models.CharField(max_length=15, default='No', null=True, blank=True)
     created_at          = models.DateTimeField(auto_now_add=True)
     updated_at          = models.DateTimeField(auto_now_add=True)
    

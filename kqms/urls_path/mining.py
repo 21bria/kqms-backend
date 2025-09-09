@@ -89,6 +89,7 @@ urlpatterns = [
     path('mine-production/volume-adjustment/delete/',delete_volume_adjustment,name='mine-production-volume-adjustment-delete'), 
     # Category
     path('mine-production/truck-factors/get_category_mine/',get_category_mine_volume,name='get-truck-factors-category-mine'),
+    path('mine-production/truck-factors/get_direct_mine/',get_direct_mine_volume,name='get-truck-factors-get-direct-mine'),
     path('mine-production/truck-factors/get_vendors_mine/',get_vendors_mine_volume,name='get-truck-factors-get-vendors-mine'),
     path('mine-production/truck-factors/get_sources_mine/',get_sources_mine_volume,name='get-truck-factors-get-sources-mine'),
     path('mine-production/truck-factors/get_loading_mine/',get_loading_mine_volume,name='get-truck-factors-get-loading-mine'),

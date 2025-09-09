@@ -18,7 +18,6 @@ import logging
 # Dapatkan instance logger
 logger = logging.getLogger('celery')
 
-
 def parse_time_hauling(raw_value):
     if pd.isna(raw_value):
         return None
@@ -58,7 +57,6 @@ def parse_time_hauling(raw_value):
 
     # Gagal parsing
     return None
-
 
 @shared_task(name='kqms.task.import_mines_productions.import_mine_productions')
 def import_mine_productions(file_path, original_file_name):
@@ -110,6 +108,7 @@ def import_mine_productions(file_path, original_file_name):
                 rl_from         = row['From Rl']
                 rl_to           = row['To Rl']
                 ritase          = row['Ritase']
+                direct          = row['Direct']
                 remarks         = row['Remarks']
 
                 # Tambahkan leading zero untuk time jika nilainya antara 0-9
@@ -201,6 +200,7 @@ def import_mine_productions(file_path, original_file_name):
                                 ritase          = ritase,
                                 bcm             = 0,
                                 tonnage         = tonnage,
+                                direct          = direct,
                                 remarks         = remarks,
                                 hauler_type     = type_hauler,
                                 ref_materials   = ref_plan,

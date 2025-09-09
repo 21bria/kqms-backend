@@ -179,32 +179,38 @@
                                         placeholder="Choose date">
                                 </div>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
+                            <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Category</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="category" name="category">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-6 col-span-12">
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Direct</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="direct" name="direct">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Vendors</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="vendors" name="vendors">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <!-- <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Sorces</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="sources" name="sources">
                                     <option value="">Select</option>
                                 </select>
-                            </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            </div> -->
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Loading point</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="loading_point"
                                     name="loading_point">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Hauler Type</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="hauler_class"
                                     name="hauler_class">
@@ -219,9 +225,9 @@
                                 <thead>
                                     <tr>
                                         <th width="5%">Material</th>
-                                        <th>Bcm Ori</th>
+                                        <th>Bucket Ori</th>
                                         <th>Tonnage Ori</th>
-                                        <th>Bcm Edit</th>
+                                        <th>Bucket Edit</th>
                                         <th>Tonnage Edit</th>
                                     </tr>
                                 </thead>
@@ -361,7 +367,7 @@
                             </div>
                             <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Bcm Ori</label>
-                                <input type="text" id="bcm_ori_edit" name="bcm_ori_edit"
+                                <input type="text" id="bucket_ori_edit" name="bucket_ori_edit"
                                     class="form-control w-full !rounded-md disabled:pointer-events-none" readonly />
                             </div>
                             <div class="xl:col-span-4 col-span-12">
@@ -371,7 +377,7 @@
                             </div>
                             <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Bcm Update</label>
-                                <input type="text" id="bcm_update_edit" name="bcm_update_edit"
+                                <input type="text" id="bucket_update_edit" name="bucket_update_edit"
                                     class="form-control w-full !rounded-md" />
                             </div>
                             <div class="xl:col-span-4 col-span-12">
@@ -464,13 +470,28 @@
             const startDate = $('#start_date').val();
             const endDate = $('#end_date').val();
             // If category is selected, load vendors
-            $('#vendors').empty().append('<option value="">Select Vendor</option>');
-            $('#sources').empty().append('<option value="">Select Sources</option>');
+            $('#direct').empty().append('<option value="">Select Direct</option>');
+            // $('#sources').empty().append('<option value="">Select Sources</option>');
             $('#loading_point').empty().append('<option value="">Select Loading</option>');
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#material_table tbody').empty();
             if (selectedCategory) {
-                loadVendorsDropdown(startDate, endDate, selectedCategory);
+                loadDirectDropdown(startDate, endDate, selectedCategory);
+            }
+
+        });
+
+        $('#direct').change(function () {
+            const selectedDirect = $(this).val();
+            const startDate = $('#start_date').val();
+            const endDate = $('#end_date').val();
+            const category = $('#category').val();
+            $('#vendors').empty().append('<option value="">Select Vendor</option>');
+            $('#loading_point').empty().append('<option value="">Select Loading</option>');
+            $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
+            $('#material_table tbody').empty();
+            if (selectedDirect) {
+                loadVendorsDropdown(startDate, endDate, category, selectedDirect);
             }
 
         });
@@ -480,44 +501,46 @@
             const startDate = $('#start_date').val();
             const endDate = $('#end_date').val();
             const category = $('#category').val();
+            const direct = $('#direct').val();
             // If category is selected, load sources
-            $('#sources').empty().append('<option value="">Select Sources</option>');
+            // $('#sources').empty().append('<option value="">Select Sources</option>');
             $('#loading_point').empty().append('<option value="">Select Loading</option>');
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#material_table tbody').empty();
             if (selectedVendors) {
-                loadSourcesDropdown(startDate, endDate, category, selectedVendors);
+                loadLoadingDropdown(startDate, endDate, category,direct, selectedVendors);
             }
         });
 
-        $('#sources').change(function () {
-            const selectedSources = $(this).val();
-            const startDate = $('#start_date').val();
-            const endDate = $('#end_date').val();
-            const category = $('#category').val();
-            const vendors = $('#vendors').val();
-            // If sources is selected, load loading point
-            $('#loading_point').empty().append('<option value="">Select Loading</option>');
-            $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
-            $('#material_table tbody').empty();
-            if (selectedSources) {
-                loadLoadingDropdown(startDate, endDate, category, vendors, selectedSources);
-            }
-        });
+        // $('#sources').change(function () {
+        //     const selectedSources = $(this).val();
+        //     const startDate = $('#start_date').val();
+        //     const endDate = $('#end_date').val();
+        //     const category = $('#category').val();
+        //     const vendors = $('#vendors').val();
+        //     // If sources is selected, load loading point
+        //     $('#loading_point').empty().append('<option value="">Select Loading</option>');
+        //     $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
+        //     $('#material_table tbody').empty();
+        //     if (selectedSources) {
+        //         loadLoadingDropdown(startDate, endDate, category, vendors, selectedSources);
+        //     }
+        // });
 
         $('#loading_point').change(function () {
             const selectedLoading = $(this).val();
             const startDate = $('#start_date').val();
             const endDate = $('#end_date').val();
             const category = $('#category').val();
+            const direct = $('#direct').val();
             const vendors = $('#vendors').val();
-            const sources = $('#sources').val();
+            // const sources = $('#sources').val();
             // If loading is selected, load hauler
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#nama_material').empty().append('<option value="">Select Material</option>');
             $('#material_table tbody').empty();
             if (selectedLoading) {
-                loadHaulerDropdown(startDate, endDate, category, vendors, sources, selectedLoading);
+                loadHaulerDropdown(startDate, endDate, category,direct, vendors, selectedLoading);
             }
         });
 
@@ -526,14 +549,15 @@
             const startDate = $('#start_date').val();
             const endDate = $('#end_date').val();
             const category = $('#category').val();
+            const direct = $('#direct').val();
             const vendors = $('#vendors').val();
-            const sources = $('#sources').val();
+            // const sources = $('#sources').val();
             const loading_point = $('#loading_point').val();
             // If loading is selected, load hauler
             $('#nama_material').empty().append('<option value="">Select Material</option>');
             $('#material_table tbody').empty();
             if (selectedHauler) {
-                loadMaterialDropdown(startDate, endDate, category, vendors, sources, loading_point, selectedHauler);
+                loadMaterialDropdown(startDate, endDate, category,direct, vendors, loading_point, selectedHauler);
             }
         });
 
@@ -565,15 +589,44 @@
             });
         }
 
+        // Function to load the 'direct' dropdown based on selected category
+        function loadDirectDropdown(startDate, endDate, selectedCategory) {
+            $.ajax({
+                url: "{% url 'get-truck-factors-get-direct-mine' %}",
+                type: 'GET',
+                data: {
+                    startDate: startDate,
+                    endDate: endDate,
+                    category: selectedCategory,
+                },
+                success: function (response) {
+                    const dropdown = $('#direct');
+                    dropdown.empty().append('<option value="">Select Direct</option>'); // Clear and set default
+
+                    if (response.list && response.list.length > 0) {
+                        response.list.forEach(function (item) {
+                            dropdown.append(new Option(item.direct, item.direct));
+                        });
+                    } else {
+                        dropdown.append('<option value="">No data found</option>');
+                    }
+                },
+                error: function () {
+                    alert('Error loading direct');
+                }
+            });
+        }
+
         // Function to load the 'vendors' dropdown based on selected category
-        function loadVendorsDropdown(startDate, endDate, selectedCategory) {
+        function loadVendorsDropdown(startDate, endDate, category, selectedDirect) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-vendors-mine' %}",
                 type: 'GET',
                 data: {
                     startDate: startDate,
                     endDate: endDate,
-                    category: selectedCategory,
+                    category: category,
+                    direct: selectedDirect
                 },
                 success: function (response) {
                     const dropdown = $('#vendors');
@@ -594,7 +647,7 @@
         }
 
         // Function to load the 'source' dropdown based on selected vendors
-        function loadSourcesDropdown(startDate, endDate, category, selectedVendors) {
+        function loadSourcesDropdown(startDate, endDate, category,direct, selectedVendors) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-sources-mine' %}",
                 type: 'GET',
@@ -602,6 +655,7 @@
                     startDate: startDate,
                     endDate: endDate,
                     category: category,
+                    direct: direct,
                     vendors: selectedVendors,
                 },
                 success: function (response) {
@@ -621,8 +675,9 @@
                 }
             });
         }
+
         // Function to load the 'loading point' dropdown based on selected sources
-        function loadLoadingDropdown(startDate, endDate, category, vendors, selectedSources) {
+        function loadLoadingDropdown(startDate, endDate, category,direct, vendors) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-loading-mine' %}",
                 type: 'GET',
@@ -630,8 +685,8 @@
                     startDate: startDate,
                     endDate: endDate,
                     category: category,
-                    vendors: vendors,
-                    sources: selectedSources,
+                    direct: direct,
+                    vendors: vendors
                 },
                 success: function (response) {
                     const dropdown = $('#loading_point');
@@ -652,7 +707,7 @@
         }
 
         // Function to load the 'hauler class' dropdown based on selected loading point
-        function loadHaulerDropdown(startDate, endDate, category, vendors, sources, selectedLoading) {
+        function loadHaulerDropdown(startDate, endDate, category,direct, vendors, selectedLoading) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-hauler-mine' %}",
                 type: 'GET',
@@ -660,8 +715,9 @@
                     startDate: startDate,
                     endDate: endDate,
                     category: category,
+                    direct: direct,
                     vendors: vendors,
-                    sources: sources,
+                    // sources: sources,
                     loading_point: selectedLoading
                 },
                 success: function (response) {
@@ -683,7 +739,7 @@
         }
 
         // Function to load the 'material' dropdown based on selected hauler class
-        function loadMaterialDropdown(startDate, endDate, category, vendors, sources, loading_point, selectedHauler) {
+        function loadMaterialDropdown(startDate, endDate, category,direct, vendors, loading_point, selectedHauler) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-material-mine' %}",
                 type: 'GET',
@@ -691,8 +747,9 @@
                     startDate: startDate,
                     endDate: endDate,
                     category: category,
+                    direct: direct,
                     vendors: vendors,
-                    sources: sources,
+                    // sources: sources,
                     loading_point: loading_point,
                     hauler_class: selectedHauler
                 },
@@ -716,9 +773,9 @@
                         materialTableBody.append(`
                         <tr>
                             <td>${item.nama_material}</td>
-                            <td>${item.bcm}</td>
+                            <td>${item.bucket}</td>
                             <td>${item.tonnage}</td>
-                            <td><input type="text" class="form-control edit-bcm" value="${item.bcm}"></td>
+                            <td><input type="text" class="form-control edit-bucket" value="${item.bucket}"></td>
                             <td><input type="text" class="form-control edit-tonnage" value="${item.tonnage}"></td>
                         </tr>
                         `);
@@ -787,16 +844,16 @@
                     name: 'material'
                 },
                 {
-                    data: 'bcm_original',
-                    name: 'bcm_original'
+                    data: 'bucket_original',
+                    name: 'bucket_original'
                 },
                 {
                     data: 'ton_original',
                     name: 'ton_original'
                 },
                 {
-                    data: 'bcm_updated',
-                    name: 'bcm_updated'
+                    data: 'bucket_updated',
+                    name: 'bucket_updated'
                 },
                 {
                     data: 'ton_updated',
@@ -846,8 +903,9 @@
             $('#start_date').val('');
             $('#end_date').val('');
             $('#category').empty().append('<option value="">Select Category</option>');
+            $('#direct').empty().append('<option value="">Select Direct</option>');
             $('#vendors').empty().append('<option value="">Select Vendor</option>');
-            $('#sources').empty().append('<option value="">Select Sources</option>');
+            // $('#sources').empty().append('<option value="">Select Sources</option>');
             $('#loading_point').empty().append('<option value="">Select Loading</option>');
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#material_table tbody').empty();
@@ -861,9 +919,9 @@
                 const material = {
                     // id_material: $(this).find('td:eq(0)').data('id'), // Gunakan data ID material jika tersedia
                     nama_material: $(this).find('td:eq(0)').text(),
-                    bcm_original: parseFloat($(this).find('td:eq(1)').text()) || 0,
+                    bucket_original: parseFloat($(this).find('td:eq(1)').text()) || 0,
                     ton_original: parseFloat($(this).find('td:eq(2)').text()) || 0,
-                    bcm_updated: parseFloat($(this).find('td:eq(3) input').val()) || 0,
+                    bucket_updated: parseFloat($(this).find('td:eq(3) input').val()) || 0,
                     ton_updated: parseFloat($(this).find('td:eq(4) input').val()) || 0
                 };
                 materials.push(material);
@@ -873,8 +931,8 @@
                 date_start: $('#start_date').val(),
                 date_end: $('#end_date').val(),
                 category: $('#category').val(),
+                direct: $('#direct').val(),
                 vendors: $('#vendors').val(),
-                sources: $('#sources').val(),
                 loading_point: $('#loading_point').val(),
                 hauler_class: $('#hauler_class').val(),
                 materials: materials
@@ -957,9 +1015,9 @@
                     loading_point: $('#loading_edit').val(),
                     material: $('#material_edit').val(),
                     type_truck: $('#truck_edit').val(),
-                    bcm_original: $('#bcm_ori_edit').val(),
+                    bucket_original: $('#bucket_ori_edit').val(),
                     ton_original: $('#ton_ori_edit').val(),
-                    // bcm_updated: $('#bcm_update_edit').val(),
+                    // bucket_updated: $('#bucket_update_edit').val(),
                     // ton_updated: $('#ton_update_edit').val(),
                 },
 
@@ -988,9 +1046,9 @@
                         $('#loading_edit').val('');
                         $('#material_edit').val('');
                         $('#truck_edit').val('');
-                        $('#bcm_ori_edit').val('');
+                        $('#bucket_ori_edit').val('');
                         $('#ton_ori_edit').val('');
-                        $('#bcm_update_edit').val('');
+                        $('#bucket_update_edit').val('');
                         $('#ton_update_edit').val('');
                         toggleModal('editModal');
                         // Reload Table
@@ -1115,9 +1173,9 @@
                     // $('#loading_edit').val(response.loading_point);
                     // $('#material_edit').val(response.material);
                     $('#truck_edit').val(response.type_truck);
-                    $('#bcm_ori_edit').val(response.bcm_original);
+                    $('#bucket_ori_edit').val(response.bucket_original);
                     $('#ton_ori_edit').val(response.ton_original);
-                    $('#bcm_update_edit').val(response.bcm_updated);
+                    $('#bucket_update_edit').val(response.bucket_updated);
                     $('#ton_update_edit').val(response.ton_updated);
                     $('#sources_edit').val(response.sources).trigger('change');
                     var newSource = new Option(response.sources, response.sources_id, true, true);
