@@ -283,6 +283,7 @@ def get_vendors_mine_volume(request):
     tgl_terakhir = request.GET.get('endDate')
     category     = request.GET.get('category')
     direct       = request.GET.get('direct')
+    
 
     if request.method == 'GET':
         try:
@@ -413,7 +414,7 @@ def get_hauler_class_volume(request):
     direct        = request.GET.get('direct')
     vendors       = request.GET.get('vendors')
     sources       = request.GET.get('sources')
-    loading_point = request.GET.get('loading_point')
+    # loading_point = request.GET.get('loading_point')
 
     if request.method == 'GET':
         try:
@@ -424,13 +425,13 @@ def get_hauler_class_volume(request):
                 LEFT JOIN mine_sources_point_loading as t2 ON t2.id = t1.loading_point
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
-                    AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s AND t2.id=%s 
+                    AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s 
                 GROUP BY 
                   hauler_class
                 ORDER BY
                    hauler_class ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,direct,vendors,loading_point]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -474,13 +475,13 @@ def get_material_volume(request):
                 WHERE 
                     t1.date_production BETWEEN %s AND %s
                     AND t1.category_mine=%s AND t1.direct=%s AND t1.vendors=%s 
-                    AND t2.id=%s  AND t1.hauler_class=%s
+                    AND t1.hauler_class=%s
                 GROUP BY 
                   t3.id,t3.nama_material,bucket,tonnage
                 ORDER BY
                    t3.nama_material ASC
             """
-            params = [tgl_pertama, tgl_terakhir,category,direct,vendors,loading_point,hauler_class]
+            params = [tgl_pertama, tgl_terakhir,category,direct,vendors,hauler_class]
              # Eksekusi query
             with connections['kqms_db'].cursor() as cursor:
                 cursor.execute(sql_query,params)
@@ -573,7 +574,7 @@ def insert_volume_adjustment(request):
                 'date_start', 'date_end',
                 'category','direct',
                 'vendors',
-                'loading_point',
+                # 'loading_point',
                 'hauler_class',
                 'materials'
             ]
@@ -592,14 +593,14 @@ def insert_volume_adjustment(request):
 
             with transaction.atomic():
                 # Reference check (tanpa bucket, karena bucket ada di level material)
-                reference_tf = f"{data['date_start']}{data['date_end']}{data['category']}{data['vendors']}{data['loading_point']}{data['hauler_class']}"
+                reference_tf = f"{data['date_start']}{data['date_end']}{data['category']}{data['vendors']}{data['hauler_class']}"
 
                 if volumeTruckFactorAdjustment.objects.filter(
                     date_start__gte=data['date_start'],
                     date_end__lte=data['date_end'],
                     category=data['category'],
                     vendors=data['vendors'],
-                    loading_point=data['loading_point'],
+                    # loading_point=data['loading_point'],
                     type_truck=data['hauler_class']
                 ).exists():
                     return JsonResponse({'error': f'{reference_tf} already exists'}, status=422)
@@ -620,7 +621,7 @@ def insert_volume_adjustment(request):
                             'date_end'       : data['date_end'],
                             'category'       : data['category'],
                             'vendors'        : data['vendors'],
-                            'loading_point'  : int(data['loading_point']),
+                            # 'loading_point'  : int(data['loading_point']),
                             'type_truck'     : data['hauler_class'],
                             'bucket_original': bucket_original,
                             'ton_original'   : ton_original,
@@ -638,7 +639,7 @@ def insert_volume_adjustment(request):
                         vendors=data['vendors'],
                         hauler_class=data['hauler_class'],
                         sources_area=data.get('sources'),
-                        loading_point=data['loading_point'],
+                        # loading_point=data['loading_point'],
                         bucket=bucket_original
                     )
 

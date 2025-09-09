@@ -179,19 +179,19 @@
                                         placeholder="Choose date">
                                 </div>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Category</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="category" name="category">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Direct</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="direct" name="direct">
                                     <option value="">Select</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Vendors</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="vendors" name="vendors">
                                     <option value="">Select</option>
@@ -203,15 +203,15 @@
                                     <option value="">Select</option>
                                 </select>
                             </div> -->
-                            <div class="xl:col-span-6 col-span-12">
+                            <!-- <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Loading point</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="loading_point"
                                     name="loading_point">
                                     <option value="">Select</option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Hauler Type</label>
+                                <label class="form-label">Loader Type</label>
                                 <select class="ti-form-select rounded-sm !py-2 !px-3t" id="hauler_class"
                                     name="hauler_class">
                                     <option value="">Select</option>
@@ -508,7 +508,8 @@
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#material_table tbody').empty();
             if (selectedVendors) {
-                loadLoadingDropdown(startDate, endDate, category,direct, selectedVendors);
+                // loadLoadingDropdown(startDate, endDate, category,direct, selectedVendors);
+                 loadHaulerDropdown(startDate, endDate, category,direct, selectedVendors);
             }
         });
 
@@ -527,22 +528,22 @@
         //     }
         // });
 
-        $('#loading_point').change(function () {
-            const selectedLoading = $(this).val();
-            const startDate = $('#start_date').val();
-            const endDate = $('#end_date').val();
-            const category = $('#category').val();
-            const direct = $('#direct').val();
-            const vendors = $('#vendors').val();
-            // const sources = $('#sources').val();
-            // If loading is selected, load hauler
-            $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
-            $('#nama_material').empty().append('<option value="">Select Material</option>');
-            $('#material_table tbody').empty();
-            if (selectedLoading) {
-                loadHaulerDropdown(startDate, endDate, category,direct, vendors, selectedLoading);
-            }
-        });
+        // $('#loading_point').change(function () {
+        //     const selectedLoading = $(this).val();
+        //     const startDate = $('#start_date').val();
+        //     const endDate = $('#end_date').val();
+        //     const category = $('#category').val();
+        //     const direct = $('#direct').val();
+        //     const vendors = $('#vendors').val();
+        //     // const sources = $('#sources').val();
+        //     // If loading is selected, load hauler
+        //     $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
+        //     $('#nama_material').empty().append('<option value="">Select Material</option>');
+        //     $('#material_table tbody').empty();
+        //     if (selectedLoading) {
+        //         loadHaulerDropdown(startDate, endDate, category,direct, vendors, selectedLoading);
+        //     }
+        // });
 
         $('#hauler_class').change(function () {
             const selectedHauler = $(this).val();
@@ -552,12 +553,12 @@
             const direct = $('#direct').val();
             const vendors = $('#vendors').val();
             // const sources = $('#sources').val();
-            const loading_point = $('#loading_point').val();
+            // const loading_point = $('#loading_point').val();
             // If loading is selected, load hauler
             $('#nama_material').empty().append('<option value="">Select Material</option>');
             $('#material_table tbody').empty();
             if (selectedHauler) {
-                loadMaterialDropdown(startDate, endDate, category,direct, vendors, loading_point, selectedHauler);
+                loadMaterialDropdown(startDate, endDate, category,direct, vendors, selectedHauler);
             }
         });
 
@@ -707,7 +708,7 @@
         }
 
         // Function to load the 'hauler class' dropdown based on selected loading point
-        function loadHaulerDropdown(startDate, endDate, category,direct, vendors, selectedLoading) {
+        function loadHaulerDropdown(startDate, endDate, category,direct, selectedVendors) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-hauler-mine' %}",
                 type: 'GET',
@@ -716,9 +717,9 @@
                     endDate: endDate,
                     category: category,
                     direct: direct,
-                    vendors: vendors,
+                    vendors: selectedVendors,
                     // sources: sources,
-                    loading_point: selectedLoading
+                    // loading_point: selectedLoading
                 },
                 success: function (response) {
                     const dropdown = $('#hauler_class');
@@ -739,7 +740,7 @@
         }
 
         // Function to load the 'material' dropdown based on selected hauler class
-        function loadMaterialDropdown(startDate, endDate, category,direct, vendors, loading_point, selectedHauler) {
+        function loadMaterialDropdown(startDate, endDate, category,direct, vendors, selectedHauler) {
             $.ajax({
                 url: "{% url 'get-truck-factors-get-material-mine' %}",
                 type: 'GET',
@@ -750,7 +751,7 @@
                     direct: direct,
                     vendors: vendors,
                     // sources: sources,
-                    loading_point: loading_point,
+                    // loading_point: loading_point,
                     hauler_class: selectedHauler
                 },
                 success: function (response) {
@@ -906,7 +907,7 @@
             $('#direct').empty().append('<option value="">Select Direct</option>');
             $('#vendors').empty().append('<option value="">Select Vendor</option>');
             // $('#sources').empty().append('<option value="">Select Sources</option>');
-            $('#loading_point').empty().append('<option value="">Select Loading</option>');
+            // $('#loading_point').empty().append('<option value="">Select Loading</option>');
             $('#hauler_class').empty().append('<option value="">Select Hauler</option>');
             $('#material_table tbody').empty();
             window.HSOverlay.open('#add-data');
@@ -933,7 +934,7 @@
                 category: $('#category').val(),
                 direct: $('#direct').val(),
                 vendors: $('#vendors').val(),
-                loading_point: $('#loading_point').val(),
+                // loading_point: $('#loading_point').val(),
                 hauler_class: $('#hauler_class').val(),
                 materials: materials
             };
