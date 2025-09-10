@@ -371,7 +371,7 @@
             }
             $.ajax({
                 type: "GET",
-                url: "{% url 'blending-get-sorce' %}?page=" + page,
+                url: "{% url 'blending-get-source' %}?page=" + page,
                 data: filter_data,
                 dataType: 'json',
                 success: function (response) {

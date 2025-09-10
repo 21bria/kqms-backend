@@ -49,7 +49,7 @@ urlpatterns = [
     path('split/coa/list/', splitOfficial, name='sale-split-coa-list'),
 
     # Blending
-    path('blending/data/source/', get_data_source, name='blending-get-sorce'),
+    path('blending/data/source/', get_data_source, name='blending-get-source'),
     path('blending/page/', blending_manual_page, name='blending-form-page'),
     path('blending/manual/calculate/', calculate_blending_auto, name='blending-manual-calculate'),
     path('blending/auto/calculate/', calculate_blending_auto_all, name='blending-auto-calculate'),
