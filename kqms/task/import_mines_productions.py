@@ -145,14 +145,23 @@ def import_mine_productions(file_path, original_file_name):
                 # hitung tonnage sesuai formula
                 tonnage = (float(parsing or 0) * float(ritase or 0) * float(bucket_capacity or 0) * float(density_lcm or 0))
 
+                # hitung tonnage sesuai material
+                # if nama_material_str.upper() == "LIM":
+                #     tonnage = 19.5 * float(ritase or 0)
+                # elif nama_material_str.upper() == "SAP":
+                #     tonnage = 19 * float(ritase or 0)
+                # else:
+                #     tonnage = (
+                #         float(parsing or 0) *
+                #         float(ritase or 0) *
+                #         float(bucket_capacity or 0) *
+                #         float(density_lcm or 0)
+                #     )
+
 
                 # Modifikasi hauler
                 type_hauler = None
-                # if isinstance(hauler_class, str):
-                #     if 'ADT' in hauler_class:
-                #         type_hauler = 'ADT'
-                #     elif 'Dump Truck' in hauler_class:
-                #         type_hauler = 'DT'
+
 
                 # ref_plan = f"{date_pds}{category_mine}{source}{vendors}".replace(" ", "")
                 ref_plan = f"{date_pds}{category_mine}{vendors}".replace(" ", "")

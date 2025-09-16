@@ -512,11 +512,20 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining']
         )
 
+        # Transfer Direct
+        Menu.objects.create(
+            title="Sale Direct Transfer",
+            url="selling-direct-staging-page",
+            parent=forms,
+            order=4,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling']
+        )
+
         # By Quick
         data_quick_barging = Menu.objects.create(
             title="Quick Entry Barging",
             parent=forms,
-            order=4,
+            order=5,
              allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         Menu.objects.create(

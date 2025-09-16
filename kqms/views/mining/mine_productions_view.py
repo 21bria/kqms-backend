@@ -322,7 +322,7 @@ def export_mines_data(request):
     # Buat file Excel
     workbook = Workbook()
     worksheet = workbook.active
-    worksheet.title = 'Selling Data'
+    worksheet.title = 'Mine Data'
 
     # Header kolom Excel
     header = [

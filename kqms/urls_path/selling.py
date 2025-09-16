@@ -11,6 +11,7 @@ from ..views.selling.entry.barging_data import *
 from ..views.selling.entry.selling_data import *
 from ..views.selling.entry.daily_summary import *
 from ..views.selling.entry.daily_summary_barging import *
+from ..views.selling.direct.staging_data import *
 
 
 urlpatterns = [
@@ -85,6 +86,12 @@ urlpatterns = [
     path('daily/barging/summary/sublot/',total_daily_barging_sublot, name='sublot-daily-barging-summary'),
     path('summary/hours/material/barging/', total_time_barging_by_hours, name='total-hours-summary-barging'),
     path('summary/housr/chart/barging/', total_barging_by_hours, name='total-hours-chart-barging'),
+
+    # Direct Trasfer
+    path('direct/selling/page/', staging_data_page, name='selling-direct-staging-page'),
+    path('direct/selling/staging/list/', dataStagingList.as_view(), name='selling-direct-staging-list'),
+    path('direct/get/tonnage/', get_tonnage_direct,name='direct-get-tonnage'),
+    path('direct/insert/productions/', transfers_direct_production, name='insert-direct-sale-productions'),
 
    
 ]
