@@ -140,7 +140,7 @@ def transfers_direct_production(request):
             date_hauling__range=[date_from, date_to],
             direct="Yes"
         ).values(
-            "date_hauling", "shift", "id_material", "id_stockpile", "id_pile", "batch"
+            "date_hauling", "shift", "id_material", "id_pile", "batch"
         ).annotate(
             total_ritase=Sum("ritase_group"),
             total_tonnage=Sum("tonnage")
@@ -164,7 +164,7 @@ def transfers_direct_production(request):
                 exists = OreProductions.objects.filter(
                     tgl_production=g["date_hauling"],
                     shift=shift_val,
-                    id_stockpile=g["id_stockpile"],
+                    # id_stockpile=g["id_stockpile"],
                     id_pile=g["id_pile"],
                     id_material=g["id_material"],
                     kode_batch=g["batch"],
@@ -179,8 +179,8 @@ def transfers_direct_production(request):
                     tgl_production=g["date_hauling"],
                     shift=shift_val,  # gunakan D atau N
                     id_material=g["id_material"],
-                    id_prospect_area=g["id_stockpile"],
-                    id_stockpile=g["id_stockpile"],
+                    id_prospect_area=None,
+                    id_stockpile=None,
                     id_pile=g["id_pile"],
                     ritase=g["total_ritase"],
                     tonnage=g["total_tonnage"],
