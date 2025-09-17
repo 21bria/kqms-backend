@@ -1547,7 +1547,7 @@ def get_data_inventory(request):
                     ELSE 0
                 END
             )::numeric, 2), 0) AS total_selling,
-            ROUND((t1.released - COALESCE(SUM(
+            ROUND((t1.total_ore - COALESCE(SUM(
                 CASE
                     WHEN t1.nama_material = 'LIM' AND t2.material = 'SAP' THEN t2.tonnage
                     WHEN t1.nama_material = 'SAP' AND t2.material = 'LIM' THEN t2.tonnage
@@ -1690,7 +1690,7 @@ def get_inventory_lim(request):
                 END
             )::numeric, 2), 0) AS total_selling,
             ROUND((
-                t1.released - COALESCE(SUM(
+                t1.total_ore - COALESCE(SUM(
                     CASE
                         WHEN t1.nama_material = t2.material THEN t2.tonnage
                         WHEN t1.nama_material = 'LIM' AND t2.material = 'SAP' THEN t2.tonnage
@@ -1847,7 +1847,7 @@ def get_inventory_sap(request):
                 END
             )::numeric, 2), 0) AS total_selling,
             ROUND((
-                t1.released - COALESCE(SUM(
+                t1.total_ore - COALESCE(SUM(
                     CASE
                         WHEN t1.nama_material = t2.material THEN t2.tonnage
                         WHEN t1.nama_material = 'LIM' AND t2.material = 'SAP' THEN t2.tonnage
@@ -1988,7 +1988,7 @@ def get_inventory_stockpile(request):
                     SUM(t1.released) AS released,
                     t1.nama_material,
                     COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
-                    ROUND((SUM(t1.released) - COALESCE(SUM(t2.tonnage), 0))::numeric, 2) AS balance,
+                    ROUND((SUM(t1.total_ore) - COALESCE(SUM(t2.tonnage), 0))::numeric, 2) AS balance,
                     t1.Ni,
                     t1.Co,
                     t1.Al2O3,
