@@ -131,8 +131,8 @@ def get_chart_selling(request):
                         -- 🔹 Total actual per hari
                         actual_daily AS (
                             SELECT
-                                SUM(CASE WHEN m.nama_material='LIM' THEN os.tonnage ELSE 0 END) AS actual_lim,
-                                SUM(CASE WHEN m.nama_material='SAP' THEN os.tonnage ELSE 0 END) AS actual_sap
+                                SUM(CASE WHEN sale_adjust='HPAL' THEN os.tonnage ELSE 0 END) AS actual_lim,
+                                SUM(CASE WHEN sale_adjust='RKEF' THEN os.tonnage ELSE 0 END) AS actual_sap
                             FROM ore_sellings_barging os
                             LEFT JOIN materials m ON m.id = os.id_material
                             WHERE DATE(date_barge_out)=%s::date
@@ -195,8 +195,8 @@ def get_chart_selling(request):
                     actual AS (
                         SELECT
                             date_barge_out::date AS date,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap
+                            SUM(CASE WHEN sale_adjust='HPAL' THEN s.tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN sale_adjust='RKEF' THEN s.tonnage ELSE 0 END) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE date_barge_out BETWEEN %s AND %s
@@ -217,8 +217,8 @@ def get_chart_selling(request):
                         SELECT
                             date_barge_out::date AS date,
                             mb.barge_code,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap,
+                            SUM(CASE WHEN sale_adjust='HPAL' THEN s.tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN sale_adjust='RKEF' THEN s.tonnage ELSE 0 END) AS sap,
                             SUM(s.tonnage) AS total
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
@@ -305,8 +305,8 @@ def get_chart_selling(request):
                     actual AS (
                         SELECT
                             date_barge_out::date AS date,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS actual_lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS actual_sap
+                            SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END) AS actual_lim,
+                            SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END) AS actual_sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE date_barge_out BETWEEN %s AND %s
@@ -327,11 +327,10 @@ def get_chart_selling(request):
                         SELECT
                             date_barge_out::date AS date,
                             mb.barge_code,
-                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim,
-                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap,
+                            SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END) AS lim,
+                            SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END) AS sap,
                             SUM(tonnage) AS total
                         FROM ore_sellings_barging s
-                        LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out, mb.barge_code
@@ -424,10 +423,9 @@ def get_chart_selling(request):
                         SELECT
                             date_barge_out::date AS date,
                             ROUND(SUM(tonnage)::numeric, 2) AS total,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
-                        LEFT JOIN materials m ON m.id = s.id_material
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date
                     ),
@@ -435,11 +433,10 @@ def get_chart_selling(request):
                         SELECT
                             date_barge_out::date AS date,
                             mb.barge_code,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
                             ROUND(SUM(tonnage)::numeric, 2) AS total
                         FROM ore_sellings_barging s
-                        LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         WHERE date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date, mb.barge_code
@@ -492,8 +489,8 @@ def get_chart_selling(request):
                         SELECT
                             EXTRACT(MONTH FROM date_barge_out)::int AS month,
                             ROUND(SUM(tonnage)::numeric, 2) AS total,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
@@ -505,8 +502,8 @@ def get_chart_selling(request):
                         SELECT
                             EXTRACT(MONTH FROM date_barge_out)::int AS month,
                             mb.barge_code,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
                             ROUND(SUM(tonnage)::numeric, 2) AS total
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
@@ -567,10 +564,9 @@ def get_chart_selling(request):
                         SELECT
                             EXTRACT(YEAR FROM date_barge_out)::int AS year,
                             ROUND(SUM(tonnage)::numeric, 2) AS total,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
-                        LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         GROUP BY EXTRACT(YEAR FROM date_barge_out)
                     ),
@@ -579,11 +575,10 @@ def get_chart_selling(request):
                         SELECT
                             EXTRACT(YEAR FROM date_barge_out)::int AS year,
                             mb.barge_code,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
-                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
+                            ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
                             ROUND(SUM(tonnage)::numeric, 2) AS total
                         FROM ore_sellings_barging s
-                        LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         GROUP BY EXTRACT(YEAR FROM date_barge_out), mb.barge_code
                     ),
