@@ -141,9 +141,8 @@ def get_monthly_detail_chart(filter_year, filter_month):
                 DATE(date_production) AS prod_date,
                 SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
                 SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap,
-                SUM(CASE WHEN nama_material IN ('LGLO','MGLO','HGLO','MWS','LGSO','MGSO','HGSO') 
-                        THEN tonnage ELSE 0 END)::numeric AS ore,
-                SUM(tonnage)::numeric AS total
+                SUM(CASE WHEN nama_material IN ('LGLO','MGLO','HGLO','MWS','LGSO','MGSO','HGSO') THEN tonnage ELSE 0 END)::numeric AS ore,
+                SUM(CASE WHEN nama_material IN ('LIM','SAP') THEN tonnage ELSE 0 END)::numeric AS total
             FROM mine_productions
             WHERE EXTRACT(MONTH FROM date_production) = %s
             AND EXTRACT(YEAR  FROM date_production) = %s
