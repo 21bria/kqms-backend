@@ -6,6 +6,7 @@ from ..views.report.achievements.achievements_roa_view import *
 # inventory
 from ..views.report.inventory.inventory_all_view import *
 from ..views.report.inventory.inventory_finish_view import *
+from ..views.report.inventory.inventory_all_status import *
 
 # Grade Control sample
 from ..views.report.grade_control.samples_gc_view import *
@@ -69,6 +70,9 @@ urlpatterns = [
     path('inventory/get-all',getInventoryAll, name='get-inventory-all'),
     path('inventory/get-hpal',getInventoryHpal, name='get-inventory-hpal'),
     path('inventory/get-rkef',getInventoryRkef, name='get-inventory-rkef'),
+
+    path('inventory/all-status-page',inventory_all_status_page, name='inventory-page-status-all'),
+    path('inventory/get-all-status',getInventoryAllStatus, name='get-inventory-all-status'),
 
     path('inventory/stockpile-page',inventory_stockpile_page, name='inventory-page-stockpile'),
     path('inventory/stockpile-hpal',inventory_stockpile_hpal, name='inventory-stockpile-hpal'),

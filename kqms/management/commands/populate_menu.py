@@ -678,11 +678,17 @@ class Command(BaseCommand):
             parent=inventory,
             order=4
         )
+        Menu.objects.create(
+            title="By Status Selling",
+            url="inventory-page-status-all",
+            parent=inventory,
+            order=5
+        )
         # Finish Selling
         finish_selling = Menu.objects.create(
             title="Finish Selling",
             parent=inventory,
-            order=5
+            order=6
         )
         Menu.objects.create(
             title="Data all",
