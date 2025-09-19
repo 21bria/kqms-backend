@@ -100,9 +100,37 @@ def import_selling(file_path, original_file_name):
             truck           = str(row.get('no_truck', '')).strip()
 
             # Buat kode batch
-            code_batch_in     = f"{type_selling}{id_material}{code_lot}{batch}"
-            code_batch_ex     = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
-            code_batch_pulp   = f"{type_selling}{code_lot}Split_CAR{batch}"
+            # code_batch_in     = f"{type_selling}{id_material}{code_lot}{batch}"
+            # code_batch_ex     = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
+            # code_batch_pulp   = f"{type_selling}{code_lot}Split_CAR{batch}"
+
+            # Mapping adjust_sale ke material & type_selling
+            if row['adjust_sale'] == 'RKEF':
+                material_name = 'SAP'
+                type_selling  = 'SAS'
+            elif row['adjust_sale'] == 'HPAL':
+                material_name = 'LIM'
+                type_selling  = 'LIS'
+            else:
+                material_name = row['material']   # default material asli
+                # type_selling tetap pakai dari row['sale_code']
+                type_selling = row['sale_code']
+
+            # Ambil id_material dari tabel Materials (aman tanpa error)
+            id_material = (
+                Material.objects.filter(nama_material=material_name)
+                .values_list('id', flat=True)
+                .first()
+            )
+
+            # Kalau tidak ada di tabel, kasih default 0 (atau None sesuai kebutuhan)
+            if not id_material:
+                id_material = 0   # <- default supaya tidak error
+
+            # Buat kode batch
+            code_batch_in   = f"{type_selling}{id_material}{code_lot}{batch}"
+            code_batch_ex   = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
+            code_batch_pulp = f"{type_selling}{code_lot}Split_CAR{batch}"
           
 
             list_new.append(SellingBarging(

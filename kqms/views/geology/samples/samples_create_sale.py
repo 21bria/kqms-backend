@@ -205,8 +205,10 @@ def create_sample_sale(request):
                 # Loop untuk menyimpan setiap data sample
                 for idx in range(len(tgl_sample)):
                     # Gabungkan nilai-nilai kolom menjadi kode batch
-                    combinedKodeBatch = type[idx] + id_material[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
-                    pulpKodeBatch     = type[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
+                    # combinedKodeBatch = type[idx] + id_material[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
+                    # pulpKodeBatch     = type[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
+                    combinedKodeBatch = type[idx] + id_material[idx]   + productCode[idx] + batch_code[idx]
+                    pulpKodeBatch     = type[idx] + productCode[idx] + batch_code[idx]
 
                     combinedKodeBatch = combinedKodeBatch.replace(" ", "")  # Menghapus spasi
                     pulpKodeBatch     = pulpKodeBatch.replace(" ", "")  # Menghapus spasi
