@@ -17,12 +17,15 @@ from ....models.ore_production_view import OreProductionsView
 from ....models.details_mral_view import DetailsMral
 from ....models.details_roa_view import DetailsRoa
 from ....models.block_model import Block
-from ....models.source_model import SourceMinesLoading,SourceMinesDumping,SourceMinesDome
+from ....models.source_model import SourceMinesLoading,SourceMinesDome
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.worksheet import Worksheet
-
+from django.db import connections
+from ....utils.db_utils import get_db_vendor
+# Memanggil fungsi utility
+db_vendor = get_db_vendor('kqms_db')
 
 def format_angka(jumlah):
     if jumlah >= 1_000_000_000:
@@ -264,46 +267,67 @@ def export_ore_data(request):
     workbook.save(response)
     return response
 
-@login_required()
+
+@login_required
 def total_ore(request):
-    # queryset = OreProductions.objects.exclude(id_stockpile=66)
-    queryset = OreProductionsView.objects.exclude(stockpile='Temp-Rompile_KM09')
+    start_date     = request.GET.get('startDate')
+    end_date       = request.GET.get('endDate')
+    materialFilter = request.GET.get('material_filter')
+    batchStatus    = request.GET.get('batch_status')
+    areaFilter     = request.GET.get('area_filter')
+    pointFilter    = request.GET.get('point_filter')
+    sourceFilter   = request.GET.get('source_filter')
 
-    start_date  = request.GET.get('startDate')
-    end_date    = request.GET.get('endDate')
+    if db_vendor == 'postgresql':
+        query = """
+            SELECT 
+                COUNT(*) AS qty,
+                COALESCE(SUM(tonnage), 0)::numeric AS tonnage
+            FROM ore_productions
+            WHERE 1=1
+        """
+    else:
+        raise ValueError("Unsupported database vendor.")
 
-    material_filter = request.GET.get('material_filter')
-    batch_status = request.GET.get('batch_status')
-    area_filter = request.GET.get('area_filter')
-    point_filter = request.GET.get('point_filter')
-    source_filter = request.GET.get('source_filter')
+    filters = []
+    params  = []
 
     if start_date and end_date:
-        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
-        end_date   = datetime.strptime(end_date, '%Y-%m-%d').date()
-        queryset   = queryset.filter(tgl_production__range=[start_date, end_date])
+        filters.append("tgl_production BETWEEN %s AND %s")
+        params.extend([start_date, end_date])
 
-    if material_filter:
-        queryset = queryset.filter(nama_material=material_filter)
-    if batch_status:
-        queryset = queryset.filter(batch_status=batch_status)
-    if area_filter:
-        queryset = queryset.filter(stockpile=area_filter)
-    if point_filter:
-        queryset = queryset.filter(pile_id=point_filter)
-    if source_filter:
-        queryset = queryset.filter(prospect_area=source_filter)    
+    if materialFilter:
+        filters.append("nama_material = %s")
+        params.append(materialFilter)
 
-    result = queryset.aggregate(
-        qty     = Count('*'),
-        tonnage = Sum('tonnage', default=0)
-    )
+    if batchStatus:
+        filters.append("batch_status = %s")
+        params.append(batchStatus)
 
+    if areaFilter:
+        filters.append("stockpile = %s")
+        params.append(areaFilter)
 
-    return JsonResponse({
-        'Qty': result['qty'],
-        'Tonnage': result['tonnage']
-    })
+    if pointFilter:
+        filters.append("pile_id = %s")
+        params.append(pointFilter)
+
+    if sourceFilter:
+        filters.append("prospect_area = %s")
+        params.append(sourceFilter)
+
+    if filters:
+        query += " AND " + " AND ".join(filters)
+
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(query, params)
+        row = cursor.fetchone()
+        result = {
+            "Qty": row[0],
+            "Tonnage": float(row[1]) if row[1] is not None else 0.0
+        }
+
+    return JsonResponse(result)
 
 @login_required()
 def total_details_mral(request):
