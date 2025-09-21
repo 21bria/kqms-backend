@@ -77,9 +77,9 @@
                                             <th class="bg-soft-secondary">Type</th>
                                             <th class="bg-soft-secondary">Code</th>
                                             <th class="bg-soft-secondary" width="5%">Surveyor</th>
-                                            <th class="bg-soft-secondary">Name</th>
-                                            <th class="bg-soft-secondary">Discharging</th>
-                                            <th class="bg-soft-secondary">So Number</th>
+                                            <!-- <th class="bg-soft-secondary">Name</th> -->
+                                            <th class="bg-soft-secondary">Barge</th>
+                                            <!-- <th class="bg-soft-secondary">So Number</th> -->
                                             <th class="bg-soft-secondary">Tonnage</th>
                                             <th class="bg-soft-secondary">Ni</th>
                                             <th class="bg-soft-secondary">Fe</th>
@@ -91,8 +91,9 @@
                                             <th class="bg-soft-secondary">Cr2O3</th>
                                             <th class="bg-soft-secondary">MnO</th>
                                             <th class="bg-soft-secondary">MC</th>
-                                            <th class="bg-soft-secondary">Start Date</th>
-                                            <th class="bg-soft-secondary">End Date</th>
+                                            <th class="bg-soft-secondary">SM</th>
+                                            <th class="bg-soft-secondary">Loading</th>
+                                            <th class="bg-soft-secondary">Complete</th>
                                             <th class="bg-soft-secondary" width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -102,7 +103,7 @@
                                     <tfoot class="th_hide" style='display:none;'>
                                         <tr>
                                             <th width="5%"></th>
-                                            <th></th>
+                                            <!-- <th></th> -->
                                             <th></th>
                                             <th></th>
                                             <th></th>
@@ -153,29 +154,13 @@
                 <form>
                     <div class="ti-modal-body !overflow-visible">
                         <div class="grid grid-cols-12 gap-4">
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Start date</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="startDate" name="startDate"
-                                        placeholder="Choose date" value="{{start_date}}">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">End date</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="endDate" name="endDate"
-                                        placeholder="Choose date" value="{{end_date}}">
-                                </div>
-                            </div>
                             <div class="xl:col-span-12 col-span-12">
-                                <label class="form-label">Materials</label>
-                                <select id="materialFilter" name="materialFilter"
+                                <label class="form-label">Type</label>
+                                <select id="typeFilter" name="typeFilter"
                                     class="ti-form-select rounded-sm !py-2 !px-3t">
                                     <option value="">Select</option>
+                                    <option value="LIS">LIS</option>
+                                    <option value="SAS">SAS</option>
                                 </select>
                             </div>
                         </div>
@@ -601,7 +586,6 @@
                 dataType: 'json',
                 "data": function (data) {
                     data.typeFilter = $('#typeFilter').val();
-                    data.codeFilter = $('#codeFilter').val();
                     return data;
                 },
             },
@@ -627,21 +611,20 @@
                     name: 'ore_sellings_surveyor.code_surveyor',
                     searchable: true
                 },
-
+                // {
+                //     data: 'name_surveyor',
+                //     name: 'ore_sellings_surveyor.name_surveyor'
+                // },
                 {
-                    data: 'name_surveyor',
-                    name: 'ore_sellings_surveyor.name_surveyor'
-                },
-                {
-                    data: 'discharging_port',
-                    name: 'stock_factories.factory_stock',
+                    data: 'barge_code',
+                    name: 'barge_code',
                     searchable: true
                 },
 
-                {
-                    data: 'so_number',
-                    name: 'so_number'
-                },
+                // {
+                //     data: 'so_number',
+                //     name: 'so_number'
+                // },
 
 
                 {
@@ -722,6 +705,17 @@
                     }
                 },
                 {
+                    data: 'sm',
+                    name: 'sm',
+                    render: function (data) {
+                        if (data === null || data === undefined || data === '' || isNaN(data)) {
+                            return '-'; // tampilkan strip kalau kosong/NaN
+                        }
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+
+                {
                     data: 'start_date',
                     name: 'start_date'
                 },
@@ -788,6 +782,11 @@
             // },
         });
         // $('.th_hide').show();
+
+        $('#typeFilter').select2({
+            width: '100%',
+            dropdownParent: $('#search-modal .ti-modal-body')
+        })
         /*--Filter Modal and Apply Filter---*/
         $('#applyFilterBtn').click(function () {
             table.ajax.reload();
@@ -797,13 +796,7 @@
         /*  Reset */
         $('#reload').on('click', function () {
             // Reset tanggal ke default, jika ada nilai default di context Python
-            $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
-            $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
-            $('#batch_status').val('').trigger('change');
-            $('#source_filter').val('').trigger('change');
-            $('#area_filter').val('').trigger('change');
-            $('#point_filter').val('').trigger('change');
-            $('#material_filter').val('').trigger('change');
+            $('#typeFilter').val('').trigger('change');
             table.ajax.reload(); //just reload table
         });
 
@@ -1321,40 +1314,7 @@
 
 </script>
 
-<script>
-    $(document).ready(function () {
 
-        $(".ti-form-select").select2({
-            width: '100%',
-            // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#search-modal, .ti-modal-body')
-        });
-
-        //opsi Select2
-        $.ajax({
-            url: "{% url 'material-dropdown' %}",
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                var options = '<option value="">-- Select --</option>'; // Tambah opsi default di awal
-
-                // Loop data material
-                $.each(data.materials, function (key, value) {
-                    options += '<option value="' + value.nama_material + '">' + value.nama_material + '</option>';
-                });
-
-                // Isi ke select + inisialisasi select2
-                $('#materialFilter').html(options).select2({
-                    width: '100%',
-                    // dropdownParent: $('#search-modal'),
-                    dropdownParent: $('#search-modal .ti-modal-body')
-                })
-
-            }
-        });
-
-    });
-</script>
 
 <!-- Exports to Excel -->
 <!-- <script>

@@ -45,19 +45,14 @@ class sellingDataOfficial(View):
             data = data.filter(
                 Q(product_code__icontains=search) |
                 Q(code_surveyor__icontains=search) |
-                Q(discharging_port__icontains=search) |
                 Q(type_selling__icontains=search)
             )
        
         # Filter berdasarkan parameter dari request
-        codeFilter  = request.POST.get('codeFilter')
-        typeFilter  = request.POST.get('typeFilter')
+        typeFilter = request.POST.get('typeFilter')
 
         if typeFilter:
             data = data.filter(type_selling=typeFilter)
-
-        if codeFilter:
-            data = data.filter(product_code=codeFilter)
 
         # Atur sorting
         if order_dir == 'desc':
@@ -91,7 +86,7 @@ class sellingDataOfficial(View):
                 "type_selling"      : item.type_selling,
                 "code_surveyor"     : item.code_surveyor,
                 "name_surveyor"     : item.name_surveyor,
-                "discharging_port"  : item.discharging_port,
+                "barge_code"        : item.barge_code,
                 "so_number"         : item.so_number,
                 "product_code"      : item.product_code,
                 "tonnage"           : item.tonnage,
@@ -105,6 +100,7 @@ class sellingDataOfficial(View):
                 "sio2"              : item.sio2,
                 "mno"               : item.mno,
                 "mc"                : item.mc,
+                "sm"                : item.sm,
                 "start_date"        : item.start_date,
                 "end_date"          : item.end_date
                 # "created_at"  : item.created_at.strftime('%Y-%m-%d %H:%M:%S'), 
