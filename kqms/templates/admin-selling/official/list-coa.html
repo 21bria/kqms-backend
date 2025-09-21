@@ -112,8 +112,8 @@
                                             <select name="materialFilter" class="ti-form-select rounded-sm !py-2 !px-3t"
                                                 id="materialFilter">
                                                 <option value="">-- Type -- </option>
-                                                <option value="HOS">HPAL</option>
-                                                <option value="ROS">RKEF</option>
+                                                <option value="LIS">LIM</option>
+                                                <option value="SAS">SAP</option>
                                             </select>
                                         </div>
                                         <div class="mb-0" id="form-tanggal">
@@ -159,36 +159,25 @@
                             </div>
 
                             <div class="mb-3">
-
-                                <!-- <button id="search" type="button"
-                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button> -->
                                 <a id="search" href="#" class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Apply
                                     Filter</a>
                             </div>
                             <div class="overflow-auto">
                                 <div class="table-responsive">
-
                                     <table id="list-table"
                                         class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
                                         <thead>
                                             <tr>
-                                                <th colspan="2" class="center-align">Code</th>
+                                                <th colspan="3" class="center-align">Code</th>
                                                 <th colspan="5" class="center-align">Internal</th>
-                                                <th colspan="5" class="center-align">Pulp (Surveyor)</th>
                                                 <th colspan="5" class="center-align">COA</th>
-                                                <!-- <th colspan="2" class="center-align">Grade Control</th>
-                                                <th colspan="2" class="center-align">Mining</th>
-                                                <th colspan="2" class="center-align">Difference</th> -->
+                                                <th colspan="5" class="center-align">Difference</th>
                                             </tr>
                                             <tr>
                                                 <th>No</th>
                                                 <th>Product</th>
+                                                <th>Barge</th>
                                                 <th>Internal (ton)</th>
-                                                <th>Ni</th>
-                                                <th>Fe</th>
-                                                <th>MgO</th>
-                                                <th>SiO2</th>
-                                                <th>Pulp (Ton)</th>
                                                 <th>Ni</th>
                                                 <th>Fe</th>
                                                 <th>MgO</th>
@@ -198,6 +187,10 @@
                                                 <th>Fe</th>
                                                 <th>MgO</th>
                                                 <th>SiO2</th>
+                                                <th>Ton(diff)</th>
+                                                <th>Ni(diff)</th>
+                                                <th>Fe(diff)</th>
+                                                <th>MgO(diff)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -205,10 +198,6 @@
                                                 <td>-</td>
                                                 <td>-</td>
                                                 <td>-</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
                                                 <td>-</td>
                                                 <td>0.00</td>
                                                 <td>0.00</td>
@@ -216,6 +205,10 @@
                                                 <td>0.00</td>
                                                 <td>-</td>
                                                 <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>0.00</td>
+                                                <td>-</td>
                                                 <td>0.00</td>
                                                 <td>0.00</td>
                                                 <td>0.00</td>
@@ -223,22 +216,21 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th colspan="2">Grand Total</th>
+                                                <th colspan="3">Grand Total</th>
                                                 <th id="total-ore">-</th>
                                                 <th id="sum-ni">-</th>
                                                 <th id="sum-fe">-</th>
                                                 <th id="sum-mgo">-</th>
                                                 <th id="sum-sio2">-</th>
-                                                <th id="pulp-total-ore">-</th>
-                                                <th id="pulp-sum-ni">-</th>
-                                                <th id="pulp-sum-fe">-</th>
-                                                <th id="pulp-sum-mgo">-</th>
-                                                <th id="pulp-sum-sio2">-</th>
                                                 <th id="coa-total-ore">-</th>
                                                 <th id="coa-sum-ni">-</th>
                                                 <th id="coa-sum-fe">-</th>
                                                 <th id="coa-sum-mgo">-</th>
                                                 <th id="coa-sum-sio2">-</th>
+                                                <th id="diff-total-ore">-</th>
+                                                <th id="diff-sum-ni">-</th>
+                                                <th id="diff-sum-fe">-</th>
+                                                <th id="diff-sum-mgo">-</th>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -402,7 +394,7 @@
                 return false;
             } else {
                 // $(this).attr("disabled", "disabled");
-                loadAWK();
+                loadCOA();
             }
 
         });
@@ -415,8 +407,7 @@
                 return false;
             } else {
                 // Panggil function Group,Awk,Scci
-                devSplitAwk();
-                // devOfficialAwk();
+                devSplitCOA();
             }
 
         });
@@ -424,23 +415,16 @@
 </script>
 
 <!-- For AWK -->
-<
-
 <script type="text/javascript">
-    function loadAWK() {
+    function loadCOA() {
         var rowCount = 0; // Jumlah baris
         var table = $("#list-table").find("tbody");
         var grandTotalOre = 0;
-        var grandTotalPulp = 0;
         var grandTotalCoa = 0;
         var internalNi = [];
         var internalFe = [];
         var internalMgo = [];
         var internalSiO2 = [];
-        var pulpNi = [];
-        var pulpFe = [];
-        var pulpMgo = [];
-        var pulpSiO2 = [];
         var coaNi = [];
         var coaFe = [];
         var coaMgo = [];
@@ -451,13 +435,13 @@
         // Fungsi untuk menambahkan data ke tabel
         function appendDataAWK(data) {
             grandTotalOre = 0;
-            grandTotalPulp = 0;
             grandTotalCoa = 0;
             // Loop melalui data dan tambahkan ke tabel
             $.each(data, function (index, row) {
                 var newRow = $("<tr>");
                 newRow.append("<td>" + (index + 1) + "</td>"); // Menambahkan nomor urut
-                newRow.append("<td>" + formatValue(row.code_lot) + "</td>");
+                newRow.append("<td>" + (row.code_lot) + "</td>");
+                newRow.append("<td>" + (row.barge_name) + "</td>");
                 newRow.append("<td>" + parseFloat(row.tonnage_split).toLocaleString('en-US', {
                     maximumFractionDigits: 2
                 }) + "</td>");
@@ -474,21 +458,6 @@
                     maximumFractionDigits: 2
                 }) + "</td>");
 
-                newRow.append("<td>" + parseFloat(row.tonnage_pulp).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
-                }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.ni_pulp).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
-                }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.fe_pulp).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
-                }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.mgo_pulp).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
-                }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.sio2_pulp).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
-                }) + "</td>");
 
                 newRow.append("<td>" + parseFloat(row.tonnage_official).toLocaleString('en-US', {
                     maximumFractionDigits: 2
@@ -500,15 +469,27 @@
                     maximumFractionDigits: 2
                 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.mgo_official).toLocaleString('en-US', {
-                    maximumFractionDigits: 2
+                    maximumFractionDigits: 3
                 }) + "</td>");
                 newRow.append("<td>" + parseFloat(row.sio2_official).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                // SELISIH PERSEN (split vs official)
+                newRow.append("<td>" + parseFloat(row.tonnage_diff).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.ni_diff).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.fe_diff).toLocaleString('en-US', {
+                    maximumFractionDigits: 2
+                }) + "</td>");
+                newRow.append("<td>" + parseFloat(row.mgo_diff).toLocaleString('en-US', {
                     maximumFractionDigits: 2
                 }) + "</td>");
 
 
                 grandTotalOre += parseFloat(row.tonnage_split);
-                grandTotalPulp += parseFloat(row.tonnage_pulp);
                 grandTotalCoa += parseFloat(row.tonnage_official);
 
                 /* Hitung SUM Product */
@@ -516,11 +497,6 @@
                 internalFe.push(row.tonnage_split * row.fe_split);
                 internalMgo.push(row.tonnage_split * row.mgo_split);
                 internalSiO2.push(row.tonnage_split * row.sio2_split);
-
-                pulpNi.push(row.tonnage_pulp * row.ni_pulp);
-                pulpFe.push(row.tonnage_pulp * row.fe_pulp);
-                pulpMgo.push(row.tonnage_pulp * row.mgo_pulp);
-                pulpSiO2.push(row.tonnage_pulp * row.sio2_pulp);
 
                 coaNi.push(row.tonnage_official * row.ni_official);
                 coaFe.push(row.tonnage_official * row.fe_official);
@@ -534,7 +510,6 @@
 
             // Set grand total di bawah footer tabel
             $("#total-ore").text(grandTotalOre.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            $("#pulp-total-ore").text(grandTotalPulp.toLocaleString('en-US', { maximumFractionDigits: 2 }));
             $("#coa-total-ore").text(grandTotalCoa.toLocaleString('en-US', { maximumFractionDigits: 2 }));
 
             // Proses SUM Product Grade
@@ -549,11 +524,6 @@
                 { id: "sum-fe", value: (sumProduct(internalFe) / grandTotalOre) || 0 },
                 { id: "sum-mgo", value: (sumProduct(internalMgo) / grandTotalOre) || 0 },
                 { id: "sum-sio2", value: (sumProduct(internalSiO2) / grandTotalOre) || 0 },
-
-                { id: "pulp-sum-ni", value: (sumProduct(pulpNi) / grandTotalPulp) || 0 },
-                { id: "pulp-sum-fe", value: (sumProduct(pulpFe) / grandTotalPulp) || 0 },
-                { id: "pulp-sum-mgo", value: (sumProduct(pulpMgo) / grandTotalPulp) || 0 },
-                { id: "pulp-sum-sio2", value: (sumProduct(pulpSiO2) / grandTotalPulp) || 0 },
 
                 { id: "coa-sum-ni", value: (sumProduct(coaNi) / grandTotalCoa) || 0 },
                 { id: "coa-sum-fe", value: (sumProduct(coaFe) / grandTotalCoa) || 0 },
@@ -595,9 +565,9 @@
                 console.log("Gagal mengambil data dari server.");
             },
         });
-        devSplitAwk();
+        devSplitCOA();
     }
-    function devSplitAwk() {
+    function devSplitCOA() {
         var awkiNi = 0
         var groupNi = 0
         var DevAwkNi = 0

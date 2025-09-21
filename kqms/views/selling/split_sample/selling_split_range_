@@ -314,78 +314,99 @@ def splitOfficial(request):
 
     sql_query = """
         SELECT 
-            TRIM(t1.code_lot) AS code_lot,
-            TRIM(t1.barge_name) AS barge_name,
-            COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
-            COALESCE(SUM(t1.tonnage * t1.ni) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS ni_split,
-            COALESCE(SUM(t1.tonnage * t1.co) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.co IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS co_split,
-            COALESCE(SUM(t1.tonnage * t1.fe) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS fe_split,
-            COALESCE(SUM(t1.tonnage * t1.al2o3) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.al2o3 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS al2o3_split,
-            COALESCE(SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS mgo_split,
-            COALESCE(SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sio2_split,
-            COALESCE(t2.tonnage_official, 0) AS tonnage_official,
-            COALESCE(t2.ni, 0) AS ni_official,
-            COALESCE(t2.co, 0) AS co_official, 
-            COALESCE(t2.fe, 0) AS fe_official, 
-            COALESCE(t2.al2o3, 0) AS al2o3_official,
-            COALESCE(t2.mgo, 0) AS mgo_official,
-            COALESCE(t2.sio2, 0) AS sio2_official,
-            -- SELISIH TONNAGE (split vs official)
-            ABS(COALESCE(SUM(t1.tonnage) - t2.tonnage_official, 0)) AS tonnage_diff,
-            -- SELISIH PERSEN (split vs official)
-            COALESCE((
-                (SUM(t1.tonnage * t1.ni)  / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni  IS NOT NULL THEN t1.tonnage ELSE 0 END), 0))
-                - t2.ni)  / NULLIF(t2.ni, 0) * 100, 0) AS ni_diff,
-
-            COALESCE((
-                (SUM(t1.tonnage * t1.fe)  / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe  IS NOT NULL THEN t1.tonnage ELSE 0 END), 0))
-                - t2.fe)  / NULLIF(t2.fe, 0) * 100, 0) AS fe_diff,
-
-            COALESCE((
-                (SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END), 0))
-                - t2.mgo) / NULLIF(t2.mgo, 0) * 100, 0) AS mgo_diff
-        FROM details_selling_barge_split AS t1
-        LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(ni), 0) AS ni,
-                COALESCE(SUM(co), 0) AS co,
-                COALESCE(SUM(fe), 0) AS fe,
-                COALESCE(SUM(al2o3), 0) AS al2o3,
-                COALESCE(SUM(mgo), 0) AS mgo,
-                COALESCE(SUM(sio2), 0) AS sio2,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
-        WHERE 1=1
+                TRIM(t1.code_lot)code_lot,
+                COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
+                COALESCE(SUM(t1.tonnage * t1.ni) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS ni_split,
+                COALESCE(SUM(t1.tonnage * t1.co) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.co IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS co_split,
+                COALESCE(SUM(t1.tonnage * t1.fe) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS fe_split,
+                COALESCE(SUM(t1.tonnage * t1.al2o3) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.al2o3 IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS al2o3_split,
+                COALESCE(SUM(t1.tonnage * t1.mgo) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS mgo_split,
+                COALESCE(SUM(t1.tonnage * t1.sio2) / SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END), 0) AS sio2_split,
+                COALESCE(t3.tonnage_pulp, 0) AS tonnage_pulp,
+                COALESCE(t3.ni, 0) AS ni_pulp,
+                COALESCE(t3.co, 0) AS co_pulp,
+                COALESCE(t3.fe, 0) AS fe_pulp,
+                COALESCE(t3.al2o3, 0) AS al2o3_pulp,
+                COALESCE(t3.mgo, 0) AS mgo_pulp,
+                COALESCE(t3.sio2, 0) AS sio2_pulp,
+                COALESCE(t2.tonnage_official, 0) AS tonnage_official,
+                COALESCE(t2.ni, 0) AS ni_official,
+                COALESCE(t2.co, 0) AS co_official, 
+                COALESCE(t2.fe, 0) AS fe_official, 
+                COALESCE(t2.al2o3, 0) AS al2o3_official,
+                COALESCE(t2.mgo, 0) AS mgo_official,
+                COALESCE(t2.sio2, 0) AS sio2_official
+            FROM details_selling_barge_split AS t1
+            LEFT JOIN (
+                SELECT 
+                    product_code,
+                    COALESCE(SUM(tonnage), 0) AS tonnage_official,
+                    COALESCE(SUM(ni), 0) AS ni,
+                    COALESCE(SUM(co), 0) AS co,
+                    COALESCE(SUM(fe), 0) AS fe,
+                    COALESCE(SUM(al2o3), 0) AS al2o3,
+                    COALESCE(SUM(mgo), 0) AS mgo,
+                    COALESCE(SUM(sio2), 0) AS sio2,
+                    type_selling
+                FROM sellings_official_view
+                GROUP BY product_code, type_selling
+            ) AS t2 ON t1.code_lot = t2.product_code
+            LEFT JOIN (
+                SELECT 
+                    code_lot,
+                    COALESCE(SUM(tonnage), 0) AS tonnage_pulp,
+                    COALESCE(SUM(tonnage * ni) / SUM(CASE WHEN sample_number IS NOT NULL AND ni IS NOT NULL THEN tonnage ELSE 0 END), 0) AS ni,
+                    COALESCE(SUM(tonnage * co) / SUM(CASE WHEN sample_number IS NOT NULL AND co IS NOT NULL THEN tonnage ELSE 0 END), 0) AS co,
+                    COALESCE(SUM(tonnage * fe) / SUM(CASE WHEN sample_number IS NOT NULL AND fe IS NOT NULL THEN tonnage ELSE 0 END), 0) AS fe,
+                    COALESCE(SUM(tonnage * al2o3) / SUM(CASE WHEN sample_number IS NOT NULL AND al2o3 IS NOT NULL THEN tonnage ELSE 0 END), 0) AS al2o3,
+                    COALESCE(SUM(tonnage * mgo) / SUM(CASE WHEN sample_number IS NOT NULL AND mgo IS NOT NULL THEN tonnage ELSE 0 END), 0) AS mgo,
+                    COALESCE(SUM(tonnage * sio2) / SUM(CASE WHEN sample_number IS NOT NULL AND sio2 IS NOT NULL THEN tonnage ELSE 0 END), 0) AS sio2
+                FROM details_selling_barge_split_pulp
+                WHERE 1=1
     """
+
+    # **Filter pada subquery t3**
+    filters = []
+    if startDate and endDate:
+        filters.append(f"date_hauling BETWEEN '{startDate}' AND '{endDate}'")
+    if bulanFilter and tahunFilter:
+        filters.append(f"EXTRACT(MONTH FROM date_hauling) = {bulanFilter} AND EXTRACT(YEAR FROM date_hauling) = {tahunFilter}")
+    elif tahunFilter:
+        filters.append(f"EXTRACT(YEAR FROM date_hauling) = {tahunFilter}")
+
+    if filters:
+        sql_query += " AND " + " AND ".join(filters)
+
+    sql_query += " GROUP BY code_lot ) AS t3 ON t1.code_lot = t3.code_lot WHERE 1=1"
 
     # **Filter pada query utama t1**
     filters = []
     if startDate and endDate:
-        filters.append(f"t1.date_barge_out BETWEEN '{startDate}' AND '{endDate}'")
+        filters.append(f"t1.date_hauling BETWEEN '{startDate}' AND '{endDate}'")
     if typeFilter:
         filters.append(f"t2.type_selling = '{typeFilter}'")
     if bulanFilter and tahunFilter:
-        filters.append(f"EXTRACT(MONTH FROM t1.date_barge_out) = {bulanFilter} AND EXTRACT(YEAR FROM t1.date_barge_out) = {tahunFilter}")
+        filters.append(f"EXTRACT(MONTH FROM t1.date_hauling) = {bulanFilter} AND EXTRACT(YEAR FROM t1.date_hauling) = {tahunFilter}")
     elif tahunFilter:
-        filters.append(f"EXTRACT(YEAR FROM t1.date_barge_out) = {tahunFilter}")
+        filters.append(f"EXTRACT(YEAR FROM t1.date_hauling) = {tahunFilter}")
 
     if filters:
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_name,
-                 t2.tonnage_official, t2.ni, t2.co, t2.fe, t2.al2o3, t2.mgo, t2.sio2
+        GROUP BY t1.code_lot, t3.tonnage_pulp, t2.tonnage_official,
+         t3.ni, t2.ni,t3.co, t2.co,t3.fe, t2.fe,t3.al2o3, t2.al2o3,t3.mgo, t2.mgo,t3.sio2, t2.sio2
         ORDER BY t1.code_lot ASC
     """
 
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(sql_query)
         columns = [col[0] for col in cursor.description]
-        sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        sql_data = [
+            dict(zip(columns, row))
+            for row in cursor.fetchall()
+        ]
         
+    # print(sql_data)  # Cetak hasil query
+    
     return JsonResponse({'data': sql_data})
-
