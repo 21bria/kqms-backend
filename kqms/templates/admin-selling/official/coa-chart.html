@@ -311,18 +311,36 @@
         series: [],
         xaxis: { categories: [] },
         colors: ['#1f77b4', '#ff7f0e', '#ff0000ed'],
-        dataLabels: { enabled: true },
+        // dataLabels: { enabled: true },
+        dataLabels: {
+            enabled: true,
+            background: {
+                enabled: true,
+                // foreColor: '#000', // warna teks
+                borderRadius: 4,    // sudut melengkung
+                padding: 4,
+                opacity: 0.5,     // ✅ transparansi biar smooth
+                dropShadow: {
+                    enabled: false            // matikan shadow default
+                }
+            },
+            style: {
+                fontSize: '10px',
+                fontWeight: 'bold'
+            },
+            formatter: function (val, opts) {
+                return parseFloat(val).toFixed(2); // 2 desimal
+            }
+        },
+
         stroke: { width: [0, 0, 3] },
         plotOptions: {
-            // bar: {
-            //  columnWidth: "40%" 
-            // } 
             bar: {
                 columnWidth: "40%",
                 horizontal: false,
                 dataLabels: {
                     position: 'top',
-                    
+
                 }
             }
         },
