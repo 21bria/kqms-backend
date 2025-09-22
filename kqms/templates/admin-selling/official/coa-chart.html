@@ -1,0 +1,394 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Selling Official COA</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Charts
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Selling
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div id="add-box" class="col-span-12 box-body  relative z-40  gap-4 w-full md:w-auto">
+                <div class="flex justify-start mb-2">
+                    <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                        <div class="grid grid-cols-12 gap-4">
+
+                            <!-- Select -->
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-pilih">
+                                <label class="form-label">Select</label>
+                                <select name="filter" class="ti-form-select rounded-sm !py-2 !px-3t" id="filter">
+                                    <option value="">-- Select -- </option>
+                                    <option value="1">By Range</option>
+                                    <option value="2">By Month</option>
+                                    <option value="3">By Year</option>
+                                </select>
+                            </div>
+
+                            <!-- Type -->
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-type">
+                                <label class="form-label">Type</label>
+                                <select name="materialFilter" class="ti-form-select rounded-sm !py-2 !px-3t"
+                                    id="materialFilter">
+                                    <option value="">-- Type -- </option>
+                                    <option value="HPAL">LIM</option>
+                                    <option value="RKEF">SAP</option>
+                                </select>
+                            </div>
+                            <!-- Start Date -->
+                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-tanggal">
+                                <label class="form-label">Start Date</label>
+                                <input class="form-control w-full !rounded-md" type="date" id="startDate"
+                                    name="startDate">
+                            </div>
+                            <!-- End Date -->
+                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-tanggal-akhir">
+                                <label class="form-label">End Date</label>
+                                <input class="form-control w-full !rounded-md" type="date" id="endDate" name="endDate">
+                            </div>
+
+                            <!-- Bulan -->
+                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-bulan">
+                                <label class="form-label">Bulan</label>
+                                <select id="bulanFilter" name="bulanFilter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3tt">
+                                    <option value="">-- Select --</option>
+                                    <option value="1">Januari</option>
+                                    <option value="2">Februari</option>
+                                    <option value="3">Maret</option>
+                                    <option value="4">April</option>
+                                    <option value="5">Mei</option>
+                                    <option value="6">Juni</option>
+                                    <option value="7">Juli</option>
+                                    <option value="8">Agustus</option>
+                                    <option value="9">September</option>
+                                    <option value="10">Oktober</option>
+                                    <option value="11">November</option>
+                                    <option value="12">Desember</option>
+                                </select>
+                            </div>
+
+                            <!-- Tahun -->
+                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-tahun">
+                                <label class="form-label text-blue">Tahun</label>
+                                <select id="tahunFilter" name="tahunFilter"
+                                    class="ti-form-select rounded-sm !py-2 !px-3tt">
+                                    <option value="">Select Year</option>
+                                </select>
+                            </div>
+
+                            <!-- Tombol Apply -->
+                            <div class="mb-0 mt-0 col-span-12 xl:col-span-2 flex items-end" id="form-apply">
+                                <a id="search" href="#"
+                                    class="ti-btn ti-btn-primary-full !py-2 !px-3 ti-btn-wave w-full">
+                                    Apply Filter
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6 mt-4">
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_ni" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_fe" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_mgo" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-6 col-span-12">
+                    <div class="box custom-box">
+                        <div id="chart_by_sm" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#btn_filter,#form-tanggal,#form-tanggal-akhir, #form-bulan, #form-tahun')
+            .hide(); // Sebagai default kita sembunyikan form filter tanggal, bulan & tahunnya
+        $('#filter').change(function () { // Ketika user memilih filter
+            if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
+                $('#form-bulan, #form-tahun').hide(); // Sembunyikan form bulan dan tahun
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir').show(); // Tampilkan form tanggal
+            } else if ($(this).val() == '2') { // Jika filter nya 2 (per bulan)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir')
+                    .hide(); // Sembunyikan form tanggal
+                $('#form-bulan, #form-tahun')
+                    .show(); // Tampilkan form bulan dan tahun
+            } else if ($(this).val() == '3') {
+                // Jika filternya 3 (Year)
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir,#form-bulan')
+                    .hide(); // Sembunyikan form tanggal dan bulan
+                $('#form-tahun').show(); // Tampilkan form tahun
+
+            } else {
+                $('#startDate').val('');
+                $('#endDate').val('');
+                $('#tahunFilter').val('').trigger('change');
+                $('#bulanFilter').val('').trigger('change');
+                $('#form-tanggal,#form-tanggal-akhir,#form-bulan')
+                    .hide(); // Sembunyikan form
+            }
+        })
+    });
+
+    $.ajax({
+        url: "{% url 'get-sale-product' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.list, function (key, value) {
+                options += '<option value="' + value.code_lot + '">' + value.code_lot + '</option>';
+            });
+            $('#codeFilter').append(options).select2({
+                width: '100%',
+                 dropdownParent: $(document.body)
+            })
+        }
+    });
+    $.ajax({
+        url: "{% url 'get-year-sale' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.tahun, function (key, value) {
+                options += '<option value="' + value.tahun + '">' + value.tahun + '</option>';
+            });
+            $('#tahunFilter').append(options).select2({
+                width: '100%',
+                 dropdownParent: $(document.body)
+            })
+        }
+    });
+    $("#filter").select2({
+        width: '100%',
+         dropdownParent: $(document.body)
+    });
+    $('#typeFilter').select2({
+        width: '100%',
+         dropdownParent: $(document.body)
+    })
+    $('#materialFilter').select2({
+        width: '100%',
+         dropdownParent: $(document.body)
+    })
+    $('#bulanFilter').select2({
+        width: '100%',
+         dropdownParent: $(document.body)
+    })
+
+</script>
+
+<script>
+    const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+    // 🔁 Fungsi umum AJAX Chart
+    function loadChart(url, targetId, filters = {}) {
+        filters.theme = getTheme();
+        console.log(`Loading chart ${targetId} with theme: ${filters.theme}`);
+        $.ajax({
+            type: 'GET',
+            url,
+            data: filters,
+            dataType: 'json',
+            success: data => {
+                if (data.plot_div) $(targetId).html(data.plot_div);
+            },
+            error: (xhr, status, error) => {
+                console.error(`AJAX Error [${url}]`, status, error);
+            }
+        });
+    }
+
+    // 🎯 Endpoint chart
+    const chartEndpoints = {
+        '#chart_by_ni': "{% url 'split-ni-coa-chart' %}",
+        '#chart_by_fe': "{% url 'split-fe-coa-chart' %}",
+        '#chart_by_mgo': "{% url 'split-mgo-coa-chart' %}",
+        '#chart_by_sm': "{% url 'split-sm-coa-chart' %}",
+    };
+    function refreshAllCharts(filters = {}) {
+        for (const [target, url] of Object.entries(chartEndpoints)) {
+            loadChart(url, target, filters);
+        }
+    }
+
+
+    $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+        $(".form-select").select2({ width: '100%' });
+
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        // 📈 Load awal semua chart
+        refreshAllCharts();
+
+        // Saat klik search
+        $('#search').click(function () {
+            const filter = $('#filter').val();
+            const materialFilter = $('#materialFilter').val();
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+            const bulanFilter = $('#bulanFilter').val();
+            const tahunFilter = $('#tahunFilter').val();
+
+            // ✅ Validasi input
+            if (filter == '') {
+                $('#filter').select2('open'); return false;
+            } else if (materialFilter == '') {
+                $('#materialFilter').select2('open'); return false;
+            } else if (filter == '1' && startDate == '') {
+                $('#startDate').focus(); return false;
+            } else if (filter == '1' && endDate == '') {
+                $('#endDate').focus(); return false;
+            } else if (filter == '2' && bulanFilter == '') {
+                $('#bulanFilter').select2('open'); return false;
+            } else if (filter == '2' && bulanFilter !== '' && tahunFilter == '') {
+                $('#tahunFilter').select2('open'); return false;
+            } else if (filter == '3' && tahunFilter == '') {
+                $('#tahunFilter').select2('open'); return false;
+            }
+
+            // ✅ Kalau lolos validasi, panggil chart
+            const filters = {
+                filter, materialFilter, startDate, endDate,
+                bulanFilter, tahunFilter
+            };
+            refreshAllCharts(filters);   // atau loadCOA() sesuai functionmu
+        });
+
+
+
+        // 🎨 Theme change observer
+        const observer = new MutationObserver(() => {
+            refreshAllCharts();
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    });
+</script>
+
+
+
+
+</body>
+
+</html>
+
+<style>
+  /* pastikan dropdown select2 selalu di atas datepicker / modal */
+.select2-container {
+  z-index: 1050 !important;
+}
+.select2-dropdown {
+  z-index: 1060 !important;
+  position: absolute !important;
+}
+
+/* kalau parent punya overflow hidden, buka */
+#add-box {
+  overflow: visible !important;
+}
+
+</style>

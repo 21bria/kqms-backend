@@ -19,6 +19,7 @@ class SellingOfficial(models.Model):
     sio2	         = models.FloatField(default=None, null=True, blank=True)
     mno	             = models.FloatField(default=None, null=True, blank=True)
     mc	             = models.FloatField(default=None, null=True, blank=True)
+    # sm	             = models.FloatField(default=None, null=True, blank=True)
     start_date       = models.DateField(default=None, null=True, blank=True)
     end_date         = models.DateField(default=None, null=True, blank=True)
     check_duplicated = models.CharField(max_length=150, default=None, null=True, blank=True)

@@ -4,6 +4,7 @@ from ..views.selling.selling_details import *
 from ..views.selling.selling_plan import *
 from ..views.selling.selling_official import *
 from ..views.selling.split_sample.selling_split_range import *
+from ..views.selling.split_sample.selling_split_chart import *
 from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
@@ -48,6 +49,13 @@ urlpatterns = [
     # Official COA
     path('split/coa/page/', splitOfficialPage, name='sale-split-coa-page'),
     path('split/coa/list/', splitOfficial, name='sale-split-coa-list'),
+
+    # Official COA Plotly Chart
+    path('split/coa/chart/page/', splitOfficialChartPage, name='sale-split-coa-chart-page'),
+    path('split/ni/chart/', niChartPlot, name='split-ni-coa-chart'),
+    path('split/fe/chart/', feChartPlot, name='split-fe-coa-chart'),
+    path('split/mgo/chart/', mgoChartPlot, name='split-mgo-coa-chart'),
+    path('split/sm/chart/', smChartPlot, name='split-sm-coa-chart'),
 
     # Blending
     path('blending/data/source/', get_data_source, name='blending-get-source'),

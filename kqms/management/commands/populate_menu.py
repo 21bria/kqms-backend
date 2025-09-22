@@ -447,18 +447,18 @@ class Command(BaseCommand):
         )
         Menu.objects.create(
             title="Grade by code",
-            url="#",
+            url="sale-split-coa-chart-page",
             parent=analytics,
             order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
-        Menu.objects.create(
-            title="Daily mral",
-            url="#",
-            parent=analytics,
-            order=3,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
+        # Menu.objects.create(
+        #     title="Daily mral",
+        #     url="#",
+        #     parent=analytics,
+        #     order=3,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
 
          # Forms
         forms = Menu.objects.create(
