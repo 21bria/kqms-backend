@@ -11,6 +11,8 @@ python manage.py migrate --database=kqms_db
 
 python manage.py migrate --database=kqms_db --fake-initial
 
+!! Menu :
+python manage.py populate_menu
 
 ======git========
 # make changes to a repo and git add

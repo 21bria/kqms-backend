@@ -135,29 +135,40 @@
             </div>
 
             <!-- Start::row-1 -->
-            <div class="grid grid-cols-12 gap-6 mt-4">
-                <div class="xl:col-span-6 col-span-12">
-                    <div class="box custom-box">
-                        <div id="chart_by_ni" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+            <div class="grid grid-cols-12 gap-4 mt-4">
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_ni" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xl:col-span-9 col-span-12">
+                        <div class="box">
+                            <div class="box-body !p-2">
+                                <div id="chart_by_fe"
+                                    class="rounded-lg relative bg-white dark:bg-black overflow-hidden"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="xl:col-span-6 col-span-12">
-                    <div class="box custom-box">
-                        <div id="chart_by_fe" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_mgo" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
                         </div>
+
                     </div>
                 </div>
-                <div class="xl:col-span-6 col-span-12">
-                    <div class="box custom-box">
-                        <div id="chart_by_mgo" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-3">
+                            <div id="chart_by_sm" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="xl:col-span-6 col-span-12">
-                    <div class="box custom-box">
-                        <div id="chart_by_sm" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -237,7 +248,7 @@
             });
             $('#codeFilter').append(options).select2({
                 width: '100%',
-                 dropdownParent: $(document.body)
+                dropdownParent: $(document.body)
             })
         }
     });
@@ -252,60 +263,162 @@
             });
             $('#tahunFilter').append(options).select2({
                 width: '100%',
-                 dropdownParent: $(document.body)
+                dropdownParent: $(document.body)
             })
         }
     });
     $("#filter").select2({
         width: '100%',
-         dropdownParent: $(document.body)
+        dropdownParent: $(document.body)
     });
     $('#typeFilter').select2({
         width: '100%',
-         dropdownParent: $(document.body)
+        dropdownParent: $(document.body)
     })
     $('#materialFilter').select2({
         width: '100%',
-         dropdownParent: $(document.body)
+        dropdownParent: $(document.body)
     })
     $('#bulanFilter').select2({
         width: '100%',
-         dropdownParent: $(document.body)
+        dropdownParent: $(document.body)
     })
 
 </script>
 
 <script>
-    const getTheme = () => document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    // === INIT CHARTS KOSONG ===
+    const baseOptions = {
+        chart: {
+            height: 350,
+            type: "line", stacked: false,
+            toolbar: {
+                show: true, // aktifkan toolbar
+                offsetX: 0,    // geser horizontal
+                offsetY: 20,   // ✅ geser toolbar turun 20px
+                tools: {
+                    download: true,    // ✅ tombol download PNG/SVG
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+            }
+        },
 
-    // 🔁 Fungsi umum AJAX Chart
-    function loadChart(url, targetId, filters = {}) {
-        filters.theme = getTheme();
-        console.log(`Loading chart ${targetId} with theme: ${filters.theme}`);
+        series: [],
+        xaxis: { categories: [] },
+        colors: ['#1f77b4', '#ff7f0e', '#ff0000ed'],
+        dataLabels: { enabled: true },
+        stroke: { width: [0, 0, 3] },
+        plotOptions: {
+            // bar: {
+            //  columnWidth: "40%" 
+            // } 
+            bar: {
+                columnWidth: "40%",
+                horizontal: false,
+                dataLabels: {
+                    position: 'top',
+                    
+                }
+            }
+        },
+        yaxis: [
+            { title: { text: "Value (%)" } },
+            { opposite: true, title: { text: "Diff (%)" } }
+        ],
+        tooltip: {
+            shared: false,
+            intersect: true,
+        },
+        title: {
+            align: "center",
+            offsetY: 25, // ✅ geser title turun 25px
+            style: { fontSize: "16px", fontWeight: "bold" }
+        },
+        grid: {
+            padding: {
+                top: 15,
+                // right: 30,
+                bottom: 10,
+                left: 15
+            }
+        }
+    };
+
+    const charts = {
+        ni: new ApexCharts(document.querySelector("#chart_by_ni"), { ...baseOptions, title: { text: "Ni Internal vs Official", offsetY: 15 } }),
+        fe: new ApexCharts(document.querySelector("#chart_by_fe"), { ...baseOptions, title: { text: "Fe Internal vs Official", offsetY: 15 } }),
+        mgo: new ApexCharts(document.querySelector("#chart_by_mgo"), { ...baseOptions, title: { text: "MgO Internal vs Official", offsetY: 15 } }),
+        sm: new ApexCharts(document.querySelector("#chart_by_sm"), { ...baseOptions, title: { text: "SM Internal vs Official", offsetY: 15 } }),
+    };
+
+    Object.values(charts).forEach(chart => chart.render());
+
+    // === ENDPOINTS ===
+    const chartEndpoints = {
+        ni: "{% url 'split-ni-coa-chart' %}",
+        fe: "{% url 'split-fe-coa-chart' %}",
+        mgo: "{% url 'split-mgo-coa-chart' %}",
+        sm: "{% url 'split-sm-coa-chart' %}"
+    };
+
+    // === FUNGSI UPDATE CHART ===
+    function loadChart(key, url, filters = {}) {
         $.ajax({
-            type: 'GET',
+            type: "GET",
             url,
             data: filters,
-            dataType: 'json',
-            success: data => {
-                if (data.plot_div) $(targetId).html(data.plot_div);
+            dataType: "json",
+            success: function (data) {
+                if (!data.length) {
+                    charts[key].updateOptions({
+                        series: [],
+                        xaxis: { categories: [] },
+                        title: { text: `${key.toUpperCase()} - No Data` }
+                    });
+                    return;
+                }
+
+                const categories = data.map(d => d.code_lot);
+                const internal = data.map(d => parseFloat(d[`${key}_split`]).toFixed(2));
+                const official = data.map(d => parseFloat(d[`${key}_official`]).toFixed(2));
+                const diff = data.map(d => ((d[`${key}_split`] - d[`${key}_official`]) / (d[`${key}_official`] || 1) * 100).toFixed(2));
+
+                charts[key].updateOptions({
+                    xaxis: { categories: categories },
+                    tooltip: {
+                        shared: false,
+                        custom: ({ series, seriesIndex, dataPointIndex }) => {
+                            const d = data[dataPointIndex];
+                            return `
+                                <b>Barge:</b> ${d.barge_code}<br>
+                                <b>Tonnage:</b> ${d.tonnage_split.toLocaleString()}<br>
+                                <b>${key.toUpperCase()}:</b> ${series[seriesIndex][dataPointIndex]}
+                            `;
+                        }
+                    }
+                });
+
+                charts[key].updateSeries([
+                    { name: "Internal", type: "column", data: internal },
+                    { name: "Official", type: "column", data: official },
+                    { name: "Diff %", type: "line", data: diff }
+                ]);
             },
-            error: (xhr, status, error) => {
-                console.error(`AJAX Error [${url}]`, status, error);
+            error: function (xhr, status, error) {
+                console.error(`Error load ${key}`, error);
             }
         });
     }
 
-    // 🎯 Endpoint chart
-    const chartEndpoints = {
-        '#chart_by_ni': "{% url 'split-ni-coa-chart' %}",
-        '#chart_by_fe': "{% url 'split-fe-coa-chart' %}",
-        '#chart_by_mgo': "{% url 'split-mgo-coa-chart' %}",
-        '#chart_by_sm': "{% url 'split-sm-coa-chart' %}",
-    };
+    // === LOOP SEMUA CHART SEKALIGUS ===
     function refreshAllCharts(filters = {}) {
-        for (const [target, url] of Object.entries(chartEndpoints)) {
-            loadChart(url, target, filters);
+        for (const [key, url] of Object.entries(chartEndpoints)) {
+            loadChart(key, url, filters);
         }
     }
 
@@ -358,14 +471,7 @@
 
 
 
-        // 🎨 Theme change observer
-        const observer = new MutationObserver(() => {
-            refreshAllCharts();
-        });
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
+
     });
 </script>
 
@@ -377,18 +483,26 @@
 </html>
 
 <style>
-  /* pastikan dropdown select2 selalu di atas datepicker / modal */
-.select2-container {
-  z-index: 1050 !important;
-}
-.select2-dropdown {
-  z-index: 1060 !important;
-  position: absolute !important;
-}
+    /* pastikan dropdown select2 selalu di atas datepicker / modal */
+    .select2-container {
+        z-index: 1050 !important;
+    }
 
-/* kalau parent punya overflow hidden, buka */
-#add-box {
-  overflow: visible !important;
-}
+    .select2-dropdown {
+        z-index: 1060 !important;
+        position: absolute !important;
+    }
 
+    /* kalau parent punya overflow hidden, buka */
+    #add-box {
+        overflow: visible !important;
+    }
+
+    .apexcharts-tooltip {
+        margin-top: 10px !important;
+        margin-left: 15px !important;
+        padding: 8px 14px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+    }
 </style>
