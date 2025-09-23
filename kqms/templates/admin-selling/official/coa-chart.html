@@ -80,13 +80,13 @@
                                 </select>
                             </div>
                             <!-- Start Date -->
-                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-tanggal">
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-tanggal">
                                 <label class="form-label">Start Date</label>
                                 <input class="form-control w-full !rounded-md" type="date" id="startDate"
                                     name="startDate">
                             </div>
                             <!-- End Date -->
-                            <div class="mb-0 col-span-12 xl:col-span-2" id="form-tanggal-akhir">
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-tanggal-akhir">
                                 <label class="form-label">End Date</label>
                                 <input class="form-control w-full !rounded-md" type="date" id="endDate" name="endDate">
                             </div>
@@ -157,6 +157,15 @@
                     <div class="box">
                         <div class="box-body !p-2">
                             <div id="chart_by_mgo" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_sio2" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
                             </div>
                         </div>
 
@@ -314,6 +323,7 @@
         // dataLabels: { enabled: true },
         dataLabels: {
             enabled: true,
+            hideOverflowingLabels: true,
             background: {
                 enabled: true,
                 // foreColor: '#000', // warna teks
@@ -324,22 +334,29 @@
                     enabled: false            // matikan shadow default
                 }
             },
-            style: {
-                fontSize: '10px',
-                fontWeight: 'bold'
-            },
+
             formatter: function (val, opts) {
                 return parseFloat(val).toFixed(2); // 2 desimal
+            },
+            offsetY: -7,
+            style: {
+                fontSize: '8px',
+                // colors: ["#304758"]
             }
         },
 
-        stroke: { width: [0, 0, 3] },
+        stroke: {
+            width: [0, 0, 2],
+            dashArray: 3,
+
+        },
         plotOptions: {
             bar: {
                 columnWidth: "40%",
                 horizontal: false,
                 dataLabels: {
-                    position: 'top',
+                    // position: 'top'
+                    // position: 'center',
 
                 }
             }
@@ -364,13 +381,14 @@
                 bottom: 10,
                 left: 15
             }
-        }
+        },
     };
 
     const charts = {
         ni: new ApexCharts(document.querySelector("#chart_by_ni"), { ...baseOptions, title: { text: "Ni Internal vs Official", offsetY: 15 } }),
         fe: new ApexCharts(document.querySelector("#chart_by_fe"), { ...baseOptions, title: { text: "Fe Internal vs Official", offsetY: 15 } }),
         mgo: new ApexCharts(document.querySelector("#chart_by_mgo"), { ...baseOptions, title: { text: "MgO Internal vs Official", offsetY: 15 } }),
+        sio2: new ApexCharts(document.querySelector("#chart_by_sio2"), { ...baseOptions, title: { text: "SiO2 Internal vs Official", offsetY: 15 } }),
         sm: new ApexCharts(document.querySelector("#chart_by_sm"), { ...baseOptions, title: { text: "SM Internal vs Official", offsetY: 15 } }),
     };
 
@@ -381,6 +399,7 @@
         ni: "{% url 'split-ni-coa-chart' %}",
         fe: "{% url 'split-fe-coa-chart' %}",
         mgo: "{% url 'split-mgo-coa-chart' %}",
+        sio2: "{% url 'split-sio2-coa-chart' %}",
         sm: "{% url 'split-sm-coa-chart' %}"
     };
 
@@ -486,8 +505,6 @@
             };
             refreshAllCharts(filters);   // atau loadCOA() sesuai functionmu
         });
-
-
 
 
     });

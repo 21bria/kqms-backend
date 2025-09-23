@@ -5,6 +5,7 @@ from ..views.dashboard.api.geology import *
 from ..views.dashboard.api.details.quality import *
 
 from ..views.dashboard.api.selling import *
+from ..views.dashboard.api.selling_coa import *
 from ..views.dashboard.api.barging import *
 from ..views.dashboard.api.inventory import *
 from ..views.dashboard.api.details.inventory import *
@@ -44,6 +45,13 @@ urlpatterns = [
     # Selling Dashboard
     path('api/selling-summary/', get_selling_summary, name='get_selling_summary'),
     path('api/selling-chart/', get_chart_selling, name='get_chart_selling'),
+    # COA
+    path('api/selling/coa/ni/', niChartCoa, name='get_chart_selling_coa_ni'),
+    path('api/selling/coa/fe/', feChartCoa, name='get_chart_selling_coa_fe'),
+    path('api/selling/coa/mgo/', mgoChartCoa, name='get_chart_selling_coa_mgo'),
+    path('api/selling/coa/sio2/', sio2ChartCoa, name='get_chart_selling_coa_sio2'),
+    path('api/selling/coa/sm/', smChartCoa, name='get_chart_selling_coa_sm'),
+
     # Barging
     path('api/barging-summary/', get_barging_summary, name='get-barging-summary'),
     path('api/barging-chart/', get_chart_barging, name='get-chart-barging'),

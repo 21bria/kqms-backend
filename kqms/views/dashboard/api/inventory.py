@@ -1705,7 +1705,7 @@ def get_inventory_lim(request):
         LEFT JOIN selling_by_dome t2
           ON t2.stockpile = t1.stockpile
          AND t2.dome = t1.pile_id
-         AND t2.sale_adjust = 'HPAL'
+         --AND t2.sale_adjust = 'HPAL'
         WHERE {where_clause}
         GROUP BY
             t1.stockpile, t1.pile_id, t1.total_ore, t1.released,
@@ -1862,7 +1862,7 @@ def get_inventory_sap(request):
         LEFT JOIN selling_by_dome t2
             ON t2.stockpile = t1.stockpile
            AND t2.dome = t1.pile_id
-           AND t2.sale_adjust = 'RKEF'
+          --AND t2.sale_adjust = 'RKEF'
         WHERE {where_clause}
         GROUP BY
             t1.stockpile, t1.pile_id, t1.total_ore, t1.released, 

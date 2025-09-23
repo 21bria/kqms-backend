@@ -55,6 +55,7 @@ urlpatterns = [
     path('split/ni/chart/', niChartPlot, name='split-ni-coa-chart'),
     path('split/fe/chart/', feChartPlot, name='split-fe-coa-chart'),
     path('split/mgo/chart/', mgoChartPlot, name='split-mgo-coa-chart'),
+    path('split/sio2/chart/', sio2ChartPlot, name='split-sio2-coa-chart'),
     path('split/sm/chart/', smChartPlot, name='split-sm-coa-chart'),
 
     # Blending

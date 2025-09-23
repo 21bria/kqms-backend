@@ -26,7 +26,6 @@ def niChartPlot(request):
     endDate      = request.GET.get('endDate')
     bulanFilter  = request.GET.get('bulanFilter')
     tahunFilter  = request.GET.get('tahunFilter')
-    theme        = request.GET.get("theme", "light")
 
     # --- SQL Query ---
     sql_query = """
@@ -184,6 +183,63 @@ def mgoChartPlot(request):
     sql_query += """
         GROUP BY t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.mgo
+        ORDER BY t1.code_lot ASC
+    """
+
+    # Ambil data ke DataFrame
+    df = pd.read_sql_query(sql_query, connections['kqms_db'])
+
+    data = df.to_dict(orient="records")
+    return JsonResponse(data, safe=False)
+
+@login_required
+def sio2ChartPlot(request):
+    typeFilter   = request.GET.get('materialFilter')
+    startDate    = request.GET.get('startDate')
+    endDate      = request.GET.get('endDate')
+    bulanFilter  = request.GET.get('bulanFilter')
+    tahunFilter  = request.GET.get('tahunFilter')
+
+    # --- SQL Query ---
+    sql_query = """
+        SELECT 
+            TRIM(t1.code_lot) AS code_lot,
+            TRIM(t1.barge_code) AS barge_code,
+            COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
+            COALESCE(SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sio2_split,
+            COALESCE(t2.tonnage_official, 0) AS tonnage_official,
+            COALESCE(t2.sio2, 0) AS sio2_official,
+            ABS(COALESCE(SUM(t1.tonnage) - t2.tonnage_official, 0)) AS tonnage_diff,
+            COALESCE(((SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.sio2) / NULLIF(t2.sio2, 0) * 100, 0) AS sio2_diff
+        FROM details_selling_barge_split t1
+        LEFT JOIN (
+            SELECT 
+                product_code,
+                COALESCE(SUM(tonnage), 0) AS tonnage_official,
+                COALESCE(SUM(sio2), 0) AS sio2,
+                type_selling
+            FROM sellings_official_view
+            GROUP BY product_code, type_selling
+        ) AS t2 ON t1.code_lot = t2.product_code
+        WHERE 1=1
+    """
+
+    filters = []
+    if startDate and endDate:
+        filters.append(f"t1.date_barge_out BETWEEN '{startDate}' AND '{endDate}'")
+    if typeFilter:
+        filters.append(f"t1.sale_adjust = '{typeFilter}'")
+    if bulanFilter and tahunFilter:
+        filters.append(f"EXTRACT(MONTH FROM t1.date_barge_out) = {bulanFilter} AND EXTRACT(YEAR FROM t1.date_barge_out) = {tahunFilter}")
+    elif tahunFilter:
+        filters.append(f"EXTRACT(YEAR FROM t1.date_barge_out) = {tahunFilter}")
+
+    if filters:
+        sql_query += " AND " + " AND ".join(filters)
+
+    sql_query += """
+        GROUP BY t1.code_lot, t1.barge_code,
+                 t2.tonnage_official, t2.sio2
         ORDER BY t1.code_lot ASC
     """
 
