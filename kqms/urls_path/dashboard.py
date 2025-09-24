@@ -51,6 +51,7 @@ urlpatterns = [
     path('api/selling/coa/mgo/', mgoChartCoa, name='get_chart_selling_coa_mgo'),
     path('api/selling/coa/sio2/', sio2ChartCoa, name='get_chart_selling_coa_sio2'),
     path('api/selling/coa/sm/', smChartCoa, name='get_chart_selling_coa_sm'),
+    path('api/selling/coa/all/', allChartCoa, name='get_chart_selling_coa_all'),
 
     # Barging
     path('api/barging-summary/', get_barging_summary, name='get-barging-summary'),
