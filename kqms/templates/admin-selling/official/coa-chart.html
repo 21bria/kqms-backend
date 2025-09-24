@@ -363,7 +363,7 @@
         },
         yaxis: [
             { title: { text: "Value (%)" } },
-            { opposite: true, title: { text: "Diff (%)" } }
+            // { opposite: true, title: { text: "Diff (%)" } }
         ],
         tooltip: {
             shared: false,
@@ -420,7 +420,7 @@
                     return;
                 }
 
-                const categories = data.map(d => d.code_lot);
+                const categories = data.map(d => d.lot_barge);
                 const internal = data.map(d => parseFloat(d[`${key}_split`]).toFixed(2));
                 const official = data.map(d => parseFloat(d[`${key}_official`]).toFixed(2));
                 const diff = data.map(d => ((d[`${key}_split`] - d[`${key}_official`]) / (d[`${key}_official`] || 1) * 100).toFixed(2));
@@ -432,18 +432,24 @@
                         custom: ({ series, seriesIndex, dataPointIndex }) => {
                             const d = data[dataPointIndex];
                             return `
-                                <b>Barge:</b> ${d.barge_code}<br>
-                                <b>Tonnage:</b> ${d.tonnage_split.toLocaleString()}<br>
-                                <b>${key.toUpperCase()}:</b> ${series[seriesIndex][dataPointIndex]}
+                                <div style="padding:6px;">
+                                    <b> ${d.code_lot}</b><br>
+                                    <b>Barge:</b> ${d.barge_code}<br>
+                                    <b>Tonnage:</b> ${parseFloat(d.tonnage_split).toLocaleString()}<br>
+                                    <b>${key.toUpperCase()} Internal:</b> ${parseFloat(d[`${key}_split`]).toFixed(2)}<br>
+                                    <b>${key.toUpperCase()} Official:</b> ${parseFloat(d[`${key}_official`]).toFixed(2)}<br>
+                                    <b>Diff:</b> ${parseFloat(d[`${key}_diff`]).toFixed(2)} %
+                                </div>
                             `;
                         }
                     }
                 });
 
+
                 charts[key].updateSeries([
                     { name: "Internal", type: "column", data: internal },
                     { name: "Official", type: "column", data: official },
-                    { name: "Diff %", type: "line", data: diff }
+                    // { name: "Diff %", type: "line", data: diff }
                 ]);
             },
             error: function (xhr, status, error) {
@@ -458,7 +464,6 @@
             loadChart(key, url, filters);
         }
     }
-
 
     $(document).ready(function () {
         flatpickr("#startDate", { dateFormat: "Y-m-d" });
@@ -484,8 +489,8 @@
             // ✅ Validasi input
             if (filter == '') {
                 $('#filter').select2('open'); return false;
-            } else if (materialFilter == '') {
-                $('#materialFilter').select2('open'); return false;
+            // } else if (materialFilter == '') {
+            //     $('#materialFilter').select2('open'); return false;
             } else if (filter == '1' && startDate == '') {
                 $('#startDate').focus(); return false;
             } else if (filter == '1' && endDate == '') {
@@ -509,8 +514,6 @@
 
     });
 </script>
-
-
 
 
 </body>

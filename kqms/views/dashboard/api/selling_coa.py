@@ -28,6 +28,7 @@ def niChartCoa(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.ni) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS ni_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -104,7 +105,7 @@ def niChartCoa(request):
     details = df.to_dict(orient="records")
     
     compare = {
-        "x_data": [row["code_lot"] for row in details],
+        "x_data": [row["lot_barge"] for row in details],
         "y_split": [round(row["ni_split"] or 0, 2) for row in details],
         "y_official": [round(row["ni_official"] or 0, 2) for row in details],
         "tonnage_split": [round(row["tonnage_split"] or 0, 2) for row in details],
@@ -132,6 +133,7 @@ def feChartCoa(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.fe) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS fe_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -208,7 +210,7 @@ def feChartCoa(request):
     details = df.to_dict(orient="records")
     
     compare = {
-        "x_data": [row["code_lot"] for row in details],
+        "x_data": [row["lot_barge"] for row in details],
         "y_split": [round(row["fe_split"] or 0, 2) for row in details],
         "y_official": [round(row["fe_official"] or 0, 2) for row in details],
         "tonnage_split": [round(row["tonnage_split"] or 0, 2) for row in details],
@@ -236,6 +238,7 @@ def mgoChartCoa(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS mgo_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -312,7 +315,7 @@ def mgoChartCoa(request):
     details = df.to_dict(orient="records")
     
     compare = {
-        "x_data": [row["code_lot"] for row in details],
+        "x_data": [row["lot_barge"] for row in details],
         "y_split": [round(row["mgo_split"] or 0, 2) for row in details],
         "y_official": [round(row["mgo_official"] or 0, 2) for row in details],
         "tonnage_split": [round(row["tonnage_split"] or 0, 2) for row in details],
@@ -340,6 +343,7 @@ def sio2ChartCoa(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sio2_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -416,7 +420,7 @@ def sio2ChartCoa(request):
     details = df.to_dict(orient="records")
     
     compare = {
-        "x_data": [row["code_lot"] for row in details],
+        "x_data": [row["lot_barge"] for row in details],
         "y_split": [round(row["sio2_split"] or 0, 2) for row in details],
         "y_official": [round(row["sio2_official"] or 0, 2) for row in details],
         "tonnage_split": [round(row["tonnage_split"] or 0, 2) for row in details],
@@ -444,6 +448,7 @@ def smChartCoa(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.sm) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sm IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sm_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -520,7 +525,7 @@ def smChartCoa(request):
     details = df.to_dict(orient="records")
     
     compare = {
-        "x_data": [row["code_lot"] for row in details],
+        "x_data": [row["lot_barge"] for row in details],
         "y_split": [round(row["sm_split"] or 0, 2) for row in details],
         "y_official": [round(row["sm_official"] or 0, 2) for row in details],
         "tonnage_split": [round(row["tonnage_split"] or 0, 2) for row in details],

@@ -32,6 +32,7 @@ def niChartPlot(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.ni) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS ni_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -83,13 +84,13 @@ def feChartPlot(request):
     endDate      = request.GET.get('endDate')
     bulanFilter  = request.GET.get('bulanFilter')
     tahunFilter  = request.GET.get('tahunFilter')
-    theme        = request.GET.get("theme", "light")
 
     # --- SQL Query ---
     sql_query = """
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.fe) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS fe_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -141,13 +142,13 @@ def mgoChartPlot(request):
     endDate      = request.GET.get('endDate')
     bulanFilter  = request.GET.get('bulanFilter')
     tahunFilter  = request.GET.get('tahunFilter')
-    theme        = request.GET.get("theme", "light")
 
     # --- SQL Query ---
     sql_query = """
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS mgo_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -205,6 +206,7 @@ def sio2ChartPlot(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sio2_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
@@ -263,6 +265,7 @@ def smChartPlot(request):
         SELECT 
             TRIM(t1.code_lot) AS code_lot,
             TRIM(t1.barge_code) AS barge_code,
+            CONCAT(TRIM(t1.barge_code), '/', RIGHT(TRIM(t1.code_lot), 3)) AS lot_barge,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.sm) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sm IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sm_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
