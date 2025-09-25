@@ -107,16 +107,12 @@ def splitOfficial(request):
             TRIM(t1.barge_name) AS barge_name,
             COALESCE(SUM(t1.tonnage), 0) AS tonnage_split,              
             COALESCE(SUM(t1.tonnage * t1.ni) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS ni_split,
-            COALESCE(SUM(t1.tonnage * t1.co) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.co IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS co_split,
             COALESCE(SUM(t1.tonnage * t1.fe) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS fe_split,
-            COALESCE(SUM(t1.tonnage * t1.al2o3) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.al2o3 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS al2o3_split,
             COALESCE(SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS mgo_split,
             COALESCE(SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END),0), 0) AS sio2_split,
             COALESCE(t2.tonnage_official, 0) AS tonnage_official,
             COALESCE(t2.ni, 0) AS ni_official,
-            COALESCE(t2.co, 0) AS co_official, 
             COALESCE(t2.fe, 0) AS fe_official, 
-            COALESCE(t2.al2o3, 0) AS al2o3_official,
             COALESCE(t2.mgo, 0) AS mgo_official,
             COALESCE(t2.sio2, 0) AS sio2_official,
             -- SELISIH TONNAGE (split vs official)
@@ -132,16 +128,17 @@ def splitOfficial(request):
 
             COALESCE((
                 (SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END), 0))
-                - t2.mgo) / NULLIF(t2.mgo, 0) * 100, 0) AS mgo_diff
+                - t2.mgo) / NULLIF(t2.mgo, 0) * 100, 0) AS mgo_diff,
+            COALESCE((
+               (SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END), 0))
+                - t2.sio2) / NULLIF(t2.sio2, 0) * 100, 0) AS sio2_diff
         FROM details_selling_barge_split AS t1
         LEFT JOIN (
             SELECT 
                 product_code,
                 COALESCE(SUM(tonnage), 0) AS tonnage_official,
                 COALESCE(SUM(ni), 0) AS ni,
-                COALESCE(SUM(co), 0) AS co,
                 COALESCE(SUM(fe), 0) AS fe,
-                COALESCE(SUM(al2o3), 0) AS al2o3,
                 COALESCE(SUM(mgo), 0) AS mgo,
                 COALESCE(SUM(sio2), 0) AS sio2,
                 type_selling
@@ -166,9 +163,9 @@ def splitOfficial(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_name,
-                 t2.tonnage_official, t2.ni, t2.co, t2.fe, t2.al2o3, t2.mgo, t2.sio2
-        ORDER BY t1.code_lot ASC
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_name,
+                 t2.tonnage_official, t2.ni, t2.fe, t2.mgo, t2.sio2
+        ORDER BY t1.date_barge_in ASC
     """
 
     with connections['kqms_db'].cursor() as cursor:

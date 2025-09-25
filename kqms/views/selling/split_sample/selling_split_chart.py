@@ -66,9 +66,9 @@ def niChartPlot(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_code,
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.ni
-        ORDER BY t1.code_lot ASC
+        ORDER BY t1.date_barge_in ASC
     """
 
     # Ambil data ke DataFrame
@@ -124,9 +124,9 @@ def feChartPlot(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_code,
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.fe
-        ORDER BY t1.code_lot ASC
+        ORDER BY t1.date_barge_in ASC
     """
 
     # Ambil data ke DataFrame
@@ -182,9 +182,9 @@ def mgoChartPlot(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_code,
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.mgo
-        ORDER BY t1.code_lot ASC
+        ORDER BY t1.date_barge_in ASC
     """
 
     # Ambil data ke DataFrame
@@ -240,9 +240,9 @@ def sio2ChartPlot(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_code,
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.sio2
-        ORDER BY t1.code_lot ASC
+        ORDER BY t1.date_barge_in ASC
     """
 
     # Ambil data ke DataFrame
@@ -299,9 +299,9 @@ def smChartPlot(request):
         sql_query += " AND " + " AND ".join(filters)
 
     sql_query += """
-        GROUP BY t1.code_lot, t1.barge_code,
+        GROUP BY t1.date_barge_in,t1.code_lot, t1.barge_code,
                  t2.tonnage_official, t2.sm
-        ORDER BY t1.code_lot ASC
+        ORDER BY t1.date_barge_in ASC
     """
 
     # Ambil data ke DataFrame
