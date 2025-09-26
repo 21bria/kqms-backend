@@ -21,7 +21,6 @@ db_vendor = get_db_vendor('kqms_db')
 def to_float1(v):
     return round(float(v or 0), 1)
 
-
 def decimal_to_float(value):
     return float(value) if isinstance(value, Decimal) else value
 
@@ -61,19 +60,22 @@ def get_selling_summary(request):
         where_clause = "WHERE 1=1"
         params = []
 
+        # Filter status barging hanya Complete
+        where_clause += " AND status_barging = %s"
+        params.append('Complete')
+
         # Filter logika ...
         if filter_type =='daily' and filter_date:
             where_clause += " AND date_barge_out = %s"
-            params += [filter_date]
+            params.append(filter_date)
         elif filter_type =='range' and date_start and date_end:
             where_clause += " AND date_barge_out BETWEEN %s AND %s"
             params += [date_start, date_end]
         elif filter_type =='weekly' and week:
-            # Contoh week: '2025-26'
             where_clause += " AND TO_CHAR(date_barge_out, 'IYYY-IW') = %s" \
                 if db_vendor == 'postgresql' else \
                 " AND DATE_FORMAT(date_barge_out, '%%x-%%v') = %s"
-            params += [week]
+            params.append(week)
         elif filter_type =='monthly' and year and month:
             where_clause += " AND EXTRACT(YEAR FROM date_barge_out) = %s AND EXTRACT(MONTH FROM date_barge_out) = %s" \
                 if db_vendor == 'postgresql' else \
@@ -88,6 +90,7 @@ def get_selling_summary(request):
             pass
         elif filter_type not in ['1', '2', '3', '4', '5']:
             return JsonResponse({'error': 'Invalid filter type'}, status=400)
+
 
         query = build_summary_query(db_vendor, where_clause)
 
@@ -108,7 +111,7 @@ def get_selling_summary(request):
         logger.exception("Unexpected error in get_ore_summary")
         return JsonResponse({'error': str(e)}, status=500)
 
-# Create Chart Ore
+# Create Chart sellingß
 def get_chart_selling(request):
     try:
         filter_type = request.GET.get('filter_type')
@@ -135,7 +138,8 @@ def get_chart_selling(request):
                                 SUM(CASE WHEN sale_adjust='RKEF' THEN os.tonnage ELSE 0 END) AS actual_sap
                             FROM ore_sellings_barging os
                             LEFT JOIN materials m ON m.id = os.id_material
-                            WHERE DATE(date_barge_out)=%s::date
+                            WHERE status_barging ='Complete' AND
+                            DATE(date_barge_out)=%s::date
                         ),
                         -- 🔹 Distribusi actual per jam (dibagi 22 jam kerja)
                         actual_hourly AS (
@@ -199,7 +203,8 @@ def get_chart_selling(request):
                             SUM(CASE WHEN sale_adjust='RKEF' THEN s.tonnage ELSE 0 END) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND
+                        date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date
                     ),
                     -- 🔹 Plan per tanggal
@@ -223,7 +228,8 @@ def get_chart_selling(request):
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND
+                        date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date, mb.barge_code
                     )
                     SELECT
@@ -309,7 +315,8 @@ def get_chart_selling(request):
                             SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END) AS actual_sap
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND
+                        date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out
                     ),
                     -- 🔹 Plan per tanggal
@@ -332,7 +339,8 @@ def get_chart_selling(request):
                             SUM(tonnage) AS total
                         FROM ore_sellings_barging s
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND
+                        date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out, mb.barge_code
                     ),
                     -- 🔹 Gabungkan semua (actual + plan + detail)
@@ -426,7 +434,7 @@ def get_chart_selling(request):
                             ROUND(SUM(CASE WHEN sale_adjust='HPAL' THEN tonnage ELSE 0 END)::numeric, 2) AS lim,
                             ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date
                     ),
                     detail AS (
@@ -438,7 +446,7 @@ def get_chart_selling(request):
                             ROUND(SUM(tonnage)::numeric, 2) AS total
                         FROM ore_sellings_barging s
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
-                        WHERE date_barge_out BETWEEN %s AND %s
+                        WHERE status_barging ='Complete' AND date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date, mb.barge_code
                     ),
                     plan AS (
@@ -494,7 +502,7 @@ def get_chart_selling(request):
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
-                        WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                        WHERE status_barging ='Complete' AND EXTRACT(YEAR FROM date_barge_out) = %s
                         GROUP BY EXTRACT(MONTH FROM date_barge_out)
                     ),
                     -- 🔹 Detail per bulan + barge_code
@@ -508,7 +516,7 @@ def get_chart_selling(request):
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
-                        WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                        WHERE status_barging ='Complete' AND EXTRACT(YEAR FROM date_barge_out) = %s
                         GROUP BY EXTRACT(MONTH FROM date_barge_out), mb.barge_code
                     ),
                     -- 🔹 Plan per bulan
@@ -568,6 +576,7 @@ def get_chart_selling(request):
                             ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        were status_barging ='Complete'
                         GROUP BY EXTRACT(YEAR FROM date_barge_out)
                     ),
                     -- 🔹 Detail per tahun + barge_code
@@ -579,6 +588,7 @@ def get_chart_selling(request):
                             ROUND(SUM(CASE WHEN sale_adjust='RKEF' THEN tonnage ELSE 0 END)::numeric, 2) AS sap,
                             ROUND(SUM(tonnage)::numeric, 2) AS total
                         FROM ore_sellings_barging s
+                        WHERE status_barging ='Complete'
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         GROUP BY EXTRACT(YEAR FROM date_barge_out), mb.barge_code
                     ),
@@ -674,99 +684,6 @@ def get_chart_selling(request):
         return JsonResponse({'error': 'Database error'}, status=500)
     except Exception as e:
         logger.exception("Unexpected error in chart selling")
-        return JsonResponse({'error': str(e)}, status=500)
-
-def get_chart_selling_class(request):
-    try:
-            
-        filter_type = request.GET.get('filter_type')
-        year = request.GET.get('year')
-        month = request.GET.get('month')
-        week = request.GET.get('week')
-        date_start = request.GET.get('date_start')
-        date_end = request.GET.get('date_end')
-
-        filter_sql = "WHERE 1=1"
-        params = []
-
-        # Tentukan kondisi filter SQL dan parameter
-        if filter_type =='range' and date_start and date_end:  # Range
-            filter_sql += " AND date_barge_out BETWEEN %s AND %s"
-            params = [date_start, date_end]
-
-        elif filter_type =='weekly' and year and month and week:  # Weekly
-            year, month, week = int(year), int(month), int(week)
-            first_day = datetime(year, month, 1)
-            start_date = first_day + timedelta(days=(week - 1) * 7)
-            end_date = start_date + timedelta(days=6)
-            if end_date.month != month:
-                end_date = datetime(year, month + 1, 1) - timedelta(days=1)
-            filter_sql += " AND date_barge_out BETWEEN %s AND %s"
-            params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')]
-
-        elif filter_type =='monthly' and year and month:  # Monthly
-            filter_sql += " AND EXTRACT(YEAR FROM date_barge_out) = %s AND EXTRACT(MONTH FROM date_barge_out) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_barge_out) = %s AND MONTH(date_barge_out) = %s"
-            params = [year, month]
-
-        elif filter_type =='yearly' and year:  # Yearly
-            filter_sql += " AND EXTRACT(YEAR FROM date_barge_out) = %s" \
-                if db_vendor == 'postgresql' else " AND YEAR(date_barge_out) = %s"
-            params = [year]
-
-        elif filter_type =='all':  # All
-            pass  # Tidak ada tambahan filter
-
-        else:
-            return JsonResponse({'error': 'Invalid or incomplete filter parameters'}, status=400)
-
-        # Query berdasarkan vendor
-        if db_vendor == 'postgresql':
-            query = f"""
-                SELECT
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGLO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS LGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS MGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGSO' THEN tonnage ELSE 0 END)::NUMERIC, 2), 0) AS HGSO
-                FROM ore_sellingss
-                {filter_sql}
-            """
-        elif db_vendor in ['mysql', 'mssql', 'microsoft']:
-            query = f"""
-                SELECT
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGLO' THEN tonnage ELSE 0 END), 2), 0) AS LGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGLO' THEN tonnage ELSE 0 END), 2), 0) AS MGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGLO' THEN tonnage ELSE 0 END), 2), 0) AS HGLO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'LGSO' THEN tonnage ELSE 0 END), 2), 0) AS LGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'MGSO' THEN tonnage ELSE 0 END), 2), 0) AS MGSO,
-                    COALESCE(ROUND(SUM(CASE WHEN ore_class = 'HGSO' THEN tonnage ELSE 0 END), 2), 0) AS HGSO
-                FROM ore_sellingss
-                {filter_sql}
-            """
-        else:
-            raise ValueError(f"Unsupported database vendor: {db_vendor}")
-
-        with connections['kqms_db'].cursor() as cursor:
-            cursor.execute(query, params)
-            chart_data = cursor.fetchone()  # karena hasil SUM hanya satu baris
-
-        # Konversi hasil menjadi list
-        y_data = [float(val) for val in chart_data] if chart_data else [0, 0, 0, 0, 0, 0]
-
-
-        return JsonResponse({
-            'labels': ['LGLO', 'MGLO', 'HGLO', 'LGSO', 'MGSO', 'HGSO'],
-            'y_data': y_data,
-        })
-
-    except DatabaseError:
-        logger.exception("Database query failed.")
-        return JsonResponse({'error': 'Internal server error'}, status=500)
-
-    except Exception as e:
-        logger.exception("Unexpected error occurred.")
         return JsonResponse({'error': str(e)}, status=500)
 
 def forecast_selling(request):

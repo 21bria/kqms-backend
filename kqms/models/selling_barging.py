@@ -36,7 +36,7 @@ class SellingBarging(models.Model):
     sale_adjust         = models.CharField(max_length=5,default=None, null=True, blank=True)
     sale_dome           = models.CharField(max_length=10,default=None, null=True, blank=True)
     direct              = models.CharField(max_length=10,default=None, null=True, blank=True)
-    status_barging      = models.CharField(max_length=50,default=None, null=True, blank=True)
+    status_barging      = models.CharField(max_length=50,default='Draft', null=True, blank=True)
     no_input            = models.CharField(max_length=50, default=None, null=True, blank=True)
     remarks             = models.CharField(max_length=255, default=None, null=True, blank=True)
     created_at          = models.DateTimeField(auto_now_add=True)
@@ -51,7 +51,8 @@ class SellingBarging(models.Model):
             models.Index(fields=['code_batch']),
             models.Index(fields=['code_batch_pulp']),
             models.Index(fields=['sale_adjust']),
-            models.Index(fields=['code_lot'])
+            models.Index(fields=['code_lot']),
+            models.Index(fields=['status_barging'])
     ]
 
 
