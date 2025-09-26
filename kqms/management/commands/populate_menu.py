@@ -884,19 +884,42 @@ class Command(BaseCommand):
             order=7
         )
 
+        #  Export to Excel
+        export = Menu.objects.create(
+            title="Export Data",
+            icon="bx bx-task",
+            order=22,
+        )
+        
+        Menu.objects.create(
+            title="Export to Excel",
+            url="export-excel-page",
+            parent=export,
+            order=1
+        )
+        #  Export to Excel
+        # Menu.objects.create(
+        #     title="Export to Excel",
+        #     icon="bx bx-task",
+        #     url="export-excel-page",
+        #     parent=reporting,
+        #     order=22,
+        # )
+
+
         # Kategory Settings
         settings = Menu.objects.create(
             title="Settings",
             is_category=True,
             category_title="Settings",
-            order=22,
+            order=23,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab']
         )
        
         users = Menu.objects.create(
             title="Users",
             icon="bx bx-fingerprint",
-            order=23,
+            order=24,
             allowed_group_names=['superadmin','data-control','admin-mgoqa']
         )
 
@@ -925,7 +948,7 @@ class Command(BaseCommand):
         master = Menu.objects.create(
             title="Master",
             icon="bx bx-store-alt",
-            order=24,
+            order=25,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-selling','entry-vendors']
         )
 
@@ -1032,7 +1055,7 @@ class Command(BaseCommand):
         configuration = Menu.objects.create(
             title="Configuration",
             icon="bx bx-cog",
-            order=25,
+            order=26,
             allowed_group_names=['superadmin','data-control','admin-mgoqa']
         )
 

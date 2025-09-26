@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views.auth.login import *
 from .views.generate_dummy import *
+from .views.report.export_excel import *
 
 
 urlpatterns = [
@@ -36,5 +37,8 @@ urlpatterns = [
     path('generate-dummy-selling-plan/', generate_dummy_selling_plan, name='generate_dummy_selling_plan'),
     path('generate-dummy-mine-pds/', generate_dummy_mine_productions, name='generate_dummy_mine_productions'),
     path('generate-dummy-plan-mine/', generate_dummy_plan_productions, name='generate_dummy_plan_productions'),
+
+    # Export Excel
+    path('export/excel/page/', export_excel_page, name='export-excel-page'),
     
 ]

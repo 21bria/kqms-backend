@@ -1,0 +1,566 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<!-- <div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div> -->
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                    </h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Data
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Export
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="container">
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-x-6">
+                    <div class="xxl:col-span-9 col-span-12">
+                        <div class="box overflow-hidden">
+                            <div class="box-body !p-0  product-checkout">
+                                <nav class="md:flex justify-evenly !border-b !border-dashed border-defaultborder dark:border-defaultborder/10"
+                                    aria-label="Tabs" role="tablist">
+                                    <a class="w-full hs-tab-active:text-primary hs-tab-active:relative hs-tab-active:before:bg-primary hs-tab-active:before:absolute hs-tab-active:before:start-0 hs-tab-active:before:end-0 hs-tab-active:before:bottom-0 hs-tab-active:before:w-full hs-tab-active:before:h-[0.175rem] hs-tab-active:before:rounded-full text-defaulttextcolor cursor-pointer dark:text-defaulttextcolor/70 !py-4 !px-8 text-sm inline-flex items-center flex-grow font-medium text-center rounded-none hover:text-primary"
+                                        id="order-tab" data-hs-tab="#compile-tab-pane" aria-controls="compile-tab-pane">
+                                        <i
+                                            class="ri-task-line me-2 align-middle w-[1.875rem] h-[1.875rem] p-[0.4rem] rounded-full hs-tab-active:bg-primary/10 bg-light !block"></i>Compile
+                                        Data
+                                    </a>
+                                    <a class="w-full hs-tab-active:text-primary hs-tab-active:relative hs-tab-active:before:bg-primary hs-tab-active:before:absolute hs-tab-active:before:start-0 hs-tab-active:before:end-0 hs-tab-active:before:bottom-0 hs-tab-active:before:w-full hs-tab-active:before:h-[0.175rem] hs-tab-active:before:rounded-full text-defaulttextcolor cursor-pointer dark:text-defaulttextcolor/70 !py-4 !px-8 text-sm inline-flex items-center flex-grow font-medium text-center rounded-none hover:text-primary active"
+                                        id="confirmed-tab" data-hs-tab="#raw-tab-pane" aria-controls="raw-tab-pane">
+                                        <i
+                                            class="ri-task-line me-2 align-middle w-[1.875rem] h-[1.875rem] p-[0.4rem] rounded-full hs-tab-active:bg-primary/10 bg-light !block"></i>Export
+                                        Raw Data
+                                    </a>
+                                    <a class="w-full hs-tab-active:text-primary hs-tab-active:relative hs-tab-active:before:bg-primary hs-tab-active:before:absolute hs-tab-active:before:start-0 hs-tab-active:before:end-0 hs-tab-active:before:bottom-0 hs-tab-active:before:w-full hs-tab-active:before:h-[0.175rem] hs-tab-active:before:rounded-full text-defaulttextcolor cursor-pointer dark:text-defaulttextcolor/70 !py-4 !px-8 text-sm inline-flex items-center flex-grow font-medium text-center rounded-none hover:text-primary"
+                                        id="shipped-tab" data-hs-tab="#coa-tab-pane" aria-controls="coa-tab-pane">
+                                        <i
+                                            class="ri-task-line me-2 align-middle w-[1.875rem] h-[1.875rem] p-[0.4rem] rounded-full hs-tab-active:bg-primary/10 bg-light !block"></i>Data
+                                        Official (COA)
+                                    </a>
+                                </nav>
+                                <div class="tab-content" id="myTabContent">
+                                    <div class="tab-pane fade show active text-defaulttextcolor dark:!text-defaulttextcolor/70 !border-0 !p-0 hidden"
+                                        id="compile-tab-pane" aria-labelledby="order-tab" role="tabpanel" tabindex="0">
+                                        <div class="p-6">
+                                            <p
+                                                class="mb-1 font-semibold text-[#8c9097] dark:text-white/50 opacity-[0.5] text-[1.25rem]">
+                                                01</p>
+                                            <p class="text-[0.9375rem] font-semibold mb-1 xl:col-span-12 mb-4">Data
+                                                Compile:
+                                            </p>
+                                            <div class="grid grid-cols-12 gap-4">
+                                                <div class="xl:col-span-4 col-span-12" id="form-compile">
+                                                    <label class="form-label">Filter category</label>
+                                                    <select name="filter-compile"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t"
+                                                        id="filter-compile">
+                                                        <option value="">---- Please select ----</option>
+                                                        <option value="range">By Range</option>
+                                                        <option value="year">By Year</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-start-compile">
+                                                    <label class="form-label">Start date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{start_date}}" id="startCompile" name="startCompile">
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-end-compile">
+                                                    <label class="form-label">End date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{end_date}}" id="endCompile" name="endCompile">
+                                                </div>
+                                                <div class="xl:col-span-6 col-span-12" id="form-year-compile">
+                                                    <label class="form-label">Year</label>
+                                                    <select id="yearCompile" name="yearCompile"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">Select Year</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="px-6 py-4 border-t border-dashed dark:border-defaultborder/10 sm:flex justify-end">
+                                            <button type="button" class="ti-btn ti-btn-success"
+                                                id="export-compile">Export Excel<i
+                                                    class="ri-task-line ms-2 align-middle inline-block"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade !border-0 !p-0 text-defaulttextcolor dark:!text-defaulttextcolor/70"
+                                        id="raw-tab-pane" aria-labelledby="confirmed-tab" role="tabpanel" tabindex="0">
+                                        <div class="p-4">
+                                            <p
+                                                class="mb-1 font-semibold text-[#8c9097] dark:text-white/50 opacity-[0.5] text-[1.25rem]">
+                                                02</p>
+                                            <div
+                                                class="text-[0.9375rem] font-semibold sm:flex block items-center justify-between mb-4">
+                                                <div>Data Raw :</div>
+                                            </div>
+                                            <div class="grid grid-cols-12 gap-4">
+                                                <div class="xl:col-span-4 col-span-12">
+                                                    <label class="form-label">Module</label>
+                                                    <select name="module" id="module"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">---- Please select ----</option>
+                                                        <option value="mining">Data Mining</option>
+                                                        <option value="quality">Data Quality</option>
+                                                        <option value="selling">Data Selling</option>
+                                                        <option value="inventory">Data Inventory</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-tanggal-awal">
+                                                    <label class="form-label">Start date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{start_date}}" id="startExport" name="startExport">
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-tanggal-akhir">
+                                                    <label class="form-label">End date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{end_date}}" id="endExport" name="endExport">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="px-6 py-4 border-t border-dashed dark:border-defaultborder/10 sm:flex justify-end">
+                                            <button type="button" class="ti-btn ti-btn-success" id="export-raw">Export
+                                                Raw<i class="ri-task-line ms-2 align-middle inline-block"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade !border-0 !p-0 hidden" id="coa-tab-pane"
+                                        aria-labelledby="shipped-tab" role="tabpanel" tabindex="0">
+                                        <div class="p-4 text-defaulttextcolor dark:!text-defaulttextcolor/70">
+                                            <p
+                                                class="mb-1 font-semibold text-[#8c9097] dark:text-white/50 opacity-[0.5] text-[1.25rem]">
+                                                03</p>
+                                            <div
+                                                class="text-[0.9375rem] font-semibold sm:flex block items-center justify-between mb-4">
+                                                <div>Data Official (COA) :</div>
+                                            </div>
+
+                                            <div class="grid grid-cols-12 gap-4">
+                                                <div class="xl:col-span-4 col-span-12" id="form-pilih">
+                                                    <label class="form-label">Filter category</label>
+                                                    <select name="filter-coa"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t" id="filter-coa">
+                                                        <option value="">---- Please select ----</option>
+                                                        <option value="range">By Range</option>
+                                                        <option value="year">By Year</option>
+                                                    </select>
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-material">
+                                                    <label class="form-label">Material</label>
+                                                    <select name="materialCoa"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t" id="materialCoa">
+                                                        <option value="">---- Please select ----</option>
+                                                        <option value="HPAL">LIM</option>
+                                                        <option value="RKEF">SAP</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="xl:col-span-6 col-span-12" id="form-start-coa">
+                                                    <label class="form-label">Start date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{start_date}}" id="startCoa" name="startCoa">
+                                                </div>
+                                                <div class="xl:col-span-6 col-span-12" id="form-end-coa">
+                                                    <label class="form-label">End date</label>
+                                                    <input type="date" class="form-control w-full !rounded-md"
+                                                        value="{{end_date}}" id="endCoa" name="endCoa">
+                                                </div>
+                                                <div class="xl:col-span-4 col-span-12" id="form-year-coa">
+                                                    <label class="form-label">Year</label>
+                                                    <select id="yearCoa" name="yearCoa"
+                                                        class="ti-form-select rounded-sm !py-2 !px-3t">
+                                                        <option value="">Select Year</option>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div
+                                            class="px-6 py-4 border-t border-dashed dark:border-defaultborder/10 sm:flex justify-end">
+                                            <button type="button" class="ti-btn ti-btn-success" id="export-coa">Export
+                                                COA<i class="ri-task-line ms-2 align-middle inline-block"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!--End::row-1 -->
+            </div>
+        </div>
+        <!-- End::row-1 -->
+
+    </div>
+    <!-- Start::main-content -->
+
+</div>
+
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<!-- Scripts -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*--- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $('#yearCompile,#materialCoa,#yearCoa').select2({
+            width: '100%',
+            dropdownParent: $(document.body)
+        });
+
+        $('#filter-compile,#module,#filter-coa').select2({
+            width: '100%',
+            // dropdownParent: $(document.body)
+        });
+
+        $('#form-start-compile,#form-end-compile, #form-year-compile').hide();
+        $('#filter-compile').trigger('change');
+
+        $('#filter-compile').change(function () {
+            if ($(this).val() == 'range') { // Jika filter nya 1 (per range)
+                $('#form-year-compile').hide();
+                $('#form-start-compile,#form-end-compile').show();
+                $('#startCompile').val('');
+                $('#endCompile').val('');
+                $('#yearCompile').val('').trigger('change');
+
+            } else if ($(this).val() == 'year') {
+                // Jika filternya 3 (Year)
+                $('#startCompile').val('');
+                $('#endCompile').val('');
+                $('#form-start-compile,#form-end-compile').hide();
+                $('#form-year-compile').show();
+                $('#form-year-compile').removeClass('xl:col-span-3').addClass('xl:col-span-12');
+            } else {
+                $('#startCompile').val('');
+                $('#endCompile').val('');
+                $('#yearCompile').val('').trigger('change');
+                $('#form-start-compile,#form-end-compile, #form-year-compile').hide();
+            }
+        })
+
+        $('#form-start-coa,#form-end-coa, #form-year-coa').hide();
+        $('#filter-coa').trigger('change');
+
+        $('#filter-coa').change(function () {
+            if ($(this).val() == 'range') { // Jika filter nya 1 (per range)
+                $('#form-year-coa').hide();
+                $('#form-start-coa,#form-end-coa').show();
+                $('#startCoa').val('');
+                $('#endCoa').val('');
+                $('#yearCoa').val('').trigger('change');
+                // $('#form-material').removeClass('xl:col-span-3').addClass('xl:col-span-12');
+
+            } else if ($(this).val() == 'year') {
+                // Jika filternya 3 (Year)
+                $('#startCoa').val('');
+                $('#endCoa').val('');
+                $('#form-start-coa,#form-end-coa').hide();
+                $('#form-year-coa').show();
+                $('#form-year-coa').removeClass('xl:col-span-3').addClass('xl:col-span-12');
+            } else {
+                $('#startCoa').val('');
+                $('#endCoa').val('');
+                $('#yearCoa').val('').trigger('change');
+                $('#form-start-coa,#form-end-coa, #form-year-coa').hide();
+            }
+        })
+
+        /* =========================  Tahun ========================= */
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; // 1‑12
+
+        // isi tahun (3 th terakhir) & pilih default = th sekarang
+        for (let i = 0; i < 3; i++) {
+            const y = currentYear - i;
+            $('#yearCompile,#yearCoa').append(`<option value="${y}">${y}</option>`);
+        }
+        $('#yearCompile,#yearCoa').val(currentYear);
+
+
+        // ========== COMPILE ==========
+        $('#export-compile').click(function () {
+            const filter = $('#filter-compile').val();
+            const params = new URLSearchParams();
+
+            if (!filter) {
+                Swal.fire("Error", "Please select filter category.", "error");
+                return;
+            }
+
+            if (filter === 'range') {
+                const start = $('#startCompile').val();
+                const end = $('#endCompile').val();
+
+                if (!start || !end) {
+                    Swal.fire("Error", "Start date and End date are required.", "error");
+                    return;
+                }
+
+                const dsDate = new Date(start);
+                const deDate = new Date(end);
+                const diffDays = Math.floor((deDate - dsDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays > 31) {
+                    Swal.fire("Error", "Range too long. Maximum 31 days allowed.", "error");
+                    return;
+                }
+
+                params.set('mode', 'range');
+                params.set('date_start', start);
+                params.set('date_end', end);
+
+            } else if (filter === 'year') {
+                const year = $('#yearCompile').val();
+                if (!year) {
+                    Swal.fire("Error", "Please select year.", "error");
+                    return;
+                }
+                params.set('mode', 'year');
+                params.set('year', year);
+            }
+
+            const url = `/kqms/excel/generate/summary/?${params.toString()}`;
+            window.open(url, '_blank');
+        });
+
+
+        // ========== RAW ==========
+        $('#export-raw').click(function () {
+            const params = new URLSearchParams();
+            // params.set('module', $('#module').val());
+            // params.set('date_start', $('#startExport').val());
+            // params.set('date_end', $('#endExport').val());
+            const module = $('#module').val();
+            const start = $('#startExport').val();
+            const end = $('#endExport').val();
+
+            if (!module || !start || !end) {
+                // alert("Module, start date, and end date are required.");
+                Swal.fire("Error", "Module, start date, and end date are required.", "error");
+                return;
+            }
+
+            // ✅ cek maksimal 31 hari
+            const dsDate = new Date(start);
+            const deDate = new Date(end);
+            const diffDays = Math.floor((deDate - dsDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            if (diffDays > 31) {
+                Swal.fire("Error", "Range too long. Maximum 31 days allowed.", "error");
+                return;
+            }
+
+            params.set('module', module);
+            params.set('date_start', start);
+            params.set('date_end', end);
+
+
+            const url = `/kqms/excel/export/data/?${params.toString()}`;
+            window.open(url, '_blank');
+        });
+
+        // ========== COA ==========
+        $('#export-coa').click(function () {
+            const filter = $('#filter-coa').val();
+            const params = new URLSearchParams();
+
+            if (!filter) {
+                Swal.fire("Error", "Please select filter category.", "error");
+                return;
+            }
+
+            if (filter === 'range') {
+                const start = $('#startCoa').val();
+                const end = $('#endCoa').val();
+
+                if (!start || !end) {
+                    Swal.fire("Error", "Start date and End date are required.", "error");
+                    return;
+                }
+
+                const dsDate = new Date(start);
+                const deDate = new Date(end);
+                const diffDays = Math.floor((deDate - dsDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays > 31) {
+                    Swal.fire("Error", "Range too long. Maximum 31 days allowed.", "error");
+                    return;
+                }
+
+                params.set('mode', 'range');
+                params.set('date_start', start);
+                params.set('date_end', end);
+
+            } else if (filter === 'year') {
+                const year = $('#yearCoa').val();
+                if (!year) {
+                    Swal.fire("Error", "Please select year.", "error");
+                    return;
+                }
+                params.set('mode', 'year');
+                params.set('year', year);
+            }
+
+            // tambah material kalau ada
+            const material = $('#materialCoa').val();
+            if (material) {
+                params.set('material', material);
+            }
+
+            const url = `/kqms/excel/export/data/coa/?${params.toString()}`;
+            window.open(url, '_blank');
+        });
+
+
+    });
+
+
+</script>
+
+
+
+</body>
+
+</html>
+
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+    .table-scrollable {
+        max-height: 635px;
+        /* Setel tinggi maksimum */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
+        overflow-x: auto;
+        /* Disable horizontal scrolling jika tidak diperlukan */
+    }
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+
+    /* Styling umum untuk baris total */
+    .summary-row {
+        font-weight: bold;
+        background: #f3f4f6;
+        /* abu-abu terang */
+        color: #111827;
+        /* teks gelap */
+    }
+
+    /* Jika dark mode aktif */
+    .dark .summary-row {
+        background: #374151;
+        /* abu-abu gelap (Tailwind slate-700) */
+        color: #f9fafb;
+        /* teks terang */
+    }
+</style>
