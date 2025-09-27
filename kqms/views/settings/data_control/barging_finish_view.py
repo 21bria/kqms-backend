@@ -192,6 +192,7 @@ def insert_barging_finish(request):
                     tonnage=tonnage_per_ritase,
                     date_barge_in=date_arrival,
                     date_barge_out=date_departure,
+                    status_barging="Complete"
                 )
 
                 return JsonResponse({'success': True, 'message': 'Data berhasil disimpan dengan status Complete.'})

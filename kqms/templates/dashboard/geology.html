@@ -165,85 +165,44 @@
 
                             </div>
                         </div>
-
                         <div class="xl:col-span-12 col-span-12">
                             <div class="box">
                                 <div class="box-header justify-between">
-                                    <div class="box-title">Invertory Stockpiles</div>
-                                    <div class="hs-dropdown ti-dropdown">
-                                        <a href="javascript:void(0);"
-                                            class="px-2 font-normal text-[0.75rem] text-[#8c9097] dark:text-white/50"
-                                            aria-expanded="false">
-                                            View All<i class="ri-arrow-down-s-line align-middle ms-1 inline-block"></i>
-                                        </a>
-                                        <ul class="hs-dropdown-menu ti-dropdown-menu hidden" role="menu">
-                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
-                                                    href="javascript:void(0);">Today</a></li>
-                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
-                                                    href="javascript:void(0);">This Week</a></li>
-                                            <li><a class="ti-dropdown-item !py-2 !px-[0.9375rem] !text-[0.8125rem] !font-medium block"
-                                                    href="javascript:void(0);">Last Week</a></li>
-                                        </ul>
-                                    </div>
-
+                                    <div class="box-title">Barging Chart (Draft)</div>
                                 </div>
                                 <div class="box-body">
-                                    {% include 'dashboard/static/card_inventory.html' %}
-                                    <div id="iventory-charts"></div>
+                                    {% include 'dashboard/static/card_barging.html' %}
+                                    <div id="barging-chart"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="grid grid-cols-12 gap-x-6">
-                <div class="xl:col-span-9 col-span-12">
+                <div class="xl:col-span-7 col-span-12">
                     <div class="box">
                         <div class="box-header justify-between">
-                            <div class="box-title">
-                                Stockpile
-                            </div>
-
+                            <div class="box-title">Mining Productions</div>
                         </div>
                         <div class="box-body">
-                            <div class="table-responsive">
-                                {% include 'dashboard/static/table-stock.html' %}
-                            </div>
-                        </div>
-                        <div class="box-footer">
-                            <div class="sm:flex items-center">
-                                <div class="dark:text-defaulttextcolor/70">
-                                    Showing Entries <i class="bi bi-arrow-right ms-2 font-semibold"></i>
-                                </div>
-                                <div class="ms-auto">
-                                    <nav aria-label="Page navigation" class="pagination-style-4">
-                                        <ul class="ti-pagination mb-0">
-                                            <li class="page-item">
-                                                <a href="javascript:void(0);" class="text-primary">View Details <i
-                                                        class="ti ti-external-link"></i></a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
+                            {% include 'dashboard/static/card_mining.html' %}
+                            <div id="mining-chart"></div>
                         </div>
                     </div>
                 </div>
-                <div class="xl:col-span-3 col-span-12">
+                <div class="xl:col-span-5 col-span-12">
                     <div class="box">
                         <div class="box-header justify-between">
-                            <div class="box-title">
-                                Ore By Dome
-                            </div>
-                            <div class="hs-dropdown ti-dropdown">
-                                <a href="javascript:void(0);" class="text-primary">View Details <i
-                                        class="ti ti-external-link"></i></a>
-                            </div>
+                            <div class="box-title">Invertory Balance</div>
                         </div>
-                        {% include 'dashboard/static/table-dome.html' %}
+                        <div class="box-body">
+                            {% include 'dashboard/static/card_inventory.html' %}
+                            <div id="iventory-charts"></div>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
         </div>
@@ -513,7 +472,7 @@
 <!-- Get Data -->
 <script>
 
-    /* Total Users Chart */
+    /* Total spark Chart */
     var spark1 = {
         chart: {
             type: 'line',
@@ -640,14 +599,24 @@
         loadOreSummary(filter, year, month, week, startDate, endDate);
         loadOreChart(filter, year, month, week, startDate, endDate);
         loadOreClassChart(filter, year, month, week, startDate, endDate);
+
         loadSaleSummary(filter, year, month, week, startDate, endDate);
         loadSellingChart(filter, year, month, week, startDate, endDate);
+
+        loadBargingSummary(filter, year, month, week, startDate, endDate);
+        loadBargingChart(filter, year, month, week, startDate, endDate);
+
         loadInventorySummary(filter, year, month, week, startDate, endDate);
         loadInventoryChart(filter, year, month, week, startDate, endDate);
+
+        loadMiningSummary(filter, year, month, week, startDate, endDate);
+        loadMiningChart(filter, year, month, week, startDate, endDate);
+
         loadStockpileRoa(filter, year, month, week, startDate, endDate);
         loadDomeRoa(filter, year, month, week, startDate, endDate);
         loadGradeOre(filter, year, month, week, startDate, endDate);
     });
+
     // Reset
     $('#reload').click(function () {
         // Ambil bulan & tahun sekarang
@@ -658,14 +627,22 @@
         loadOreSummary('monthly', currentYear, currentMonth, '', '', '');
         loadOreChart('monthly', currentYear, currentMonth, '', '', '');
         loadOreClassChart('monthly', currentYear, currentMonth, '', '', '');
+
         loadSaleSummary('monthly', currentYear, currentMonth, '', '', '');
         loadSellingChart('monthly', currentYear, currentMonth, '', '', '');
+
+        loadBargingSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadBargingChart('monthly', currentYear, currentMonth, '', '', '');
+
         loadInventorySummary('monthly', currentYear, currentMonth, '', '', '');
         loadInventoryChart('monthly', currentYear, currentMonth, '', '', '');
+
+        loadMiningSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadMiningChart('monthly', currentYear, currentMonth, '', '', '');
+
         loadStockpileRoa('monthly', currentYear, currentMonth, '', '', '');
         loadDomeRoa('monthly', currentYear, currentMonth, '', '', '');
         loadGradeOre('monthly', currentYear, currentMonth, '', '', '');
-
 
     });
 
@@ -1118,23 +1095,185 @@
         if (dateStart) url.searchParams.append("date_start", dateStart);
         if (dateEnd) url.searchParams.append("date_end", dateEnd);
 
+        let sellingData = null;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                sellingData = data; // simpan details
+
+                chartSelling.updateSeries([
+                    {
+                        name: "Limonite",
+                        type: "bar",
+                        data: data.details.map(d => ({ x: d.label, y: d.lim_actual, barges: d.barges }))
+                    },
+                    {
+                        name: "Saprolite",
+                        type: "bar",
+                        data: data.details.map(d => ({ x: d.label, y: d.sap_actual, barges: d.barges }))
+                    },
+                    {
+                        name: "Plan",
+                        type: "line",
+                        data: data.details.map(d => ({ x: d.label, y: d.total_plan, barges: d.barges }))
+                    }
+                ]);
+            })
+            .catch(error => console.error("Error fetching selling chart:", error));
+    }
+
+    var optionsSelling = {
+        series: [],
+        chart: {
+            type: 'line',  // mixed chart
+            height: 250,
+            stacked: true, // ✅ aktifkan stack untuk bar
+            fontFamily: 'Nunito, sans-serif',
+            toolbar: {
+                show: true,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+            },
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: "60%",
+                borderRadius: 2,
+            }
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [0, 0, 2],
+            dashArray: [0, 0, 3]
+        },
+        labels: [],
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: true,
+            position: 'top',
+        },
+        xaxis: {
+            axisBorder: {
+                color: '#e9e9e9',
+            },
+        },
+        yaxis: {
+            min: 0,
+            labels: {
+                formatter: (value) => {
+                    return value / 1000 + 'K';
+                },
+                style: {
+                    fontSize: '12px',
+                },
+            },
+        },
+        fill: {
+            opacity: [0.4, 0.5, 1]
+        },
+        colors: ['#f5b849', '#34d399', '#f43f5f'], // lim, sap, plan
+        noData: {
+            text: "No data...",
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            custom: function ({ seriesIndex, dataPointIndex, w }) {
+                const point = w.globals.initialSeries[seriesIndex].data[dataPointIndex];
+                if (!point) return `<div>No data</div>`;
+                let html = `<div class="p-2 text-xs">
+                        <strong>Day ${point.x}</strong><br/>
+                        Value: ${point.y.toLocaleString()}<hr/>
+                        <strong>Barges:</strong><br/>`;
+                if (point.barges && point.barges.length > 0) {
+                    point.barges.forEach(b => {
+                        html += `${b.barge_code} → ${b.total.toLocaleString()}<br/>`;
+                    });
+                } else {
+                    html += `<em>No barge data</em>`;
+                }
+                return html + "</div>";
+            }
+        }
+
+    };
+
+    document.getElementById('selling-chart').innerHTML = '';
+    var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), optionsSelling);
+    chartSelling.render();
+
+
+    /* Barging Summary Card */
+    function loadBargingSummary(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/barging-summary/", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const totalOre = data.total_ore || 0;
+                const totalLim = data.total_lim || 0;
+                const totalSap = data.total_sap || 0;
+
+                // Hitung persentase
+                const limPercent = totalOre ? ((totalLim / totalOre) * 100).toFixed(0) : 0;
+                const sapPercent = totalOre ? ((totalSap / totalOre) * 100).toFixed(0) : 0;
+
+                document.getElementById("total_barging").innerText = formatNumberShort(data.total_ore);
+                document.getElementById("lim_barging").innerText = formatNumberShort(data.total_lim);
+                document.getElementById("sap_barging").innerText = formatNumberShort(data.total_sap);
+
+
+            })
+            .catch(error => {
+                console.error("Error fetching barging summary:", error);
+            });
+    }
+    /* Barging Summary Card */
+
+    /* Barging Chart */
+    function loadBargingChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/barging-chart/", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("year", year);
+        if (month) url.searchParams.append("month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 const isMonthly = filterType === 'monthly';
                 // const chartType = isMonthly ? 'line' : 'line';
-                const chartType = isMonthly ? 'bar' : 'bar';
+                const chartType = isMonthly ? 'line' : 'line';
                 const seriesActual = isMonthly ? 'bar' : 'bar';
-                const seriesTarget = isMonthly ? 'bar' : 'bar';
+                const seriesTarget = isMonthly ? 'line' : 'line';
                 const enableDataLabels = ['weekly', 'range'].includes(filterType);
 
                 // const chartType = isMonthly ? 'area' : 'bar';
                 // const seriesType = isMonthly ? 'area' : 'bar';
 
-                chartSelling.updateOptions({
+                chartBarging.updateOptions({
                     chart: { type: chartType },
                     stroke: {
-                        width: [2, 2],
+                        width: [0, 2],
                         curve: isMonthly ? ['smooth', 'smooth'] : ['straight', 'straight']
                     },
                     plotOptions: {
@@ -1152,21 +1291,21 @@
                             fontSize: '10px'
                         }
                     },
-                    labels: data.summary.x_data,
+                    labels: data.x_data,
 
                 });
 
-                chartSelling.updateSeries([
+                chartBarging.updateSeries([
 
                     {
-                        name: 'Limonite',
+                        name: 'Barging',
                         type: seriesActual,
-                        data: data.summary.y_data_lim
+                        data: data.y_data_actual
                     },
                     {
-                        name: 'Saprolite',
+                        name: 'Plan',
                         type: seriesTarget,
-                        data: data.summary.y_data_sap
+                        data: data.y_data_plan
                     },
                 ]);
             })
@@ -1175,13 +1314,13 @@
             });
     }
 
-    var optionsSelling = {
+    var optionsBarging = {
         series: [],
         chart: {
             toolbar: {
                 show: true, // aktifkan toolbar
                 tools: {
-                    download: true,    // ✅ tombol download PNG/SVG
+                    download: true,
                     selection: false,
                     zoom: false,
                     zoomin: false,
@@ -1217,7 +1356,7 @@
             enabled: false
         },
         stroke: {
-            width: [0, 0.6],
+            width: [0, 1],
             // curve: ['straight', 'smooth'],
             curve: ['smooth', 'smooth'],
         },
@@ -1230,7 +1369,7 @@
         },
         legend: {
             show: true,
-            position: 'top',
+            position: 'bottom',
         },
         xaxis: {
             axisBorder: {
@@ -1302,12 +1441,13 @@
                 speed: 1000,
             },
         },
-        colors: ['#f5b849', '#34d399'],
+        colors: ['#34d399', '#f43f5f'],
     };
-    document.getElementById('selling-chart').innerHTML = '';
-    var chartSelling = new ApexCharts(document.querySelector("#selling-chart"), optionsSelling);
-    chartSelling.render();
-    /* Selling vs Plan Chart Chart */
+
+    document.getElementById('barging-chart').innerHTML = '';
+    var chartBarging = new ApexCharts(document.querySelector("#barging-chart"), optionsBarging);
+    chartBarging.render();
+    /* Barging vs Plan Chart Chart */
 
     /* Inventory Summary Card */
     function loadInventorySummary(filterType, year, month, week, dateStart, dateEnd) {
@@ -1391,7 +1531,7 @@
 
                 chart4.updateSeries([
                     {
-                        name: 'Mining',
+                        name: 'Production In',
                         // type: seriesType,
                         type: 'area',
                         data: data.y_data_stock
@@ -1404,7 +1544,7 @@
                         data: data.y_data_out
                     },
                     {
-                        name: 'Balance',
+                        name: 'Stock Balance',
                         // type: seriesType,
                         type: 'line',
                         data: data.y_data_balance
@@ -1431,28 +1571,15 @@
             dashArray: [0, 0, 5]
         },
         fill: {
-            //   opacity: [0.35, 0.45, 1],
-            opacity: [0.35, 0.75, 1],
-            gradient: {
-                inverseColors: false,
-                shade: 'light',
-                type: "vertical",
-                opacityFrom: 0.65,
-                opacityTo: 0.35,
-                stops: [0, 100, 100, 50]
-            }
+            opacity: [0.35, 0.46, 1],
         },
-        colors: ['#845ade', '#e6533c', '#23b7e5', '#23b7e5'],
+        colors: ['#34d399', '#e6533c', '#f5b849', '#23b7e5'],
         labels: [],
         markers: {
-            size: 0
+            size: [0, 0, 4],
         },
         yaxis: [
-
             {
-                // title: {
-                //   text: 'Mining',
-                // },
                 show: true,
                 labels: {
                     formatter: (value) => {
@@ -1501,13 +1628,237 @@
                     return y;
                 }
             }
-        }
+        },
+
     };
     document.getElementById('iventory-charts').innerHTML = ''
     var chart4 = new ApexCharts(document.querySelector("#iventory-charts"), options2);
     chart4.render();
-
     /* Inventory Stockpile Chart */
+
+
+    /* Mining Summary Card */
+    function loadMiningSummary(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("/kqms/dashboard/api/summary/mines", window.location.origin);
+
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("filter_year", year);
+        if (month) url.searchParams.append("filter_month", month);
+        if (week) url.searchParams.append("week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const mtd = data.mtd;
+
+                // angka produksi
+                document.getElementById("total-ore-mine").innerText = formatNumberShort(mtd.total_ore);
+                document.getElementById("total-lim-mine").innerText = formatNumberShort(mtd.total_limonite);
+                document.getElementById("total-sap-mine").innerText = formatNumberShort(mtd.total_saprolite);
+
+                // achievement %
+                document.getElementById("total-ach").innerText = mtd.achievement + "%";
+                document.getElementById("lim-ach").innerText = mtd.achievement_limonite + "%";
+                document.getElementById("sap-ach").innerText = mtd.achievement_saprolite + "%";
+
+                // labels (pakai label dari API, misalnya MTD)
+                document.getElementById("label-lim").innerText = `Limonite - ${mtd.label}`;
+                document.getElementById("label-sap").innerText = `Saprolite - ${mtd.label}`;
+                document.getElementById("label_total").innerText = `Total Ore - ${mtd.label}`;
+            })
+            .catch(error => {
+                console.error("Error fetching mining summary:", error);
+            });
+    }
+    /* Mining Summary Card */
+
+    /* Mining Chart */
+    function loadMiningChart(filterType, year, month, week, dateStart, dateEnd) {
+        const url = new URL("kqms/dashboard/api/summary/mines/ore", window.location.origin);
+        if (filterType) url.searchParams.append("filter_type", filterType);
+        if (year) url.searchParams.append("filter_year", year);
+        if (month) url.searchParams.append("filter_month", month);
+        if (week) url.searchParams.append("filter_week", week);
+        if (dateStart) url.searchParams.append("date_start", dateStart);
+        if (dateEnd) url.searchParams.append("date_end", dateEnd);
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const isMonthly = filterType === 'monthly';
+                // chart type
+                const chartType = isMonthly ? 'area' : 'bar';
+                // series type
+                const seriesActual = isMonthly ? 'area' : 'bar';
+                const seriesTarget = 'line'; // target selalu line
+
+                const actualData = isMonthly ? data.total_tonnage : data.total_actual;
+                const planData = data.total_plan || [];
+
+                const enableDataLabels = ['weekly', 'range'].includes(filterType);
+
+                console.log("API Mining data:", data);
+
+                chartMining.updateOptions({
+                    chart: { type: chartType },
+                    labels: data.x_data || [],
+                    stroke: {
+                        width: [0, 2],
+                        curve: ['smooth', 'smooth'],
+                        dashArray: [0, isMonthly ? 4 : 4] // ✅ plan garis putus-putus kalau monthly
+                    },
+                    fill: {
+                        type: isMonthly ? ['gradient', 'solid'] : ['gradient', 'solid'],
+                        gradient: {
+                            shade: 'light',
+                            type: "vertical",
+                            shadeIntensity: 0.2,
+                            opacityFrom: 0.7,
+                            opacityTo: 0.4,
+                            stops: [0, 100]
+                        }
+                    },
+                    plotOptions: {
+                        bar: {
+                            columnWidth: "70%",
+                            borderRadius: 2
+                        }
+                    },
+                    dataLabels: {
+                        enabled: enableDataLabels,
+                        formatter: function (val, opts) {
+                            if (opts.seriesIndex === 0) {
+                                return val.toFixed(1);
+                            }
+                            return ""; // hide label untuk Plan
+                        },
+                        style: { fontSize: '9px' }
+                    }
+                });
+
+                chartMining.updateSeries([
+                    {
+                        name: 'Ore',
+                        type: seriesActual,
+                        data: actualData || []
+                    },
+                    {
+                        name: 'Plan',
+                        type: seriesTarget,
+                        data: planData
+                    }
+                ]);
+            })
+            .catch(error => {
+                console.error("Error fetching ore chart:", error);
+            });
+    }
+
+    var optionsMining = {
+        series: [],
+        chart: {
+            toolbar: {
+                show: true, // aktifkan toolbar
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+            },
+            type: 'line',
+            height: 320,
+            fontFamily: 'Nunito, sans-serif',
+        },
+        grid: {
+            borderColor: '#f1f1f1',
+            // strokeDashArray: 3
+        },
+        labels: [],
+        dataLabels: {
+            enabled: false
+        },
+        dropShadow: {
+            enabled: false,
+            opacity: 0.2,
+            blur: 5,
+            left: -7,
+            top: 22,
+        },
+        legend: {
+            show: true,
+            position: 'bottom',
+        },
+        xaxis: {
+            axisBorder: {
+                color: '#e9e9e9',
+            },
+
+        },
+        yaxis: {
+            min: 0,
+            // tickAmount: 5,
+            labels: {
+                formatter: (value) => {
+                    return value / 1000 + 'K';
+                },
+                offsetY: 0,
+                style: {
+                    fontSize: '12px',
+
+                },
+            },
+        },
+        plotOptions: {
+            bar: {
+                columnWidth: "70%",
+                borderRadius: 2
+            }
+        },
+        tooltip: {
+            marker: {
+                show: true,
+            },
+            x: {
+                show: true,
+            },
+            y: {
+                formatter: function (y) {
+                    if (typeof y !== "undefined") {
+                        return y.toFixed(0);
+                    }
+                    return y;
+                }
+            }
+        },
+        noData: {
+            text: "No data...",
+        },
+        animations: {
+            enabled: true,
+            easing: "easeinout",
+            speed: 2000,
+            animateGradually: {
+                enabled: true,
+                delay: 250,
+            },
+            dynamicAnimation: {
+                enabled: true,
+                speed: 1000,
+            },
+        },
+        colors: ['#34d399', '#f43f5f'],
+    };
+
+    document.getElementById('mining-chart').innerHTML = '';
+    var chartMining = new ApexCharts(document.querySelector("#mining-chart"), optionsMining);
+    chartMining.render();
+    /* Mining vs Plan Chart Chart */
 
     /* sale percentage Chart */
     var options = {
@@ -1636,14 +1987,9 @@
                         <td>${parseFloat(row.released || 0).toFixed(1)}</td>
                         <td>${parseFloat(row.ni || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.fe || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.al2o3 || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.co || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.mgo || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sio2 || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cao || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.cr2o3 || 0).toFixed(2)}</td>
                         <td>${parseFloat(row.sm || 0).toFixed(2)}</td>
-                        <td>${parseFloat(row.mc || 0).toFixed(2)}</td>
                        <td>${row.grade}</td>
                     </tr>
                 `;
@@ -1713,8 +2059,8 @@
         const today = new Date();
         const currentMonth = today.getMonth() + 1; // bulan dimulai dari 0
         const currentYear = today.getFullYear();
-        // Panggil data & chart pertama kali dengan tipe monthly ('3')
 
+        // Panggil data & chart pertama kali dengan tipe monthly ('3')
         loadOreSummary('monthly', currentYear, currentMonth, '', '', '');
         loadOreChart('monthly', currentYear, currentMonth, '', '', '');
         loadOreClassChart('monthly', currentYear, currentMonth, '', '', '');
@@ -1722,8 +2068,15 @@
         loadSaleSummary('monthly', currentYear, currentMonth, '', '', '');
         loadSellingChart('monthly', currentYear, currentMonth, '', '', '');
 
+        loadBargingSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadBargingChart('monthly', currentYear, currentMonth, '', '', '');
+
         loadInventorySummary('monthly', currentYear, currentMonth, '', '', '');
         loadInventoryChart('monthly', currentYear, currentMonth, '', '', '');
+
+        loadMiningSummary('monthly', currentYear, currentMonth, '', '', '');
+        loadMiningChart('monthly', currentYear, currentMonth, '', '', '');
+
         loadStockpileRoa('monthly', currentYear, currentMonth, '', '', '');
         loadDomeRoa('monthly', currentYear, currentMonth, '', '', '');
         loadGradeOre('monthly', currentYear, currentMonth, '', '', '');
