@@ -1657,16 +1657,22 @@
                 document.getElementById("total-ore-mine").innerText = formatNumberShort(mtd.total_ore);
                 document.getElementById("total-lim-mine").innerText = formatNumberShort(mtd.total_limonite);
                 document.getElementById("total-sap-mine").innerText = formatNumberShort(mtd.total_saprolite);
+                document.getElementById("total-non-ore-mine").innerText = formatNumberShort(mtd.total_non_ore);
+                document.getElementById("total-mov-ore-mine").innerText = formatNumberShort(mtd.total_actual);
 
                 // achievement %
                 document.getElementById("total-ach").innerText = mtd.achievement + "%";
                 document.getElementById("lim-ach").innerText = mtd.achievement_limonite + "%";
                 document.getElementById("sap-ach").innerText = mtd.achievement_saprolite + "%";
+                document.getElementById("total-non-ach").innerText = mtd.achievement_non_ore + "%";
+                document.getElementById("total-mov-ach").innerText = mtd.achievement + "%";
 
                 // labels (pakai label dari API, misalnya MTD)
                 document.getElementById("label-lim").innerText = `Limonite - ${mtd.label}`;
                 document.getElementById("label-sap").innerText = `Saprolite - ${mtd.label}`;
                 document.getElementById("label_total").innerText = `Total Ore - ${mtd.label}`;
+                document.getElementById("label_total_non").innerText = `Non Ore - ${mtd.label}`;
+                document.getElementById("label_total_Mov").innerText = `Total Movements - ${mtd.label}`;
             })
             .catch(error => {
                 console.error("Error fetching mining summary:", error);
@@ -1705,7 +1711,7 @@
                     chart: { type: chartType },
                     labels: data.x_data || [],
                     stroke: {
-                        width: [0, 2],
+                        width: [1, 2],
                         curve: ['smooth', 'smooth'],
                         dashArray: [0, isMonthly ? 4 : 4] // ✅ plan garis putus-putus kalau monthly
                     },
@@ -1716,7 +1722,7 @@
                             type: "vertical",
                             shadeIntensity: 0.2,
                             opacityFrom: 0.7,
-                            opacityTo: 0.4,
+                            opacityTo: 0.3,
                             stops: [0, 100]
                         }
                     },

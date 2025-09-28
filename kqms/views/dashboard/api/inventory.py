@@ -1936,173 +1936,166 @@ def get_inventory_sap(request):
         }
     })
 
-
+# Stockpile
 def get_inventory_stockpile(request):
     saleFilter = request.GET.get('saleFilter')
-    areaFilter  = request.GET.get('areaFilter', '[]')  # Menggunakan '[]' sebagai default jika None
-    # Parsing JSON
-    areaFilter  = json.loads(areaFilter)  # Parsing JSON menjadi list
+    areaFilter = request.GET.get('areaFilter', '[]')
+    areaFilter = json.loads(areaFilter)
 
     # Pagination setup
     page = int(request.GET.get('page', 1))
     per_page = 100
     offset = (page - 1) * per_page
 
-    # Query to count total data
-    count_query = """
-        SELECT COUNT(*)
-        FROM inventory_by_dome AS t1
-        LEFT JOIN selling_by_dome AS t2 ON 
-            t2.stockpile = t1.stockpile AND
-            t2.dome = t1.pile_id
-        WHERE t1.status_dome != 'Finished'
-    """
-
-    # Apply filters to the count query
-    count_filters = []
+    # --- Build filters ---
+    count_filters = ["t1.status_dome = 'Continue'"]
     params = []
 
     if saleFilter:
         count_filters.append("t1.sale_adjust = %s")
         params.append(saleFilter)
 
-    if areaFilter:  # Pastikan areaFilter tidak kosong
-        count_filters.append(f"t1.stockpile IN ({', '.join(['%s'] * len(areaFilter))})")
+    if areaFilter:
+        placeholders = ', '.join(['%s'] * len(areaFilter))
+        count_filters.append(f"t1.stockpile IN ({placeholders})")
         params.extend(areaFilter)
 
-    if count_filters:
-        count_query += " AND " + " AND ".join(count_filters)
+    where_clause = " AND ".join(count_filters)
 
-    # Execute count query
+    # --- Count query ---
+    count_query = f"""
+        SELECT COUNT(*)
+        FROM inventory_by_stockpile AS t1
+        WHERE {where_clause}
+    """
+
     with connections['kqms_db'].cursor() as cursor:
-        cursor.execute(count_query,params)
+        cursor.execute(count_query, params)
         result = cursor.fetchone()
-        total_data = result[0] if result else 0 
-   
+        total_data = result[0] if result else 0
 
-        if db_vendor == 'postgresql':
-            query = """
-                SELECT
-                    t1.stockpile,
-                    SUM(t1.total_ore) AS total_ore,
-                    SUM(t1.released) AS released,
-                    t1.nama_material,
-                    COALESCE(ROUND(SUM(t2.tonnage)::numeric, 2), 0) AS total_selling,
-                    ROUND((SUM(t1.total_ore) - COALESCE(SUM(t2.tonnage), 0))::numeric, 2) AS balance,
-                    t1.Ni,
-                    t1.Co,
-                    t1.Al2O3,
-                    t1.CaO,
-                    t1.Cr2O3,
-                    t1.Fe,
-                    t1.Mgo,
-                    t1.SiO2,
-                    t1.MC,
-                    t1.SM
-                FROM inventory_by_dome AS t1
-                LEFT JOIN selling_by_dome AS t2 
-                    ON t2.stockpile = t1.stockpile 
-                    AND t2.dome = t1.pile_id
-                WHERE t1.status_dome != 'Finished'
-            """
-        else:
-            raise ValueError("Unsupported database vendor.")
-
-        # Add filters if any
-        if count_filters:
-            query += " AND " + " AND ".join(count_filters)
-
-        # Add the GROUP BY clause
-        query += """
+    # --- Data query (pakai mapping selling) ---
+    if db_vendor == 'postgresql':
+        query = f"""
+            WITH selling_sum AS (
+                SELECT 
+                    stockpile,
+                    CASE
+                        WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
+                        WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
+                        WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                        WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
+                        ELSE material
+                    END AS mapped_material,
+                    SUM(tonnage) AS total_selling
+                FROM selling_by_stockpile
+                WHERE (direct = 'No' OR direct IS NULL)
+                  AND sale_dome = 'Continue'
+                GROUP BY stockpile,
+                         CASE
+                             WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
+                             WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
+                             WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                             WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
+                             ELSE material
+                         END
+            )
+            SELECT
+                t1.stockpile,
+                t1.nama_material,
+                SUM(t1.total_ore) AS total_ore,
+                SUM(t1.released) AS released,
+                COALESCE(ROUND(s.total_selling::numeric, 2), 0) AS total_selling,
+                ROUND((SUM(t1.total_ore) - COALESCE(s.total_selling, 0))::numeric, 2) AS balance,
+                ROUND((SUM(t1.Ni::numeric    * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Ni,
+                ROUND((SUM(t1.Co::numeric    * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Co,
+                ROUND((SUM(t1.Al2O3::numeric * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Al2O3,
+                ROUND((SUM(t1.CaO::numeric   * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS CaO,
+                ROUND((SUM(t1.Cr2O3::numeric * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Cr2O3,
+                ROUND((SUM(t1.Fe::numeric    * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Fe,
+                ROUND((SUM(t1.Mgo::numeric   * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS Mgo,
+                ROUND((SUM(t1.SiO2::numeric  * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS SiO2,
+                ROUND((SUM(t1.MC::numeric    * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS MC,
+                ROUND((SUM(t1.SM::numeric    * t1.total_ore) / NULLIF(SUM(t1.total_ore),0))::numeric, 2) AS SM
+            FROM inventory_by_stockpile AS t1
+            LEFT JOIN selling_sum s
+                ON s.stockpile = t1.stockpile
+               AND s.mapped_material = t1.nama_material
+            WHERE {where_clause}
             GROUP BY 
                 t1.stockpile, 
                 t1.nama_material, 
-                t1.Ni, 
-                t1.Co, 
-                t1.Al2O3, 
-                t1.CaO, 
-                t1.Cr2O3, 
-                t1.Fe, 
-                t1.Mgo, 
-                t1.SiO2, 
-                t1.MC, 
-                t1.SM
-        """
-
-        # Add ordering and pagination (if needed)
-        query += """
+                s.total_selling
             ORDER BY t1.nama_material ASC, t1.stockpile ASC
+            LIMIT {per_page} OFFSET {offset};
         """
+    else:
+        raise ValueError("Unsupported database vendor.")
 
-        if db_vendor == 'postgresql':
-            query += f" LIMIT {per_page} OFFSET {offset};"
-        elif db_vendor in ['mssql', 'microsoft']:
-            query += f" OFFSET {offset} ROWS FETCH NEXT {per_page} ROWS ONLY;"
-        else:
-            raise ValueError("Unsupported database vendor.")
-
+    # --- Execute data query ---
     with connections['kqms_db'].cursor() as cursor:
-        cursor.execute(query,params)
+        cursor.execute(query, params)
         if cursor.description:
             columns = [col[0] for col in cursor.description]
             sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
         else:
             sql_data = []
 
-        for item in sql_data:
-            for field in [
-                'total_ore', 'released', 'total_selling', 'balance',
-                'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
-            ]:
-                val = item.get(field)
-                if isinstance(val, Decimal):
-                    item[field] = float(val)
-                elif isinstance(val, (float, int)):
-                    item[field] = float(val)
-                elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
-                    item[field] = float(val)
-    
-    # Tambahkan ini setelah `sql_data` selesai dikonversi
+    # --- Convert decimals to float ---
+    for item in sql_data:
+        for field in [
+            'total_ore', 'released', 'total_selling', 'balance',
+            'ni', 'co', 'al2o3', 'cao', 'cr2o3', 'fe', 'mgo', 'sio2', 'mc', 'sm'
+        ]:
+            val = item.get(field)
+            if isinstance(val, Decimal):
+                item[field] = float(val)
+            elif isinstance(val, (float, int)):
+                item[field] = float(val)
+            elif isinstance(val, str) and val.replace('.', '', 1).isdigit():
+                item[field] = float(val)
+
+    # --- Summary ---
     total_released = sum(item['released'] for item in sql_data if item['released'])
     total_ore      = sum(item['total_ore'] for item in sql_data if item['total_ore'])
     total_selling  = sum(item['total_selling'] for item in sql_data if item['total_selling'])
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
-
     def weighted_avg(field):
         return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
 
     sum_results = {
-            'total_ore': total_ore,
-            'total_released': total_released,
-            'total_selling': total_selling,
-            'total_balance': total_balance,
-            'avg_ni': weighted_avg('ni'),
-            'avg_co': weighted_avg('co'),
-            'avg_al2o3': weighted_avg('al2o3'),
-            'avg_cao': weighted_avg('cao'),
-            'avg_cr2o3': weighted_avg('cr2o3'),
-            'avg_fe': weighted_avg('fe'),
-            'avg_mgo': weighted_avg('mgo'),
-            'avg_sio2': weighted_avg('sio2'),
-            'avg_mc': weighted_avg('mc')
+        'total_ore': total_ore,
+        'total_released': total_released,
+        'total_selling': total_selling,
+        'total_balance': total_balance,
+        'avg_ni': weighted_avg('ni'),
+        'avg_co': weighted_avg('co'),
+        'avg_al2o3': weighted_avg('al2o3'),
+        'avg_cao': weighted_avg('cao'),
+        'avg_cr2o3': weighted_avg('cr2o3'),
+        'avg_fe': weighted_avg('fe'),
+        'avg_mgo': weighted_avg('mgo'),
+        'avg_sio2': weighted_avg('sio2'),
+        'avg_mc': weighted_avg('mc'),
+        'avg_sm': weighted_avg('sm'),
     }
 
-    
-    # Calculate if there is more data
+    # --- Pagination metadata ---
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
-        'data'      : sql_data,
-        'summary'   : sum_results,
+        'data': sql_data,
+        'summary': sum_results,
         'pagination': {
-            'more'  : more_data,
+            'more': more_data,
             'total_pages': total_pages,
             'current_page': page,
             'total_data': total_data
         }
     })
+
 
 # Get Finish Inventory
 def get_inventory_finished(request):

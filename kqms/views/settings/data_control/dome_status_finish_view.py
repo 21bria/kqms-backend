@@ -105,7 +105,7 @@ def get_dome_finish(request, id):
             item = domeStatusFinishView.objects.get(id=id)
             data = {
                 'id':item.id,
-                'id_dome':item.id_dome,
+                'id_dome'        :item.id_dome,
                 'sampling_point' :clean_string(item.sampling_point),
                 'sampling_area'  :clean_string(item.sampling_area),
                 'tonnage_dome'   :item.tonnage_dome, 
@@ -133,14 +133,14 @@ def insert_dome_finish(request):
     try:
         # === Aturan validasi ===
         rules = {
-            'id_dome': ['required'],
-            'tonnage_dome': ['required'],
-            # 'description': ['required'],  # kalau mau opsional → hapus 'required'
+            'id_dome'       : ['required'],
+            'tonnage_dome'  : ['required'],
+            # 'description' : ['required'],  # kalau mau opsional → hapus 'required'
         }
 
         custom_messages = {
-            'id_dome.required': 'Dome is required.',
-            'tonnage_dome.required': 'Tonnage is required.',
+            'id_dome.required'      : 'Dome is required.',
+            'tonnage_dome.required' : 'Tonnage is required.',
             # 'description.required': 'Description is required.',
         }
 
