@@ -25,9 +25,9 @@ def build_summary_query(db_vendor: str, where_clause: str) -> str:
     if db_vendor == 'postgresql':
         return f"""
             SELECT 
-                COALESCE(ROUND(SUM(CASE WHEN sale_adjust IN ('HPAL', 'RKEF') THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total,
-                COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'HPAL' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_lim,
-                COALESCE(ROUND(SUM(CASE WHEN sale_adjust = 'RKEF' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_sap
+                COALESCE(ROUND(SUM(CASE WHEN material IN ('LIM', 'SAP') THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total,
+                COALESCE(ROUND(SUM(CASE WHEN material = 'LIM' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_lim,
+                COALESCE(ROUND(SUM(CASE WHEN material = 'SAP' THEN tonnage ELSE 0 END)::numeric, 2), 0) AS total_sap
             FROM details_selling_barging
             {where_clause}
         """
@@ -456,7 +456,6 @@ def get_chart_barging(request):
         plan_total   = []
         lim_plan     = []
         sap_plan     = []
-
 
         for row in results:
             print(f"ROW: {row} ({len(row)} fields)")

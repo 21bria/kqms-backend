@@ -1298,9 +1298,14 @@
                 chartBarging.updateSeries([
 
                     {
-                        name: 'Barging',
+                        name: 'Limonite',
                         type: seriesActual,
-                        data: data.y_data_actual
+                        data: data.y_lim_actual
+                    },
+                    {
+                        name: 'Saprolite',
+                        type: seriesActual,
+                        data: data.y_sap_actual
                     },
                     {
                         name: 'Plan',
@@ -1328,22 +1333,9 @@
                     pan: false,
                     reset: false
                 },
-                export: {
-                    csv: {
-                        filename: 'export-chart',
-                        columnDelimiter: ',',
-                        headerCategory: 'Category',
-                        headerValue: 'Value',
-                    },
-                    svg: {
-                        filename: 'export-chart',
-                    },
-                    png: {
-                        filename: 'export-chart',
-                    }
-                }
             },
             type: 'line',
+            stacked: true, // ✅ aktifkan stack untuk bar
             height: 250,
             fontFamily: 'Nunito, sans-serif',
         },
@@ -1356,7 +1348,7 @@
             enabled: false
         },
         stroke: {
-            width: [0, 1],
+            width: [0,0, 1],
             // curve: ['straight', 'smooth'],
             curve: ['smooth', 'smooth'],
         },
@@ -1441,7 +1433,7 @@
                 speed: 1000,
             },
         },
-        colors: ['#34d399', '#f43f5f'],
+         colors: ['#f5b849', '#34d399', '#f43f5f'], // lim, sap, plan
     };
 
     document.getElementById('barging-chart').innerHTML = '';
