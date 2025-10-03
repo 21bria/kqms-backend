@@ -38,14 +38,15 @@ from .compile_year import (
     fetch_inventory_dome_year,
     fetch_summary_to_year
 )
+def parse_label(dt_val):
+    if isinstance(dt_val, date):          # datetime.date / datetime
+        return dt_val.day                 # kalau range (daily)
+    if isinstance(dt_val, str) and len(dt_val) == 7:  # "YYYY-MM"
+        return datetime.strptime(dt_val, "%Y-%m").month
+    if isinstance(dt_val, str) and len(dt_val) == 10: # "YYYY-MM-DD"
+        return datetime.strptime(dt_val, "%Y-%m-%d").day
+    return dt_val
 
-def parse_label(dt_str):
-    if len(dt_str) == 10:  # YYYY-MM-DD
-        return datetime.strptime(dt_str, "%Y-%m-%d").day
-    elif len(dt_str) == 7:  # YYYY-MM
-        return datetime.strptime(dt_str, "%Y-%m").month
-    else:
-        return dt_str  # fallback
     
 def excel_unified_summary(request):
     mode       = request.GET.get("mode") or "range"   # default: range
