@@ -1,7 +1,7 @@
 # reports/views.py
 from io import BytesIO
 from django.http import HttpResponse, HttpResponseBadRequest
-from datetime import date
+from datetime import date,datetime
 from django.utils import timezone
 from django.utils.timezone import localtime
 import xlsxwriter
@@ -36,8 +36,17 @@ from .compile_year import (
     fetch_production_mining_year,
     fetch_inventory_balance_year,
     fetch_inventory_dome_year,
+    fetch_summary_to_year
 )
 
+def parse_label(dt_str):
+    if len(dt_str) == 10:  # YYYY-MM-DD
+        return datetime.strptime(dt_str, "%Y-%m-%d").day
+    elif len(dt_str) == 7:  # YYYY-MM
+        return datetime.strptime(dt_str, "%Y-%m").month
+    else:
+        return dt_str  # fallback
+    
 def excel_unified_summary(request):
     mode       = request.GET.get("mode") or "range"   # default: range
     date_start = request.GET.get("date_start") or str(date.today().replace(day=1))
@@ -64,6 +73,7 @@ def excel_unified_summary(request):
         barging = fetch_barging_year(year)
         inv     = fetch_inventory_balance_year(year)
         invlist = fetch_inventory_dome_year(year)
+        summary = fetch_summary_to_year(year)
     else:
         return HttpResponseBadRequest("Invalid mode or missing parameters")
 
@@ -77,6 +87,7 @@ def excel_unified_summary(request):
     fmt_num   = workbook.add_format({'border': 1, 'num_format': '#,##0'})
     fmt_dec2  = workbook.add_format({'border': 1, 'num_format': '#,##0.00'})
     fmt_small = workbook.add_format({'font_size': 9, 'italic': True, 'font_color': '#6B7280'})
+    
 
     # === Sheet Data_Mining
     ws_mining = workbook.add_worksheet('Data_Mining')
@@ -258,10 +269,64 @@ def excel_unified_summary(request):
 
     ws_sum.write('F2', f'Generated: {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}', fmt_small)
 
+   # === Project Summary To-Date ===
+    ws_sum.write('A4', 'Project Summary to Date', fmt_title)
+
+    # ---------- Mining (kolom A–B, vertikal) ----------
+    ws_sum.write('A6', 'Mining', fmt_th)
+    ws_sum.write_row('A7', ['Metric','Value'], fmt_th)
+    ws_sum.write('A8',  'Total Actual', fmt_td); ws_sum.write_number('B8', summary['mining']['actual_total'], fmt_num)
+    ws_sum.write('A9',  'Total Plan',   fmt_td); ws_sum.write_number('B9', summary['mining']['plan_total'], fmt_num)
+    ws_sum.write('A10', 'Achievement',  fmt_td); ws_sum.write('B10', f"{(summary['mining']['actual_total']/summary['mining']['plan_total']*100 if summary['mining']['plan_total'] else 0):.0f}%", fmt_td)
+    ws_sum.write('A11', 'Total LIM',    fmt_td); ws_sum.write_number('B11', summary['mining']['lim_total'], fmt_num)
+    ws_sum.write('A12', 'Total SAP',    fmt_td); ws_sum.write_number('B12', summary['mining']['sap_total'], fmt_num)
+    ws_sum.write('A13', 'Total Waste',  fmt_td); ws_sum.write_number('B13', summary['mining']['waste_total'], fmt_num)
+    ws_sum.write('A14', 'Total Quarry', fmt_td); ws_sum.write_number('B14', summary['mining']['quarry_total'], fmt_num)
+    ws_sum.write('A15', 'Total Topsoil',fmt_td); ws_sum.write_number('B15', summary['mining']['topsoil_total'], fmt_num)
+    ws_sum.write('A16', 'Total OB',     fmt_td); ws_sum.write_number('B16', summary['mining']['ob_total'], fmt_num)
+    ws_sum.write('A17', 'Total Ballast',fmt_td); ws_sum.write_number('B17', summary['mining']['ballast_total'], fmt_num)
+    ws_sum.write('A18', 'Total Biomass',fmt_td); ws_sum.write_number('B18', summary['mining']['biomass_total'], fmt_num)
+
+    # ---------- Quality (kolom D–I, horizontal) ----------
+    ws_sum.write('D6', 'Quality', fmt_th)
+    ws_sum.write_row('D7', ['Metric','Total','LIM (total)','LIM (%)','SAP (total)','SAP (%)'], fmt_th)
+    ws_sum.write_row('D8', [
+        'Value',
+        summary['quality']['total'] or 0,
+        summary['quality']['lim'] or 0,
+        f"{(summary['quality']['lim']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%",
+        summary['quality']['sap'] or 0,
+        f"{(summary['quality']['sap']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%",
+    ], fmt_td)
+
+    # ---------- Selling (kolom D–I, horizontal) ----------
+    ws_sum.write('D10', 'Selling', fmt_th)
+    ws_sum.write_row('D11', ['Metric','Total Actual','Total Plan','Achievement','LIM Actual','SAP Actual'], fmt_th)
+    ws_sum.write_row('D12', [
+        'Value',
+        summary['selling']['actual'] or 0,
+        summary['selling']['plan'] or 0,
+        f"{(summary['selling']['actual']/summary['selling']['plan']*100):.0f}%" if summary['selling']['plan'] else "0%",
+        summary['selling']['lim_actual'] or 0,
+        summary['selling']['sap_actual'] or 0,
+    ], fmt_td)
+
+    # ---------- Inventory (kolom D–H, horizontal) ----------
+    ws_sum.write('D14', 'Inventory', fmt_th)
+    ws_sum.write_row('D15', ['Metric','Production In','Selling Out','Current Stock'], fmt_th)
+    ws_sum.write_row('D16', [
+        'Value',
+        summary['inventory']['in'] or 0,
+        summary['inventory']['out'] or 0,
+        summary['inventory']['opening'] or 0,   # pakai closing balance
+    ], fmt_td)
+
+
+
     # ---------------- Mining Section ----------------
-    ws_sum.write('A4', 'Mining Metrics', fmt_title)
-    ws_sum.write_row('A5', ['Metric', 'Value'], fmt_th)
-    row = 6
+    ws_sum.write('A20', 'Mining Metrics', fmt_title)
+    ws_sum.write_row('A21', ['Metric', 'Value'], fmt_th)
+    row = 22 # mulai dari baris 22
 
     total_actual = sum(r["actual_total"] for r in mining["rows"]) if mining["rows"] else 0
     total_plan   = sum(r["plan_total"] for r in mining["rows"]) if mining["rows"] else 0
@@ -320,12 +385,12 @@ def excel_unified_summary(request):
         })
 
         chart_m.combine(line_chart_m)
-        ws_sum.insert_chart('E5', chart_m, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('D21', chart_m, {'x_scale': 2.07, 'y_scale': 1.32})
 
     # ================= Quality Summary =================
-    ws_sum.write('A26', 'Quality Metrics', fmt_title)
-    ws_sum.write_row('A27', ['Metric', 'Value'], fmt_th)
-    row = 28
+    ws_sum.write('A43', 'Quality Metrics', fmt_title)
+    ws_sum.write_row('A44', ['Metric', 'Value'], fmt_th)
+    row = 45    # mulai dari baris 45
 
     total_all = sum(r["prod_total"] for r in prod["rows"]) if prod["rows"] else 0
     total_lim = sum(r.get("prod_lim", 0) for r in prod["rows"])
@@ -372,12 +437,12 @@ def excel_unified_summary(request):
         #     'values': f'=Data_Quality!$B${first}:$B${last}',
         # })
         # chart_q.combine(line_chart_q)
-        ws_sum.insert_chart('E26', chart_q, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('D44', chart_q, {'x_scale': 2.07, 'y_scale': 1.32})
 
    # ================= Selling Summary =================
-    ws_sum.write('A47', 'Selling Metrics', fmt_title)
-    ws_sum.write_row('A48', ['Metric', 'Value'], fmt_th)
-    row = 49
+    ws_sum.write('A65', 'Selling Metrics', fmt_title)
+    ws_sum.write_row('A66', ['Metric', 'Value'], fmt_th)
+    row = 67    # mulai dari baris 65
 
     total_actual = sum(r["actual_total"] for r in sell["rows"]) if sell["rows"] else 0
     total_plan   = sum(r["plan_total"] for r in sell["rows"]) if sell["rows"] else 0
@@ -436,12 +501,12 @@ def excel_unified_summary(request):
         })
 
         chart_s.combine(line_chart_s)
-        ws_sum.insert_chart('E47', chart_s, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('D66', chart_s, {'x_scale': 2.07, 'y_scale': 1.32})
 
     # ================= Barging Summary =================
-    ws_sum.write('A68', 'Barging Metrics', fmt_title)
-    ws_sum.write_row('A69', ['Metric', 'Value'], fmt_th)
-    row = 70
+    ws_sum.write('A87', 'Barging Metrics', fmt_title)
+    ws_sum.write_row('A88', ['Metric', 'Value'], fmt_th)
+    row = 89
 
     summary_b = barging["summary"]
 
@@ -452,38 +517,6 @@ def excel_unified_summary(request):
     ws_sum.write(f'A{row}', 'LIM Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["lim_plan"], fmt_num); row += 1
     ws_sum.write(f'A{row}', 'SAP Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["sap_plan"], fmt_num); row += 1
 
-
-    # if barging["rows"]:
-    #     first, last = 2, len(barging["rows"]) + 1
-    #     chart_b = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
-    #     chart_b.set_title({'name': 'Barging Trend'})
-    #     chart_b.set_legend({'position': 'top'})
-
-    #     # Actual LIM
-    #     chart_b.add_series({
-    #         'name': 'LIM Actual',
-    #         'categories': f'=Barging!$A${first}:$A${last}',
-    #         'values': f'=Barging!$B${first}:$B${last}',
-    #         'fill': {'color': '#f4b94a'}
-    #     })
-    #     # Actual SAP
-    #     chart_b.add_series({
-    #         'name': 'SAP Actual',
-    #         'categories': f'=Barging!$A${first}:$A${last}',
-    #         'values': f'=Barging!$C${first}:$C${last}',
-    #         'fill': {'color': '#34d399'}
-    #     })
-    
-     # Line Plan
-        # line_chart_b = workbook.add_chart({'type': 'line'})
-        # line_chart_b.add_series({
-        #     'name': 'Plan Total',
-        #     'categories': f'=Barging!$A${first}:$A${last}',
-        #     'values': f'=Barging!$G${first}:$G${last}',
-        #     'line': {'color': '#ef4444', 'width': 2.25}
-        # })
-
-    # chart_b = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
 
     if barging["rows"]:
         first, last = 2, len(barging["rows"]) + 1
@@ -507,13 +540,13 @@ def excel_unified_summary(request):
             'line': {'color': "#ea5e5e", 'width': 2.25}
         })
         chart_barges.combine(line_plan)
-        ws_sum.insert_chart('E68', chart_barges, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('D88', chart_barges, {'x_scale': 2.07, 'y_scale': 1.32})
 
 
     # ================= Inventory Summary =================
-    ws_sum.write('A89', 'Inventory Metrics', fmt_title)
-    ws_sum.write_row('A90', ['Metric', 'Value'], fmt_th)
-    row = 91
+    ws_sum.write('A109', 'Inventory Metrics', fmt_title)
+    ws_sum.write_row('A110', ['Metric', 'Value'], fmt_th)
+    row = 111  # mulai dari baris 109
 
     opening_stock = inv["summary"].get("opening_balance", 0)
     closing_stock = inv["summary"].get("closing_balance", 0)
@@ -591,7 +624,7 @@ def excel_unified_summary(request):
         # Axis labels
         chart_i.set_y_axis({'name': 'Production / Selling'})
         chart_i.set_y2_axis({'name': 'Stock Opname'})
-        ws_sum.insert_chart('E89', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('D110', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
 
 
     # Lebarkan kolom summary
@@ -631,6 +664,7 @@ def pdf_unified_summary(request):
         sell    = fetch_selling_year(year)
         barging = fetch_barging_year(year)
         inv     = fetch_inventory_balance_year(year)
+        summary = fetch_summary_to_year(year)
     else:
         return HttpResponseBadRequest("Invalid mode or missing parameters")
 
@@ -1173,7 +1207,8 @@ def pdf_unified_summary(request):
         "Mining Metrics",
         mining_metrics,
         mining["rows"],
-        [str(r['dt'].day).zfill(2) for r in mining["rows"]],
+        # [str(r['dt'].day).zfill(2) for r in mining["rows"]],
+        [str(parse_label(r['dt'])).zfill(2) for r in mining["rows"]],
         [[safe_float(r.get("actual_total")) for r in mining["rows"]]],
         line_series=[safe_float(r.get("plan_total")) for r in mining["rows"]],
         bar_color="#335871",
@@ -1217,7 +1252,8 @@ def pdf_unified_summary(request):
 
     quality_series = [[safe_float(r.get("prod_total")) for r in prod["rows"]]]
     add_section("Quality Metrics", quality_metrics, prod["rows"],
-        [str(r['dt'].day).zfill(2) for r in prod["rows"]],
+        # [str(r['dt'].day).zfill(2) for r in prod["rows"]],
+        [str(parse_label(r['dt'])).zfill(2) for r in prod["rows"]],
         quality_series,
         bar_color="#ff7c2c")
 
@@ -1250,7 +1286,8 @@ def pdf_unified_summary(request):
 
     selling_series = [[safe_float(r.get("actual_total")) for r in sell["rows"]]]
     add_section("Selling Metrics", selling_metrics, sell["rows"],
-        [str(r['dt'].day).zfill(2) for r in sell["rows"]],
+        # [str(r['dt'].day).zfill(2) for r in sell["rows"]],
+        [str(parse_label(r['dt'])).zfill(2) for r in sell["rows"]],
         selling_series,
         line_series=[safe_float(r.get('plan_total')) for r in sell["rows"]],
         bar_color="#fac849")
@@ -1312,7 +1349,8 @@ def pdf_unified_summary(request):
         "Inventory Metrics",
         inv_metrics,
         inv["rows"],
-        [str(r['dt'].day).zfill(2) for r in inv["rows"]],
+        # [str(r['dt'].day).zfill(2) for r in inv["rows"]],
+        [str(parse_label(r['dt'])).zfill(2) for r in inv["rows"]],
         bar_series=inv_series,
         line_series=None  # ⬅ Hilangkan line
     )
