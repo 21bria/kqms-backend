@@ -18,7 +18,7 @@ from reportlab.graphics.charts.axes import XValueAxis, YValueAxis
 from reportlab.graphics.widgets.markers import makeMarker
 from reportlab.lib.colors import HexColor
 from reportlab.graphics.charts.legends import Legend
-
+from ....utils.safe_chart import safe_chart_multi
 
 from .compile_renge import (
     fetch_production_quality, 
@@ -47,7 +47,8 @@ def parse_label(dt_val):
         return datetime.strptime(dt_val, "%Y-%m-%d").day
     return dt_val
 
-    
+
+  
 def excel_unified_summary(request):
     mode       = request.GET.get("mode") or "range"   # default: range
     date_start = request.GET.get("date_start") or str(date.today().replace(day=1))
@@ -291,36 +292,40 @@ def excel_unified_summary(request):
     # ---------- Quality (kolom D–I, horizontal) ----------
     ws_sum.write('D6', 'Quality', fmt_th)
     ws_sum.write_row('D7', ['Metric','Total','LIM (total)','LIM (%)','SAP (total)','SAP (%)'], fmt_th)
-    ws_sum.write_row('D8', [
-        'Value',
-        summary['quality']['total'] or 0,
-        summary['quality']['lim'] or 0,
-        f"{(summary['quality']['lim']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%",
-        summary['quality']['sap'] or 0,
-        f"{(summary['quality']['sap']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%",
-    ], fmt_td)
+
+    ws_sum.write('D8', 'Value', fmt_td)
+    ws_sum.write_number('E8', summary['quality']['total'] or 0, fmt_num)
+    ws_sum.write_number('F8', summary['quality']['lim'] or 0, fmt_num)
+    ws_sum.write('G8', f"{(summary['quality']['lim']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%", fmt_td)
+    ws_sum.write_number('H8', summary['quality']['sap'] or 0, fmt_num)
+    ws_sum.write('I8', f"{(summary['quality']['sap']/summary['quality']['total']*100):.2f}%" if summary['quality']['total'] else "0%", fmt_td)
 
     # ---------- Selling (kolom D–I, horizontal) ----------
     ws_sum.write('D10', 'Selling', fmt_th)
     ws_sum.write_row('D11', ['Metric','Total Actual','Total Plan','Achievement','LIM Actual','SAP Actual'], fmt_th)
-    ws_sum.write_row('D12', [
-        'Value',
-        summary['selling']['actual'] or 0,
-        summary['selling']['plan'] or 0,
-        f"{(summary['selling']['actual']/summary['selling']['plan']*100):.0f}%" if summary['selling']['plan'] else "0%",
-        summary['selling']['lim_actual'] or 0,
-        summary['selling']['sap_actual'] or 0,
-    ], fmt_td)
+
+    ws_sum.write('D12', 'Value', fmt_td)
+    ws_sum.write_number('E12', summary['selling']['actual'] or 0, fmt_num)
+    ws_sum.write_number('F12', summary['selling']['plan'] or 0, fmt_num)
+    ws_sum.write('G12', f"{(summary['selling']['actual']/summary['selling']['plan']*100):.0f}%" if summary['selling']['plan'] else "0%", fmt_td)
+    ws_sum.write_number('H12', summary['selling']['lim_actual'] or 0, fmt_num)
+    ws_sum.write_number('I12', summary['selling']['sap_actual'] or 0, fmt_num)
 
     # ---------- Inventory (kolom D–H, horizontal) ----------
     ws_sum.write('D14', 'Inventory', fmt_th)
     ws_sum.write_row('D15', ['Metric','Production In','Selling Out','Current Stock'], fmt_th)
-    ws_sum.write_row('D16', [
-        'Value',
-        summary['inventory']['in'] or 0,
-        summary['inventory']['out'] or 0,
-        summary['inventory']['opening'] or 0,   # pakai closing balance
-    ], fmt_td)
+
+    ws_sum.write('D16', 'Value', fmt_td)
+    ws_sum.write_number('E16', summary['inventory']['in'] or 0, fmt_num)
+    ws_sum.write_number('F16', summary['inventory']['out'] or 0, fmt_num)
+    ws_sum.write_number('G16', summary['inventory']['opening'] or 0, fmt_num)  # pakai closing balance
+
+
+    # Atur lebar kolom D–I (Quality & Selling)
+    ws_sum.set_column('D:I', 12)
+
+    # Atur lebar kolom D–H (Inventory)
+    ws_sum.set_column('D:H', 12)
 
 
 
@@ -365,28 +370,75 @@ def excel_unified_summary(request):
     ws_sum.write(f'A{row}', 'Total Biomass', fmt_td); ws_sum.write_number(f'B{row}', total_biomass, fmt_num); row += 1
 
     # Chart Mining (stacked bar + line plan)
+    # if mining["rows"]:
+    #     first, last = 2, len(mining["rows"]) + 1
+    #     chart_m = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
+    #     chart_m.set_title({'name': 'Mining Trend'})
+    #     chart_m.set_legend({'position': 'top'})
+
+    #     for col, name in zip("BCDEFGHI", ['LIM','SAP','Waste','Quarry','Topsoil','OB','Ballast','Biomass']):
+    #         chart_m.add_series({
+    #             'name': name,
+    #             'categories': f'=Data_Mining!$A${first}:$A${last}',
+    #             'values': f'=Data_Mining!${col}${first}:${col}${last}',
+    #         })
+
+    #     line_chart_m = workbook.add_chart({'type': 'line'})
+    #     line_chart_m.add_series({
+    #         'name': 'Plan',
+    #         'categories': f'=Data_Mining!$A${first}:$A${last}',
+    #         'values': f'=Data_Mining!$K${first}:$K${last}',
+    #     })
+
+    #     chart_m.combine(line_chart_m)
+    #     ws_sum.insert_chart('D21', chart_m, {'x_scale': 2.07, 'y_scale': 1.32})
+    material_colors = {
+            'LIM': "#f5d8aa",      # kuning
+            'SAP': "#b1dcb5",      # hijau
+            'Waste': "#d4c399", 
+            'Quarry': '#365e58',   
+            'Topsoil': "#b79d46", 
+            'OB': "#f29b5d",      
+            'Ballast': "#7f7f7f",  
+            'Biomass': '#f4b0ad', 
+        }   
+
     if mining["rows"]:
         first, last = 2, len(mining["rows"]) + 1
-        chart_m = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
-        chart_m.set_title({'name': 'Mining Trend'})
-        chart_m.set_legend({'position': 'top'})
+        categories = f'=Data_Mining!$A${first}:$A${last}'
 
+        series_defs = []
         for col, name in zip("BCDEFGHI", ['LIM','SAP','Waste','Quarry','Topsoil','OB','Ballast','Biomass']):
-            chart_m.add_series({
+            series_defs.append({
                 'name': name,
-                'categories': f'=Data_Mining!$A${first}:$A${last}',
                 'values': f'=Data_Mining!${col}${first}:${col}${last}',
+                'fill': {'color': material_colors.get(name, '#999999')}  # default abu2 kalau gak ketemu
             })
 
-        line_chart_m = workbook.add_chart({'type': 'line'})
-        line_chart_m.add_series({
+        line_defs = [{
             'name': 'Plan',
-            'categories': f'=Data_Mining!$A${first}:$A${last}',
             'values': f'=Data_Mining!$K${first}:$K${last}',
-        })
+            'line': {'color': "#ea5e5e", 'width': 2.25}
+        }]
+    else:
+        categories = None
+        series_defs = None
+        line_defs = None
 
-        chart_m.combine(line_chart_m)
-        ws_sum.insert_chart('D21', chart_m, {'x_scale': 2.07, 'y_scale': 1.32})
+    safe_chart_multi(
+        workbook,
+        ws_sum,
+        pos='D21',
+        title='Mining Trend',
+        rows=mining["rows"],
+        categories=categories,
+        series_defs=series_defs,
+        line_defs=line_defs,   # langsung combine line plan
+        scale=(2.07, 1.32),
+        stacked=True,
+        legend_pos='top'
+    )
+
 
     # ================= Quality Summary =================
     ws_sum.write('A43', 'Quality Metrics', fmt_title)
@@ -414,31 +466,40 @@ def excel_unified_summary(request):
         ws_sum.write(f'A{row}', 'Min day', fmt_td); ws_sum.write(f'B{row}', f"{min_day['dt']} • {min_day['prod_total']:.2f}", fmt_td); row += 1
 
     # Chart Quality
+
     if prod["rows"]:
         first, last = 2, len(prod["rows"]) + 1
-        chart_q = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
-        chart_q.set_title({'name': 'Quality Trend'})
-        chart_q.set_legend({'position': 'top'})
-        chart_q.add_series({
-            'name': 'LIM',
-            'categories': f'=Data_Quality!$A${first}:$A${last}',
-            'values': f'=Data_Quality!$C${first}:$C${last}',
-            'fill': {'color': '#f4b94a'} 
-        })
-        chart_q.add_series({
-            'name': 'SAP',
-            'categories': f'=Data_Quality!$A${first}:$A${last}',
-            'values': f'=Data_Quality!$D${first}:$D${last}',
-            'fill': {'color': '#34d399'} 
-        })
-        # line_chart_q = workbook.add_chart({'type': 'line'})
-        # line_chart_q.add_series({
-        #     'name': 'Total',
-        #     'categories': f'=Data_Quality!$A${first}:$A${last}',
-        #     'values': f'=Data_Quality!$B${first}:$B${last}',
-        # })
-        # chart_q.combine(line_chart_q)
-        ws_sum.insert_chart('D44', chart_q, {'x_scale': 2.07, 'y_scale': 1.32})
+        categories  = f'=Data_Quality!$A${first}:$A${last}'
+
+        series_defs = [
+            {
+                'name': 'LIM',
+                'values': f'=Data_Quality!$C${first}:$C${last}',
+                'fill': {'color': "#f8dfb7"}
+            },
+            {
+                'name': 'SAP',
+                'values': f'=Data_Quality!$D${first}:$D${last}',
+                'fill': {'color': '#bdddc0'}
+            }
+        ]
+    else:
+        categories = None
+        series_defs = None
+
+    chart_q = safe_chart_multi(
+        workbook,
+        ws_sum,
+        pos='D44',
+        title='Quality Trend',
+        rows=prod["rows"],
+        categories=categories,
+        series_defs=series_defs,
+        scale=(2.07, 1.32),
+        stacked=True,
+        legend_pos='top'
+    )
+
 
    # ================= Selling Summary =================
     ws_sum.write('A65', 'Selling Metrics', fmt_title)
@@ -471,38 +532,85 @@ def excel_unified_summary(request):
         ws_sum.write(f'B{row}', f"{min_day['dt']} • {min_day['actual_total']:.2f}", fmt_td); row += 1
 
     # Chart Selling: stacked LIM+SAP actual, line = plan_total
+
+    # if sell["rows"]:
+    #     first, last = 2, len(sell["rows"]) + 1
+    #     chart_s = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
+    #     chart_s.set_title({'name': 'Selling Trend'})
+    #     chart_s.set_legend({'position': 'top'})
+
+    #     # Actual LIM
+    #     chart_s.add_series({
+    #         'name': 'LIM Actual',
+    #         'categories': f'=Data_Selling!$A${first}:$A${last}',
+    #         'values':     f'=Data_Selling!$B${first}:$B${last}',  # pastikan kolom mapping ke actual LIM
+    #          'fill': {'color': '#f4b94a'} 
+    #     })
+    #     # Actual SAP
+    #     chart_s.add_series({
+    #         'name': 'SAP Actual',
+    #         'categories': f'=Data_Selling!$A${first}:$A${last}',
+    #         'values':     f'=Data_Selling!$C${first}:$C${last}',  # pastikan sesuai kolom
+    #         'fill': {'color': '#34d399'} 
+    #     })
+
+    #     # Line Plan Total
+    #     line_chart_s = workbook.add_chart({'type': 'line'})
+    #     line_chart_s.add_series({
+    #         'name': 'Plan Total',
+    #         'categories': f'=Data_Selling!$A${first}:$A${last}',
+    #         'values':     f'=Data_Selling!$G${first}:$G${last}',  # kolom plan_total
+    #         'line': {'color': "#d2572f", 'width': 2.25}  #  warna merah + tebal
+    #     })
+
+    #     chart_s.combine(line_chart_s)
+    #     ws_sum.insert_chart('D66', chart_s, {'x_scale': 2.07, 'y_scale': 1.32})
+
     if sell["rows"]:
         first, last = 2, len(sell["rows"]) + 1
-        chart_s = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
-        chart_s.set_title({'name': 'Selling Trend'})
-        chart_s.set_legend({'position': 'top'})
+        categories = f'=Data_Selling!$A${first}:$A${last}'
 
-        # Actual LIM
-        chart_s.add_series({
-            'name': 'LIM Actual',
-            'categories': f'=Data_Selling!$A${first}:$A${last}',
-            'values':     f'=Data_Selling!$B${first}:$B${last}',  # pastikan kolom mapping ke actual LIM
-             'fill': {'color': '#f4b94a'} 
-        })
-        # Actual SAP
-        chart_s.add_series({
-            'name': 'SAP Actual',
-            'categories': f'=Data_Selling!$A${first}:$A${last}',
-            'values':     f'=Data_Selling!$C${first}:$C${last}',  # pastikan sesuai kolom
-            'fill': {'color': '#34d399'} 
-        })
+        # Series stacked bar
+        series_defs = [
+            {
+                'name': 'LIM Actual',
+                'values': f'=Data_Selling!$B${first}:${"B"}${last}',
+                'fill': {'color': '#ffedd1'}
+            },
+            {
+                'name': 'SAP Actual',
+                'values': f'=Data_Selling!$C${first}:${"C"}${last}',
+                'fill': {'color': "#bdddc0"}
+            }
+        ]
 
-        # Line Plan Total
-        line_chart_s = workbook.add_chart({'type': 'line'})
-        line_chart_s.add_series({
-            'name': 'Plan Total',
-            'categories': f'=Data_Selling!$A${first}:$A${last}',
-            'values':     f'=Data_Selling!$G${first}:$G${last}',  # kolom plan_total
-            'line': {'color': "#d2572f", 'width': 2.25}  #  warna merah + tebal
-        })
+        # Series line
+        line_defs = [
+            {
+                'name': 'Plan Total',
+                'values': f'=Data_Selling!$G${first}:${"G"}${last}',
+                'line': {'color': "#fe927a", 'width': 2.25}
+            }
+        ]
+    else:
+        categories = None
+        series_defs = None
+        line_defs = None
 
-        chart_s.combine(line_chart_s)
-        ws_sum.insert_chart('D66', chart_s, {'x_scale': 2.07, 'y_scale': 1.32})
+    safe_chart_multi(
+        workbook,
+        ws_sum,
+        pos='D66',
+        title='Selling Trend',
+        rows=sell["rows"],
+        categories=categories,
+        series_defs=series_defs,
+        line_defs=line_defs,   #  line langsung combine
+        scale=(2.07, 1.32),
+        stacked=True,
+        legend_pos='top'
+    )
+
 
     # ================= Barging Summary =================
     ws_sum.write('A87', 'Barging Metrics', fmt_title)
@@ -518,31 +626,48 @@ def excel_unified_summary(request):
     ws_sum.write(f'A{row}', 'LIM Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["lim_plan"], fmt_num); row += 1
     ws_sum.write(f'A{row}', 'SAP Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["sap_plan"], fmt_num); row += 1
 
+    # Palet warna 
+    palette = [
+        "#72b1ab",  # biru
+        "#a4c3f4",  # biru
+        "#bddddc",  # hijau
+        "#ffedd1",  # kuning
+        "#fe927a",  # ungu
+        "#d0b97f",  # teal
+        "#365e58",  # oranye
+        "#8192aa",  # abu2
+    ]
+
 
     if barging["rows"]:
         first, last = 2, len(barging["rows"]) + 1
-        chart_barges = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
-        chart_barges.set_title({'name': 'Barging by Barge Code'})
-        chart_barges.set_legend({'position': 'top'})
-
-        # Tambahin series per barge_code
+        categories  = f'=Barging_ByBarge!$A${first}:$A${last}'
+        series_defs = []
         for idx, code in enumerate(barge_codes, start=2):
-            chart_barges.add_series({
+            color = palette[(idx - 2) % len(palette)]  # ambil warna dari palet
+            series_defs.append({
                 'name': code,
-                'categories': f'=Barging_ByBarge!$A${first}:$A${last}',
                 'values': f'=Barging_ByBarge!${chr(64+idx)}${first}:${chr(64+idx)}${last}',
+                'fill': {'color': color} 
             })
-       
-        line_plan = workbook.add_chart({'type': 'line'})
-        line_plan.add_series({
-            'name': 'Plan Total',
-            'categories': f'=Barging!$A${first}:$A${last}',
-            'values': f'=Barging!$G${first}:$G${last}',
-            'line': {'color': "#ea5e5e", 'width': 2.25}
-        })
-        chart_barges.combine(line_plan)
-        ws_sum.insert_chart('D88', chart_barges, {'x_scale': 2.07, 'y_scale': 1.32})
+    else:
+        categories = None
+        series_defs = None
 
+    safe_chart_multi(
+        workbook,
+        ws_sum,
+        pos='D88',
+        title='Barging by Barge Code',
+        rows=barging["rows"],
+        categories=categories,
+        series_defs=series_defs,
+        scale=(2.07, 1.32),
+        stacked=True,
+        legend_pos='top'
+    )
+
+    
 
     # ================= Inventory Summary =================
     ws_sum.write('A109', 'Inventory Metrics', fmt_title)
@@ -576,56 +701,106 @@ def excel_unified_summary(request):
 
 
     # === Chart Inventory ===
+    # if inv["rows"]:
+    #     first, last = 2, len(inv["rows"]) + 1
+
+    #     if mode == "range":
+    #         # Area chart (harian)
+    #         chart_i = workbook.add_chart({'type': 'area', 'subtype': 'stacked'})
+    #     else:  # mode == "year"
+    #         # Column chart (bulanan)
+    #         chart_i = workbook.add_chart({'type': 'column', 'subtype': 'clustered'})
+
+    #     chart_i.set_title({'name': 'Inventory Trend'})
+    #     chart_i.set_legend({'position': 'bottom'})
+
+    #     # Production In
+    #     chart_i.add_series({
+    #         'name': 'Production In',
+    #         'categories': f'=Stock_Opname!$A${first}:$A${last}',
+    #         'values': f'=Stock_Opname!$B${first}:$B${last}',
+    #         # 'fill': {'color': '#22c55f'} 
+    #         'fill': {'color': '#22c55f', 'transparency': 30},  # hijau dengan 30% transparansi
+    #         'smooth': True   # bikin garis halus / smooth
+    #     })
+
+    #     # Selling Out
+    #     chart_i.add_series({
+    #         'name': 'Selling Out',
+    #         'categories': f'=Stock_Opname!$A${first}:$A${last}',
+    #         'values': f'=Stock_Opname!$C${first}:$C${last}',
+    #         'fill': {'color': '#fa7315','transparency': 40},
+    #         'smooth': True   # bikin garis halus / smooth
+    #     })
+
+    #     # Stock Opname (line, secondary axis)
+    #     line_chart_i = workbook.add_chart({'type': 'line'})
+    #     line_chart_i.add_series({
+    #         'name': 'Stock Opname',
+    #         'categories': f'=Stock_Opname!$A${first}:$A${last}',
+    #         'values': f'=Stock_Opname!$D${first}:$D${last}',
+    #         'y2_axis': True,
+    #         # 'line': {'color': '#f43f5f', 'width': 2.25}  #  warna merah + tebal
+    #         'line': {'color': '#cc4f25', 'width': 2.5, 'dash_type': 'dash'},
+    #         'smooth': True   # bikin garis halus / smooth
+    #     })
+
+    #     chart_i.combine(line_chart_i)
+
+    #     # Axis labels
+    #     chart_i.set_y_axis({'name': 'Production / Selling'})
+    #     chart_i.set_y2_axis({'name': 'Stock Opname'})
+    #     ws_sum.insert_chart('D110', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
     if inv["rows"]:
         first, last = 2, len(inv["rows"]) + 1
+        categories = f'=Stock_Opname!$A${first}:$A${last}'
 
-        if mode == "range":
-            # Area chart (harian)
-            chart_i = workbook.add_chart({'type': 'area', 'subtype': 'stacked'})
-        else:  # mode == "year"
-            # Column chart (bulanan)
-            chart_i = workbook.add_chart({'type': 'column', 'subtype': 'clustered'})
+        series_defs = [
+            {
+                'name': 'Production In',
+                'values': f'=Stock_Opname!$B${first}:$B${last}',
+                # 'fill': {'color': '#bddddc', 'transparency': 75},
+                'fill': {'color': '#bddddc', 'transparency': 25},
+                'smooth': True
+            },
+            {
+                'name': 'Selling Out',
+                'values': f'=Stock_Opname!$C${first}:$C${last}',
+                'fill': {'color': '#ffedd1', 'transparency': 30},
+                'smooth': True
+            }
+        ]
 
-        chart_i.set_title({'name': 'Inventory Trend'})
-        chart_i.set_legend({'position': 'bottom'})
+        line_defs = [
+            {
+                'name': 'Stock Opname',
+                'values': f'=Stock_Opname!$D${first}:$D${last}',
+                'line': {'color': '#fe927a', 'width': 2.5, 'dash_type': 'dash'},
+                'y2_axis': True,
+                'smooth': True
+            }
+        ]
+    else:
+        categories = None
+        series_defs = None
+        line_defs = None
 
-        # Production In
-        chart_i.add_series({
-            'name': 'Production In',
-            'categories': f'=Stock_Opname!$A${first}:$A${last}',
-            'values': f'=Stock_Opname!$B${first}:$B${last}',
-            # 'fill': {'color': '#22c55f'} 
-            'fill': {'color': '#22c55f', 'transparency': 30},  # hijau dengan 30% transparansi
-            'smooth': True   # bikin garis halus / smooth
-        })
-
-        # Selling Out
-        chart_i.add_series({
-            'name': 'Selling Out',
-            'categories': f'=Stock_Opname!$A${first}:$A${last}',
-            'values': f'=Stock_Opname!$C${first}:$C${last}',
-            'fill': {'color': '#fa7315','transparency': 40},
-            'smooth': True   # bikin garis halus / smooth
-        })
-
-        # Stock Opname (line, secondary axis)
-        line_chart_i = workbook.add_chart({'type': 'line'})
-        line_chart_i.add_series({
-            'name': 'Stock Opname',
-            'categories': f'=Stock_Opname!$A${first}:$A${last}',
-            'values': f'=Stock_Opname!$D${first}:$D${last}',
-            'y2_axis': True,
-            # 'line': {'color': '#f43f5f', 'width': 2.25}  #  warna merah + tebal
-            'line': {'color': '#cc4f25', 'width': 2.5, 'dash_type': 'dash'},
-            'smooth': True   # bikin garis halus / smooth
-        })
-
-        chart_i.combine(line_chart_i)
-
-        # Axis labels
-        chart_i.set_y_axis({'name': 'Production / Selling'})
-        chart_i.set_y2_axis({'name': 'Stock Opname'})
-        ws_sum.insert_chart('D110', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
+    safe_chart_multi(
+        workbook,
+        ws_sum,
+        pos='D110',
+        title='Inventory Trend',
+        rows=inv["rows"],
+        categories=categories,
+        series_defs=series_defs,
+        line_defs=line_defs,
+        scale=(2.07, 1.32),
+        chart_type='area' if mode == "range" else 'column',
+        stacked=True if mode == "range" else False,
+        legend_pos='bottom',
+        y_axis={'name': 'Production / Selling'},
+        y2_axis={'name': 'Stock Opname'}
+    )
 
 
     # Lebarkan kolom summary
