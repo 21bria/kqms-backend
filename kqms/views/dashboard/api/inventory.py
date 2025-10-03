@@ -49,26 +49,26 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -115,13 +115,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -129,13 +129,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -216,26 +216,26 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -282,13 +282,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -296,13 +296,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -338,10 +338,10 @@ def get_inventory_summary(request):
                 """
             
             params = [
-                start_date.strftime('%Y-%m-%d'),  # 1: tgl_production < %s
-                start_date.strftime('%Y-%m-%d'),  # 2: date_hauling < %s
-                start_date.strftime('%Y-%m-%d'),  # 3: tgl_production < %s
-                start_date.strftime('%Y-%m-%d'),  # 4: date_hauling < %s
+                start_date.strftime('%Y-%m-%d'),  # 1: tgl_production <= %s
+                start_date.strftime('%Y-%m-%d'),  # 2: date_hauling <= %s
+                start_date.strftime('%Y-%m-%d'),  # 3: tgl_production <= %s
+                start_date.strftime('%Y-%m-%d'),  # 4: date_hauling <= %s
                 start_date.strftime('%Y-%m-%d'),  # 5: BETWEEN
                 end_date.strftime('%Y-%m-%d'),    # 6: BETWEEN
                 start_date.strftime('%Y-%m-%d'),  # 7: BETWEEN
@@ -371,26 +371,26 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -437,13 +437,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -451,13 +451,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -504,26 +504,26 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE EXTRACT(YEAR FROM tgl_production) < %s
+                                    WHERE EXTRACT(YEAR FROM tgl_production) <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) <= %s
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
+                                     WHERE EXTRACT(YEAR FROM tgl_production) <= %s
                                 ), 0) -
                                 COALESCE((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -570,13 +570,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -584,13 +584,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -636,26 +636,26 @@ def get_inventory_summary(request):
                                 SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                 FROM ore_productions op
                                 LEFT JOIN materials m ON m.id = op.id_material
-                                WHERE tgl_production < %s
+                                WHERE tgl_production <= %s
                             ), 0) -
                             COALESCE((
                                 SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                 FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_hauling < %s
+                                WHERE date_hauling <= %s
                             ), 0) AS lim_awal,
 
                             COALESCE((
                                 SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                 FROM ore_productions op
                                 LEFT JOIN materials m ON m.id = op.id_material
-                                WHERE tgl_production < %s
+                                WHERE tgl_production <= %s
                             ), 0) -
                             COALESCE((
                                 SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                 FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_hauling < %s
+                                WHERE date_hauling <= %s
                             ), 0) AS sap_awal
                     ),
                     incoming AS (
@@ -697,13 +697,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS lim_awal,
 
                                 -- Saprolite
@@ -711,13 +711,13 @@ def get_inventory_summary(request):
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) -
                                 ISNULL((
                                     SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
@@ -819,11 +819,11 @@ def get_chart_inventory(request):
                                     COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_productions
-                                        WHERE tgl_production < %s
+                                        WHERE tgl_production <= %s
                                     ), 0) - COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_sellings_barging
-                                        WHERE date_hauling < %s
+                                        WHERE date_hauling <= %s
                                     ), 0) AS value
                             )         
                             SELECT
@@ -920,11 +920,11 @@ def get_chart_inventory(request):
                                 COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_productions
-                                    WHERE tgl_production < %s
+                                    WHERE tgl_production <= %s
                                 ), 0) - COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
-                                    WHERE date_hauling < %s
+                                    WHERE date_hauling <= %s
                                 ), 0) AS value
                         )
                         SELECT
@@ -992,11 +992,11 @@ def get_chart_inventory(request):
                                     COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_productions
-                                        WHERE tgl_production < %s
+                                        WHERE tgl_production <= %s
                                     ), 0) - COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_sellings_barging
-                                        WHERE date_hauling < %s
+                                        WHERE date_hauling <= %s
                                     ), 0) AS value
                             )
                             SELECT
@@ -1043,11 +1043,11 @@ def get_chart_inventory(request):
                                 COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_productions
-                                    WHERE EXTRACT(YEAR FROM tgl_production) < %s
+                                    WHERE EXTRACT(YEAR FROM tgl_production) <= %s
                                 ), 0) - COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
-                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) <= %s
                                 ), 0) AS value
                         )
                         SELECT

@@ -27,7 +27,7 @@ def fetch_production_quality(ds: str, de: str):
     }
     return {"rows": rows, "summary": summary}
 
-def fetch_selling_quality(ds: str, de: str):
+def fetch_selling(ds: str, de: str):
     query = """
         WITH day_series AS (
             SELECT generate_series(%s::date, %s::date, interval '1 day')::date AS dt
@@ -64,6 +64,75 @@ def fetch_selling_quality(ds: str, de: str):
         LEFT JOIN actual a ON ds.dt = a.dt
         LEFT JOIN plan p ON ds.dt = p.dt
         ORDER BY ds.dt;
+    """
+    with connections['kqms_db'].cursor() as cur:
+        cur.execute(query, [ds, de, ds, de, ds, de])
+        rows = [dict(zip([c[0] for c in cur.description], r)) for r in cur.fetchall()]
+
+    summary = {
+        "actual_total": sum(r["actual_total"] or 0 for r in rows),
+        "plan_total"  : sum(r["plan_total"] or 0 for r in rows),
+        "lim_actual"  : sum(r["actual_lim"] or 0 for r in rows),
+        "sap_actual"  : sum(r["actual_sap"] or 0 for r in rows),
+        "lim_plan"    : sum(r["plan_lim"] or 0 for r in rows),
+        "sap_plan"    : sum(r["plan_sap"] or 0 for r in rows),
+    }
+    return {"rows": rows, "summary": summary}
+
+def fetch_barging(ds: str, de: str):
+    query = """
+               WITH tanggal AS (
+                        SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                    ),
+                    detail AS (
+                        SELECT
+                            s.date_hauling::date AS date,
+                            mb.barge_code,
+                            ROUND(SUM(s.tonnage)::numeric, 2) AS total,
+                            ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)::numeric, 2) AS lim,
+                            ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)::numeric, 2) AS sap
+                        FROM ore_sellings_barging s
+                        LEFT JOIN master_barge mb ON mb.id = s.barge_code
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        WHERE s.date_hauling BETWEEN %s AND %s
+                        AND s.status_barging = 'Complete'
+                        GROUP BY s.date_hauling::date, mb.barge_code
+                    ),
+                    plan AS (
+                        SELECT
+                            p.plan_date::date AS date,
+                            ROUND(SUM(p.tonnage_plan)::numeric, 2) AS total_plan,
+                            ROUND(SUM(CASE WHEN p.type_ore = 'LIM' THEN p.tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
+                            ROUND(SUM(CASE WHEN p.type_ore = 'SAP' THEN p.tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan
+                        FROM ore_sellings_plan_barging p
+                        WHERE p.plan_date BETWEEN %s AND %s
+                        GROUP BY p.plan_date::date
+                    )
+                    SELECT
+                        TO_CHAR(t.date, 'YY-MM-DD') AS label,
+                        ROUND(COALESCE(SUM(d.total), 0), 2)  AS actual_total,
+                        ROUND(COALESCE(SUM(d.lim), 0), 2)    AS actual_lim,
+                        ROUND(COALESCE(SUM(d.sap), 0), 2)    AS actual_sap,
+                        ROUND(COALESCE(p.total_plan, 0), 2)  AS plan_total,
+                        ROUND(COALESCE(p.lim_plan, 0), 2)    AS plan_lim,
+                        ROUND(COALESCE(p.sap_plan, 0), 2)    AS plan_sap,
+                        COALESCE(
+                            json_agg(
+                                json_build_object(
+                                    'barge_code', d.barge_code,
+                                    'total', ROUND(d.total, 2),
+                                    'lim',   ROUND(d.lim, 2),
+                                    'sap',   ROUND(d.sap, 2)
+                                )
+                                ORDER BY d.barge_code
+                            ) FILTER (WHERE d.barge_code IS NOT NULL),
+                            '[]'
+                        ) AS summary_by_barge
+                    FROM tanggal t
+                    LEFT JOIN detail d ON t.date = d.date
+                    LEFT JOIN plan p   ON t.date = p.date
+                    GROUP BY t.date, p.total_plan, p.lim_plan, p.sap_plan
+                    ORDER BY t.date;
     """
     with connections['kqms_db'].cursor() as cur:
         cur.execute(query, [ds, de, ds, de, ds, de])
@@ -163,22 +232,23 @@ def fetch_inventory_balance(ds: str, de: str):
         ),
         outgoing AS (
             SELECT
-                date_barge_out::date AS dt,
+                date_hauling::date AS dt,
                 SUM(tonnage) AS total_out
             FROM ore_sellings_barging
-            WHERE date_barge_out BETWEEN %s AND %s
-            GROUP BY date_barge_out::date
+            WHERE date_hauling BETWEEN %s AND %s
+            GROUP BY date_hauling::date
         ),
         saldo_awal AS (
             SELECT
-                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < %s), 0)
-                - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out < %s), 0) 
+                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production <=%s), 0)
+                - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_hauling <= %s), 0) 
                 AS value
         )
         SELECT
             t.dt,
             COALESCE(i.total_in, 0) AS total_in,
             COALESCE(o.total_out, 0) AS total_out,
+            (SELECT value FROM saldo_awal) AS opening_balance,
             (SELECT value FROM saldo_awal)
               + SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0)) 
                 OVER (ORDER BY t.dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) 
@@ -194,8 +264,9 @@ def fetch_inventory_balance(ds: str, de: str):
         rows = [dict(zip([c[0] for c in cur.description], r)) for r in cur.fetchall()]
 
     summary = {
-        "total_in": sum(r["total_in"] or 0 for r in rows),
-        "total_out": sum(r["total_out"] or 0 for r in rows),
+        "opening_balance" : rows[0]["opening_balance"] if rows else 0,
+        "total_in"  : sum(r["total_in"] or 0 for r in rows),
+        "total_out" : sum(r["total_out"] or 0 for r in rows),
         "closing_balance": rows[-1]["running_balance"] if rows else 0
     }
 
@@ -206,9 +277,9 @@ def fetch_inventory_dome(de: str):
       WITH prod AS (
         SELECT
             TRIM(stockpile) AS stockpile,
-            TRIM(pile_id)   AS pile_id,
+            TRIM(pile_id) AS pile_id,
             TRIM(nama_material) AS nama_material,
-            SUM(tonnage)    AS total_ore,
+            SUM(tonnage) AS total_ore,
             SUM(
                 CASE
                     WHEN roa_ni IS NOT NULL AND sample_number IS NOT NULL THEN tonnage
@@ -242,8 +313,9 @@ def fetch_inventory_dome(de: str):
                 )::numeric,2
             ) AS sm
         FROM details_roa
-        WHERE status_dome != 'Finished'
-        AND direct_sale = 'No'
+        WHERE
+        -- status_dome != 'Finished' AND 
+        direct_sale = 'No'
         AND tgl_production <= %s
         GROUP BY stockpile, pile_id, nama_material
     ),
@@ -298,3 +370,157 @@ def fetch_inventory_dome(de: str):
         rows = [dict(zip([c[0] for c in cur.description], r)) for r in cur.fetchall()]
 
     return {"rows": rows}
+
+
+def fetch_summary_to_date(end_date):
+    with connections['kqms_db'].cursor() as cur:
+        # === Mining (agregat sampai end_date) ===
+        cur.execute("""
+            WITH mining AS (
+                SELECT 
+                    SUM(CASE WHEN nama_material = 'LIM' THEN tonnage ELSE 0 END)::numeric AS lim,
+                    SUM(CASE WHEN nama_material = 'SAP' THEN tonnage ELSE 0 END)::numeric AS sap,
+                    SUM(CASE WHEN nama_material = 'Waste' THEN tonnage ELSE 0 END)::numeric AS waste,
+                    SUM(CASE WHEN nama_material = 'Quarry' THEN tonnage ELSE 0 END)::numeric AS quarry,
+                    SUM(CASE WHEN nama_material = 'Top Soil' THEN tonnage ELSE 0 END)::numeric AS topsoil,
+                    SUM(CASE WHEN nama_material = 'OB' THEN tonnage ELSE 0 END)::numeric AS ob,
+                    SUM(CASE WHEN nama_material = 'Ballast' THEN tonnage ELSE 0 END)::numeric AS ballast,
+                    SUM(CASE WHEN nama_material = 'Biomass' THEN tonnage ELSE 0 END)::numeric AS biomass,
+                    SUM(tonnage)::numeric AS total
+                FROM mine_productions
+                WHERE date_production <= %s
+            ),
+            plan AS (
+                SELECT
+                    SUM(
+                        COALESCE(lim,0) + COALESCE(sap,0) + COALESCE(quarry,0) + 
+                        COALESCE(topsoil,0) + COALESCE(ob,0) + COALESCE(ballast,0) +
+                        COALESCE(biomass,0) + COALESCE(waste,0)
+                    )::numeric AS plan_total
+                FROM plan_productions
+                WHERE date_plan <= %s
+            )
+            SELECT 
+                COALESCE(m.lim,0)      AS lim_total,
+                COALESCE(m.sap,0)      AS sap_total,
+                COALESCE(m.waste,0)    AS waste_total,
+                COALESCE(m.quarry,0)   AS quarry_total,
+                COALESCE(m.topsoil,0)  AS topsoil_total,
+                COALESCE(m.ob,0)       AS ob_total,
+                COALESCE(m.ballast,0)  AS ballast_total,
+                COALESCE(m.biomass,0)  AS biomass_total,
+                COALESCE(m.total,0)    AS actual_total,
+                COALESCE(p.plan_total,0) AS plan_total
+            FROM mining m
+            CROSS JOIN plan p
+        """, [end_date, end_date])
+
+        mining_row = cur.fetchone()
+        mining = {
+            "lim_total"     : mining_row[0],
+            "sap_total"     : mining_row[1],
+            "waste_total"   : mining_row[2],
+            "quarry_total"  : mining_row[3],
+            "topsoil_total" : mining_row[4],
+            "ob_total"      : mining_row[5],
+            "ballast_total" : mining_row[6],
+            "biomass_total" : mining_row[7],
+            "actual_total"  : mining_row[8],
+            "plan_total"    : mining_row[9]
+        }
+
+       # === Quality (summary sampai end_date) ===
+        cur.execute("""
+            SELECT
+            SUM(op.tonnage) AS prod_total,
+            SUM(CASE WHEN m.nama_material = 'LIM' THEN op.tonnage ELSE 0 END) AS prod_lim,
+            SUM(CASE WHEN m.nama_material = 'SAP' THEN op.tonnage ELSE 0 END) AS prod_sap
+            FROM ore_productions op
+            LEFT JOIN materials m ON m.id = op.id_material
+            WHERE op.tgl_production <= %s
+        """, [end_date])
+        q_total, q_lim, q_sap = cur.fetchone()
+        quality = {
+            "total": q_total or 0,
+            "lim": q_lim or 0,
+            "sap": q_sap or 0
+        }
+
+       # === Selling (summary sampai end_date) ===
+        cur.execute("""
+            WITH actual AS (
+                SELECT
+                    SUM(CASE WHEN sale_adjust='HPAL' THEN s.tonnage ELSE 0 END) AS lim,
+                    SUM(CASE WHEN sale_adjust='RKEF' THEN s.tonnage ELSE 0 END) AS sap,
+                    SUM(s.tonnage) AS total
+                FROM ore_sellings_barging s
+                WHERE s.date_barge_out <= %s
+            ),
+            plan AS (
+                SELECT
+                    SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim,
+                    SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap,
+                    SUM(tonnage_plan) AS total
+                FROM ore_sellings_plan_barging p
+                WHERE p.plan_date <= %s
+            )
+            SELECT
+                COALESCE(a.lim,0)      AS actual_lim,
+                COALESCE(a.sap,0)      AS actual_sap,
+                COALESCE(a.total,0)    AS actual_total,
+                COALESCE(p.lim,0)      AS plan_lim,
+                COALESCE(p.sap,0)      AS plan_sap,
+                COALESCE(p.total,0)    AS plan_total
+            FROM actual a, plan p
+        """, [end_date, end_date])
+
+        s_lim_actual, s_sap_actual, s_total_actual, s_lim_plan, s_sap_plan, s_total_plan = cur.fetchone()
+
+        selling = {
+            "actual": s_total_actual or 0,
+            "plan": s_total_plan or 0,
+            "lim_actual": s_lim_actual or 0,
+            "sap_actual": s_sap_actual or 0,
+            "lim_plan": s_lim_plan or 0,
+            "sap_plan": s_sap_plan or 0
+        }
+
+        # === Inventory ===
+        cur.execute("""
+            WITH incoming AS (
+                SELECT SUM(tonnage) AS total_in
+                FROM ore_productions
+                WHERE tgl_production <= %s
+            ),
+            outgoing AS (
+                SELECT SUM(tonnage) AS total_out
+                FROM ore_sellings_barging
+                WHERE date_barge_out <= %s
+            ),
+            saldo_awal AS (
+                SELECT
+                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production <= %s), 0)
+                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out <= %s), 0)
+                    AS opening_balance
+            )
+            SELECT
+                (SELECT opening_balance FROM saldo_awal) AS opening_balance,
+                COALESCE((SELECT total_in FROM incoming), 0) AS total_in,
+                COALESCE((SELECT total_out FROM outgoing), 0) AS total_out
+                    
+        """, [end_date, end_date, end_date, end_date])
+
+        inv_open, inv_in, inv_out = cur.fetchone()
+
+        inventory = {
+            "opening": inv_open or 0,
+            "in": inv_in or 0,
+            "out": inv_out or 0,
+        }
+
+    return {
+        "mining"    : mining,
+        "quality"   : quality,
+        "selling"   : selling,
+        "inventory" : inventory
+    }

@@ -7,6 +7,7 @@ from ..views.dashboard.api.details.quality import *
 from ..views.dashboard.api.selling import *
 from ..views.dashboard.api.selling_coa import *
 from ..views.dashboard.api.barging import *
+from ..views.dashboard.api.barging_group import *
 from ..views.dashboard.api.inventory import *
 from ..views.dashboard.api.details.inventory import *
 
@@ -56,6 +57,8 @@ urlpatterns = [
     # Barging
     path('api/barging-summary/', get_barging_summary, name='get-barging-summary'),
     path('api/barging-chart/', get_chart_barging, name='get-chart-barging'),
+    # Group Barging
+    path('api/barging-chart/group/', get_chart_barging_group, name='get-chart-barging-group'),
 
     # Inventory Dashboard
     path('api/inventory-summary/', get_inventory_summary, name='get_inventory_summary'),

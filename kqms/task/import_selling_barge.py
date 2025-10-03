@@ -88,6 +88,7 @@ def import_selling(file_path, original_file_name):
 
 
             id_material     = material_dict.get(nama_material)
+            material_ori    = material_dict.get(nama_material)
             id_pile         = pile_dict.get(pile_name)
             id_stockpile    = stockpile_dict.get(stockpile_name)
             id_factory      = factory_dict.get(factory_name)
@@ -144,7 +145,7 @@ def import_selling(file_path, original_file_name):
                 barging_unload_loc  = validated_unload_loc,
                 unit_code           = truck,
                 type_selling        = type_selling,
-                id_material         = id_material,
+                id_material         = material_ori,
                 id_pile             = id_pile,
                 id_stockpile        = id_stockpile,
                 id_factory          = id_factory,

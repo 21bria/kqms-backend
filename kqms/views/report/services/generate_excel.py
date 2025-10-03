@@ -1,19 +1,38 @@
 # reports/views.py
 from io import BytesIO
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.utils import timezone
 from datetime import date
+from django.utils import timezone
+from django.utils.timezone import localtime
 import xlsxwriter
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.enums import TA_RIGHT
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.graphics.shapes import Drawing, Line, String
+from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.graphics.charts.lineplots import LinePlot
+from reportlab.graphics.charts.axes import XValueAxis, YValueAxis
+from reportlab.graphics.widgets.markers import makeMarker
+from reportlab.lib.colors import HexColor
+from reportlab.graphics.charts.legends import Legend
+
+
 from .compile_renge import (
     fetch_production_quality, 
-    fetch_selling_quality,
+    fetch_selling,
+    fetch_barging,
     fetch_production_mining,
     fetch_inventory_balance,
     fetch_inventory_dome,
+    fetch_summary_to_date
 )
 from .compile_year import (
     fetch_production_quality_year, 
-    fetch_selling_quality_year,
+    fetch_selling_year,
+    fetch_barging_year,
     fetch_production_mining_year,
     fetch_inventory_balance_year,
     fetch_inventory_dome_year,
@@ -29,9 +48,11 @@ def excel_unified_summary(request):
     if mode == "range":
         mining  = fetch_production_mining(date_start, date_end)
         prod    = fetch_production_quality(date_start, date_end)
-        sell    = fetch_selling_quality(date_start, date_end)
+        sell    = fetch_selling(date_start, date_end)
+        barging = fetch_barging(date_start, date_end)
         inv     = fetch_inventory_balance(date_start, date_end)
         invlist = fetch_inventory_dome(date_end)
+        summary = fetch_summary_to_date(date_end)
     elif mode == "year" and year:
         try:
             year = int(year)
@@ -39,7 +60,8 @@ def excel_unified_summary(request):
             return HttpResponseBadRequest("Invalid year parameter")
         mining  = fetch_production_mining_year(year)
         prod    = fetch_production_quality_year(year)
-        sell    = fetch_selling_quality_year(year)
+        sell    = fetch_selling_year(year)
+        barging = fetch_barging_year(year)
         inv     = fetch_inventory_balance_year(year)
         invlist = fetch_inventory_dome_year(year)
     else:
@@ -106,19 +128,93 @@ def excel_unified_summary(request):
     ws_sell.set_column('A:A', 12)
     ws_sell.set_column('B:G', 15)
 
+    # === Sheet Barging
+    ws_barging = workbook.add_worksheet('Barging')
+    ws_barging.write_row(
+        'A1',
+        ['Date', 'Actual LIM', 'Actual SAP', 'Actual Total',
+        'Plan LIM', 'Plan SAP', 'Plan Total', 'By Barge JSON'],
+        fmt_th
+    )
+
+    for i, r in enumerate(barging["rows"], start=2):
+        ws_barging.write(f'A{i}', r['label'], fmt_td)
+        ws_barging.write_number(f'B{i}', r['actual_lim'] or 0, fmt_num)
+        ws_barging.write_number(f'C{i}', r['actual_sap'] or 0, fmt_num)
+        ws_barging.write_number(f'D{i}', r['actual_total'] or 0, fmt_num)
+        ws_barging.write_number(f'E{i}', r['plan_lim'] or 0, fmt_num)
+        ws_barging.write_number(f'F{i}', r['plan_sap'] or 0, fmt_num)
+        ws_barging.write_number(f'G{i}', r['plan_total'] or 0, fmt_num)
+        ws_barging.write(f'H{i}', str(r['summary_by_barge']), fmt_td)  # simpan JSON string
+
+    ws_barging.set_column('A:A', 12)
+    ws_barging.set_column('B:G', 15)
+    ws_barging.set_column('H:H', 120)  # kolom JSON panjang
+
+    # === Sheet Barging_ByBarge
+    ws_barging_b = workbook.add_worksheet('Barging_ByBarge')
+    ws_barging_b.write('A1', 'Date', fmt_th)
+
+    # Ambil semua barge_code unik dari seluruh rows
+    barge_codes = set()
+    for r in barging["rows"]:
+        for b in r["summary_by_barge"]:
+            barge_codes.add(b["barge_code"])
+
+    barge_codes = sorted(barge_codes)  # biar urut
+    for idx, code in enumerate(barge_codes, start=2):
+        ws_barging_b.write(0, idx-1, code, fmt_th)  # header barge_code (kolom B,C,D...)
+
+    # Isi data per tanggal
+    for row_idx, r in enumerate(barging["rows"], start=2):
+        ws_barging_b.write(f'A{row_idx}', r['label'], fmt_td)
+        barge_map = {b["barge_code"]: b["total"] for b in r["summary_by_barge"]}
+        for col_idx, code in enumerate(barge_codes, start=2):
+            ws_barging_b.write_number(row_idx-1, col_idx-1, barge_map.get(code, 0), fmt_num)
+
+    ws_barging_b.set_column('A:A', 12)
+    ws_barging_b.set_column('B:Z', 14)
+
 
     # === Sheet Stock_Opname
     ws_inv = workbook.add_worksheet('Stock_Opname')
     ws_inv.write_row('A1', ['Date', 'Production In', 'Selling Out', 'Stock Opname'], fmt_th)
 
-    for i, r in enumerate(inv["rows"], start=2):
-        ws_inv.write(f'A{i}', str(r['dt']), fmt_td)
-        ws_inv.write_number(f'B{i}', r['total_in'] or 0, fmt_num)       # Production In
-        ws_inv.write_number(f'C{i}', r['total_out'] or 0, fmt_num)      # Selling Out
-        ws_inv.write_number(f'D{i}', r['running_balance'] or 0, fmt_num) # Stock Opname
+    row = 2
 
-    ws_inv.set_column('A:A', 12)
+    # Opening Stock (ambil dari inv["summary"]["opening_balance"])
+    opening_stock = inv["summary"].get("opening_balance", 0)
+    ws_inv.write('A2', 'Opening Stock', fmt_th)
+    ws_inv.write_number('D2', opening_stock, fmt_num)
+    row += 1
+
+    # Daily records
+    for r in inv["rows"]:
+        ws_inv.write(f'A{row}', str(r['dt']), fmt_td)
+        ws_inv.write_number(f'B{row}', r['total_in'] or 0, fmt_num)        # Production In
+        ws_inv.write_number(f'C{row}', r['total_out'] or 0, fmt_num)       # Selling Out
+        ws_inv.write_number(f'D{row}', r['running_balance'] or 0, fmt_num) # Stock Opname
+        row += 1
+
+    # Closing summary
+    closing_stock  = inv["summary"].get("closing_balance", 0)
+    total_in       = inv["summary"].get("total_in", 0)
+    total_out      = inv["summary"].get("total_out", 0)
+    net_movement   = total_in - total_out
+
+    ws_inv.write(f'A{row}', 'Closing Stock', fmt_th)
+    ws_inv.write_number(f'D{row}', closing_stock, fmt_num); row += 1
+
+    ws_inv.write(f'A{row}', 'Net Movement', fmt_th)
+    ws_inv.write_number(f'D{row}', net_movement, fmt_num); row += 1
+
+    ws_inv.write(f'A{row}', 'Opening Stock (Next)', fmt_th)
+    ws_inv.write_number(f'D{row}', closing_stock, fmt_num); row += 1
+
+    # Set lebar kolom
+    ws_inv.set_column('A:A', 20)
     ws_inv.set_column('B:D', 16)
+
 
     # === Sheet Data_Inventory (by dome / pile)
     ws_invlist = workbook.add_worksheet('Data_Inventory')
@@ -336,21 +432,114 @@ def excel_unified_summary(request):
             'name': 'Plan Total',
             'categories': f'=Data_Selling!$A${first}:$A${last}',
             'values':     f'=Data_Selling!$G${first}:$G${last}',  # kolom plan_total
-            'line': {'color': '#f43f5f', 'width': 2.25}  #  warna merah + tebal
+            'line': {'color': "#d2572f", 'width': 2.25}  #  warna merah + tebal
         })
 
         chart_s.combine(line_chart_s)
         ws_sum.insert_chart('E47', chart_s, {'x_scale': 2.07, 'y_scale': 1.32})
 
-
-    # ================= Inventory Summary =================
-    ws_sum.write('A68', 'Inventory Metrics', fmt_title)
+    # ================= Barging Summary =================
+    ws_sum.write('A68', 'Barging Metrics', fmt_title)
     ws_sum.write_row('A69', ['Metric', 'Value'], fmt_th)
     row = 70
 
-    ws_sum.write(f'A{row}', 'Production In', fmt_td); ws_sum.write_number(f'B{row}', inv["summary"]["total_in"], fmt_num); row += 1
-    ws_sum.write(f'A{row}', 'Selling Out', fmt_td); ws_sum.write_number(f'B{row}', inv["summary"]["total_out"], fmt_num); row += 1
-    ws_sum.write(f'A{row}', 'Stock Opname', fmt_td); ws_sum.write_number(f'B{row}', inv["summary"]["closing_balance"], fmt_num); row += 1
+    summary_b = barging["summary"]
+
+    ws_sum.write(f'A{row}', 'Actual Total', fmt_td); ws_sum.write_number(f'B{row}', summary_b["actual_total"], fmt_num); row += 1
+    ws_sum.write(f'A{row}', 'Plan Total', fmt_td); ws_sum.write_number(f'B{row}', summary_b["plan_total"], fmt_num); row += 1
+    ws_sum.write(f'A{row}', 'LIM Actual', fmt_td); ws_sum.write_number(f'B{row}', summary_b["lim_actual"], fmt_num); row += 1
+    ws_sum.write(f'A{row}', 'SAP Actual', fmt_td); ws_sum.write_number(f'B{row}', summary_b["sap_actual"], fmt_num); row += 1
+    ws_sum.write(f'A{row}', 'LIM Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["lim_plan"], fmt_num); row += 1
+    ws_sum.write(f'A{row}', 'SAP Plan', fmt_td); ws_sum.write_number(f'B{row}', summary_b["sap_plan"], fmt_num); row += 1
+
+
+    # if barging["rows"]:
+    #     first, last = 2, len(barging["rows"]) + 1
+    #     chart_b = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
+    #     chart_b.set_title({'name': 'Barging Trend'})
+    #     chart_b.set_legend({'position': 'top'})
+
+    #     # Actual LIM
+    #     chart_b.add_series({
+    #         'name': 'LIM Actual',
+    #         'categories': f'=Barging!$A${first}:$A${last}',
+    #         'values': f'=Barging!$B${first}:$B${last}',
+    #         'fill': {'color': '#f4b94a'}
+    #     })
+    #     # Actual SAP
+    #     chart_b.add_series({
+    #         'name': 'SAP Actual',
+    #         'categories': f'=Barging!$A${first}:$A${last}',
+    #         'values': f'=Barging!$C${first}:$C${last}',
+    #         'fill': {'color': '#34d399'}
+    #     })
+    
+     # Line Plan
+        # line_chart_b = workbook.add_chart({'type': 'line'})
+        # line_chart_b.add_series({
+        #     'name': 'Plan Total',
+        #     'categories': f'=Barging!$A${first}:$A${last}',
+        #     'values': f'=Barging!$G${first}:$G${last}',
+        #     'line': {'color': '#ef4444', 'width': 2.25}
+        # })
+
+    # chart_b = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
+
+    if barging["rows"]:
+        first, last = 2, len(barging["rows"]) + 1
+        chart_barges = workbook.add_chart({'type': 'column', 'subtype': 'stacked'})
+        chart_barges.set_title({'name': 'Barging by Barge Code'})
+        chart_barges.set_legend({'position': 'top'})
+
+        # Tambahin series per barge_code
+        for idx, code in enumerate(barge_codes, start=2):
+            chart_barges.add_series({
+                'name': code,
+                'categories': f'=Barging_ByBarge!$A${first}:$A${last}',
+                'values': f'=Barging_ByBarge!${chr(64+idx)}${first}:${chr(64+idx)}${last}',
+            })
+       
+        line_plan = workbook.add_chart({'type': 'line'})
+        line_plan.add_series({
+            'name': 'Plan Total',
+            'categories': f'=Barging!$A${first}:$A${last}',
+            'values': f'=Barging!$G${first}:$G${last}',
+            'line': {'color': "#ea5e5e", 'width': 2.25}
+        })
+        chart_barges.combine(line_plan)
+        ws_sum.insert_chart('E68', chart_barges, {'x_scale': 2.07, 'y_scale': 1.32})
+
+
+    # ================= Inventory Summary =================
+    ws_sum.write('A89', 'Inventory Metrics', fmt_title)
+    ws_sum.write_row('A90', ['Metric', 'Value'], fmt_th)
+    row = 91
+
+    opening_stock = inv["summary"].get("opening_balance", 0)
+    closing_stock = inv["summary"].get("closing_balance", 0)
+    total_in      = inv["summary"].get("total_in", 0)
+    total_out     = inv["summary"].get("total_out", 0)
+    net_movement  = total_in - total_out
+
+    ws_sum.write(f'A{row}', 'Opening Stock', fmt_td)
+    ws_sum.write_number(f'B{row}', opening_stock, fmt_num); row += 1
+
+    ws_sum.write(f'A{row}', 'Production In', fmt_td)
+    ws_sum.write_number(f'B{row}', total_in, fmt_num); row += 1
+
+    ws_sum.write(f'A{row}', 'Selling Out', fmt_td)
+    ws_sum.write_number(f'B{row}', total_out, fmt_num); row += 1
+
+    ws_sum.write(f'A{row}', 'Closing Stock', fmt_td)
+    ws_sum.write_number(f'B{row}', closing_stock, fmt_num); row += 1
+
+    ws_sum.write(f'A{row}', 'Net Movement', fmt_td)
+    ws_sum.write_number(f'B{row}', net_movement, fmt_num); row += 1
+
+    # buat carry forward
+    ws_sum.write(f'A{row}', 'Opening Stock (Next)', fmt_td)
+    ws_sum.write_number(f'B{row}', closing_stock, fmt_num); row += 1
+
 
     # === Chart Inventory ===
     if inv["rows"]:
@@ -393,7 +582,7 @@ def excel_unified_summary(request):
             'values': f'=Stock_Opname!$D${first}:$D${last}',
             'y2_axis': True,
             # 'line': {'color': '#f43f5f', 'width': 2.25}  #  warna merah + tebal
-            'line': {'color': '#f43f5f', 'width': 2.5, 'dash_type': 'dash'},
+            'line': {'color': '#cc4f25', 'width': 2.5, 'dash_type': 'dash'},
             'smooth': True   # bikin garis halus / smooth
         })
 
@@ -402,8 +591,7 @@ def excel_unified_summary(request):
         # Axis labels
         chart_i.set_y_axis({'name': 'Production / Selling'})
         chart_i.set_y2_axis({'name': 'Stock Opname'})
-
-        ws_sum.insert_chart('E68', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
+        ws_sum.insert_chart('E89', chart_i, {'x_scale': 2.07, 'y_scale': 1.32})
 
 
     # Lebarkan kolom summary
@@ -421,3 +609,726 @@ def excel_unified_summary(request):
     )
     resp['Content-Disposition'] = f'attachment; filename="{filename}"'
     return resp
+
+def pdf_unified_summary(request):
+    mode       = request.GET.get("mode") or "range"
+    date_start = request.GET.get("date_start") or str(date.today().replace(day=1))
+    date_end   = request.GET.get("date_end")   or str(date.today())
+    year       = request.GET.get("year")
+
+    # === Ambil data (sama dengan Excel) ===
+    if mode == "range":
+        mining  = fetch_production_mining(date_start, date_end)
+        prod    = fetch_production_quality(date_start, date_end)
+        sell    = fetch_selling(date_start, date_end)
+        barging = fetch_barging(date_start, date_end)
+        inv     = fetch_inventory_balance(date_start, date_end)
+        summary = fetch_summary_to_date(date_end)
+    elif mode == "year" and year:
+        year = int(year)
+        mining  = fetch_production_mining_year(year)
+        prod    = fetch_production_quality_year(year)
+        sell    = fetch_selling_year(year)
+        barging = fetch_barging_year(year)
+        inv     = fetch_inventory_balance_year(year)
+    else:
+        return HttpResponseBadRequest("Invalid mode or missing parameters")
+
+    def safe_float(val):
+        try:
+            return float(val or 0)
+        except:
+            return 0.0
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(A4),
+        topMargin=25,    # margin atas diperkecil
+        bottomMargin=20  # margin bawah diperkecil
+    )
+
+    elements = []
+    styles = getSampleStyleSheet()
+
+  # Tambah style kanan kecil
+    styles.add(ParagraphStyle(
+        name="RightSmall",
+        parent=styles["Normal"],
+        fontSize=8,
+        # alignment=TA_RIGHT
+    ))
+
+    # === Header PDF ===
+    elements.append(Paragraph("KQMS Unified Report - Summary", styles['Title']))
+    if mode == "range":
+        header_info = Paragraph(
+            f"Range: {date_start} → {date_end}<br/>"
+            f"Generated: {localtime(timezone.now()).strftime('%Y-%m-%d, %H:%M:%S')}",
+            styles['RightSmall']
+        )
+    else:
+        header_info = Paragraph(
+            f"Year: {year}<br/>"
+            f"Generated: {localtime(timezone.now()).strftime('%Y-%m-%d, %H:%M:%S')}",
+            styles['RightSmall']
+        )
+
+    elements.append(header_info)
+    elements.append(Spacer(1, 4))
+
+    # Fungsi bantu untuk auto scale axis
+    def auto_scale_axis(series, n_ticks=6):
+        from math import ceil
+        max_val = max((max(s) for s in series if s), default=0)
+        if max_val == 0:
+            return (0, 100, 20)
+        step = max(1, round(max_val / (n_ticks - 1), -2))
+        vmax = ceil(max_val / step) * step
+        return (0, vmax, step)
+
+    def add_section(title, metrics, rows, categories, series, line_series=None, bar_color="#add2bb"):
+        elements.append(Paragraph(title, styles['Heading2']))
+        elements.append(Spacer(1, 6))
+
+        # Metrics table
+        table = Table(metrics, colWidths=[150, 150])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            # Kolom Metric rata kiri
+            ('ALIGN', (0,0), (0,-1), 'LEFT'),
+            # Kolom Value rata kanan
+            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 10))
+
+        if rows:
+            d = Drawing(700, 300)
+
+            # --- Sumbu Y dihitung dari actual + plan (tidak ada scaling) ---
+            combined = list(series)
+            if line_series:
+                combined.append([safe_float(v) for v in line_series])
+            vmin, vmax, vstep = auto_scale_axis(combined)
+
+            # === Bar Chart (Actual) ===
+            bc = VerticalBarChart()
+            bc.x, bc.y = 50, 50
+            bc.height, bc.width = 200, 550
+            bc.data = series
+            bc.categoryAxis.categoryNames = [str(c) for c in categories]
+            bc.barWidth = 12
+
+           # rapikan label tanggal biar tidak numpuk
+            bc.categoryAxis.labels.angle = 45  
+            bc.categoryAxis.labels.boxAnchor = 'ne'   
+            bc.categoryAxis.labels.dy = -4       
+            bc.categoryAxis.labels.fontSize = 9      
+           
+
+            # Style axis
+            bc.valueAxis.valueMin  = vmin
+            bc.valueAxis.valueMax  = vmax
+            bc.valueAxis.valueStep = vstep
+            bc.valueAxis.strokeColor = HexColor("#9ca3af")
+            bc.valueAxis.labels.fillColor = HexColor("#6b7280")
+            bc.categoryAxis.strokeColor = HexColor("#9ca3af")
+            bc.categoryAxis.labels.fillColor = HexColor("#676a6e")
+            bc.categoryAxis.visibleTicks = 0
+
+            # warna bar (support multi-series)
+            bar_colors = [bar_color] if isinstance(bar_color, str) else bar_color
+            for i, c in enumerate(bar_colors):
+                if i < len(bc.bars):
+                    bc.bars[i].fillColor = HexColor(c)
+                    bc.bars[i].strokeColor = HexColor(c)   # triknya: samakan warna stroke dengan fill
+                    bc.bars[i].strokeWidth = 0             # pastikan garis pinggir 0
+            d.add(bc)
+                        
+            # === Line Chart (Plan) – tanpa scaling, pakai sumbu yang sama ===
+            if line_series:
+                lp = LinePlot()
+                lp.x, lp.y = 50, 50
+                lp.height, lp.width = 200, 550
+
+                # data X numerik 0..N-1 agar segaris dengan kategori bar
+                lp.data = [list(enumerate([safe_float(v) for v in line_series]))]
+
+
+                # definisikan axis numeric dan samakan rentang Y
+                lp.xValueAxis = XValueAxis()
+                lp.yValueAxis = YValueAxis()
+                lp.xValueAxis.valueMin  = 0
+                lp.xValueAxis.valueMax  = max(1, len(categories)-1)
+                lp.xValueAxis.valueStep = max(1, len(categories)//10)
+                lp.yValueAxis.valueMin  = vmin
+                lp.yValueAxis.valueMax  = vmax
+                lp.yValueAxis.valueStep = vstep
+
+                # >>> matikan label & ticks di X axis (biar 0-28 hilang) <<<
+                lp.xValueAxis.labels.fontSize = 0       # sembunyikan tulisan
+                lp.xValueAxis.visibleTicks = 0          # sembunyikan garis tick
+                # lp.xValueAxis.strokeColor = colors.white  # bikin invisible
+                lp.xValueAxis.strokeColor = HexColor("#9ca3af")  # abu-abu halu
+
+                # Y axis tetap jalan
+                lp.yValueAxis.valueMin  = vmin
+                lp.yValueAxis.valueMax  = vmax
+                lp.yValueAxis.valueStep = vstep
+                lp.yValueAxis.strokeColor = HexColor("#9ca3af")
+                lp.yValueAxis.labels.fillColor = HexColor("#6b7280")
+
+                lp.lines[0].strokeWidth = 0   # garis hilang
+                lp.lines[0].strokeColor = None  # tidak ada warna garis    
+                # marker tetap tampil
+                lp.lines[0].symbol = makeMarker('Circle')
+                lp.lines[0].symbol.fillColor = HexColor("#ef4444")   # warna marker isi
+                lp.lines[0].symbol.strokeColor = HexColor("#3A3939") # warna outline marker
+                lp.lines[0].symbol.size = 4                          # ukuran marker
+
+                d.add(lp)
+
+            elements.append(d)
+
+        elements.append(PageBreak())
+
+    def add_section_with_summary(title, metrics, rows, categories, series, line_series=None, breakdown=None, bar_color="#1f2937"):
+        elements.append(Paragraph(title, styles['Heading2']))
+        elements.append(Spacer(1, 6))
+
+        # Tabel ringkas
+        table = Table(metrics, colWidths=[200, 150])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            # Kolom Metric rata kiri
+            ('ALIGN', (0,0), (0,-1), 'LEFT'),
+            # Kolom Value rata kanan
+            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 12))
+
+        if rows:
+            d = Drawing(700, 300)
+
+            # auto-scale
+            combined = list(series)
+            if line_series:
+                combined.append([safe_float(v) for v in line_series])
+            vmin, vmax, vstep = auto_scale_axis(combined)
+
+            # === Bar chart ===
+            bc = VerticalBarChart()
+            bc.x, bc.y = 50, 50
+            bc.height, bc.width = 200, 550
+            bc.data = series
+            bc.categoryAxis.categoryNames = [str(c) for c in categories]
+            bc.barWidth = 12
+            
+            # rapikan label tanggal biar tidak numpuk
+            bc.categoryAxis.labels.angle = 45            # miring 45 derajat
+            bc.categoryAxis.labels.boxAnchor = 'ne'      # anchor ke atas kanan
+            bc.categoryAxis.labels.dy = -3              # geser ke atas sedikit
+            bc.categoryAxis.labels.fontSize = 9          # perkecil font biar muat
+            bc.categoryAxis.labels.fillColor = HexColor("#9ca3af")  # warna abu
+
+        
+            # Style axis
+            bc.valueAxis.valueMin  = vmin
+            bc.valueAxis.valueMax  = vmax
+            bc.valueAxis.valueStep = vstep
+            bc.valueAxis.strokeColor = HexColor("#9ca3af")
+            bc.valueAxis.labels.fillColor = HexColor("#6b7280")
+            bc.categoryAxis.strokeColor = HexColor("#fdfeff")
+            bc.categoryAxis.labels.fillColor = HexColor("#676a6e")
+            bc.categoryAxis.visibleTicks = 0
+
+            # Bar color
+            bc.bars[0].fillColor = HexColor(bar_color)
+            for i in range(len(bc.bars)):
+                bc.bars[i].strokeColor = None
+
+            d.add(bc)
+
+            # === Marker only (Plan) ===
+             # === Line Chart (Plan) – tanpa scaling, pakai sumbu yang sama ===
+            if line_series:
+                lp = LinePlot()
+                lp.x, lp.y = 50, 50
+                lp.height, lp.width = 200, 550
+
+                # data X numerik 0..N-1 agar sejajar bar
+                lp.data = [list(enumerate([safe_float(v) for v in line_series]))]
+
+                # definisikan axis numeric dan samakan rentang Y
+                lp.xValueAxis.valueMin  = 0
+                lp.xValueAxis.valueMax  = max(1, len(categories)-1)
+                lp.xValueAxis.valueStep = max(1, len(categories)//10)
+
+                # >>> matikan label & ticks di X axis (biar 0-28 hilang) <<<
+                lp.xValueAxis.labels.fontSize = 0       # sembunyikan tulisan
+                lp.xValueAxis.visibleTicks = 0          # sembunyikan garis tick
+                # lp.xValueAxis.strokeColor = colors.white  # bikin invisible
+                lp.xValueAxis.strokeColor = HexColor("#9ca3af")  # abu-abu halus
+
+                # Y axis tetap jalan
+                lp.yValueAxis.valueMin  = vmin
+                lp.yValueAxis.valueMax  = vmax
+                lp.yValueAxis.valueStep = vstep
+                lp.yValueAxis.strokeColor = HexColor("#9ca3af")
+                lp.yValueAxis.labels.fillColor = HexColor("#6b7280")
+
+                lp.lines[0].strokeColor = HexColor("#ef4444")
+                lp.lines[0].strokeWidth = 2
+                lp.lines[0].symbol = makeMarker('Circle')
+
+                d.add(lp)
+
+
+            elements.append(d)
+
+        # breakdown tambahan
+        if breakdown:
+            elements.append(Spacer(1, 12))
+            btable = Table(breakdown, colWidths=[78] * len(breakdown[0]))
+            btable.setStyle(TableStyle([
+                ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+                ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+                ('ALIGN', (0,1), (-1,-1), 'CENTER'),
+            ]))
+            elements.append(btable)
+
+        elements.append(PageBreak())
+
+    def add_inventory_section(title, metrics, rows, categories, bar_series, line_series):
+        elements.append(Paragraph(title, styles['Heading2']))
+        elements.append(Spacer(1, 6))
+
+        # Metrics table
+        table = Table(metrics, colWidths=[120, 120])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            # Kolom Metric rata kiri
+            ('ALIGN', (0,0), (0,-1), 'LEFT'),
+            # Kolom Value rata kanan
+            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 10))
+
+        if rows:
+            # d = Drawing(700, 200)
+            d = Drawing(400, 200)   # lebih kecil agar muat di samping
+            # === Bar Chart (Production In & Selling Out) ===
+            bc = VerticalBarChart()
+            bc.x, bc.y = 30, 30
+            bc.height, bc.width = 170, 550
+            bc.data = bar_series
+            bc.categoryAxis.categoryNames = [str(c) for c in categories]
+            bc.barWidth = 8
+
+            # auto scale bar axis
+            vmin, vmax, vstep = auto_scale_axis(bar_series)
+            bc.valueAxis.valueMin = vmin
+            bc.valueAxis.valueMax = vmax
+            bc.valueAxis.valueStep = vstep
+
+            bc.bars[0].fillColor = HexColor("#add2bb")  # green
+            bc.bars[1].fillColor = HexColor("#eab672")  # orange
+
+
+            bc.valueAxis.strokeColor = HexColor("#9ca3af")
+            bc.valueAxis.labels.fillColor = HexColor("#6b7280")
+            bc.categoryAxis.strokeColor = HexColor("#9ca3af")
+            bc.categoryAxis.labels.fillColor = HexColor("#676a6e")
+
+
+            # hilangkan outline (stroke) cukup di level series
+            bc.bars[0].strokeColor = None
+            bc.bars[0].strokeWidth = 0
+            bc.bars[1].strokeColor = None
+            bc.bars[1].strokeWidth = 0
+
+
+            d.add(bc)
+
+            # === Line Chart (Running Balance, pakai axis kanan) ===
+            if line_series:
+                lp = LinePlot()
+                lp.x, lp.y = 50, 50
+                lp.height, lp.width = 200, 550
+                lp.data = [list(enumerate([safe_float(v) for v in line_series]))]
+
+                lp.lines[0].strokeColor = HexColor("#ef4444")
+                lp.lines[0].strokeWidth = 2
+                lp.lines[0].symbol = makeMarker('Circle')
+                d.add(lp)
+
+                # --- Axis kanan manual ---
+                max_line = max(line_series) if line_series else 0
+                if max_line > 0:
+                    step_line = max(1, round(max_line / 5, -3))  # step ribuan
+
+                    # garis axis kanan
+                    d.add(Line(bc.x + bc.width, bc.y, bc.x + bc.width, bc.y + bc.height))
+
+                    # label axis kanan
+                    for i in range(0, int(max_line) + 1, int(step_line)):
+                        y = bc.y + (i / max_line) * bc.height
+                        d.add(String(bc.x + bc.width + 10, y, f"{i:,}", fontSize=7, fillColor=HexColor("#ef4444")))
+
+            # --- Legend di atas chart ---
+            legend = Legend()
+            legend.x = bc.x + bc.width/2 - 150   # posisikan agak tengah
+            legend.y = bc.y + bc.height + 40     # taruh di atas grafik
+            legend.dx = 12                       # ukuran kotak warna
+            legend.dy = 12
+            legend.fontName = 'Helvetica'
+            legend.fontSize = 9
+            legend.boxAnchor = 'n'
+            legend.columnMaximum = 3             # biar semua item 1 baris
+            legend.deltax = 100                  # jarak antar item
+            legend.deltay = 0                    # jangan bertingkat
+
+            legend.colorNamePairs = [
+                (HexColor("#add2bb"), "Production In"),
+                (HexColor("#eab672"), "Selling Out"),
+            ]
+
+            d.add(legend)
+            elements.append(d)
+
+        elements.append(PageBreak()) 
+
+
+   # === Summary Section ===
+    summary_title = Paragraph("Project Summary To-Date", styles['Heading4'])
+    elements.append(summary_title)
+    elements.append(Spacer(1, 6))
+
+
+    # --- Mining ---
+    mining_table = Table([
+        ["Metric", "Value"],
+        ["Total Actual", f"{summary['mining'].get('actual_total', 0):,.0f}"],
+        ["Total Plan",   f"{summary['mining'].get('plan_total', 0):,.0f}"],
+        ["Achievement",  f"{(summary['mining'].get('actual_total', 0) / summary['mining'].get('plan_total', 1) * 100):.0f}%"],
+    ], colWidths=[120, 100])
+
+    mining_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 10),
+         # Kolom Metric rata kiri
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        # Kolom Value rata kanan
+        ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+    ]))
+
+    # --- Quality ---
+    quality_table = Table([
+        ["Metric", "Value"],
+        ["Total Tonnage", f"{summary['quality'].get('total', 0):,.0f}"],
+        ["LIM (total)",   f"{summary['quality'].get('lim', 0):,.0f}"],
+        ["LIM (%)",       f"{(summary['quality'].get('lim', 0)/(summary['quality'].get('total',1))*100):.2f}%"],
+        ["SAP (total)",   f"{summary['quality'].get('sap', 0):,.0f}"],
+        ["SAP (%)",       f"{(summary['quality'].get('sap', 0)/(summary['quality'].get('total',1))*100):.2f}%"],
+    ], colWidths=[120, 100])
+
+    quality_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 10),
+         # Kolom Metric rata kiri
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        # Kolom Value rata kanan
+        ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+    ]))
+
+    # --- Selling ---
+    selling_table = Table([
+        ["Metric", "Value"],
+        ["Total Actual", f"{summary['selling'].get('actual', 0):,.0f}"],
+        ["Total Plan",   f"{summary['selling'].get('plan', 0):,.0f}"],
+        ["Achievement",  f"{(summary['selling'].get('actual', 0) / summary['selling'].get('plan', 1) * 100):.0f}%"],
+        ["LIM Actual",   f"{summary['selling'].get('lim_actual', 0):,.0f}"],
+        ["SAP Actual",   f"{summary['selling'].get('sap_actual', 0):,.0f}"],
+    ], colWidths=[120, 100])
+
+    selling_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 10),
+        # Kolom Metric rata kiri
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        # Kolom Value rata kanan
+        ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+    ]))
+
+    # --- Inventory ---
+    inv_table = Table([
+        ["Metric", "Value"],
+        ["Production In", f"{summary['inventory'].get('in', 0):,.0f}"],
+        ["Selling Out",   f"{summary['inventory'].get('out', 0):,.0f}"],
+        ["Current Stock", f"{summary['inventory'].get('opening', 0):,.0f}"],
+    ], colWidths=[120, 100])
+
+    inv_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 10),
+        # Kolom Metric rata kiri
+        ('ALIGN', (0,0), (0,-1), 'LEFT'),
+        # Kolom Value rata kanan
+        ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+    ]))
+
+    # === Gabung jadi 2 kolom ===
+    left_col = [Paragraph("Mining", styles['Heading5']), mining_table,
+                Spacer(1,4),
+                Paragraph("Quality", styles['Heading5']), quality_table]
+
+    right_col = [Paragraph("Selling", styles['Heading5']), selling_table,
+                Spacer(1,4),
+                Paragraph("Inventory", styles['Heading5']), inv_table]
+
+    two_col = Table([
+        [left_col, right_col]
+    ], colWidths=[250, 250])
+
+    elements.append(two_col)
+    elements.append(Spacer(1, 10))
+
+    # --- Breakdown Mining ---
+    breakdown_table = Table([
+        ["Total LIM", "Total SAP", "Total Waste", "Total Quarry",
+        "Total Topsoil", "Total OB", "Total Ballast", "Total Biomass"],
+        [
+            f"{summary['mining'].get('lim_total', 0):,.0f}",
+            f"{summary['mining'].get('sap_total', 0):,.0f}",
+            f"{summary['mining'].get('waste_total', 0):,.0f}",
+            f"{summary['mining'].get('quarry_total', 0):,.0f}",
+            f"{summary['mining'].get('topsoil_total', 0):,.0f}",
+            f"{summary['mining'].get('ob_total', 0):,.0f}",
+            f"{summary['mining'].get('ballast_total', 0):,.0f}",
+            f"{summary['mining'].get('biomass_total', 0):,.0f}",
+        ]
+    ], colWidths=[65,65,65,70,70,70,70,70])
+
+    breakdown_table.setStyle(TableStyle([
+        ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,-1), 8),     # kecilkan font
+        ('BOTTOMPADDING', (0,0), (-1,-1), 2),  # rapatkan tabel
+        ('TOPPADDING', (0,0), (-1,-1), 2),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+    ]))
+
+    elements.append(Paragraph("Productions Mining by Materials", styles['Heading5']))
+    elements.append(Spacer(1, 6))
+    elements.append(breakdown_table)
+    elements.append(PageBreak())
+
+    # === Mining Section ===
+    total_actual = sum(safe_float(r.get("actual_total")) for r in mining["rows"])
+    total_plan   = sum(safe_float(r.get("plan_total")) for r in mining["rows"])
+
+    # hitung AVG & Achievement
+    avg_actual   = total_actual / len(mining["rows"]) if mining["rows"] else 0
+    achievement  = (total_actual / total_plan * 100) if total_plan > 0 else 0
+
+    mining_metrics = [
+        ["Metric", "Value"],
+        ["Total Actual", f"{total_actual:,.0f}"],
+        ["Total Plan",   f"{total_plan:,.0f}"],
+        ["Average",      f"{avg_actual:,.0f}"],
+        ["Achievement",  f"{achievement:.0f}%"],
+    ]
+
+
+    # === Hitung Breakdown Mining ===
+    lim_total     = sum(safe_float(r.get("lim")) for r in mining["rows"])
+    sap_total     = sum(safe_float(r.get("sap")) for r in mining["rows"])
+    waste_total   = sum(safe_float(r.get("waste")) for r in mining["rows"])
+    quarry_total  = sum(safe_float(r.get("quarry")) for r in mining["rows"])
+    topsoil_total = sum(safe_float(r.get("topsoil")) for r in mining["rows"])
+    ob_total      = sum(safe_float(r.get("ob")) for r in mining["rows"])
+    ballast_total = sum(safe_float(r.get("ballast")) for r in mining["rows"])
+    biomass_total = sum(safe_float(r.get("biomass")) for r in mining["rows"])
+
+    # Mining pakai summary + breakdown
+    add_section_with_summary(
+        "Mining Metrics",
+        mining_metrics,
+        mining["rows"],
+        [str(r['dt'].day).zfill(2) for r in mining["rows"]],
+        [[safe_float(r.get("actual_total")) for r in mining["rows"]]],
+        line_series=[safe_float(r.get("plan_total")) for r in mining["rows"]],
+        bar_color="#335871",
+
+        # --- Breakdown Mining ---
+        breakdown = [
+            ["Total LIM", "Total SAP", "Total Waste", "Total Quarry",
+            "Total Topsoil", "Total OB", "Total Ballast", "Total Biomass"],
+            [
+                f"{lim_total:,.0f}",
+                f"{sap_total:,.0f}",
+                f"{waste_total:,.0f}",
+                f"{quarry_total:,.0f}",
+                f"{topsoil_total:,.0f}",
+                f"{ob_total:,.0f}",
+                f"{ballast_total:,.0f}",
+                f"{biomass_total:,.0f}",
+            ]
+        ]
+        
+    )
+
+    # === Quality Section ===
+    prod_total = sum(safe_float(r.get("prod_total")) for r in prod["rows"])
+    prod_lim   = sum(safe_float(r.get("prod_lim")) for r in prod["rows"])
+    prod_sap   = sum(safe_float(r.get("prod_sap")) for r in prod["rows"])
+
+    # hitung AVG & Achievement
+    avg_actual       = prod_total / len(prod["rows"]) if prod["rows"] else 0
+    achievement_lim  = (prod_lim / prod_total * 100) if prod_total > 0 else 0
+    achievement_sap  = (prod_sap / prod_total * 100) if prod_total > 0 else 0
+
+    quality_metrics = [
+        ["Metric", "Value"],
+        ["Total Tonnage", f"{prod_total:,.0f}"],
+        ["LIM",    f"{prod_lim:,.0f}"],
+        ["SAP",    f"{prod_sap:,.0f}"],
+        ["Average",    f"{avg_actual:,.0f}"],
+        # ["LIM(%)",  f"{achievement_lim:.0f}%"],
+    ]
+
+    quality_series = [[safe_float(r.get("prod_total")) for r in prod["rows"]]]
+    add_section("Quality Metrics", quality_metrics, prod["rows"],
+        [str(r['dt'].day).zfill(2) for r in prod["rows"]],
+        quality_series,
+        bar_color="#ff7c2c")
+
+    # === Selling Section ===
+    rows = sell["rows"]
+    summary = sell["summary"]
+
+    actual_total = summary.get("actual_total", 0)
+    plan_total   = summary.get("plan_total", 0)
+    lim_actual   = summary.get("lim_actual", 0)
+    sap_actual   = summary.get("sap_actual", 0)
+    lim_plan     = summary.get("lim_plan", 0)
+    sap_plan     = summary.get("sap_plan", 0)
+
+    # hitung AVG & Achievement
+    avg_actual   = actual_total / len(rows) if rows else 0
+    achievement  = (actual_total / plan_total * 100) if plan_total > 0 else 0
+
+    selling_metrics = [
+        ["Metric", "Value"],
+        ["Total Actual", f"{actual_total:,.0f}"],
+        ["Total Plan",   f"{plan_total:,.0f}"],
+        ["Achievement",  f"{achievement:.0f}%"],
+        ["LIM Actual",   f"{lim_actual:,.0f}"],
+        ["SAP Actual",   f"{sap_actual:,.0f}"],
+        # ["LIM Plan",     f"{lim_plan:,.0f}"],
+        # ["SAP Plan",     f"{sap_plan:,.0f}"],
+        ["Average",   f"{avg_actual:,.0f}"],
+    ]
+
+    selling_series = [[safe_float(r.get("actual_total")) for r in sell["rows"]]]
+    add_section("Selling Metrics", selling_metrics, sell["rows"],
+        [str(r['dt'].day).zfill(2) for r in sell["rows"]],
+        selling_series,
+        line_series=[safe_float(r.get('plan_total')) for r in sell["rows"]],
+        bar_color="#fac849")
+
+    # === Barging Section ===
+    rows = barging["rows"]
+    summary = barging["summary"]
+
+    actual_total = summary.get("actual_total", 0)
+    plan_total   = summary.get("plan_total", 0)
+    lim_actual   = summary.get("lim_actual", 0)
+    sap_actual   = summary.get("sap_actual", 0)
+    lim_plan     = summary.get("lim_plan", 0)
+    sap_plan     = summary.get("sap_plan", 0)
+
+    # hitung AVG & Achievement
+    avg_actual   = actual_total / len(rows) if rows else 0
+    achievement  = (actual_total / plan_total * 100) if plan_total > 0 else 0
+
+    barging_metrics = [
+        ["Metric", "Value"],
+        ["Total Actual", f"{actual_total:,.0f}"],
+        ["Total Plan",   f"{plan_total:,.0f}"],
+        ["Achievement",  f"{achievement:.0f}%"],
+        ["LIM Actual",   f"{lim_actual:,.0f}"],
+        ["SAP Actual",   f"{sap_actual:,.0f}"],
+        # ["LIM Plan",     f"{lim_plan:,.0f}"],
+        # ["SAP Plan",     f"{sap_plan:,.0f}"],
+        ["Average",   f"{avg_actual:,.0f}"],
+    ]
+
+    barging_series = [[safe_float(r.get("actual_total")) for r in barging["rows"]]]
+    add_section("Barging Metrics", barging_metrics, barging["rows"],
+        [r['label'][-2:] for r in barging["rows"]],
+        barging_series,
+        line_series=[safe_float(r.get('plan_total')) for r in barging["rows"]],
+        bar_color="#a1c582")
+
+    # === Inventory Section ===
+    inv_sum = inv["summary"]
+    inv_metrics = [
+        ["Metric", "Value"],
+        ["Opening Stock", f"{safe_float(inv_sum.get('opening_balance')):,.2f}"],
+        ["Production In", f"{safe_float(inv_sum.get('total_in')):,.2f}"],
+        ["Selling Out", f"{safe_float(inv_sum.get('total_out')):,.2f}"],
+        ["Closing Stock", f"{safe_float(inv_sum.get('closing_balance')):,.2f}"],
+    ]
+
+    # 2 bar series
+    inv_series = [
+        [safe_float(r.get("total_in")) for r in inv["rows"]],
+        [safe_float(r.get("total_out")) for r in inv["rows"]],
+    ]
+
+    # 1 line series (Running Balance)
+    inv_line = [safe_float(r.get("running_balance")) for r in inv["rows"]]
+
+    add_inventory_section(
+        "Inventory Metrics",
+        inv_metrics,
+        inv["rows"],
+        [str(r['dt'].day).zfill(2) for r in inv["rows"]],
+        bar_series=inv_series,
+        line_series=None  # ⬅ Hilangkan line
+    )
+
+
+    # === Build PDF ===
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+
+    # response = HttpResponse(content_type="application/pdf")
+    # response['Content-Disposition'] = 'attachment; filename="KQMS-summary.pdf"'
+    # response.write(pdf)
+    # return response
+
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = 'inline; filename="KQMS-summary.pdf"'  # selalu preview
+    response.write(pdf)
+    return response

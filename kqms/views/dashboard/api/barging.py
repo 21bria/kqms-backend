@@ -2,15 +2,8 @@
 import logging
 from django.http import JsonResponse
 from django.db import connections, DatabaseError
-from prophet import Prophet
-import pandas as pd
 import calendar
 from datetime import datetime, timedelta
-from ....utils.utils import validate_month,validate_year
-import itertools
-from django.db.models import Sum
-from django.utils.timezone import now
-from django.db.models.functions import TruncWeek
 logger = logging.getLogger(__name__)
 from ....utils.db_utils import get_db_vendor
 
@@ -140,7 +133,7 @@ def get_chart_barging(request):
                             SELECT
                                 SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS total_lim,
                                 SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS total_sap
-                            FROM ore_sellings_plan
+                            FROM ore_sellings_plan_barging
                             WHERE plan_date = %s::date
                         ),
                         plan AS (
@@ -191,7 +184,7 @@ def get_chart_barging(request):
                             plan_date::date AS date,
                             SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
                             SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
+                        FROM ore_sellings_plan_barging
                         WHERE plan_date BETWEEN %s AND %s
                         GROUP BY plan_date::date
                     )
@@ -271,7 +264,7 @@ def get_chart_barging(request):
                             plan_date::date AS date,
                             SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
                             SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
+                        FROM ore_sellings_plan_barging
                         WHERE plan_date BETWEEN %s AND %s
                         GROUP BY plan_date
                     ),
@@ -342,7 +335,7 @@ def get_chart_barging(request):
                             ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
                             ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan,
                             ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan
-                        FROM ore_sellings_plan
+                        FROM ore_sellings_plan_barging
                         WHERE plan_date BETWEEN %s AND %s
                         GROUP BY plan_date
                     )
@@ -385,7 +378,7 @@ def get_chart_barging(request):
                           ROUND(SUM(tonnage_plan)::numeric, 2) AS total_plan,
                           ROUND(SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS lim_plan,
                           ROUND(SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END)::numeric, 2) AS sap_plan
-                      FROM ore_sellings_plan
+                      FROM ore_sellings_plan_barging
                       WHERE EXTRACT(YEAR FROM plan_date) = %s
                       GROUP BY EXTRACT(MONTH FROM plan_date)
                   )
@@ -431,7 +424,7 @@ def get_chart_barging(request):
                             TO_CHAR(plan_date, 'YYYY') AS year_label,
                             SUM(CASE WHEN type_ore = 'LIM' THEN tonnage_plan ELSE 0 END) AS lim_plan,
                             SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap_plan
-                        FROM ore_sellings_plan
+                        FROM ore_sellings_plan_barging
                         GROUP BY TO_CHAR(plan_date, 'YYYY')
                     ) AS plan
                     ON actual.year_label = plan.year_label
