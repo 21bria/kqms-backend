@@ -58,6 +58,7 @@ urlpatterns = [
     path('api/barging-summary/', get_barging_summary, name='get-barging-summary'),
     path('api/barging-chart/', get_chart_barging, name='get-chart-barging'),
     # Group Barging
+    path('api/barging-summary/group/', get_barging_summary_group, name='get-barging-summary-group'),
     path('api/barging-chart/group/', get_chart_barging_group, name='get-chart-barging-group'),
 
     # Inventory Dashboard

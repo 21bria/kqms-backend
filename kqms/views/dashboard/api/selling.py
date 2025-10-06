@@ -131,7 +131,7 @@ def get_chart_selling(request):
                                 CASE WHEN hour_label >= 7 THEN hour_label ELSE hour_label+24 END AS sort_order
                             FROM generate_series(0,23) AS hour_label
                         ),
-                        -- 🔹 Total actual per hari
+                        -- Total actual per hari
                         actual_daily AS (
                             SELECT
                                 SUM(CASE WHEN sale_adjust='HPAL' THEN os.tonnage ELSE 0 END) AS actual_lim,
@@ -141,7 +141,7 @@ def get_chart_selling(request):
                             WHERE status_barging ='Complete' AND
                             DATE(date_barge_out)=%s::date
                         ),
-                        -- 🔹 Distribusi actual per jam (dibagi 22 jam kerja)
+                        -- Distribusi actual per jam (dibagi 22 jam kerja)
                         actual_hourly AS (
                             SELECT
                                 wh.hour_label,
@@ -151,7 +151,7 @@ def get_chart_selling(request):
                             CROSS JOIN actual_daily ad
                             WHERE wh.hour_label BETWEEN 7 AND 23 OR wh.hour_label BETWEEN 0 AND 4
                         ),
-                        -- 🔹 Total plan per hari
+                        -- Total plan per hari
                         plan_daily AS (
                             SELECT
                                 SUM(CASE WHEN type_ore='LIM' THEN tonnage_plan ELSE 0 END) AS plan_lim,
@@ -159,7 +159,7 @@ def get_chart_selling(request):
                             FROM ore_sellings_plan_barging
                             WHERE plan_date=%s::date
                         ),
-                        -- 🔹 Distribusi plan per jam (dibagi 22 jam kerja)
+                        -- Distribusi plan per jam (dibagi 22 jam kerja)
                         plan_hourly AS (
                             SELECT
                                 wh.hour_label,
@@ -169,7 +169,7 @@ def get_chart_selling(request):
                             CROSS JOIN plan_daily pd
                             WHERE wh.hour_label BETWEEN 7 AND 23 OR wh.hour_label BETWEEN 0 AND 4
                         )
-                        -- 🔹 Output final
+                        -- Output final
                         SELECT
                             wh.hour_label AS label,
                             COALESCE(a.actual_lim,0)+COALESCE(a.actual_sap,0) AS actual_total,
@@ -195,7 +195,7 @@ def get_chart_selling(request):
                    WITH tanggal AS (
                         SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                     ),
-                    -- 🔹 Actual per tanggal
+                    -- Actual per tanggal
                     actual AS (
                         SELECT
                             date_barge_out::date AS date,
@@ -207,7 +207,7 @@ def get_chart_selling(request):
                         date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out::date
                     ),
-                    -- 🔹 Plan per tanggal
+                    -- Plan per tanggal
                     plan AS (
                         SELECT
                             plan_date::date AS date,
@@ -217,7 +217,7 @@ def get_chart_selling(request):
                         WHERE plan_date BETWEEN %s AND %s
                         GROUP BY plan_date::date
                     ),
-                    -- 🔹 Detail per tanggal + barge_code
+                    -- Detail per tanggal + barge_code
                     detail AS (
                         SELECT
                             date_barge_out::date AS date,
@@ -307,7 +307,7 @@ def get_chart_selling(request):
                    WITH tanggal AS (
                         SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                     ),
-                    -- 🔹 Actual per tanggal
+                    -- Actual per tanggal
                     actual AS (
                         SELECT
                             date_barge_out::date AS date,
@@ -319,7 +319,7 @@ def get_chart_selling(request):
                         date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out
                     ),
-                    -- 🔹 Plan per tanggal
+                    -- Plan per tanggal
                     plan AS (
                         SELECT
                             plan_date::date AS date,
@@ -329,7 +329,7 @@ def get_chart_selling(request):
                         WHERE plan_date BETWEEN %s AND %s
                         GROUP BY plan_date
                     ),
-                    -- 🔹 Detail barge per tanggal
+                    -- Detail barge per tanggal
                     detail AS (
                         SELECT
                             date_barge_out::date AS date,
@@ -343,7 +343,7 @@ def get_chart_selling(request):
                         date_barge_out BETWEEN %s AND %s
                         GROUP BY date_barge_out, mb.barge_code
                     ),
-                    -- 🔹 Gabungkan semua (actual + plan + detail)
+                    -- Gabungkan semua (actual + plan + detail)
                     combine AS (
                         SELECT
                             tanggal.date,
@@ -367,7 +367,7 @@ def get_chart_selling(request):
                         LEFT JOIN detail d ON tanggal.date = d.date
                         GROUP BY tanggal.date, day_name, a.actual_lim, a.actual_sap, p.plan_lim, p.plan_sap
                     )
-                    -- 🔹 Agregasi by day_name
+                    -- Agregasi by day_name
                     SELECT
                         day_name AS label,
                         SUM(actual_lim + actual_sap) AS actual_total,
@@ -492,7 +492,7 @@ def get_chart_selling(request):
                     WITH bulan AS (
                         SELECT generate_series(1, 12) AS month
                     ),
-                    -- 🔹 Summary actual per bulan
+                    -- Summary actual per bulan
                     summary AS (
                         SELECT
                             EXTRACT(MONTH FROM date_barge_out)::int AS month,
@@ -505,7 +505,7 @@ def get_chart_selling(request):
                         WHERE status_barging ='Complete' AND EXTRACT(YEAR FROM date_barge_out) = %s
                         GROUP BY EXTRACT(MONTH FROM date_barge_out)
                     ),
-                    -- 🔹 Detail per bulan + barge_code
+                    -- Detail per bulan + barge_code
                     detail AS (
                         SELECT
                             EXTRACT(MONTH FROM date_barge_out)::int AS month,
@@ -519,7 +519,7 @@ def get_chart_selling(request):
                         WHERE status_barging ='Complete' AND EXTRACT(YEAR FROM date_barge_out) = %s
                         GROUP BY EXTRACT(MONTH FROM date_barge_out), mb.barge_code
                     ),
-                    -- 🔹 Plan per bulan
+                    -- Plan per bulan
                     plan AS (
                         SELECT
                             EXTRACT(MONTH FROM plan_date)::int AS month,
@@ -567,7 +567,7 @@ def get_chart_selling(request):
                             (SELECT MAX(EXTRACT(YEAR FROM date_barge_out))::int FROM ore_sellings_barging)
                         ) AS year
                     ),
-                    -- 🔹 Summary actual per tahun
+                    -- Summary actual per tahun
                     summary AS (
                         SELECT
                             EXTRACT(YEAR FROM date_barge_out)::int AS year,
@@ -579,7 +579,7 @@ def get_chart_selling(request):
                         were status_barging ='Complete'
                         GROUP BY EXTRACT(YEAR FROM date_barge_out)
                     ),
-                    -- 🔹 Detail per tahun + barge_code
+                    -- Detail per tahun + barge_code
                     detail AS (
                         SELECT
                             EXTRACT(YEAR FROM date_barge_out)::int AS year,
@@ -592,7 +592,7 @@ def get_chart_selling(request):
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         GROUP BY EXTRACT(YEAR FROM date_barge_out), mb.barge_code
                     ),
-                    -- 🔹 Plan per tahun
+                    -- Plan per tahun
                     plan AS (
                         SELECT
                             EXTRACT(YEAR FROM plan_date)::int AS year,

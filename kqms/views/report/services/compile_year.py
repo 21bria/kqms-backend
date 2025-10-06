@@ -67,6 +67,7 @@ def fetch_selling_year(year: int):
                 SUM(tonnage)::numeric AS total
             FROM ore_sellings_barging
             WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+            AND status_barging = 'Complete'
             GROUP BY TO_CHAR(date_barge_out, 'YYYY-MM')
         ),
         plan AS (
@@ -285,12 +286,13 @@ def fetch_inventory_balance_year(year: int):
                 SUM(tonnage) AS total_out
             FROM ore_sellings_barging
             WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+            AND status_barging = 'Complete'
             GROUP BY TO_CHAR(date_barge_out, 'YYYY-MM')
         ),
         saldo_awal AS (
             SELECT
                 COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < make_date(%s,1,1)),0)
-            - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out < make_date(%s,1,1)),0) 
+               - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out < make_date(%s,1,1) AND status_barging = 'Complete'),0) 
             AS value
         )
         SELECT 
@@ -376,6 +378,7 @@ def fetch_inventory_dome_year(year: int):
             SUM(tonnage)    AS tonnage
         FROM details_selling_barging
         WHERE EXTRACT(YEAR FROM date_barge_out) <= %s
+        AND status_barging = 'Complete'
         GROUP BY stockpile, dome, material
     )
     SELECT 
@@ -501,6 +504,7 @@ def fetch_summary_to_year(year: int):
                     SUM(s.tonnage) AS total
                 FROM ore_sellings_barging s
                 WHERE EXTRACT(YEAR FROM s.date_barge_out) = %s
+                AND s.status_barging = 'Complete'
             ),
             plan AS (
                 SELECT
@@ -541,12 +545,13 @@ def fetch_summary_to_year(year: int):
             outgoing AS (
                 SELECT SUM(tonnage) AS total_out
                 FROM ore_sellings_barging
-                WHERE EXTRACT(YEAR FROM date_barge_out) = %s    
+                WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                AND status_barging = 'Complete'
             ),
             saldo_awal AS (
                 SELECT
-                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE EXTRACT(YEAR FROM tgl_production) <= %s), 0)
-                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE EXTRACT(YEAR FROM date_barge_out) <= %s), 0)
+                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE EXTRACT(YEAR FROM tgl_production) <=%s), 0)
+                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE EXTRACT(YEAR FROM date_barge_out) <=%s AND status_barging = 'Complete'), 0)
                     AS opening_balance
             )
             SELECT

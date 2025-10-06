@@ -33,9 +33,10 @@ def export_production_quality(ds: str, de: str):
 def export_selling_quality(ds: str, de: str):
     query = """
         SELECT *
-        FROM details_selling_barge_split
+        FROM details_selling_barging
         WHERE date_barge_in >= %s
           AND date_barge_out <= %s
+          AND status_barging = 'Complete'
         ORDER BY date_barge_out::date
     """
     with connections['kqms_db'].cursor() as cur:
@@ -87,7 +88,7 @@ def export_inventory_dome(de: str):
         FROM details_roa
         WHERE status_dome != 'Finished'
         AND direct_sale = 'No'
-        AND tgl_production <= %s
+        AND tgl_production < %s
         GROUP BY stockpile, pile_id, nama_material
     ),
     sell AS (
@@ -97,7 +98,8 @@ def export_inventory_dome(de: str):
             TRIM(material)  AS nama_material,
             SUM(tonnage)    AS tonnage
         FROM details_selling_barging
-        WHERE date_barge_out <= %s
+        WHERE date_barge_out < %s
+        AND status_barging = 'Complete'
         GROUP BY stockpile, dome, material
     )
     SELECT 

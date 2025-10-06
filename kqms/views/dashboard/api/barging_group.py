@@ -128,7 +128,7 @@ def get_chart_barging_group(request):
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE s.date_hauling::date = %s::date
-                            AND s.status_barging = 'Complete'
+                            --AND s.status_barging = 'Complete'
                             GROUP BY EXTRACT(HOUR FROM s.time_hauling)
                         ),
                         plan_total AS (
@@ -157,7 +157,7 @@ def get_chart_barging_group(request):
                             LEFT JOIN master_barge mb ON mb.id = s.barge_code
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE s.date_hauling::date = %s::date
-                            AND s.status_barging = 'Complete'
+                            --AND s.status_barging = 'Complete'
                             GROUP BY EXTRACT(HOUR FROM s.time_hauling), mb.barge_code
                         )
                         SELECT
@@ -208,7 +208,7 @@ def get_chart_barging_group(request):
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.date_hauling BETWEEN %s AND %s
-                        AND s.status_barging = 'Complete'
+                        --AND s.status_barging = 'Complete'
                         GROUP BY s.date_hauling::date
                     ),
                     plan AS (
@@ -232,7 +232,7 @@ def get_chart_barging_group(request):
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.date_hauling BETWEEN %s AND %s
-                        AND s.status_barging = 'Complete'
+                        --AND s.status_barging = 'Complete'
                         GROUP BY s.date_hauling::date, mb.barge_code
                     )
                     SELECT
@@ -320,6 +320,7 @@ def get_chart_barging_group(request):
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.date_hauling BETWEEN %s AND %s
+                        --AND s.status_barging = 'Complete'
                         GROUP BY s.date_hauling::date
                     ),
                     plan AS (
@@ -358,7 +359,7 @@ def get_chart_barging_group(request):
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.date_hauling BETWEEN %s AND %s
-                        --AND s.status_barging = 'Complete'
+                        ----AND s.status_barging = 'Complete'
                         GROUP BY s.date_hauling::date, mb.barge_code
                     )
                     SELECT
@@ -429,7 +430,7 @@ def get_chart_barging_group(request):
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.date_hauling BETWEEN %s AND %s
-                        AND s.status_barging = 'Complete'
+                        --AND s.status_barging = 'Complete'
                         GROUP BY s.date_hauling::date, mb.barge_code
                     ),
                     plan AS (
@@ -488,6 +489,7 @@ def get_chart_barging_group(request):
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE EXTRACT(YEAR FROM s.date_hauling) = %s
+                        --AND s.status_barging = 'Complete'
                         GROUP BY EXTRACT(MONTH FROM s.date_hauling), mb.barge_code
                     ),
                     plan AS (
@@ -548,6 +550,7 @@ def get_chart_barging_group(request):
                             ROUND(SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)::numeric, 2) AS lim,
                             ROUND(SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)::numeric, 2) AS sap
                         FROM ore_sellings_barging s
+                        WHERE s.status_barging = 'Complete'
                         LEFT JOIN master_barge mb ON mb.id = s.barge_code
                         LEFT JOIN materials m ON m.id = s.id_material
                         GROUP BY EXTRACT(YEAR FROM s.date_hauling), mb.barge_code
