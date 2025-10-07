@@ -2,6 +2,7 @@ from django.urls import path
 from ..views.geology.samples.samples_create_sale import *
 from ..views.selling.selling_details import *
 from ..views.selling.selling_plan import *
+from ..views.selling.barging_plan import *
 from ..views.selling.selling_official import *
 from ..views.selling.split_sample.selling_split_range import *
 from ..views.selling.split_sample.selling_split_chart import *
@@ -27,14 +28,18 @@ urlpatterns = [
     path('barge/list/', SellingDetails.as_view(), name='selling-barge-list'),
     path('export/daily/', export_sale_data, name='export-selling-data'), 
     # Plan
-    path('plan-page/', sale_plan_page, name='sale-plan-page'),
+    path('plan-page/selling', sale_plan_page, name='selling-plan-page'),
     path('plan/list/', sellingDataPlan.as_view(), name='selling-plan-list'),
+   
     # CRUD
     path('plan/create/', create_plan_sale, name='create-plan-sale'),
     path('plan/get-id/<uuid:id>/', getIdPlanSale, name='get-id-sale-plan'), 
     path('plan/update/<uuid:id>/', update_sale_plan, name='update-sale-plan'),
     path('plan/delete/', delete_sale_plan, name='delete-sale-plan'),
 
+    path('plan-page/barge/', sale_barge_plan_page, name='barging-plan-page'),
+    path('plan/list/barging/', bargingDataPlan.as_view(), name='barging-plan-list'),
+    path('plan/delete/barging/', delete_barging_plan, name='delete-barging-plan'),
 
     # Official
     path('official-page/', sale_official_page, name='sale-official-page'),

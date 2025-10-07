@@ -29,7 +29,7 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Selling</h3>
+                        Barging</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -42,7 +42,7 @@
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Selling
+                        Barging
                     </li>
                 </ol>
             </div>
@@ -54,7 +54,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">Plan Selling</h5>
+                            <h5 class="box-title">Plan Barging</h5>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
@@ -167,9 +167,6 @@
                         </div>
                     </div>
                     <div class="ti-modal-footer">
-                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
-                            id="exportButton"> Export
-                        </button>
                         <button type="button" id="applyFilterBtn"
                             class="ti-btn bg-primary text-white !font-medium">Filter</button>
                     </div>
@@ -414,7 +411,7 @@
 
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
-        let data_url = '{% url "selling-plan-list" %}';
+        let data_url = '{% url "barging-plan-list" %}';
         // var material_filter = 'LIM';
         var table = $('#data_table').DataTable({
             'processing': true,
@@ -544,109 +541,16 @@
             table.ajax.reload(); //just reload table
         });
 
-        /* Insert Data */
-        $('#multiRowForm').submit(function (e) {
-            e.preventDefault();
-            var formData = $(this).serialize();
-            $.ajax({
-                method: 'POST',
-                url: "{% url 'create-plan-sale' %}",
-                data: formData,
-                dataType: "json",
-                success: function (response) {
-                    if (response.success) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'success',
-                            // title: 'Insert successfully',
-                            html: response.message,
-                            padding: '2em',
-                        });
-
-                        // Membersihkan formulir setelah sukses input
-                        $("[name='plan_date[]']").val('');
-                        $("[name='type_ore[]']").val('').trigger('change');
-                        $("[name='tonnage_plan[]']").val('');
-                        $("[name='ni_plan[]']").val('');
-                        $("[name='co_plan[]']").val('');
-                        $("[name='fe_plan[]']").val('');
-                        $("[name='sio2_plan[]']").val('');
-                        $("[name='al2o3_plan[]']").val('');
-                        $("[name='mgo_plan[]']").val('');
-                        $('#planTable tbody tr:last').remove();
-                        // Reload Table
-                        $('#data_table').DataTable().clear().draw();
-                    } else {
-                        // Handle kesalahan validasi atau kesalahan lainnya
-                        alert('Terjadi kesalahan: ' + response.messages);
-                    }
-                },
-                error: function (xhr, status, errorThrown, error) {
-
-                    if (xhr.status === 400) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.error,
-                            padding: '2em',
-                        });
-                    }
-                    else if (xhr.status === 422) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-
-                    else {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            // title: 'Update successfully',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-                }
-
-            });
-        });
-
         /*--- Delete Modal ---*/
         $('#applyRemoveBtn').click(function () {
             window.HSOverlay.open('#delete-modal');
         });
+
         /*--- Delete ---*/
         $('#applyDeleteBtn').click(function () {
             var month_date = $('#month_date').val();
             var materials = $('#materials').val();
-            var url = '{% url "delete-sale-plan" %}';
+            var url = '{% url "delete-barging-plan" %}';
             if (month_date == '') {
                 $("#month_date").focus();
                 return false;
@@ -715,122 +619,10 @@
     });
 </script>
 
-<!-- Create new Data -->
-<script type="text/javascript">
-    $('#addPlan').click(function () {
-        window.HSOverlay.open('#add-data');
-    });
-
-    $(document).ready(function () {
-        //Number Only Decimal
-        $(document).on('input',
-            'input[name="ni_plan[]"], input[name="co_plan[]"], input[name="fe_plan[]"], input[name="sio2_plan[]"], input[name="mgo_plan[]"], input[name="mgo_plan[]"]',
-            function () {
-                var regex = /[^\d.]|\.(?=.*\.)/g;
-                var str = $(this).val();
-                var result = str.replace(regex, "");
-                $(this).val(result);
-            });
-
-        // Add new row
-        $('#addRow').on('click', function () {
-            var newRow = '<tr>' +
-                '<td></button>' +
-                '<button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
-                '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
-                '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
-                '</i></button></div></td>' +
-                '<td><input type="month" name="plan_date[]" value="" class="form-control text-black" ></td>' +
-                '<td>' +
-                '<select name="type_ore[]" class="form-control w-full !rounded-md !bg-light">' +
-                '<option value="">-- --</option>' +
-                '<option value="LIM">LIM</option>' +
-                '<option value="SAP">SAP</option>' +
-                '</select>' +
-                '</td>' +
-                '<td><input type="number" class="form-control" name="tonnage_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="ni_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="co_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="fe_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="sio2_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="mgo_plan[]"></td>' +
-                '<td><input type="text" class="form-control" name="al2o3_plan[]"></td>' +
-                '</tr>';
-
-            $('#planTable tbody').append(newRow);
-        });
-
-        // Remove row
-        $('#planTable').on('click', '.removeRow', function () {
-            $(this).closest('tr').remove();
-        });
-    });
-
-</script>
-
-<!-- Get Data for Edit -->
-<script>
-    $('body').on('click', '.editData', function () {
-        var id = $(this).data('id');
-        var url = '/kqms/selling/plan/get-id/' + id + '/';
-        $.ajax({
-            url: url,
-            type: "GET",
-            dataType: "json",
-            success: function (response) {
-                if (response) {
-                    window.HSOverlay.open('#edit-data');
-                    // Mengisi formulir dengan data yang diterima
-                    $('#id').val(response.id);
-                    $('#tgl_hauling').val(response.tgl_hauling);
-                    var responseTHauling = response.time_hauling;
-                    $('#id').val(response.id);
-                    $('#plan_date').val(response.plan_date);
-                    $('#type_ore').val(response.type_ore).trigger('change');
-                    // $('#type_selling').val(response.type_selling).trigger('change');
-                    $('#tonnage_plan').val(parseFloat(response.tonnage_plan).toFixed(2));
-                    $('#ni_plan').val(parseFloat(response.ni_plan).toFixed(2));
-                    $('#check_duplicated').val(response.check_duplicated);
-                    $('#description').val(response.description);
-                } else {
-                    alert(
-                        'Data tidak ditemukan'
-                    ); // Atau tindakan lain jika data tidak ditemukan
-                }
-            },
-            error: function (xhr, status, error) {
-                const toast = window.Swal.mixin({
-                    toast: true,
-                    position: 'top',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    padding: '2em',
-                });
-                toast.fire({
-                    icon: 'error',
-                    // title: 'Update successfully',
-                    html: 'Oppss!! : ' + error,
-                    padding: '2em',
-                });
-
-            }
-        });
-    });
-</script>
 
 <script>
     $(document).ready(function () {
 
-        $(".ti-form-select").select2({
-            width: '100%',
-            // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#search-modal .ti-modal-body')
-        });
-        $(".ti-form-select").select2({
-            width: '100%',
-            // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#delete-modal .ti-modal-body')
-        });
 
         //opsi Select2
         $.ajax({
@@ -850,8 +642,7 @@
                     width: '100%',
                     dropdownParent: $('#search-modal .ti-modal-body')
                 })
-
-                   $('#materials').html(options).select2({
+                $('#materials').html(options).select2({
                     width: '100%',
                     dropdownParent: $('#delete-modal .ti-modal-body')
                 })
@@ -863,43 +654,6 @@
 </script>
 
 <!-- Exports to Excel -->
-<script>
-    $(document).ready(function () {
-        let isSelect2Init = false;
-        $('#exportFilter').click(function () {
-            window.HSOverlay.open('#search-modal');
-            $('#exportButton').show();
-            $('#applyFilterBtn').hide();
-            setTimeout(function () {
-                if (!isSelect2Init) {
-                }
-            }, 300);
-        });
-
-        $('#exportButton').click(function () {
-            var startDate = $('#startDate').val();
-            var endDate = $('#endDate').val();
-            var materialFilter = $('#materialFilter').val();
-            var pointFilter = $('#pointFilter').val();
-            // var areaFilter = $('#areaFilter').val();
-            var factoriesFilter = $('#factoriesFilter').val();
-            var productFilter = $('#productFilter').val();
-
-            // Membuat URL untuk permintaan ekspor Excel
-            var exportUrl = "{% url 'export-selling-data' %}?startDate=" + startDate +
-                "&endDate=" + endDate +
-                "&materialFilter=" + materialFilter +
-                "&pointFilter=" + pointFilter +
-                // "&areaFilter=" + areaFilter +
-                "&factoriesFilter=" + factoriesFilter +
-                "&productFilter=" + productFilter;
-
-            // Redirect browser ke URL ekspor
-            window.location.href = exportUrl;
-        });
-    });
-</script>
-
 
 
 </body>

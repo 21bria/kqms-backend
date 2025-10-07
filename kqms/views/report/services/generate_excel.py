@@ -79,7 +79,7 @@ def excel_unified_summary(request):
     else:
         return HttpResponseBadRequest("Invalid mode or missing parameters")
 
-    output = BytesIO()
+    output   = BytesIO()
     workbook = xlsxwriter.Workbook(output, {'in_memory': True})
 
     # Styles
@@ -270,9 +270,9 @@ def excel_unified_summary(request):
     elif mode == "year":
         ws_sum.write('A2', f'Year: {year}', fmt_small)
 
-    ws_sum.write('F2', f'Generated: {timezone.now().strftime("%Y-%m-%d %H:%M:%S")}', fmt_small)
+    ws_sum.write('D2', f"Generated: {localtime(timezone.now()).strftime('%Y-%m-%d, %H:%M:%S')}", fmt_small)
 
-   # === Project Summary To-Date ===
+    # === Project Summary To-Date ===
     ws_sum.write('A4', 'Project Summary to Date', fmt_title)
 
     # ---------- Mining (kolom A–B, vertikal) ----------

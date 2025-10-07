@@ -1,6 +1,7 @@
 # management/commands/populate_menu.py
 from django.core.management.base import BaseCommand
 from kqms.models import Menu
+# TRUNCATE TABLE table_name RESTART IDENTITY;
 # python manage.py populate_menu
 
 class Command(BaseCommand):
@@ -367,41 +368,29 @@ class Command(BaseCommand):
             order=1,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
-        Menu.objects.create(
-            title="Selling Plan",
-            url="sale-plan-page",
-            parent=selling,
-            order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
-        )
+    
         Menu.objects.create(
             title="Samples Split",
             url="sale-split-sample-page",
             parent=selling,
-            order=3,
+            order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
         Menu.objects.create(
             title="Data Official",
             url="sale-official-page",
             parent=selling,
-            order=4,
+            order=3,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
 
         split_official = Menu.objects.create(
             title="Split Official",
             parent=selling,
-            order=5,
+            order=4,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
-        # Menu.objects.create(
-        #     title="Split mral",
-        #     url="#",
-        #     parent=split_official,
-        #     order=1,
-        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        # )
+
         Menu.objects.create(
             title="Split coa",
             url="sale-split-coa-page",
@@ -410,27 +399,44 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
        
-        split_official = Menu.objects.create(
+        blending_ore = Menu.objects.create(
             title="Ore Blending",
             parent=selling,
-            order=6,
+            order=5,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
         Menu.objects.create(
             title="Form Blending",
             url="blending-form-page",
-            parent=split_official,
+            parent=blending_ore,
             order=1,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
-        # Menu.objects.create(
-        #     title="Split coa",
-        #     url="sale-split-coa-page",
-        #     parent=split_official,
-        #     order=2,
-        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        # )
-       
+ 
+         #Plan  Selling & Barging b
+        data_plan_selling = Menu.objects.create(
+            title="Plan Selling",
+            parent=selling,
+            order=6,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
+        )
+        Menu.objects.create(
+            title="Selling",
+            url="selling-plan-page",
+            parent=data_plan_selling,
+            order=1,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
+        )
+        Menu.objects.create(
+            title="Barging",
+            url="barging-plan-page",
+            parent=data_plan_selling,
+            order=2,
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
+        )
+
+        
+
         # Analytics
         analytics = Menu.objects.create(
             title="Analytics",
@@ -517,8 +523,8 @@ class Command(BaseCommand):
             title="Sale Direct Transfer",
             url="selling-direct-staging-page",
             parent=forms,
-            order=4,
-             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling']
+            order=4, 
+            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling']
         )
 
         # By Quick

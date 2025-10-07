@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from ...models.selling_plan_barging import SellingPlanBarging
+from ...models.selling_plan import SellingPlan
 from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
@@ -42,7 +42,7 @@ class sellingDataPlan(View):
         order_dir = datatables.get('order[0][dir]')
 
         # get Data
-        data = SellingPlanBarging.objects.all()
+        data = SellingPlan.objects.all()
 
         if search:
             data = data.filter(
@@ -124,14 +124,14 @@ class sellingDataPlan(View):
                 "id"          : item.id,
                 "plan_date"   : item.plan_date,
                 "type_ore"    : item.type_ore,
-                "tonnage_plan": item.tonnage_plan,
-                "ni_plan"     : item.ni_plan,
-                "co_plan"     : item.co_plan,
-                "fe_plan"     : item.fe_plan,
-                "sio2_plan"   : item.sio2_plan,
-                "al2o3_plan"  : item.al2o3_plan,
-                "mgo_plan"    : item.mgo_plan,
-                "sm_plan"     : item.sm_plan,
+                "tonnage_plan": f"{item.tonnage_plan:.2f}",
+                "ni_plan"     : f"{item.ni_plan:.2f}",
+                "co_plan"     : f"{item.co_plan:.2f}",
+                "fe_plan"     : f"{item.fe_plan:.2f}",
+                "sio2_plan"   : f"{item.sio2_plan:.2f}",
+                "al2o3_plan"  : f"{item.al2o3_plan:.2f}",
+                "mgo_plan"    : f"{item.mgo_plan:.2f}",
+                "sm_plan"     : f"{item.sm_plan:.2f}",
                 "created_at"  : item.created_at.strftime('%Y-%m-%d %H:%M:%S')
             } for item in object_list
         ]
@@ -233,10 +233,10 @@ def create_plan_sale(request):
 
                         checkDup = f"{current_date}{type_ore[idx]}"
 
-                        if SellingPlanBarging.objects.filter(check_duplicated=checkDup).exists():
+                        if SellingPlan.objects.filter(check_duplicated=checkDup).exists():
                             continue  # skip kalau sudah ada
 
-                        SellingPlanBarging.objects.create(
+                        SellingPlan.objects.create(
                             plan_date        = current_date,
                             type_ore         = type_ore[idx],
                             tonnage_plan     = tonnage_per_day,
@@ -269,7 +269,7 @@ def create_plan_sale(request):
 def getIdPlanSale(request, id):
     if request.method == 'GET':
         try:
-            items = SellingPlanBarging.objects.get(id=id)
+            items = SellingPlan.objects.get(id=id)
             data = {
                 'id'              : items.id,
                 'plan_date'       : items.plan_date.strftime('%Y-%m-%d'),
@@ -283,7 +283,7 @@ def getIdPlanSale(request, id):
         
             }
             return JsonResponse(data)
-        except SellingPlanBarging.DoesNotExist:
+        except SellingPlan.DoesNotExist:
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
@@ -337,7 +337,7 @@ def update_sale_plan(request, id):
 
         # Validasi duplikat
         checkDup = plan_date + type_ore 
-        if SellingPlanBarging.objects.exclude(id=id).filter(check_duplicated=checkDup).exists(): 
+        if SellingPlan.objects.exclude(id=id).filter(check_duplicated=checkDup).exists(): 
             return JsonResponse({'message': f'{checkDup} : already exists.'}, status=422)
         
         if plan_date:
@@ -348,7 +348,7 @@ def update_sale_plan(request, id):
             left_date = None  # Atau berikan nilai default 
 
         # Dapatkan data yang akan diupdate berdasarkan ID
-        data = SellingPlanBarging.objects.get(id=id)
+        data = SellingPlan.objects.get(id=id)
 
         # Lakukan update data dengan nilai baru
         data.plan_date    = plan_date
@@ -365,7 +365,7 @@ def update_sale_plan(request, id):
         # Kembalikan respons JSON sukses
         return JsonResponse({'success': True, 'message': 'Data berhasil diupdate.'})
 
-    except SellingPlanBarging.DoesNotExist:
+    except SellingPlan.DoesNotExist:
         return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     except IntegrityError as e:
@@ -408,7 +408,7 @@ def delete_sale_plan(request):
             end_date   = datetime(year, month, days_in_month).date()
 
             # filter query
-            qs = SellingPlanBarging.objects.filter(plan_date__range=[start_date, end_date])
+            qs = SellingPlan.objects.filter(plan_date__range=[start_date, end_date])
             if materials:
                 qs = qs.filter(type_ore=materials)
 
