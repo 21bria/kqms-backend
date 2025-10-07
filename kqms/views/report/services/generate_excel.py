@@ -1266,14 +1266,22 @@ def pdf_unified_summary(request):
     ]))
 
     # --- Selling ---
+    actual = summary['selling'].get('actual', 0) or 0
+    plan   = summary['selling'].get('plan', 0) or 0
+    lim_actual = summary['selling'].get('lim_actual', 0) or 0
+    sap_actual = summary['selling'].get('sap_actual', 0) or 0
+
+    achievement = f"{(actual / plan * 100):.0f}%" if plan > 0 else "0%"
+
     selling_table = Table([
         ["Metric", "Value"],
-        ["Total Actual", f"{summary['selling'].get('actual', 0):,.0f}"],
-        ["Total Plan",   f"{summary['selling'].get('plan', 0):,.0f}"],
-        ["Achievement",  f"{(summary['selling'].get('actual', 0) / summary['selling'].get('plan', 1) * 100):.0f}%"],
-        ["LIM Actual",   f"{summary['selling'].get('lim_actual', 0):,.0f}"],
-        ["SAP Actual",   f"{summary['selling'].get('sap_actual', 0):,.0f}"],
+        ["Total Actual", f"{actual:,.0f}"],
+        ["Total Plan",   f"{plan:,.0f}"],
+        ["Achievement",  achievement],
+        ["LIM Actual",   f"{lim_actual:,.0f}"],
+        ["SAP Actual",   f"{sap_actual:,.0f}"],
     ], colWidths=[120, 100])
+
 
     selling_table.setStyle(TableStyle([
         ('GRID', (0,0), (-1,-1), 0.4, colors.black),

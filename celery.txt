@@ -36,3 +36,4 @@ python manage.py runserver 0.0.0.0:8000
 sudo systemctl daemon-reload
 sudo systemctl start celery.service
 sudo systemctl status celery.service
+pankaj.dhoka@oorjaindonesia.com
