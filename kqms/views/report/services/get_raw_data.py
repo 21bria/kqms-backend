@@ -86,9 +86,9 @@ def export_inventory_dome(de: str):
                 )::numeric,2
             ) AS sm
         FROM details_roa
-        WHERE status_dome != 'Finished'
-        AND direct_sale = 'No'
-        AND tgl_production < %s
+        WHERE 
+        --status_dome != 'Finished' AND
+        direct_sale = 'No' AND tgl_production <= %s
         GROUP BY stockpile, pile_id, nama_material
     ),
     sell AS (
@@ -98,7 +98,7 @@ def export_inventory_dome(de: str):
             TRIM(material)  AS nama_material,
             SUM(tonnage)    AS tonnage
         FROM details_selling_barging
-        WHERE date_barge_out < %s
+        WHERE date_barge_out <= %s
         AND status_barging = 'Complete'
         GROUP BY stockpile, dome, material
     )

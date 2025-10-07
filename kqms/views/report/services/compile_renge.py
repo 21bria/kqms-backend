@@ -236,12 +236,14 @@ def fetch_inventory_balance(ds: str, de: str):
                 date_hauling::date AS dt,
                 SUM(tonnage) AS total_out
             FROM ore_sellings_barging
-            WHERE date_hauling BETWEEN %s AND %s
+            WHERE 
+            date_hauling >= %s AND date_barge_out <= %s
+            AND status_barging = 'Complete'
             GROUP BY date_hauling::date
         ),
         saldo_awal AS (
             SELECT
-                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production <%s), 0)
+                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < %s), 0)
                 - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_hauling < %s AND status_barging = 'Complete'), 0) 
                 AS value
         )
@@ -261,7 +263,7 @@ def fetch_inventory_balance(ds: str, de: str):
     """
     with connections['kqms_db'].cursor() as cur:
         # 8 parameter: (ds,de) untuk tanggal series, (ds,de) untuk incoming, (ds,de) untuk outgoing, (ds,de) untuk saldo_awal
-        cur.execute(query, [ds, de, ds, de, ds, de, ds, ds])
+        cur.execute(query, [ds,de, ds, de,ds, de,ds, ds])
         rows = [dict(zip([c[0] for c in cur.description], r)) for r in cur.fetchall()]
 
     summary = {
@@ -312,13 +314,14 @@ def fetch_inventory_dome(de: str):
                     ),0) + 0.000001),
                     0
                 )::numeric,2
-            ) AS sm
+            ) AS sm,
+          direct_sale  
         FROM details_roa
         WHERE
         -- status_dome != 'Finished' AND 
-        direct_sale = 'No'
-        AND tgl_production < %s
-        GROUP BY stockpile, pile_id, nama_material
+        direct_sale = 'No' AND 
+        tgl_production <= %s
+        GROUP BY stockpile, pile_id, nama_material, direct_sale
     ),
     sell AS (
         SELECT
@@ -327,7 +330,7 @@ def fetch_inventory_dome(de: str):
             TRIM(material)  AS nama_material,
             SUM(tonnage)    AS tonnage
         FROM details_selling_barging
-        WHERE date_barge_out < %s
+        WHERE date_barge_out <= %s
         AND status_barging = 'Complete'
         GROUP BY stockpile, dome, material
     )
@@ -363,7 +366,8 @@ def fetch_inventory_dome(de: str):
     ON p.stockpile = s.stockpile 
     AND p.pile_id   = s.pile_id
     GROUP BY p.stockpile, p.pile_id, p.nama_material, 
-            p.total_ore, p.released, 
+            p.total_ore, 
+            p.released, 
             p.ni, p.co, p.fe, p.mgo, p.sio2, p.sm
     ORDER BY p.nama_material, p.stockpile;
     """
@@ -389,7 +393,7 @@ def fetch_summary_to_date(end_date):
                     SUM(CASE WHEN nama_material = 'Biomass' THEN tonnage ELSE 0 END)::numeric AS biomass,
                     SUM(tonnage)::numeric AS total
                 FROM mine_productions
-                WHERE date_production < %s
+                WHERE date_production <= %s
             ),
             plan AS (
                 SELECT
@@ -399,7 +403,7 @@ def fetch_summary_to_date(end_date):
                         COALESCE(biomass,0) + COALESCE(waste,0)
                     )::numeric AS plan_total
                 FROM plan_productions
-                WHERE date_plan < %s
+                WHERE date_plan <= %s
             )
             SELECT 
                 COALESCE(m.lim,0)      AS lim_total,
@@ -438,13 +442,13 @@ def fetch_summary_to_date(end_date):
             SUM(CASE WHEN m.nama_material = 'SAP' THEN op.tonnage ELSE 0 END) AS prod_sap
             FROM ore_productions op
             LEFT JOIN materials m ON m.id = op.id_material
-            WHERE op.tgl_production < %s
+            WHERE op.tgl_production <= %s
         """, [end_date])
         q_total, q_lim, q_sap = cur.fetchone()
         quality = {
-            "total": q_total or 0,
-            "lim": q_lim or 0,
-            "sap": q_sap or 0
+            "total" : q_total or 0,
+            "lim"   : q_lim or 0,
+            "sap"   : q_sap or 0
         }
 
        # === Selling (summary sampai end_date) ===
@@ -455,7 +459,7 @@ def fetch_summary_to_date(end_date):
                     SUM(CASE WHEN sale_adjust='RKEF' THEN s.tonnage ELSE 0 END) AS sap,
                     SUM(s.tonnage) AS total
                 FROM ore_sellings_barging s
-                WHERE s.date_barge_out < %s
+                WHERE s.date_barge_out <= %s
                  AND s.status_barging = 'Complete'   
             ),
             plan AS (
@@ -464,7 +468,7 @@ def fetch_summary_to_date(end_date):
                     SUM(CASE WHEN type_ore = 'SAP' THEN tonnage_plan ELSE 0 END) AS sap,
                     SUM(tonnage_plan) AS total
                 FROM ore_sellings_plan_barging p
-                WHERE p.plan_date < %s
+                WHERE p.plan_date <= %s
             )
             SELECT
                 COALESCE(a.lim,0)      AS actual_lim,
@@ -479,12 +483,12 @@ def fetch_summary_to_date(end_date):
         s_lim_actual, s_sap_actual, s_total_actual, s_lim_plan, s_sap_plan, s_total_plan = cur.fetchone()
 
         selling = {
-            "actual": s_total_actual or 0,
-            "plan": s_total_plan or 0,
+            "actual"    : s_total_actual or 0,
+            "plan"      : s_total_plan or 0,
             "lim_actual": s_lim_actual or 0,
             "sap_actual": s_sap_actual or 0,
-            "lim_plan": s_lim_plan or 0,
-            "sap_plan": s_sap_plan or 0
+            "lim_plan"  : s_lim_plan or 0,
+            "sap_plan"  : s_sap_plan or 0
         }
 
         # === Inventory ===
@@ -492,33 +496,33 @@ def fetch_summary_to_date(end_date):
             WITH incoming AS (
                 SELECT SUM(tonnage) AS total_in
                 FROM ore_productions
-                WHERE tgl_production < %s
+                WHERE tgl_production <= %s
             ),
             outgoing AS (
                 SELECT SUM(tonnage) AS total_out
                 FROM ore_sellings_barging
-                WHERE date_barge_out < %s
+                WHERE date_barge_out <= %s
                 AND status_barging = 'Complete'
             ),
             saldo_awal AS (
                 SELECT
-                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < %s), 0)
-                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out < %s AND status_barging = 'Complete'), 0)
-                    AS opening_balance
+                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production <= %s), 0)
+                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out <= %s AND status_barging = 'Complete'), 0)
+                    AS current_stock
             )
             SELECT
-                (SELECT opening_balance FROM saldo_awal) AS opening_balance,
+                (SELECT current_stock FROM saldo_awal) AS current_stock,
                 COALESCE((SELECT total_in FROM incoming), 0) AS total_in,
                 COALESCE((SELECT total_out FROM outgoing), 0) AS total_out
                     
         """, [end_date, end_date, end_date, end_date])
 
-        inv_open, inv_in, inv_out = cur.fetchone()
+        current_stock, inv_in, inv_out = cur.fetchone()
 
         inventory = {
-            "opening": inv_open or 0,
-            "in": inv_in or 0,
-            "out": inv_out or 0,
+            "current_stock" : current_stock or 0,
+            "in"            : inv_in or 0,
+            "out"           : inv_out or 0,
         }
 
     return {

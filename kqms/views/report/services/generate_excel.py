@@ -252,10 +252,11 @@ def excel_unified_summary(request):
         ws_invlist.write_number(f'K{i}', float(r['mgo'] or 0), fmt_dec2)
         ws_invlist.write_number(f'L{i}', float(r['sio2'] or 0), fmt_dec2)
         ws_invlist.write_number(f'M{i}', float(r['sm'] or 0), fmt_dec2)
+        # ws_invlist.write(f'N{i}', r['direct_sale'], fmt_td)
 
     ws_invlist.set_column('A:C', 14)   # stockpile, pile id, material
     ws_invlist.set_column('D:G', 14)   # total ore, released, selling, balance
-    ws_invlist.set_column('H:M', 10)   # Ni, Co, Fe, MgO, SiO2, SM
+    ws_invlist.set_column('H:N', 10)   # Ni, Co, Fe, MgO, SiO2, SM,Direct
 
 
     # tambahkan blok summary Quality, Selling, Mining :
@@ -318,7 +319,7 @@ def excel_unified_summary(request):
     ws_sum.write('D16', 'Value', fmt_td)
     ws_sum.write_number('E16', summary['inventory']['in'] or 0, fmt_num)
     ws_sum.write_number('F16', summary['inventory']['out'] or 0, fmt_num)
-    ws_sum.write_number('G16', summary['inventory']['opening'] or 0, fmt_num)  # pakai closing balance
+    ws_sum.write_number('G16', summary['inventory']['current_stock'] or 0, fmt_num)  # pakai closing balance
 
 
     # Atur lebar kolom D–I (Quality & Selling)
@@ -1290,7 +1291,7 @@ def pdf_unified_summary(request):
         ["Metric", "Value"],
         ["Production In", f"{summary['inventory'].get('in', 0):,.0f}"],
         ["Selling Out",   f"{summary['inventory'].get('out', 0):,.0f}"],
-        ["Current Stock", f"{summary['inventory'].get('opening', 0):,.0f}"],
+        ["Current Stock", f"{summary['inventory'].get('current_stock', 0):,.0f}"],
     ], colWidths=[120, 100])
 
     inv_table.setStyle(TableStyle([

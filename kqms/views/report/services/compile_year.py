@@ -550,23 +550,23 @@ def fetch_summary_to_year(year: int):
             ),
             saldo_awal AS (
                 SELECT
-                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE EXTRACT(YEAR FROM tgl_production) <=%s), 0)
-                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE EXTRACT(YEAR FROM date_barge_out) <=%s AND status_barging = 'Complete'), 0)
-                    AS opening_balance
+                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE EXTRACT(YEAR FROM tgl_production) < %s), 0)
+                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE EXTRACT(YEAR FROM date_barge_out) < %s AND status_barging = 'Complete'), 0)
+                    AS current_stock
             )
             SELECT
-                (SELECT opening_balance FROM saldo_awal) AS opening_balance,
+                (SELECT current_stock FROM saldo_awal) AS current_stock,
                 COALESCE((SELECT total_in FROM incoming), 0) AS total_in,
                 COALESCE((SELECT total_out FROM outgoing), 0) AS total_out
                     
         """, [year, year, year, year])
 
-        inv_open, inv_in, inv_out = cur.fetchone()
+        current_stock, inv_in, inv_out = cur.fetchone()
 
         inventory = {
-            "opening" : inv_open or 0,
-            "in"      : inv_in or 0,
-            "out"     : inv_out or 0,
+            "current_stock" : current_stock or 0,
+            "in"            : inv_in or 0,
+            "out"           : inv_out or 0,
         }
 
     return {
