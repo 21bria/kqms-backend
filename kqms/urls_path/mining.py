@@ -60,6 +60,7 @@ urlpatterns = [
     # Plan Mine Productions
     path('mine-production-plan/page/', plan_mine_production_page, name='mine-production-plan-page'), 
     path('mine-production-plan/list/', viewPlanMineProduction.as_view(), name='mine-production-plan-list'),
+    path('mine-production-plan/delete/', delete_productions_plan, name='mine-production-plan-delete'),
 
     # Analyst Mine Production
     path('mine-production/analyst-days-page/', mine_production_days_page, name='mine-production-analyst-days-page'), 

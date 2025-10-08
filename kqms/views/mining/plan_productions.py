@@ -5,17 +5,10 @@ from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import get_object_or_404
-from django.db.models import Count, Sum
 from datetime import datetime
+import calendar
 from django.views.decorators.csrf import csrf_exempt
-import pandas as pd
-from django.http import HttpResponse
 from django.views import View
-from openpyxl import Workbook
-from openpyxl.styles import Font
-from openpyxl.utils import get_column_letter
-
 
 def format_angka(jumlah):
     if jumlah >= 1_000_000_000:
@@ -26,6 +19,10 @@ def format_angka(jumlah):
         return f"{jumlah / 1_000:.2f} K"
     else:
         return str(jumlah)
+    
+@login_required
+def plan_mine_production_page(request):
+    return render(request, 'admin-mine/list-plan-productions.html')
 
 class viewPlanMineProduction(View):
 
@@ -137,6 +134,48 @@ class viewPlanMineProduction(View):
             'totalPages'     : total_pages,
         }
 
+
 @login_required
-def plan_mine_production_page(request):
-    return render(request, 'admin-mine/list-plan-productions.html')
+@csrf_exempt
+def delete_productions_plan(request):
+    allowed_groups = ['superadmin','data-control','admin-mining','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
+
+    if request.method == 'DELETE':
+        try:
+            import json
+            body = json.loads(request.body.decode('utf-8'))
+            month_date = body.get('month_date')   # format: YYYY-MM
+    
+
+            if not month_date:
+                return JsonResponse({'status': 'error', 'message': 'Month date required'}, status=400)
+
+            # ambil tahun & bulan
+            try:
+                year, month = map(int, month_date.split('-'))
+            except Exception:
+                return JsonResponse({'status': 'error', 'message': 'Invalid month_date format'}, status=400)
+
+            days_in_month = calendar.monthrange(year, month)[1]
+            start_date    = datetime(year, month, 1).date()
+            end_date      = datetime(year, month, days_in_month).date()
+
+            # filter query
+            qs = planProductions.objects.filter(date_plan__range=[start_date, end_date])
+        
+            deleted_count, _ = qs.delete()
+
+            return JsonResponse({'status': 'deleted', 'message': f'{deleted_count} record(s) deleted'})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON body'}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)

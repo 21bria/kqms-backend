@@ -97,6 +97,12 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div class=" mt-1">
+                                <div class="flex flex-wrap items-left justify-start gap-2">
+                                    <button type="button" id="applyRemoveBtn"
+                                        class="ti-btn ti-btn-danger !rounded-lg ti-btn-wave">Remove data</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,10 +184,90 @@
 
 
 
-    <!-- Global Toast Container -->
-    <div id="toast-container" class="fixed top-5  rounded-sm  right-5 z-[9999] space-y-3"></div>
+    <!-- Start::delete modal -->
+    <div id="delete-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">Delete
+                        Data Plan Production
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#delete-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                    <div class="hs-accordion-group">
+                        <div class="accordion customized-accordion accordions-items-seperate pb-3"
+                            id="customizedAccordion">
+                            <div class="hs-accordion-group">
+                                <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                    id="hs-basic-heading31">
+                                    <button
+                                        class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                        aria-controls="hs-basic-collapse31" type="button">
+                                        KQMS Info#
+                                        <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                        <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                            width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                    <div id="hs-basic-collapse11"
+                                        class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                        aria-labelledby="hs-basic-heading11">
+                                        <div class="accordion-body">
+                                            <strong>Note :</strong>
+                                            Form untuk melakukan delete data plan production berdasarkan bulan.
+                                            <div class="mt-2 text-sm text-muted">
+                                                1. Pilih bulan pada form date month.<br>
+                                                2. Klik tombol delete untuk menghapus data plan production pada bulan
+                                                tersebut.<br>
+                                                3. Pastikan data yang dihapus sudah benar karena proses ini tidak dapat
+                                                dibatalkan.<br>
+                                                4. Jika ada kesalahan atau pertanyaan, hubungi administrator sistem.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form>
+                    <div class="ti-modal-body !overflow-visible">
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="xl:col-span-12 col-span-12">
+                                <label class="form-label">Date Month</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="month" class="form-control" id="month_date" name="month_date"
+                                        placeholder="Choose date">
+                                </div>
+                            </div>
 
-    <!-- End::add task modal -->
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" id="applyDeleteBtn"
+                            class="ti-btn bg-danger text-white !font-medium">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <!-- Footer Start -->
     {% include 'layout/footer.html' %}
     <!-- Footer End -->
@@ -392,6 +478,81 @@
             table.ajax.reload(); //just reload table
         });
 
+        /*--- Delete Modal ---*/
+        $('#applyRemoveBtn').click(function () {
+            window.HSOverlay.open('#delete-modal');
+        });
+
+        /*--- Delete ---*/
+        $('#applyDeleteBtn').click(function () {
+            var month_date = $('#month_date').val();
+            var materials = $('#materials').val();
+            var url = '{% url "mine-production-plan-delete" %}';
+            if (month_date == '') {
+                $("#month_date").focus();
+                return false;
+            }
+            else {
+                window.HSOverlay.close('#delete-modal');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete :" + " " + month_date,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                    // width: 320,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            contentType: 'application/json',
+                            data: JSON.stringify(
+                                {
+                                    month_date: month_date,
+                                    materials: materials
+                                }
+
+                            ), // Sending data in the body
+                            success: function (data) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
+                                );
+                                table.draw();
+                                $('#btn_clear').hide(); // 
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+
+        });
+
     });
 </script>
 
@@ -436,14 +597,10 @@
             method: "GET",
             dataType: "json",
             success: function (data) {
-
                 var options = '';
-
-
                 $.each(data.list, function (key, value) {
                     options += '<option value="' + value.code + '">' + value.vendor_name + '</option>';
                 });
-
                 // Set opsi dalam elemen Select2
                 $('#vendors').append(options);
 
