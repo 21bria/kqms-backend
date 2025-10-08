@@ -13,7 +13,14 @@ from django.db.models import Case, When, Value, IntegerField
 
 @login_required
 def sale_barge_plan_page(request):
-    return render(request, 'admin-selling/plan/list-plan-barging.html')
+    today = datetime.today()
+    first_day_of_month = today.replace(day=1)  # Tanggal awal bulan berjalan
+    context = {
+        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
+        'end_date'   : today.strftime('%Y-%m-%d'),
+    }
+
+    return render(request, 'admin-selling/plan/list-plan-barging.html', context)
 
 class bargingDataPlan(View):
     def post(self, request):

@@ -22,7 +22,14 @@ def format_angka(jumlah):
     
 @login_required
 def plan_mine_production_page(request):
-    return render(request, 'admin-mine/list-plan-productions.html')
+    today = datetime.today()
+    first_day_of_month = today.replace(day=1)  # Tanggal awal bulan berjalan
+    context = {
+        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
+        'end_date'   : today.strftime('%Y-%m-%d'),
+    }
+
+    return render(request, 'admin-mine/list-plan-productions.html', context)
 
 class viewPlanMineProduction(View):
 
