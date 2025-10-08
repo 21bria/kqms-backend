@@ -118,7 +118,7 @@ def build_filter_clause(filter_type, year, month, week, date_val, date_start, da
 
         # Jika tahun/bulan/minggu spesifik dikirim, kita hitung dari situ
         group_actual = "DATE(date_production)"
-        group_plan = "DATE(date_plan)"
+        group_plan   = "DATE(date_plan)"
 
         # Hitung awal minggu dari kombinasi tahun + minggu ISO
         if year and week:

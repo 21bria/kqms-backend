@@ -1,3 +1,4 @@
+from .mine_reserve import *
 from .assay_mral_model import *
 from .assay_roa_model import *
 from .block_model import *

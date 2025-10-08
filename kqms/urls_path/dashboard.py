@@ -1,5 +1,8 @@
 from django.urls import path
 from ..views.dashboard.index import *
+
+# Reserve
+from ..views.dashboard.api.reserve import *
 # Quality
 from ..views.dashboard.api.geology import *
 from ..views.dashboard.api.details.quality import *
@@ -22,6 +25,8 @@ from ..views.dashboard.mining.details_others import *
 
 
 urlpatterns = [
+    # Reserve Dashboard
+    path('api/reserve-summary/', get_reserve_summary, name='get_reserve_summary'),
     # Geology Dashboard
     path('geology/', geology_home, name='home-geology'),
     path('api/ore-summary/', get_ore_summary, name='get_ore_summary'),
