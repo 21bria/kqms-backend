@@ -410,7 +410,7 @@ def getStockpileAll(request):
     offset = (page - 1) * per_page
 
     # --- Build base filters ---
-    count_filters = ["t1.status_dome = 'Continue'"]  # default filter
+    count_filters = ["t1.status_dome != 'Finished'"]  # default filter
     params = []
 
     if saleFilter:
@@ -444,20 +444,20 @@ def getStockpileAll(request):
                     stockpile,
                     CASE
                         WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
-                        WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
-                        WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                        WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'LIM'
+                        WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'SAP'
                         WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
                         ELSE material
                     END AS mapped_material,
                     SUM(tonnage) AS total_selling
                 FROM selling_by_stockpile
                 WHERE (direct = 'No' OR direct IS NULL)
-                  AND sale_dome = 'Continue'
+                  AND sale_dome !='Finished'
                 GROUP BY stockpile,
                          CASE
                              WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
-                             WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
-                             WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                             WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'LIM'
+                             WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'SAP'
                              WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
                              ELSE material
                          END

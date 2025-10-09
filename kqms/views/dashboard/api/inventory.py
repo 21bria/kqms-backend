@@ -2005,20 +2005,20 @@ def get_inventory_stockpile(request):
                     stockpile,
                     CASE
                         WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
-                        WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
-                        WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                        WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'LIM'
+                        WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'SAP'
                         WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
                         ELSE material
                     END AS mapped_material,
                     SUM(tonnage) AS total_selling
                 FROM selling_by_stockpile
                 WHERE (direct = 'No' OR direct IS NULL)
-                  AND sale_dome = 'Continue'
+                  AND sale_dome !='Finished'
                 GROUP BY stockpile,
                          CASE
                              WHEN material = 'LIM' AND sale_adjust = 'HPAL' THEN 'LIM'
-                             WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'SAP'
-                             WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'LIM'
+                             WHEN material = 'LIM' AND sale_adjust = 'RKEF' THEN 'LIM'
+                             WHEN material = 'SAP' AND sale_adjust = 'HPAL' THEN 'SAP'
                              WHEN material = 'SAP' AND sale_adjust = 'RKEF' THEN 'SAP'
                              ELSE material
                          END

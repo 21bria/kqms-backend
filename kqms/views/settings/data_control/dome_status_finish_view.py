@@ -161,34 +161,24 @@ def insert_dome_finish(request):
         cek_data = f"{id_dome}_FINISHED".upper()
 
         with transaction.atomic():
-            existing = domeStatusFinish.objects.filter(cek_duplicated=cek_data).first()
+            # Update jika sudah ada, buat baru jika belum
+            obj, created = domeStatusFinish.objects.update_or_create(
+                cek_duplicated=cek_data,
+                defaults={
+                    'id_dome'       : int(id_dome),
+                    'tonnage_dome'  : float(tonnage_dome),
+                    'status_dome'   : 'Finished',
+                    'description'   : description,
+                }
+            )
 
-            if existing:
-                # Kalau sudah ada → ubah jadi Closed
-                existing.status_dome = "Closed"
-                existing.save(update_fields=["status_dome"])
+            # Update relasi lain tetap disamakan
+            OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Finished", pile_status="Close")
+            SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Finished", status_dome="Close")
+            SellingBarging.objects.filter(id_pile=int(id_dome)).update(sale_dome="Finished")
 
-                OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Closed")
-                SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Closed")
-                SellingBarging.objects.filter(id_pile=int(id_dome)).update(sale_dome="Closed")
-
-                return JsonResponse({'success': True, 'message': 'Data sudah ada, status diubah menjadi Closed.'})
-
-            else:
-                # Kalau belum ada → simpan baru
-                domeStatusFinish.objects.create(
-                    id_dome=int(id_dome),
-                    tonnage_dome=float(tonnage_dome),
-                    status_dome="Finished",
-                    description=description,
-                    cek_duplicated=cek_data,
-                )
-
-                OreProductions.objects.filter(id_pile=int(id_dome)).update(status_dome="Finished")
-                SourceMinesDome.objects.filter(pile_id=str(id_dome)).update(dome_finish="Finished")
-                SellingBarging.objects.filter(id_pile=int(id_dome)).update(sale_dome="Finished")
-
-                return JsonResponse({'success': True, 'message': 'Data berhasil disimpan dengan status Finished.'})
+            msg = 'Data baru disimpan dengan status Finished.' if created else 'Data sudah ada, diperbarui ke status Finished.'
+            return JsonResponse({'success': True, 'message': msg})
 
     except IntegrityError as e:
         return JsonResponse({'error': 'Kesalahan integritas database', 'message': str(e)}, status=400)
