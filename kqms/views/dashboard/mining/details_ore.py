@@ -154,10 +154,7 @@ def get_monthly_detail_chart(filter_year, filter_month):
                 SUM(COALESCE(lim,0))::numeric AS plan_lim,
                 SUM(COALESCE(sap,0))::numeric AS plan_sap,
                 SUM(
-                    COALESCE(lglo,0)+COALESCE(mglo,0)+COALESCE(hglo,0)+COALESCE(mws,0)+
-                    COALESCE(lgso,0)+COALESCE(mgso,0)+COALESCE(hgso,0)+
-                    COALESCE(lim,0)+COALESCE(sap,0)+
-                    COALESCE(quarry,0)+COALESCE(ballast,0)+COALESCE(biomass,0)
+                    COALESCE(lim,0)+COALESCE(sap,0)
                 )::numeric AS plan_total
             FROM plan_productions
             WHERE EXTRACT(MONTH FROM date_plan) = %s
