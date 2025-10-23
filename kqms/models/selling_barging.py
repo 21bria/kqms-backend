@@ -29,7 +29,7 @@ class SellingBarging(models.Model):
     code_batch_ex       = models.CharField(max_length=150, default=None, null=True, blank=True)
     code_batch_pulp     = models.CharField(max_length=150, default=None, null=True, blank=True)
     surv_order          = models.CharField(max_length=100, default=None, null=True, blank=True)
-    code_fix_batch      = models.CharField(max_length=100, default=None, null=True, blank=True)
+    code_monitoring     = models.CharField(max_length=100, default=None, null=True, blank=True)
     code_lot            = models.CharField(max_length=150, default=None, null=True, blank=True)
     date_barging        = models.DateField(default=None, null=True, blank=True)
     id_user             = models.IntegerField(default=None, null=True, blank=True)
@@ -47,7 +47,7 @@ class SellingBarging(models.Model):
         app_label  = 'kqms'
 
     indexes = [
-            models.Index(fields=['code_fix_batch']),
+            models.Index(fields=['code_monitoring']),
             models.Index(fields=['code_batch']),
             models.Index(fields=['code_batch_pulp']),
             models.Index(fields=['sale_adjust']),

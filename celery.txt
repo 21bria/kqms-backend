@@ -30,10 +30,12 @@ sudo systemctl restart celery
 =====
 TRUNCATE TABLE your_table_name RESTART IDENTITY CASCADE;
 
+ALTER SEQUENCE nama_tabel_id_seq RESTART WITH ?;
 
 python manage.py runserver 0.0.0.0:8000
 
 sudo systemctl daemon-reload
 sudo systemctl start celery.service
 sudo systemctl status celery.service
-pankaj.dhoka@oorjaindonesia.com
+
+

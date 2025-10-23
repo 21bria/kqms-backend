@@ -207,19 +207,41 @@ def create_sample_sale(request):
                     # Gabungkan nilai-nilai kolom menjadi kode batch
                     # combinedKodeBatch = type[idx] + id_material[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
                     # pulpKodeBatch     = type[idx] + (method[idx] if method else '')  + productCode[idx] + batch_code[idx]
-                    combinedKodeBatch = type[idx] + id_material[idx]   + productCode[idx] + batch_code[idx]
+                    combinedKodeBatch = type[idx] + id_material[idx] + productCode[idx] + batch_code[idx]
+                    monitoringBatch   = type[idx] + id_material[idx] + productCode[idx] + batch_code[idx] + increments[idx]
                     pulpKodeBatch     = type[idx] + productCode[idx] + batch_code[idx]
 
-                    combinedKodeBatch = combinedKodeBatch.replace(" ", "")  # Menghapus spasi
+                    combinedKodeBatch = combinedKodeBatch.replace(" ", "")
+                    monitoringBatch   = monitoringBatch.replace(" ", "")  
                     pulpKodeBatch     = pulpKodeBatch.replace(" ", "")  # Menghapus spasi
 
                     # Definisikan tipe-tipe yang ingin cek
-                    valid_types = ['LIS', 'SAS']
+                    valid_types    = ['LIS', 'SAS']
+                    valid_type_cks = ['LIS_CKS', 'SAS_CKS']
 
                     # Cek apakah kode batch sudah ada dalam database
-                    if type[idx] in valid_types:
+                    if type[idx]  in valid_types:
+                        # Cek duplikat berdasarkan kode_batch saja
                         if SampleProductions.objects.filter(kode_batch=combinedKodeBatch).exists():
-                            return JsonResponse({'message': f'{batch_code[idx]} : batch code already exists.'}, status=422)
+                           return JsonResponse({'message': f'{batch_code[idx]} : batch code already exists.'}, status=422)
+                    else:
+                        # Cek duplikat berdasarkan monitoring_batch
+                        if SampleProductions.objects.filter(sale_monitoring=monitoringBatch).exists():
+                           return JsonResponse({'message': f'{batch_code[idx]} : batch code monitoring already exists.'}, status=422)
+
+                     # Tentukan field berdasarkan tipe
+                    if type[idx] in valid_types:
+                        kode_batch_val    = combinedKodeBatch
+                        selling_pulp_val  = pulpKodeBatch
+                        sale_monitoring_val = None
+                    elif type[idx] in valid_type_cks:
+                        kode_batch_val = None
+                        selling_pulp_val = None
+                        sale_monitoring_val = monitoringBatch
+                    else:
+                        kode_batch_val = None
+                        selling_pulp_val = None
+                        sale_monitoring_val = None
 
                     # Simpan data sample baru
                     SampleProductions.objects.create(
@@ -239,10 +261,11 @@ def create_sample_sale(request):
                         to_its              = '00:00:00',
                         gc_expect           = 'No',
                         type                = type[idx],
-                        kode_batch          = combinedKodeBatch,
-                        selling_pulp        = pulpKodeBatch,
+                        kode_batch          = kode_batch_val,
+                        selling_pulp        = selling_pulp_val,
+                        sale_monitoring     = sale_monitoring_val,
                         no_sample           = no_sample, 
-                        id_user             = request.user.id  
+                        id_user             = request.user.id
                     )
 
             # Kembalikan respons JSON sukses

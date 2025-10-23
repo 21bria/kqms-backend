@@ -50,7 +50,7 @@ def chartTypeYear(request):
     if db_vendor == 'postgresql':
         year_expr = "EXTRACT(YEAR FROM tgl_produksi)"
         where_clause = f"{year_expr} = %s"
-    elif db_vendor in ['mssql', 'microsoft', 'mysql']:
+    elif db_vendor in ['mssql', 'micsasoft', 'mysql']:
         year_expr = "YEAR(tgl_produksi)"
         where_clause = f"{year_expr} = %s"
     else:
@@ -64,8 +64,8 @@ def chartTypeYear(request):
             COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
             COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
             COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS qa,
-            COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
-            COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
+            COUNT(CASE WHEN type_sample = 'LIS' THEN 1 END) AS lis,
+            COUNT(CASE WHEN type_sample = 'SAS' THEN 1 END) AS sas
         FROM sample_type_count
         WHERE {where_clause}
         GROUP BY {year_expr}
@@ -97,11 +97,11 @@ def chartTypeYear(request):
     # load data
     gc      = df['gc'][0]
     qa      = df['qa'][0]
-    hos     = df['hos'][0]
-    ros     = df['ros'][0]
+    lis     = df['lis'][0]
+    sas     = df['sas'][0]
 
-    x_data = [ros, hos, qa, gc]
-    y_data = ['ROS', 'HOS', 'QA', 'GC']
+    x_data = [sas, lis, qa, gc]
+    y_data = ['SAS', 'LIS', 'QA', 'GC']
     
     fig = go.Figure()
     
@@ -159,7 +159,7 @@ def chartOrdersYear(request):
     if db_vendor == 'postgresql':
         year_expr = "EXTRACT(YEAR FROM tgl_produksi)"
         where_clause = f"{year_expr} = %s"
-    elif db_vendor in ['mysql', 'mssql', 'microsoft']:
+    elif db_vendor in ['mysql', 'mssql', 'micsasoft']:
         year_expr = "YEAR(tgl_produksi)"
         where_clause = f"{year_expr} = %s"
     else:
@@ -210,21 +210,21 @@ def chartOrdersYear(request):
             COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
             COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS qa_roa_pre_released,
 
-            COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'HOS' THEN 1 END) AS hos_mral_order,
-            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'HOS' THEN 1 END) AS hos_mral_released,
-            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'HOS' THEN 1 END) AS hos_mral_pre_released,
+            COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'lis' THEN 1 END) AS lis_mral_order,
+            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'lis' THEN 1 END) AS lis_mral_released,
+            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'lis' THEN 1 END) AS lis_mral_pre_released,
 
-            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'HOS' THEN 1 END) AS hos_roa_order,
-            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NOT NULL AND type_sample = 'HOS' THEN 1 END) AS hos_roa_released,
-            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'HOS' THEN 1 END) AS hos_roa_pre_released,
+            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'lis' THEN 1 END) AS lis_roa_order,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NOT NULL AND type_sample = 'lis' THEN 1 END) AS lis_roa_released,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'lis' THEN 1 END) AS lis_roa_pre_released,
 
-            COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'ROS' THEN 1 END) AS ros_mral_order,
-            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'ROS' THEN 1 END) AS ros_mral_released,
-            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'ROS' THEN 1 END) AS ros_mral_pre_released,
+            COUNT(CASE WHEN mral_order = 'Yes' AND type_sample = 'sas' THEN 1 END) AS sas_mral_order,
+            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NOT NULL AND type_sample = 'sas' THEN 1 END) AS sas_mral_released,
+            COUNT(CASE WHEN mral_order = 'Yes' AND release_mral IS NULL AND type_sample = 'sas' THEN 1 END) AS sas_mral_pre_released,
 
-            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'ROS' THEN 1 END) AS ros_roa_order,
-            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NOT NULL AND type_sample = 'ROS' THEN 1 END) AS ros_roa_released,
-            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'ROS' THEN 1 END) AS ros_roa_pre_released
+            COUNT(CASE WHEN roa_order = 'Yes' AND type_sample = 'sas' THEN 1 END) AS sas_roa_order,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NOT NULL AND type_sample = 'sas' THEN 1 END) AS sas_roa_released,
+            COUNT(CASE WHEN roa_order = 'Yes' AND release_roa IS NULL AND type_sample = 'sas' THEN 1 END) AS sas_roa_pre_released
 
         FROM sample_type_count
         WHERE {where_clause}
@@ -257,10 +257,10 @@ def chartOrdersYear(request):
     
     #  Load data
     data_order = [
-                df['ros_roa_order'][0],
-                df['ros_mral_order'][0],
-                df['hos_roa_order'][0],
-                df['hos_mral_order'][0],
+                df['sas_roa_order'][0],
+                df['sas_mral_order'][0],
+                df['lis_roa_order'][0],
+                df['lis_mral_order'][0],
                 df['qa_roa_order'][0],
                 df['qa_mral_order'][0],
                 df['gc_roa_order'][0],
@@ -268,10 +268,10 @@ def chartOrdersYear(request):
                ]
     
     data_released = [
-                df['ros_roa_released'][0],
-                df['ros_mral_released'][0],
-                df['hos_roa_released'][0],
-                df['hos_mral_released'][0],
+                df['sas_roa_released'][0],
+                df['sas_mral_released'][0],
+                df['lis_roa_released'][0],
+                df['lis_mral_released'][0],
                 df['qa_roa_released'][0],
                 df['qa_mral_released'][0],
                 df['gc_roa_released'][0],
@@ -279,17 +279,17 @@ def chartOrdersYear(request):
                ]
     
     data_unreleased = [
-                df['ros_roa_pre_released'][0],
-                df['ros_mral_pre_released'][0],
-                df['hos_roa_pre_released'][0],
-                df['hos_mral_pre_released'][0],
+                df['sas_roa_pre_released'][0],
+                df['sas_mral_pre_released'][0],
+                df['lis_roa_pre_released'][0],
+                df['lis_mral_pre_released'][0],
                 df['qa_roa_pre_released'][0],
                 df['qa_mral_pre_released'][0],
                 df['gc_roa_pre_released'][0],
                 df['gc_mral_pre_released'][0],
                ]
 
-    y=['ROS-roa', 'ROS-mral', 'HOS-roa', 'HOS-mral','QA-roa', 'QA-Mral', 'Gc-roa','Gc-mral']
+    y=['Sas-roa', 'Sas-mral', 'Lis-roa', 'Lis-mral','QA-roa', 'QA-Mral', 'Gc-roa','Gc-mral']
     
     fig = go.Figure()
     
@@ -368,7 +368,7 @@ def chartTypeMonth(request):
         year_expr = "EXTRACT(YEAR FROM tgl_produksi)"
         month_expr = "EXTRACT(MONTH FROM tgl_produksi)"
         group_expr = year_expr  # atau group_expr = f"{year_expr}, {month_expr}" jika perlu per bulan
-    elif db_vendor in ['mysql', 'mssql', 'microsoft']:
+    elif db_vendor in ['mysql', 'mssql', 'micsasoft']:
         year_expr = "YEAR(tgl_produksi)"
         month_expr = "MONTH(tgl_produksi)"
         group_expr = year_expr
@@ -384,8 +384,8 @@ def chartTypeMonth(request):
             COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
             COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
             COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS qa,
-            COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
-            COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
+            COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS lis,
+            COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS sas
         FROM sample_type_count
         WHERE {year_expr} = %s AND {month_expr} = %s
         GROUP BY {group_expr}
@@ -419,11 +419,11 @@ def chartTypeMonth(request):
     # Load data
     gc  = df['gc'][0]
     qa  = df['qa'][0]
-    hos = df['hos'][0]
-    ros = df['ros'][0]
+    lis = df['lis'][0]
+    sas = df['sas'][0]
 
-    x_data = [ros, hos, qa, gc]
-    y_data = ['ROS', 'HOS', 'QA', 'GC']
+    x_data = [sas, lis, qa, gc]
+    y_data = ['SAS', 'LIS', 'QA', 'GC']
     
     fig = go.Figure()
     
@@ -488,8 +488,8 @@ def chartFiveWeeks(request):
         COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
         COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
         COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS qa,
-        COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
-        COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
+        COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS lis,
+        COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS sas
     """
 
     if db_vendor == 'mysql':
@@ -509,7 +509,7 @@ def chartFiveWeeks(request):
             ORDER BY minggu;
         """
 
-    elif db_vendor in ['mssql', 'microsoft']:
+    elif db_vendor in ['mssql', 'micsasoft']:
         query = f"""
             SELECT
                 'Week ' + CAST(DATEPART(WEEK, tgl_produksi) AS VARCHAR) AS minggu,
@@ -574,8 +574,8 @@ def chartFiveWeeks(request):
     # Load data
     gc  = df['gc'].tolist()
     qa  = df['qa'].tolist()
-    hos = df['hos'].tolist()
-    ros = df['ros'].tolist()
+    lis = df['lis'].tolist()
+    sas = df['sas'].tolist()
     x   = df['minggu'].tolist()
     
 
@@ -585,8 +585,8 @@ def chartFiveWeeks(request):
     colors = {
         'GC': '#8fd7b8',
         'QA': '#fade91',
-        'HOS': '#FFA07A',
-        'ROS': '#bcc3c9'
+        'lis': '#FFA07A',
+        'sas': '#bcc3c9'
     }
     
     # Tambahkan trace dengan warna khusus
@@ -608,18 +608,18 @@ def chartFiveWeeks(request):
 
     fig.add_trace(go.Bar(
         x=x,
-        y=hos,
-        name="HOS",
-        text=hos,
-        marker=dict(color=colors['HOS']),
+        y=lis,
+        name="LIS",
+        text=lis,
+        marker=dict(color=colors['lis']),
     ))
 
     fig.add_trace(go.Bar(
         x=x,
-        y=ros,
-        name="ROS",
-        text=ros,
-        marker=dict(color=colors['ROS']),
+        y=sas,
+        name="SAS",
+        text=sas,
+        marker=dict(color=colors['sas']),
     ))
      
     fig.update_layout(
@@ -661,8 +661,8 @@ def chartTypeByWeek(request):
                 COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "qa",
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "hos",
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ros"
+                COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS "lis",
+                COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS "sas"
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s   
     """
@@ -698,11 +698,11 @@ def chartTypeByWeek(request):
     # Load data
     gc  = df['gc'][0]
     qa  = df['qa'][0]
-    hos = df['hos'][0]
-    ros = df['ros'][0]
+    lis = df['lis'][0]
+    sas = df['sas'][0]
 
-    x_data = [ros, hos, qa, gc]
-    y_data = ['ROS', 'HOS', 'QA', 'GC']
+    x_data = [sas, lis, qa, gc]
+    y_data = ['SAS', 'LIS', 'QA', 'GC']
     
     fig = go.Figure()
     
@@ -750,8 +750,8 @@ def donutTypeByWeek(request):
                 COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) +
                 COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS "qa",
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS "hos",
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS "ros"
+                COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS "lis",
+                COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS "sas"
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s                                          
         """
@@ -786,11 +786,11 @@ def donutTypeByWeek(request):
     # Load data
     gc  = df['gc'][0]
     qa  = df['qa'][0]
-    hos = df['hos'][0]
-    ros = df['ros'][0]
+    lis = df['lis'][0]
+    sas = df['sas'][0]
 
-    values  = [ros, hos, qa, gc]
-    labels = ['ROS', 'HOS', 'QA', 'GC']
+    values  = [sas, lis, qa, gc]
+    labels = ['SAS', 'LIS', 'QA', 'GC']
     
     fig = go.Figure()
     
@@ -1039,8 +1039,8 @@ def chartSaleByWeek(request):
     query = """
             SELECT
                 tgl_produksi,
-                COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
-                COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
+                COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS lis,
+                COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS sas
             FROM sample_type_count
             WHERE tgl_produksi BETWEEN %s AND %s    
             GROUP BY  tgl_produksi
@@ -1074,34 +1074,34 @@ def chartSaleByWeek(request):
         return JsonResponse({'plot_div': plot_div})
     
     # Load data
-    HOS  = df['hos'].tolist()
-    ROS  = df['ros'].tolist()
+    lis  = df['lis'].tolist()
+    sas  = df['sas'].tolist()
     x    = df['tgl_produksi'].tolist()
     
     fig = go.Figure()
 
      # Warna untuk masing-masing trace
     colors = {
-        'ROS': '#95b4be',
-        'HOS': '#bea895'
+        'sas': '#95b4be',
+        'lis': '#bea895'
     }
     
     fig.add_trace(go.Bar(
         x=x,
-        y=ROS,
-        text=ROS, 
-        name="ROS",
+        y=sas,
+        text=sas, 
+        name="sas",
         texttemplate='%{text:.0f}',
-        marker=dict(color=colors['ROS']),
+        marker=dict(color=colors['sas']),
     ))
 
     fig.add_trace(go.Bar(
         x=x,
-        y=HOS,
-        text=HOS, 
-        name="HOS",
+        y=lis,
+        text=lis, 
+        name="lis",
         texttemplate='%{text:.0f}',
-        marker=dict(color=colors['HOS']),
+        marker=dict(color=colors['lis']),
     ))
 
 
@@ -1141,8 +1141,8 @@ def getSampleOrdersByWeeks(request):
             COUNT(CASE WHEN type_sample = 'PDS' THEN 1 END) AS pds,
             COUNT(CASE WHEN type_sample = 'QAQC' AND sample_method IN ('CRM', 'DUP_PDS') THEN 1 END) AS qaqc,
             COUNT(CASE WHEN type_sample = 'SPC' AND sample_method = 'SPC_QA' THEN 1 END) AS spc_qa,
-            COUNT(CASE WHEN type_sample = 'HOS' THEN 1 END) AS hos,
-            COUNT(CASE WHEN type_sample = 'ROS' THEN 1 END) AS ros
+            COUNT(CASE WHEN type_sample = 'lis' THEN 1 END) AS lis,
+            COUNT(CASE WHEN type_sample = 'sas' THEN 1 END) AS sas
         FROM sample_type_count
     """
 

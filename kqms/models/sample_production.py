@@ -24,6 +24,7 @@ class SampleProductions(models.Model):
     unit_truck      = models.CharField(max_length=15,default=None, null=True, blank=True)
     kode_batch      = models.CharField(max_length=150,default=None, null=True, blank=True)
     selling_pulp    = models.CharField(max_length=150,default=None, null=True, blank=True)
+    sale_monitoring = models.CharField(max_length=150,default=None, null=True, blank=True)
     sampling_deskripsi = models.CharField(max_length=50,default=None, null=True, blank=True)
     type            = models.CharField(max_length=25,default=None, null=True, blank=True)
     usage_status    = models.CharField(max_length=5,default=None, null=True, blank=True)
@@ -46,6 +47,7 @@ class SampleProductions(models.Model):
         indexes = [
             models.Index(fields=['sample_number']),   # Index for sample_number
             models.Index(fields=['selling_pulp']),
+            models.Index(fields=['sale_monitoring']),
             models.Index(fields=['kode_batch']),
             models.Index(fields=['gc_expect'])
         ]

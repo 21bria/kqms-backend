@@ -99,7 +99,7 @@ def import_selling(file_path, original_file_name):
             code_lot        = str(row.get('code_lot', '')).strip()
             batch           = str(row.get('sub_lot', '')).strip()
             truck           = str(row.get('no_truck', '')).strip()
-
+            group           = str(row.get('group', '')).strip()
             # Buat kode batch
             # code_batch_in     = f"{type_selling}{id_material}{code_lot}{batch}"
             # code_batch_ex     = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
@@ -130,6 +130,7 @@ def import_selling(file_path, original_file_name):
 
             # Buat kode batch
             code_batch_in   = f"{type_selling}{id_material}{code_lot}{batch}"
+            code_monitoring = f"{type_selling}{id_material}{code_lot}{batch}{group}"
             code_batch_ex   = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
             code_batch_pulp = f"{type_selling}{code_lot}Split_CAR{batch}"
           
@@ -158,7 +159,7 @@ def import_selling(file_path, original_file_name):
                 code_batch_ex       = code_batch_ex,
                 code_batch_pulp     = code_batch_pulp,
                 surv_order          = row.get('surv_order'),
-                code_fix_batch      = row.get('code_fix_batch'),
+                code_monitoring     = code_monitoring,
                 code_lot            = code_lot,
                 date_barge_out      = row['date_barging_out'],
                 sale_adjust         = row['adjust_sale'],

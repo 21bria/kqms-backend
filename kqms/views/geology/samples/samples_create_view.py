@@ -322,35 +322,54 @@ def update_sample(request, id):
         sampling_point      = request.POST.get('sampling_point')
         sampling_point      = int(sampling_point) if sampling_point and sampling_point not in ['None', 'null'] else None
         batch_code          = request.POST.get('batch_code')
-        combinedKodeBatch   = f"{type}{id_material}{method}{sampling_area}{sampling_point}{batch_code}"
+        increments          = request.POST.get('increments')
 
-        combinedKodeBatch = combinedKodeBatch.replace(" ", "")  # Menghapus spasi
+        combinedKodeBatch   = f"{type}{id_material}{method}{sampling_area}{sampling_point}{batch_code}"
+        combinedKodeBatch   = combinedKodeBatch.replace(" ", "")  # Menghapus spasi
         
         productCode      = request.POST.get('codeProduct')
         productKodeBatch = f"{type}{id_material}{productCode}{batch_code}"  # Selling sample
-        pulpKodeBatch    = f"{type}{method}{productCode}{batch_code}"  # 
+        pulpKodeBatch    = f"{type}{productCode}{batch_code}" # Pulp sample
+        monitoringBatch  = f"{type}{id_material}{productCode}{batch_code}{increments}"  # Selling sample monitoring
         
         productKodeBatch = productKodeBatch.replace(" ", "")  # Menghapus spasi
         pulpKodeBatch    = pulpKodeBatch.replace(" ", "")  # Menghapus spasi
-
-        # print(combinedKodeBatch)
-        # print('sampling_area : ', sampling_area)
-        # print('sampling_point : ', sampling_point)
-        # print('type : ', type)
+        monitoringBatch  = monitoringBatch.replace(" ", "")  # Menghapus spasi
 
         # Proses untuk menghilangkan "DUP_" jika ada
         sampling_deskripsi = request.POST.get('sampling_deskripsi')
         dupSample = sampling_deskripsi.replace('DUP_', '', 1) if sampling_deskripsi.startswith('DUP_') else sampling_deskripsi
 
         # Cek apakah kode batch sudah ada dalam database jika type adalah "PDS"
+        # if type == "PDS":
+        #     duplicateCheck = SampleProductions.objects.exclude(id=id).filter(kode_batch=combinedKodeBatch).exists()
+        #     if duplicateCheck:
+        #         return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)
+        # elif type in ['LIS', 'SAS']:
+        #     duplicateSelling = SampleProductions.objects.exclude(id=id).filter(kode_batch=productKodeBatch).exists()
+        #     if duplicateSelling:
+        #         return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)
+
+        # Tentukan tipe-tipe yang tidak punya monitoring
+        valid_types    = ['LIS', 'SAS']
+        valid_type_cks = ['LIS_CKS', 'SAS_CKS']
+
+        # ====  CEK DUPLIKAT ====
         if type == "PDS":
             duplicateCheck = SampleProductions.objects.exclude(id=id).filter(kode_batch=combinedKodeBatch).exists()
             if duplicateCheck:
                 return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)
-        elif type in ['LIS', 'SAS']:
+        elif type in valid_types:  # LIS & SAS
             duplicateSelling = SampleProductions.objects.exclude(id=id).filter(kode_batch=productKodeBatch).exists()
             if duplicateSelling:
                 return JsonResponse({'message': f'{batch_code} : batch code already exists.'}, status=422)
+            
+        elif type in valid_type_cks:  # LIS_CKS & SAS_CKS
+             # selain LIS/SAS → cek sale_monitoring
+            duplicateMonitor = SampleProductions.objects.exclude(id=id).filter(sale_monitoring=monitoringBatch).exists()
+            if duplicateMonitor:
+                return JsonResponse({'message': f'{batch_code} : monitoring already exists.'}, status=422)
+
 
         # Validasi keunikan sample_number
         sample_number = request.POST.get('sample_number')
@@ -358,8 +377,7 @@ def update_sample(request, id):
             return JsonResponse({'error': f'SampleID {sample_number} already exists.'}, status=400)
 
 
-        to_its_str      = request.POST.get('to_its')
-
+        to_its_str     = request.POST.get('to_its')
         discharge_area = request.POST.get('discharge_area')
         discharge_area = int(discharge_area) if discharge_area and discharge_area not in ['None', '--- Select ---'] else None
 
@@ -379,7 +397,7 @@ def update_sample(request, id):
         sample.sampling_area    = sampling_area
         sample.sampling_point   = sampling_point
         sample.batch_code       = batch_code
-        sample.increments       = request.POST.get('increments')
+        sample.increments       = increments
         sample.sample_weight    = safe_float(request.POST.get('sample_weight', ''))
         sample.sample_number    = sample_number
         sample.primer_raw       = request.POST.get('primer_raw')
@@ -394,8 +412,8 @@ def update_sample(request, id):
         sample.duplicate_raw    = safe_float(request.POST.get('duplicate_raw', ''))
         sample.unit_truck       = method
         sample.type             = type
-        sample.kode_batch       = combinedKodeBatch if type == 'PDS' else productKodeBatch
-        sample.selling_pulp     = pulpKodeBatch
+        # sample.kode_batch       = combinedKodeBatch if type == 'PDS' else productKodeBatch
+        # sample.selling_pulp     = pulpKodeBatch
         sample.sampling_deskripsi = sampling_deskripsi
         sample.remark           = request.POST.get('remark')
         sample.product_code     = product_code
@@ -403,7 +421,32 @@ def update_sample(request, id):
         sample.gc_expect        = request.POST.get('gc_expect')
         sample.sample_dup       = dupSample
         sample.id_user          = request.user.id
+
+        # Set kode_batch dan selling_pulp sesuai tipe
+        if type == 'PDS':
+            sample.kode_batch   = combinedKodeBatch
+            sample.selling_pulp = None
+        elif type in valid_types:  # LIS / SAS
+            sample.kode_batch   = productKodeBatch
+            sample.selling_pulp = pulpKodeBatch
+        elif type in valid_type_cks:  # LIS_CKS / SAS_CKS
+            sample.kode_batch   = None
+            sample.selling_pulp = None
+            sample.sale_monitoring = monitoringBatch
+        else:
+            # tipe lain
+            sample.kode_batch = None
+            sample.selling_pulp = None
+            sample.sale_monitoring = None
+
+            
        
+        # Set selling_pulp = None untuk selain LIS & SAS
+        # if type in valid_types:
+        #     sample.selling_pulp = pulpKodeBatch
+        # else:
+        #     sample.selling_pulp = None
+            
 
         # Simpan perubahan ke dalam database
         sample.save()
