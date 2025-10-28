@@ -126,7 +126,7 @@ class mineRemoveView(View):
 @login_required
 @csrf_exempt
 def delete_mine_bulk(request):
-    allowed_groups = ['superadmin','admin-mgoqa','admin-mining']
+    allowed_groups = ['superadmin','admin-mining']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 

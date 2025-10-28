@@ -109,9 +109,11 @@ def import_selling(file_path, original_file_name):
             if row['adjust_sale'] == 'RKEF':
                 material_name = 'SAP'
                 type_selling  = 'SAS'
+                type_monitoring  = 'SAS_CKS'
             elif row['adjust_sale'] == 'HPAL':
                 material_name = 'LIM'
                 type_selling  = 'LIS'
+                type_monitoring  = 'LIS_CKS'
             else:
                 material_name = row['material']   # default material asli
                 # type_selling tetap pakai dari row['sale_code']
@@ -130,7 +132,7 @@ def import_selling(file_path, original_file_name):
 
             # Buat kode batch
             code_batch_in   = f"{type_selling}{id_material}{code_lot}{batch}"
-            code_monitoring = f"{type_selling}{id_material}{code_lot}{batch}{group}"
+            code_monitoring = f"{type_monitoring}{id_material}{code_lot}{batch}{group}"
             code_batch_ex   = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
             code_batch_pulp = f"{type_selling}{code_lot}Split_CAR{batch}"
           

@@ -1,0 +1,371 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        </h3>
+                </div>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="container">
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-4 mx-auto">
+                    <!-- Semua item ditaruh langsung di dalam grid -->
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'ore-class-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Ore Class</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi data ore class</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                             <a href="{% url 'ore-factors-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Truck factors</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi truck factors
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                              <a href="{% url 'ore-adjustment-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Ore Adjustment</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi ore adjustment</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'dome-close-status-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Dome Close</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi close dome</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'dome-finish-status-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Dome Finished</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi selling dome</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'merge-dome-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Merge Dome</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi merge dome</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'merge-stockpile-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">C
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Merge Stockpile</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Konfigurasi merge stockpile</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item baru tinggal tambah div dengan col-span yang sama -->
+
+                    <div class="col-span-12 text-center mt-4">
+                        <button type="button" class="ti-btn ti-btn-info ti-btn-loader">
+                            Loading
+                            <span class="ti-spinner h-4 w-4" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!--End::row-1 -->
+            </div>
+
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $('#btn_clear').hide(); // 
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "remove-waybills-list" %}';
+        // var material_filter = 'LIM';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            'searching': false,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.waybill_number = $('#waybill_number').val();
+                    return data;
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'tgl_deliver',
+                    name: 'tgl_deliver'
+                },
+
+                {
+                    data: 'delivery_time',
+                    name: 'delivery_time',
+                    render: function (data, type, row) {
+                        // Pastikan data adalah string yang sesuai dengan format waktu
+                        if (type === 'display' && typeof data === 'string' && data.length >=
+                            8) {
+                            // Ambil bagian pertama (hh:mm:ss) dari data waktu
+                            var shortTime = data.substring(0, 8);
+                            return shortTime;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    data: 'waybill_number',
+                    name: 'waybill_number'
+                },
+                {
+                    data: 'numb_sample',
+                    name: 'numb_sample'
+                },
+                {
+                    data: 'sample_id',
+                    name: 'sample_id'
+                },
+                {
+                    data: 'mral_order',
+                    name: 'mral_order'
+                },
+                {
+                    data: 'roa_order',
+                    name: 'roa_order'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
+                },
+
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+
+        /*--Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+            var waybill_number = $('#waybill_number').val();
+            $('#btn_clear').hide(); // 
+            if (waybill_number == '') {
+                $("#waybill_number").focus();
+                return false;
+            } else {
+                // $('#data_table').DataTable().clear().destroy();
+                table.ajax.reload();
+                $('#btn_clear').show(); // 
+            }
+
+        });
+
+        /* Remove data */
+        $('#applyRemoveBtn').click(function () {
+            var id = $('#waybill_number').val();
+            var url = '{% url "delete-group-waybills" %}';
+            if (id == '') {
+                $("#waybill_number").focus();
+                return false;
+            } else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Waybill : " + " " + id,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            contentType: 'application/json',
+                            data: JSON.stringify({ id: id }), // Sending data in the body
+                            success: function (data) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
+                                );
+                                table.draw();
+                                $('#btn_clear').hide(); // 
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

@@ -5,16 +5,7 @@ from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from datetime import datetime
-from django.views.decorators.csrf import csrf_exempt
-import pandas as pd
-from django.http import HttpResponse
 from django.views import View
-from openpyxl import Workbook
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Font
-from openpyxl.worksheet.worksheet import Worksheet
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from uuid import UUID
 from ...models.laboratory import LaboratorySamples
 

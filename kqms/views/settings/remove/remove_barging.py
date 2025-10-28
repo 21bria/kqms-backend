@@ -2,7 +2,8 @@
 from django.contrib.auth.decorators import login_required
 import json
 from django.http import JsonResponse
-from ....models.assay_roa_model import AssayRoa
+from ....models.selling_details_barging_view import SellingDetailsBargingView
+from ....models.selling_barging import SellingBarging
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -11,11 +12,11 @@ from django.views import View
 # from ....utils.permissions import get_dynamic_permissions
 
 
-class roaDataView(View):
+class bargingDataView(View):
     def post(self, request):
         # Ambil semua data invoice yang valid
-        data_roa = self._datatables(request)
-        return JsonResponse(data_roa, safe=False)
+        data = self._datatables(request)
+        return JsonResponse(data, safe=False)
 
     def _datatables(self, request):
         datatables = request.POST
@@ -32,34 +33,15 @@ class roaDataView(View):
         # Ambil order direction
         order_dir = datatables.get('order[0][dir]')
 
-        job_number  = request.POST.get('job_number')
-        from_sample = request.POST.get('from_sample')
-        to_sample   = request.POST.get('to_sample')
+        code_lot  = request.POST.get('code_lot')
 
-        # --- Kondisi agar data awal kosong ---
-        if not job_number and not (from_sample and to_sample):
-            return {
-                'draw'           : draw,
-                'recordsTotal'   : 0,
-                'recordsFiltered': 0,
-                'data'           : [],
-                'start'          : start,
-                'length'         : length,
-                'totalPages'     : 0
-            }
+        data = SellingDetailsBargingView.objects.all()
 
-        # --- Jika filter diisi, baru ambil data ---
-        data = AssayRoa.objects.all()
-
-        if job_number:
-            data = data.filter(job_number=job_number)
-
-        if from_sample and to_sample:
-            data = data.filter(sample_id__range=[from_sample, to_sample])
+    
+        data = data.filter(code_lot=code_lot)
 
         if search:
-            data = data.filter(Q(sample_id__icontains=search))
-
+            data = data.filter(Q(nama_material__icontains=search))
 
         # Atur sorting
         if order_dir == 'desc':
@@ -89,19 +71,23 @@ class roaDataView(View):
 
         data = [
             {
-                "release_roa": item.release_roa.strftime("%Y-%m-%d %H:%M:%S"),
-                "job_number" : item.job_number,
-                "sample_id"  : item.sample_id,
-                "ni"         : item.ni,
-                "co"         : item.co,
-                "al2o3"      : item.al2o3,
-                "cao"        : item.cao,
-                "cr2o3"      : item.cr2o3,
-                "fe2o3"      : item.fe2o3,
-                "fe"         : item.fe,
-                "mgo"        : item.mgo,
-                "sio2"       : item.sio2,
-                "mc"         : item.mc
+                "id"              : item.id,
+                "date_barge_in"   : item.date_barge_in,
+                "date_hauling"    : item.date_hauling,
+                "barge_code"      : item.barge_code,
+                "shift"           : item.shift,
+                "stockpile"       : item.stockpile,
+                "dome"            : item.dome,
+                "unit_code"       : item.unit_code,
+                "material"        : item.material,
+                "code_lot"        : item.code_lot,
+                "batch"           : item.batch,
+                "code_inc"        : item.code_inc,
+                "ritase"          : item.ritase,
+                "tonnage"         : item.tonnage,
+                "sale_adjust"     : item.sale_adjust,
+                "date_barge_out"  : item.date_barge_out,
+                "status_barging"  : item.status_barging,
                 } for item in object_list
         ]
 
@@ -117,7 +103,7 @@ class roaDataView(View):
 
 @login_required
 @csrf_exempt       
-def delete_roa_number(request):
+def delete_barging_bulk(request):
     allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
@@ -131,13 +117,13 @@ def delete_roa_number(request):
 
             if job_id:
                 # Use filter() instead of get()
-                data = AssayRoa.objects.filter(job_number=job_id)
+                data = SellingBarging.objects.filter(code_lot=job_id)
 
                 if data.exists():
                     data.delete()  # Delete all matching entries
                     return JsonResponse({'status': 'deleted'})
                 else:
-                    return JsonResponse({'status': 'error', 'message': 'Job number not found'})
+                    return JsonResponse({'status': 'error', 'message': 'Code not found'})
             else:
                 return JsonResponse({'status': 'error', 'message': 'No ID provided'})
         except json.JSONDecodeError:
@@ -145,30 +131,3 @@ def delete_roa_number(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
     
-@login_required
-@csrf_exempt
-def delete_roa_by_checked(request):
-    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse({'status': 'error', 'message': 'You do not have permission'}, status=403)
-
-    if request.method == 'DELETE':
-        try:
-            body = json.loads(request.body)
-            ids = body.get('ids', [])  # Ambil array sample_id
-
-            if not ids:
-                return JsonResponse({'status': 'error', 'message': 'No IDs provided'})
-
-            # Hapus semua record dengan sample_id dalam daftar
-            deleted_count, _ = AssayRoa.objects.filter(sample_id__in=ids).delete()
-
-            if deleted_count > 0:
-                return JsonResponse({'status': 'deleted', 'deleted_count': deleted_count})
-            else:
-                return JsonResponse({'status': 'error', 'message': 'No matching data found'})
-
-        except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})

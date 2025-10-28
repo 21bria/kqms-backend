@@ -7,14 +7,20 @@ from ..views.settings.data_control.merge_stockpile_view import *
 from ..views.settings.data_control.dome_status_view import *
 from ..views.settings.data_control.dome_status_finish_view import *
 from ..views.settings.data_control.barging_finish_view import *
+from ..views.settings.remove.remove_data_view import *
 from ..views.settings.remove.remove_waybill_view import *
 from ..views.settings.remove.remove_mral_view import *
 from ..views.settings.remove.remove_roa_view import *
 from ..views.settings.remove.remove_mine_data import *
 from ..views.settings.remove.remove_selling_quik import *
+from ..views.settings.remove.remove_barging import *
+from ..views.settings.data_control.page_config import page_config
 
 
 urlpatterns = [
+    # Config Data Control Home Page
+    path('data-control-page/', page_config, name='data-control-page'),
+    
     # Table Ore Class
     path('ore-class/', OreClass_page, name='ore-class-page'), 
     path('ore-class-list/', OreClass_List.as_view(), name='ore-class-list'),
@@ -81,7 +87,8 @@ urlpatterns = [
     path('barging-finish-status/delete/', delete_barging_finish, name='delete-barging-finish-status'), 
     path('barging-finish-status-get/tonnage/<str:code_lot>/', get_tonnage_lot,name='barging-finish-status-get-tonnage'),
 
-    # Table Remove Group Data
+    # Table Remove Data
+    path('remove-page/', remove_page, name='remove-page'), 
     path('remove-waybills/', remove_waybills_page, name='remove-waybills-page'), 
     path('remove-waybills-list/', waybillsDataView.as_view(), name='remove-waybills-list'),
     path('remove-waybills/delete/', delete_waybills_number, name='delete-group-waybills'), 
@@ -89,10 +96,17 @@ urlpatterns = [
     path('remove-mral/', remove_mral_page, name='remove-mral-page'), 
     path('remove-mral-list/', mralDataView.as_view(), name='remove-mral-list'),
     path('remove-mral/delete/', delete_mral_number, name='delete-group-mral'), 
+    path('remove-mral/delete/checked/', delete_mral_by_checked, name='delete-mral-by-checked'), 
 
     path('remove-roa/', remove_roa_page, name='remove-roa-page'), 
     path('remove-roa-list/', roaDataView.as_view(), name='remove-roa-list'),
     path('remove-roa/delete/', delete_roa_number, name='delete-group-roa'), 
+    path('remove-roa/delete/checked/', delete_roa_by_checked, name='delete-roa-by-checked'), 
+
+    # Remove data Barging
+    path('remove-barging/', remove_barging_page, name='remove-barging-page'),
+    path('remove/barging/list/', bargingDataView.as_view(), name='remove-barging-list'),
+    path('remove/barging/delete/', delete_barging_bulk, name='delete-bulk-barging'), 
 
     # Remove data Mines
     path('remove-mine/', remove_mine_bulk_page, name='remove-mine-page'), 

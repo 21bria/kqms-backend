@@ -1,0 +1,187 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                    </h3>
+                </div>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <div class="container">
+                <!-- Start::row-1 -->
+                <div class="grid grid-cols-12 gap-4 mx-auto">
+                    <!-- Semua item ditaruh langsung di dalam grid -->
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-waybills-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">W
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Waybills</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
+                                                waybills</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-roa-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">R
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Roa</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data roa
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-mral-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">M
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Mral</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
+                                                mral</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-selling-temp-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> B
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Temp.Barging</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
+                                                Barging</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-barging-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> B
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Barging</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
+                                                Barging</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'remove-mine-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> P
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Productions</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
+                                                Productions</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item baru tinggal tambah div dengan col-span yang sama -->
+
+                    <div class="col-span-12 text-center">
+                        <button type="button" class="ti-btn ti-btn-info ti-btn-loader">
+                            Loading
+                            <span class="ti-spinner h-4 w-4" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!--End::row-1 -->
+            </div>
+
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+</body>
+
+</html>

@@ -11,9 +11,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 
-@login_required
-def remove_waybills_page(request):
-    return render(request, 'master/remove-waybills.html')
 
 
 class waybillsDataView(View):
@@ -102,12 +99,12 @@ class waybillsDataView(View):
 @login_required
 @csrf_exempt       
 def delete_waybills_number(request):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         try:
             body = json.loads(request.body)

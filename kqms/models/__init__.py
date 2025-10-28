@@ -29,6 +29,7 @@ from .task_model import *
 from .vendors import *
 from .waybill_model import *
 from .waybill_temp import *
+from .laboratory import *
 from .dome_setup import *
 from .merge_stock import *
 from .mine_productions import *

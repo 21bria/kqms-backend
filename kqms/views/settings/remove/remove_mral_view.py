@@ -11,13 +11,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 
-@login_required
-def remove_mral_page(request):
-    # permissions = get_dynamic_permissions(request.user)
-    # context = {
-    #     'permissions': permissions,
-    # }
-    return render(request, 'master/remove-mral.html')
 
 class mralDataView(View):
     def post(self, request):
@@ -40,18 +33,33 @@ class mralDataView(View):
         # Ambil order direction
         order_dir = datatables.get('order[0][dir]')
 
-        # Gunakan fungsi get_joined_data
+        job_number  = request.POST.get('job_number')
+        from_sample = request.POST.get('from_sample')
+        to_sample   = request.POST.get('to_sample')
+
+        # --- Kondisi agar data awal kosong ---
+        if not job_number and not (from_sample and to_sample):
+            return {
+                'draw'           : draw,
+                'recordsTotal'   : 0,
+                'recordsFiltered': 0,
+                'data'           : [],
+                'start'          : start,
+                'length'         : length,
+                'totalPages'     : 0
+            }
+
+        # --- Jika filter diisi, baru ambil data ---
         data = AssayMral.objects.all()
 
-        if search:
-            data = data.filter(
-                Q(sample_id__icontains=search) 
-            )
-       
-        # Filter berdasarkan parameter dari request
-        job_number = request.POST.get('job_number')
+        if job_number:
+            data = data.filter(job_number=job_number)
 
-        data = data.filter(job_number=job_number)
+        if from_sample and to_sample:
+            data = data.filter(sample_id__range=[from_sample, to_sample])
+
+        if search:
+            data = data.filter(Q(sample_id__icontains=search))
 
         # Atur sorting
         if order_dir == 'desc':
@@ -106,12 +114,12 @@ class mralDataView(View):
 @login_required    
 @csrf_exempt       
 def delete_mral_number(request):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         try:
             body = json.loads(request.body)
@@ -125,9 +133,37 @@ def delete_mral_number(request):
                     data.delete()  # Delete all matching entries
                     return JsonResponse({'status': 'deleted'})
                 else:
-                    return JsonResponse({'status': 'error', 'message': 'Waybill not found'})
+                    return JsonResponse({'status': 'error', 'message': 'Job numbers not found'})
             else:
                 return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@login_required
+@csrf_exempt
+def delete_mral_by_checked(request):
+    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse({'status': 'error', 'message': 'You do not have permission'}, status=403)
+
+    if request.method == 'DELETE':
+        try:
+            body = json.loads(request.body)
+            ids = body.get('ids', [])  # Ambil array sample_id
+
+            if not ids:
+                return JsonResponse({'status': 'error', 'message': 'No IDs provided'})
+
+            # Hapus semua record dengan sample_id dalam daftar
+            deleted_count, _ = AssayMral.objects.filter(sample_id__in=ids).delete()
+
+            if deleted_count > 0:
+                return JsonResponse({'status': 'deleted', 'deleted_count': deleted_count})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'No matching data found'})
+
         except json.JSONDecodeError:
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'})
     else:
