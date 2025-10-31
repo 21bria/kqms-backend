@@ -9,7 +9,6 @@ python manage.py migrate django_celery_beat
 python manage.py makemigrations kqms
 python manage.py migrate --database=kqms_db
 
-python manage.py migrate --database=kqms_db --fake-initial
 
 !! Menu :
 python manage.py populate_menu
@@ -37,5 +36,3 @@ python manage.py runserver 0.0.0.0:8000
 sudo systemctl daemon-reload
 sudo systemctl start celery.service
 sudo systemctl status celery.service
-
-

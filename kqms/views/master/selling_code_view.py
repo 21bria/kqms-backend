@@ -81,6 +81,10 @@ class SaleCodeList(View):
                 "sublot_close"  : item.sublot_close,
                 "group_close"   : item.group_close,
                 "ritase_max"    : item.ritase_max,
+                "ni"            : item.ni,
+                "fe"            : item.fe,
+                "mgo"           : item.mgo,
+                "sio2"          : item.sio2,
             } for item in object_list
         ]
 
@@ -113,6 +117,10 @@ def get_code(request, id):
                 'sublot_close' : clean_string(job.sublot_close), 
                 'group_close'  : job.group_close, 
                 'ritase_max'   : job.ritase_max, 
+                'ni'           : job.ni, 
+                'fe'           : job.fe,
+                'mgo'          : job.mgo,
+                'sio2'         : job.sio2,
                 'created_at'   : job.created_at
             }
             return JsonResponse(data)
@@ -166,6 +174,10 @@ def insert_code(request):
     sublot_close    = cleaned_data['sublot_close']
     group_close     = cleaned_data['group_close']
     ritase_max      = cleaned_data['ritase_max']
+    ni              = request.POST.get('ni')
+    fe              = request.POST.get('fe')
+    mgo             = request.POST.get('mgo')
+    sio2            = request.POST.get('sio2')
     description     = request.POST.get('description', '').strip()
     active = 1
 
@@ -183,6 +195,10 @@ def insert_code(request):
             sublot_close=sublot_close,
             group_close=group_close,
             ritase_max=ritase_max,
+            ni=float(ni) if ni and ni.replace('.', '', 1).isdigit() else 0.0,
+            fe=float(fe) if fe and fe.replace('.', '', 1).isdigit() else 0.0,
+            mgo=float(mgo) if mgo and mgo.replace('.', '', 1).isdigit() else 0.0,
+            sio2=float(sio2) if sio2 and sio2.replace('.', '', 1).isdigit() else 0.0,
             active=active
         )
         return JsonResponse({
@@ -250,6 +266,10 @@ def update_code(request, id):
         # Cek duplikat product_code untuk record lain
         if SellingCode.objects.filter(product_code=cleaned_data['product_code']).exclude(id=job.id).exists():
             return JsonResponse({'error': 'Product code already exists.'}, status=400)
+        ni   = request.POST.get('ni')
+        fe   = request.POST.get('fe')
+        mgo  = request.POST.get('mgo')
+        sio2 = request.POST.get('sio2')
 
         # Update field
         job.product_code  = cleaned_data['product_code']
@@ -259,9 +279,13 @@ def update_code(request, id):
         job.sublot_close  = request.POST.get('sublot_close')
         job.group_close   = request.POST.get('group_close')
         job.ritase_max    = request.POST.get('ritase_max')
+        job.ni            = float(ni) if ni and ni.replace('.', '', 1).isdigit() else 0.0
+        job.fe            = float(fe) if fe and fe.replace('.', '', 1).isdigit() else 0.0
+        job.mgo           = float(mgo) if mgo and mgo.replace('.', '', 1).isdigit() else 0.0
+        job.sio2          = float(sio2) if sio2 and sio2.replace('.', '', 1).isdigit() else 0.0
         active_value      = request.POST.get('active')
         job.active        = int(active_value) if active_value is not None else 1
-        
+      
         job.save()
 
         return JsonResponse({

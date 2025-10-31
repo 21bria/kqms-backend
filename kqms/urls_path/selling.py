@@ -6,6 +6,7 @@ from ..views.selling.barging_plan import *
 from ..views.selling.selling_official import *
 from ..views.selling.split_sample.selling_split_range import *
 from ..views.selling.split_sample.selling_split_chart import *
+from ..views.selling.split_sample.barging_monitoring_range import *
 from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
@@ -14,6 +15,7 @@ from ..views.selling.entry.selling_data import *
 from ..views.selling.entry.daily_summary import *
 from ..views.selling.entry.daily_summary_barging import *
 from ..views.selling.direct.staging_data import *
+from ..views.selling.sale_analysis import *
 
 
 urlpatterns = [
@@ -30,6 +32,9 @@ urlpatterns = [
     # Plan
     path('plan-page/selling', sale_plan_page, name='selling-plan-page'),
     path('plan/list/', sellingDataPlan.as_view(), name='selling-plan-list'),
+
+    # Analysis
+    path('analysis/page/', sale_analysis_page, name='selling-analysis-page'),
    
     # CRUD
     path('plan/create/', create_plan_sale, name='create-plan-sale'),
@@ -48,9 +53,17 @@ urlpatterns = [
     path('official/get-id/<int:id>/', getIdOfficial, name='get-sale-official'),
     path('official/update/<int:id>/', update_official, name='update-sale-official'),
     path('official/delete/', delete_sale_official, name='delete-official-sale'),
+
+    # Monitoring Split Selling
+    
+    path('monitoring/sample/page/', monitoringSamplePage, name='monitoring-sample-page'),
+    path('monitoring/chart/page/', monitoringChartPage, name='monitoring-chart-page'),
+    path('monitoring/sample/list/', samplesMonitoring, name='barging-monitoring-sample-list'),
+
     # Split  Selling
     path('split/sample/page/', splitSamplePage, name='sale-split-sample-page'),
     path('split/sample/list/', samplesSplit, name='sale-split-sample-list'),
+
     # Official COA
     path('split/coa/page/', splitOfficialPage, name='sale-split-coa-page'),
     path('split/coa/list/', splitOfficial, name='sale-split-coa-list'),

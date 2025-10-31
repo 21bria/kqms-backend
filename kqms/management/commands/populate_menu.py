@@ -233,7 +233,7 @@ class Command(BaseCommand):
         # Assay Data
         assay = Menu.objects.create(
             title="Assay Data",
-            icon="bx bx-analyse",
+            icon="bx bxs-alarm",
             order=8,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','admin-lab','user-mgoqa']
         )
@@ -369,40 +369,40 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
     
-        Menu.objects.create(
-            title="Samples Split",
-            url="sale-split-sample-page",
-            parent=selling,
-            order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
-        Menu.objects.create(
-            title="Data Official",
-            url="sale-official-page",
-            parent=selling,
-            order=3,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
+        # Menu.objects.create(
+        #     title="Samples Split",
+        #     url="sale-split-sample-page",
+        #     parent=selling,
+        #     order=2,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
+        # Menu.objects.create(
+        #     title="Data Official",
+        #     url="sale-official-page",
+        #     parent=selling,
+        #     order=3,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
 
-        split_official = Menu.objects.create(
-            title="Split Official",
-            parent=selling,
-            order=4,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
+        # split_official = Menu.objects.create(
+        #     title="Split Official",
+        #     parent=selling,
+        #     order=4,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
 
-        Menu.objects.create(
-            title="Split coa",
-            url="sale-split-coa-page",
-            parent=split_official,
-            order=1,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
+        # Menu.objects.create(
+        #     title="Split coa",
+        #     url="sale-split-coa-page",
+        #     parent=split_official,
+        #     order=1,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
        
         blending_ore = Menu.objects.create(
             title="Ore Blending",
             parent=selling,
-            order=5,
+            order=2,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
         Menu.objects.create(
@@ -417,7 +417,7 @@ class Command(BaseCommand):
         data_plan_selling = Menu.objects.create(
             title="Plan Selling",
             parent=selling,
-            order=6,
+            order=3,
              allowed_group_names=['superadmin','data-control','admin-mgoqa','entry-selling','admin-mining']
         )
         Menu.objects.create(
@@ -435,29 +435,29 @@ class Command(BaseCommand):
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa','admin-mining']
         )
 
-        
-
+    
         # Analytics
-        analytics = Menu.objects.create(
+        Menu.objects.create(
             title="Analytics",
-            icon="bx bx-layer",
+            icon="bx bx-stats",
+            url="selling-analysis-page",
             order=15,
             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
         )
-        Menu.objects.create(
-            title="Daily Grade",
-            url="#",
-            parent=analytics,
-            order=1,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
-        Menu.objects.create(
-            title="Grade by code",
-            url="sale-split-coa-chart-page",
-            parent=analytics,
-            order=2,
-            allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
-        )
+        # Menu.objects.create(
+        #     title="Daily Grade",
+        #     url="#",
+        #     parent=analytics,
+        #     order=1,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
+        # Menu.objects.create(
+        #     title="Grade by code",
+        #     url="sale-split-coa-chart-page",
+        #     parent=analytics,
+        #     order=2,
+        #     allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-selling','user-selling','user-mgoqa']
+        # )
         # Menu.objects.create(
         #     title="Daily mral",
         #     url="#",

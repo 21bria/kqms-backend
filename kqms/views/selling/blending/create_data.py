@@ -77,4 +77,4 @@ def create_blending_sale(request):
                 balance=item.get('balance')
             )
 
-        return JsonResponse({'success': True, 'blend_code': blend_code})
+    return JsonResponse({'success': True, 'blend_code': blend_code})

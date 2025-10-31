@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from ...models.selling_barging import SellingBarging
-from ...models.selling_details_barging_view import SellingDetailsBargingView
+from ...models.selling_details_barging import SellingDetailsBargingView
 from django.db.models import Sum, Count
 from django.shortcuts import render
 from django.db.models import Q

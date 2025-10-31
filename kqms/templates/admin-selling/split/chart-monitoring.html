@@ -1,0 +1,425 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+<style>
+    @media (min-width: 960px) {
+        .m-\[3rem\] {
+            margin: 9rem;
+        }
+    }
+</style>
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Selling Monitoring</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Charts
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Selling
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div id="add-box" class="col-span-12 box-body  relative z-40  gap-4 w-full md:w-auto">
+                <div class="flex justify-start mb-2">
+                    <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                        <div class="grid grid-cols-12 gap-4">
+                            <!-- Type -->
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-type">
+                                <label class="form-label">Type</label>
+                                <select name="materialFilter" class="ti-form-select rounded-sm !py-2 !px-3t"
+                                    id="materialFilter">
+                                    <option value="">-- Type -- </option>
+                                    <option value="HPAL">LIM</option>
+                                    <option value="RKEF">SAP</option>
+                                </select>
+                            </div>
+                            <!-- Start Date -->
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-tanggal">
+                                <label class="form-label">Start Date</label>
+                                <input class="form-control w-full !rounded-md" type="date" id="startDate"
+                                    name="startDate" value="{{start_date}}">
+                            </div>
+                            <!-- End Date -->
+                            <div class="mb-0 col-span-6 xl:col-span-2" id="form-tanggal-akhir">
+                                <label class="form-label">End Date</label>
+                                <input class="form-control w-full !rounded-md" type="date" id="endDate" name="endDate"
+                                    value="{{end_date}}">
+                            </div>
+                            <!-- Tombol Apply -->
+                            <div class="mb-0 mt-0 col-span-12 xl:col-span-2 flex items-end" id="form-apply">
+                                <a id="search" href="#"
+                                    class="ti-btn ti-btn-primary-full !py-2 !px-3 ti-btn-wave w-full">
+                                    Submit
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-4 mt-4">
+                <div class="xl:col-span-10 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_ni" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="xl:col-span-10 col-span-12">
+                        <div class="box">
+                            <div class="box-body !p-2">
+                                <div id="chart_by_fe"
+                                    class="rounded-lg relative bg-white dark:bg-black overflow-hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-10 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_mgo" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="xl:col-span-10 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-2">
+                            <div id="chart_by_sio2" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="xl:col-span-10 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-3">
+                            <div id="chart_by_sm" class="rounded-lg relative bg-white dark:bg-black overflow-hidden">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script type="text/javascript">
+    $.ajax({
+        url: "{% url 'get-sale-product' %}",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+            var options = '';
+            $.each(data.list, function (key, value) {
+                options += '<option value="' + value.code_lot + '">' + value.code_lot + '</option>';
+            });
+            $('#codeFilter').append(options).select2({
+                width: '100%',
+                dropdownParent: $(document.body)
+            })
+        }
+    });
+
+    $('#typeFilter').select2({
+        width: '100%',
+        dropdownParent: $(document.body)
+    })
+    $('#materialFilter').select2({
+        width: '100%',
+        dropdownParent: $(document.body)
+    })
+
+
+</script>
+<script>
+    // === HELPER UNTUK HANDLE NILAI NULL / UNDEFINED ===
+    function safeVal(v) {
+        return v !== null && v !== undefined && !isNaN(v) ? parseFloat(v) : 0;
+    }
+
+    // === INIT CHARTS KOSONG ===
+    const baseOptions = {
+        chart: {
+            height: 350,
+            type: "line",
+            toolbar: {
+                show: true,
+                offsetX: 0,
+                offsetY: 20,
+                tools: {
+                    download: true,
+                    selection: false,
+                    zoom: false,
+                    zoomin: false,
+                    zoomout: false,
+                    pan: false,
+                    reset: false
+                },
+            }
+        },
+
+        series: [],
+        xaxis: { categories: [] },
+
+        dataLabels: {
+            enabled: true,
+            hideOverflowingLabels: true,
+            background: {
+                enabled: true,
+                borderRadius: 4,
+                padding: 4,
+                opacity: 0.5,
+                dropShadow: { enabled: false }
+            },
+            formatter: (val) => parseFloat(val).toFixed(2),
+            offsetY: -7,
+            style: { fontSize: '8px' }
+        },
+
+        stroke: { width: [2, 2, 2, 2], dashArray: 3 },
+
+        plotOptions: {
+            bar: {
+                columnWidth: "40%",
+                horizontal: false,
+            }
+        },
+
+        yaxis: [{
+            title: { text: "Value (%)" },
+            labels: {
+                formatter: function (val) {
+                    return val.toFixed(1); // tampil 2 desimal di sumbu Y juga
+                }
+            }
+        }],
+
+        tooltip: {
+            shared: false,
+            intersect: false
+        },
+
+        title: {
+            align: "center",
+            offsetY: 25,
+            style: { fontSize: "16px", fontWeight: "bold" }
+        },
+
+        grid: { padding: { top: 15, bottom: 10, left: 15 } },
+    };
+
+    const charts = {
+        ni: new ApexCharts(document.querySelector("#chart_by_ni"), { ...baseOptions, title: { text: "Ni - Barging Plan vs Lab vs CoA", offsetY: 15 } }),
+        fe: new ApexCharts(document.querySelector("#chart_by_fe"), { ...baseOptions, title: { text: "Fe - Barging Plan vs Lab vs CoA", offsetY: 15 } }),
+        mgo: new ApexCharts(document.querySelector("#chart_by_mgo"), { ...baseOptions, title: { text: "MgO - Barging Plan vs Lab vs CoA", offsetY: 15 } }),
+        sio2: new ApexCharts(document.querySelector("#chart_by_sio2"), { ...baseOptions, title: { text: "SiO₂ - Barging Plan vs Lab vs CoA", offsetY: 15 } }),
+        sm: new ApexCharts(document.querySelector("#chart_by_sm"), { ...baseOptions, title: { text: "SM - Barging Plan vs Lab vs CoA", offsetY: 15 } }),
+    };
+
+    // Render semua chart awal
+    Object.values(charts).forEach(chart => chart.render());
+
+    // === ENDPOINTS ===
+    const chartEndpoints = {
+        ni: "{% url 'barging-monitoring-sample-list' %}",
+        fe: "{% url 'barging-monitoring-sample-list' %}",
+        mgo: "{% url 'barging-monitoring-sample-list' %}",
+        sio2: "{% url 'barging-monitoring-sample-list' %}",
+        sm: "{% url 'barging-monitoring-sample-list' %}"
+    };
+
+    // === FUNGSI UPDATE CHART ===
+    function loadChart(key, url, filters = {}) {
+        $.ajax({
+            type: "GET",
+            url,
+            data: filters,
+            dataType: "json",
+            success: function (res) {
+                const data = res.data || res; // <-- penting, karena API-mu bisa return {data: []}
+                console.log("Chart:", key, data);
+
+                if (!Array.isArray(data) || !data.length) {
+                    charts[key].updateOptions({
+                        series: [],
+                        xaxis: { categories: [] },
+                        title: { text: `${key.toUpperCase()} - No Data` }
+                    });
+                    return;
+                }
+
+                const categories = data.map(d => d.lot_barge);
+                const barging = data.map(d => safeVal(d[`${key}_plan`]));
+                const monitoring = data.map(d => safeVal(d[`${key}_monitoring`]));
+                const split = data.map(d => safeVal(d[`${key}_split`]));
+                const coa = data.map(d => safeVal(d[`${key}_official`]));
+
+                // SM (SiO₂ / MgO)
+                if (key === "sm") {
+                    data.forEach((d, i) => {
+                        barging[i] = d.sio2_plan && d.mgo_plan ? (d.sio2_plan / d.mgo_plan).toFixed(2) : 0;
+                        monitoring[i] = d.sio2_monitoring && d.mgo_monitoring ? (d.sio2_monitoring / d.mgo_monitoring).toFixed(2) : 0;
+                        split[i] = d.sio2_split && d.mgo_split ? (d.sio2_split / d.mgo_split).toFixed(2) : 0;
+                        coa[i] = d.sio2_official && d.mgo_official ? (d.sio2_official / d.mgo_official).toFixed(2) : 0;
+                    });
+                }
+
+                charts[key].updateOptions({
+                    xaxis: { categories },
+                    tooltip: {
+                        shared: true,
+                        custom: ({ dataPointIndex }) => {
+                            const d = data[dataPointIndex];
+
+                            // helper biar angka tampil 2 desimal
+                            const fmt = (val) => isNaN(val) ? '-' : parseFloat(val).toFixed(2);
+                            return `
+                                <div style="padding:6px;">
+                                    <b>${d.code_lot}</b><br>
+                                    <b>Barge:</b> ${d.barge_code}<br>
+                                    <b>Tonnage:</b> ${parseFloat(d.tonnage_split).toLocaleString(undefined, { maximumFractionDigits: 2 })}<br>
+                                    <b>${key.toUpperCase()} Plan:</b> ${fmt(barging[dataPointIndex])}<br>
+                                    <b>${key.toUpperCase()} Monitoring:</b> ${fmt(monitoring[dataPointIndex])}<br>
+                                    <b>${key.toUpperCase()} Split:</b> ${fmt(split[dataPointIndex])}<br>
+                                    <b>${key.toUpperCase()} CoA:</b> ${fmt(coa[dataPointIndex])}<br>
+                                </div>
+                            `;
+                        }
+                    }
+                });
+
+                charts[key].updateSeries([
+                    { name: "Barging Plan", data: barging },
+                    { name: "Lab KAWI Monitoring", data: monitoring },
+                    { name: "Lab KAWI Split Samples", data: split },
+                    { name: "Carsurin (CoA)", data: coa },
+                ]);
+            },
+            error: function (xhr, status, error) {
+                console.error(`Error loading chart: ${key}`, error);
+            }
+        });
+    }
+
+    // === LOOP SEMUA CHART SEKALIGUS ===
+    function refreshAllCharts(filters = {}) {
+        for (const [key, url] of Object.entries(chartEndpoints)) {
+            loadChart(key, url, filters);
+        }
+    }
+
+    // === READY ===
+    $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+
+        $.ajaxSetup({
+            headers: { 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content') }
+        });
+
+        const materialFilter = $('#materialFilter').val();
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        
+        refreshAllCharts({ materialFilter, startDate, endDate }); // load awal
+
+        $('#search').click(function () {
+            const materialFilter = $('#materialFilter').val();
+            const startDate = $('#startDate').val();
+            const endDate = $('#endDate').val();
+
+            if (!startDate) return $('#startDate').focus();
+            if (!endDate) return $('#endDate').focus();
+
+            refreshAllCharts({ materialFilter, startDate, endDate });
+        });
+    });
+</script>
+
+</body>
+
+</html>
+
+<style>
+    /* pastikan dropdown select2 selalu di atas datepicker / modal */
+    .select2-container {
+        z-index: 1050 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 1060 !important;
+        position: absolute !important;
+    }
+
+    /* kalau parent punya overflow hidden, buka */
+    #add-box {
+        overflow: visible !important;
+    }
+
+    .apexcharts-tooltip {
+        margin-top: 10px !important;
+        margin-left: 15px !important;
+        padding: 8px 14px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+    }
+</style>

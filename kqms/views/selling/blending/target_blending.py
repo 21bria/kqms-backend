@@ -95,9 +95,9 @@ def auto_blend_optimizer(target_tonase, target_ni, selected_piles):
         total_fe = sum(used[i] * selected_piles[i].get('fe', 0) for i in range(n))
         total_co = sum(used[i] * selected_piles[i].get('co', 0) for i in range(n))
         total_al2o3 = sum(used[i] * selected_piles[i].get('al2o3', 0) for i in range(n))
-        total_mgo = sum(used[i] * selected_piles[i].get('mgo', 0) for i in range(n))
-        total_sio2 = sum(used[i] * selected_piles[i].get('sio2', 0) for i in range(n))
-        total_sm = sum(used[i] * selected_piles[i].get('sm', 0) for i in range(n))
+        total_mgo   = sum(used[i] * selected_piles[i].get('mgo', 0) for i in range(n))
+        total_sio2  = sum(used[i] * selected_piles[i].get('sio2', 0) for i in range(n))
+        total_sm    = sum(used[i] * selected_piles[i].get('sm', 0) for i in range(n))
 
         final_result = []
         for i, p in enumerate(selected_piles):
@@ -124,7 +124,7 @@ def auto_blend_optimizer(target_tonase, target_ni, selected_piles):
                 'al2o3' : round(total_al2o3 / total, 2),
                 'mgo'   : round(total_mgo / total, 2),
                 'sio2'  : round(total_sio2 / total, 2),
-                'sm': round(total_sio2 / total_mgo, 2) if total_mgo != 0 else 0  # ✅ langsung dibagi
+                'sm'    : round(total_sio2 / total_mgo, 2) if total_mgo != 0 else 0  # ✅ langsung dibagi
             },
             'total_used': round(total, 2)
         }

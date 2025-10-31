@@ -7,7 +7,7 @@ from django.db.models import Case, When, Value, IntegerField
 from uuid import UUID
 from datetime import datetime
 from ....models.selling_barging_temp import SellingBargingTemp
-from ....models.selling_details_barging_view import SellingDetailsBargingTempView
+from ....models.selling_details_barging import SellingDetailsBargingTempView
 from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View

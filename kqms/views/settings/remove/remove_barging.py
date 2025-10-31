@@ -2,7 +2,7 @@
 from django.contrib.auth.decorators import login_required
 import json
 from django.http import JsonResponse
-from ....models.selling_details_barging_view import SellingDetailsBargingView
+from ....models.selling_details_barging import SellingDetailsBargingView
 from ....models.selling_barging import SellingBarging
 from django.db.models import Q
 from django.views.generic import View

@@ -30,9 +30,6 @@
 <!-- Used For Sessions By Device Chart -->
 <script src="{% static 'assets/libs/moment/moment.js' %}"></script>
 
-<!-- Analytics-Dashboard JS -->
-<!-- <script src="{% static 'assets/js/analytics-dashboard.js' %}"></script> -->
-
 
 <!-- Custom-Switcher JS -->
 <script src="{% static 'assets/js/custom-switcher.js' %}"></script>
@@ -88,7 +85,7 @@
         fetch('/hr/logout/', {
             method: 'POST',
             headers: {
-                'X-CSRFToken': '{{ csrf_token }}',  // Tambahkan token CSRF dari template
+                'X-CSRFToken': '{{ csrf_token }}', 
             },
             // Redirect ke halaman login setelah logout berhasil
             redirect: 'follow'
