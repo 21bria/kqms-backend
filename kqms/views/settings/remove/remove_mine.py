@@ -3,26 +3,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 import json
 from django.http import JsonResponse
-from uuid import UUID
 from datetime import datetime
 from ....models.mine_productions import mineProductions
 from ....models.mine_productions_view import mineProductionsView
-from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 
-@login_required
-def remove_mine_bulk_page(request):
-    today = datetime.today()
-    first_day_of_month = today.replace(day=1) 
-    context = {
-        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
-        'end_date'   : today.strftime('%Y-%m-%d'),
-    }
-    return render(request, 'master/remove-mine.html',context)
 
 class mineRemoveView(View):
     def post(self, request):

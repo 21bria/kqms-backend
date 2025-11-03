@@ -7,13 +7,14 @@ from ..views.settings.data_control.merge_stockpile_view import *
 from ..views.settings.data_control.dome_status_view import *
 from ..views.settings.data_control.dome_status_finish_view import *
 from ..views.settings.data_control.barging_finish_view import *
-from ..views.settings.remove.remove_data_view import *
-from ..views.settings.remove.remove_waybill_view import *
-from ..views.settings.remove.remove_mral_view import *
-from ..views.settings.remove.remove_roa_view import *
-from ..views.settings.remove.remove_mine_data import *
+from ..views.settings.remove.remove_home import *
+from ..views.settings.remove.remove_waybill import *
+from ..views.settings.remove.remove_mral import *
+from ..views.settings.remove.remove_roa import *
+from ..views.settings.remove.remove_mine import *
 from ..views.settings.remove.remove_selling_quik import *
 from ..views.settings.remove.remove_barging import *
+from ..views.settings.remove.remove_gc_data import *
 from ..views.settings.data_control.page_config import page_config
 
 
@@ -117,5 +118,10 @@ urlpatterns = [
     path('update/seling-temp/status/', remove_selling_temp_page, name='remove-selling-temp-page'), 
     path('update/seling-temp/list/', saleTempRemoveView.as_view(), name='remove-selling-temp-list'),
     path('update/seling-temp/', update_sale_temp_bulk, name='update-sale-temp-bulk'), 
+
+    # Remove data Geology Control
+    path('remove/geology/productions/', remove_gc_bulk_page, name='delete-productions-geology-page'), 
+    path('remove/geology/productions/list/', gcDataDeleteView.as_view(), name='productions-geology-list'),
+    path('remove/productions/delete/', delete_data_gc_bulk, name='delete-bulk-productions-geology'), 
 ]
     

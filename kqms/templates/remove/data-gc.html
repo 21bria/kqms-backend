@@ -1,0 +1,450 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+    <div class="content">
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Data Production GC</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        data gelology
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Delete bulk productions</h5>
+                        </div>
+                        <div class="box-body">
+
+                            <div class="flex justify-start md:justify-end mb-2">
+
+                                <!-- <div class="flex items-end gap-4"> -->
+                                <div class="flex flex-col md:flex-row md:items-end gap-4  w-full md:w-auto">
+                                    <!-- Date -->
+                                    <div class="w-[220px]">
+                                        <label class="form-label">Start date</label>
+                                        <input type="date" class="form-control w-full !rounded-md" id="start_date"
+                                            name="start_date" value="{{end_date}}">
+                                    </div>
+                                    <div class="w-[140px]">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" id="end_date" name="end_date"
+                                            value="{{end_date}}">
+                                    </div>
+                                        <div class="w-[280px]">
+                                        <label class="form-label">Shift</label>
+                                        <select id="shift" name="shift"
+                                            class="ti-form-select rounded-sm !py-2 !px-3t">
+                                            <option value="">--- Select ---</option>
+                                            <option value="D">Day</option>
+                                            <option value="N">Night</option>
+                                        </select>
+                                    </div>
+                                    <div class="mt-4">
+                                        <button type="button" id="applyFilterBtn"
+                                            class="ti-btn ti-btn-primary !rounded-lg ti-btn-wave mt-4">Filter</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th>Date</th>
+                                            <th width="5%">Category</th>
+                                            <th width="5%">Shift</th>
+                                            <th>Source</th>
+                                            <th>Block</th>
+                                            <th>RL</th>
+                                            <th>Material</th>
+                                            <th>Class</th>
+                                            <th>GC</th>
+                                            <th>Units</th>
+                                            <th>Stockpile</th>
+                                            <th>Dome</th>
+                                            <th>Batch</th>
+                                            <th>Incr.</th>
+                                            <th>Ritase</th>
+                                            <th>Tonnage</th>
+                                            <th>Status</th>
+                                            <th>Pile Status</th>
+                                            <th>Sample Id</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tfoot class="th_hide" style='display:none;'>
+                                        <tr>
+                                            <th width="5%"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th width="5%"></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                    </tbody>
+                                </table>
+                                <div class=" mt-5" id="btn_clear">
+                                    <div class="flex flex-wrap items-left justify-start gap-2">
+                                        <button type="button" id="applyRemoveBtn"
+                                            class="ti-btn ti-btn-danger !rounded-lg ti-btn-wave">Remove data</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $('#btn_clear').hide(); // 
+        $(".form-select").select2({
+            width: '100%',
+        });
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let url = '{% url "productions-geology-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.start_date = $('#start_date').val();
+                    data.end_date = $('#end_date').val();
+                    data.shift = $('#shift').val();
+                    return data;
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'tgl_production',
+                    name: 'tgl_production'
+                },
+                {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
+                    data: 'shift',
+                    name: 'shift'
+                },
+                {
+                    data: 'prospect_area',
+                    name: 'prospect_area',
+                    searchable: true
+                },
+                {
+                    data: 'mine_block',
+                    name: 'mine_block',
+                    searchable: true
+                },
+
+                {
+                    data: 'rl',
+                    name: 'rl'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material',
+                    searchable: true
+                },
+                {
+                    data: 'ore_class',
+                    name: 'ore_class'
+                },
+                {
+                    data: 'grade_control',
+                    name: 'grade_control'
+                },
+                {
+                    data: 'unit_truck',
+                    name: 'unit_truck'
+                },
+                {
+                    data: 'stockpile',
+                    name: 'stockpile',
+                    searchable: true
+                },
+                {
+                    data: 'pile_id',
+                    name: 'pile_id',
+                    searchable: true
+                },
+                {
+                    data: 'batch_code',
+                    name: 'batch_code'
+                },
+                {
+                    data: 'increment',
+                    name: 'increment'
+                },
+                {
+                    data: 'ritase',
+                    name: 'ritase'
+                },
+                {
+                    data: 'tonnage',
+                    name: 'tonnage'
+                },
+                {
+                    data: 'pile_status',
+                    name: 'pile_status'
+                },
+                {
+                    data: 'batch_status',
+                    name: 'batch_status'
+                },
+
+                {
+                    data: 'sample_number',
+                    name: 'sample_number'
+                },
+
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+            // Menambahkan opsi footerCallback
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+                // converting to interger to find total
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                // computing column Total the complete result 
+                var col_15 = api
+                    .column(15)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                var col_16 = api
+                    .column(16)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                col_15 = col_15.toFixed(2);
+                col_16 = col_16.toFixed(2);
+
+
+                // Update footer by showing the total with the reference of the column index   
+                $(api.column(15).footer()).html(col_15.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $(api.column(16).footer()).html(col_16.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+            },
+        });
+        $('.th_hide').show();
+        /*--Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+            var shift = $('#shift').val();
+            $('#btn_clear').hide(); // 
+            if (start_date == '') {
+                $("#start_date").focus();
+                return false;
+            }
+            if (end_date == '') {
+                $("#end_date").focus();
+                return false;
+            }
+            else {
+                // $('#data_table').DataTable().clear().destroy();
+                table.ajax.reload();
+                $('#btn_clear').show(); // 
+            }
+
+        });
+
+        /* Remove data */
+        $('#applyRemoveBtn').click(function () {
+            var start_date = $('#start_date').val();
+            var end_date = $('#end_date').val();
+            var shift = $('#shift').val();
+            var url = '{% url "delete-bulk-productions-geology" %}';
+            if (start_date == '') {
+                $("#start_date").focus();
+                return false;
+            }
+            if (end_date == '') {
+                $("#end_date").focus();
+                return false;
+            }
+            else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete :" + " " + start_date + " to " + end_date + " | Shift: " + shift,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                    // width: 320,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            contentType: 'application/json',
+                            data: JSON.stringify(
+                                {
+                                    start_date: start_date,
+                                    end_date: end_date,
+                                    shift: shift
+                                }
+
+                            ), // Sending data in the body
+                            success: function (data) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
+                                );
+                                table.draw();
+                                $('#btn_clear').hide(); // 
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>

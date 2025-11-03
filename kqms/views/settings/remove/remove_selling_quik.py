@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 import json
 from django.http import JsonResponse
 from django.db.models import Case, When, Value, IntegerField
-from uuid import UUID
 from datetime import datetime
 from ....models.selling_barging_temp import SellingBargingTemp
 from ....models.selling_details_barging import SellingDetailsBargingTempView
@@ -15,15 +14,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 
-@login_required
-def remove_selling_temp_page(request):
-    today = datetime.today()
-    first_day_of_month = today.replace(day=1) 
-    context = {
-        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
-        'end_date'   : today.strftime('%Y-%m-%d'),
-    }
-    return render(request, 'master/remove-selling-temp.html',context)
+
 
 class saleTempRemoveView(View):
     def post(self, request):
@@ -163,7 +154,7 @@ import json
 @login_required
 @csrf_exempt
 def update_sale_temp_bulk(request):
-    allowed_groups = ['superadmin','admin-mgoqa','admin-selling']
+    allowed_groups = ['superadmin','data-control','admin-mgoqa','admin-selling']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 

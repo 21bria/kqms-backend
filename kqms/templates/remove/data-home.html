@@ -36,18 +36,19 @@
                 <!-- Start::row-1 -->
                 <div class="grid grid-cols-12 gap-4 mx-auto">
                     <!-- Semua item ditaruh langsung di dalam grid -->
-
                     <div class="col-span-12 sm:col-span-6 lg:col-span-3">
                         <div class="box un-read">
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-waybills-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">W
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Waybills</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
-                                                waybills</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete waybill data</p>
                                         </div>
                                     </div>
                                 </a>
@@ -60,11 +61,14 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-roa-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">R
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Roa</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data roa
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete assay roa data
                                             </p>
                                         </div>
                                     </div>
@@ -78,12 +82,14 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-mral-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white">M
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Mral</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
-                                                mral</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete assay mral data</p>
                                         </div>
                                     </div>
                                 </a>
@@ -96,12 +102,15 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-selling-temp-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> B
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Temp.Barging</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
-                                                Barging</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete temporary barging
+                                                data</p>
                                         </div>
                                     </div>
                                 </a>
@@ -113,12 +122,14 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-barging-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> B
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Barging</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
-                                                Barging</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete Barging Data</p>
                                         </div>
                                     </div>
                                 </a>
@@ -130,12 +141,35 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'remove-mine-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                        <div class="avatar avatar-md bg-success/20 me-4 avatar-rounded text-white"> P
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
                                         </div>
                                         <div class="flex-grow">
                                             <p class="mb-0 text-[.875rem] font-semibold">Delete Productions</p>
-                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Fitur untuk hapus data
-                                                Productions</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete Mine Productions
+                                                Data</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
+                                <a href="{% url 'delete-productions-geology-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-danger/50 shadow-sm">
+                                                <i class="ri-delete-bin-2-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Delete Productions GC</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Delete Productions Geology
+                                                Data</p>
                                         </div>
                                     </div>
                                 </a>
@@ -144,9 +178,8 @@
                     </div>
 
                     <!-- Item baru tinggal tambah div dengan col-span yang sama -->
-
                     <div class="col-span-12 text-center">
-                        <button type="button" class="ti-btn ti-btn-info ti-btn-loader">
+                        <button type="button" class="ti-btn ti-btn-danger ti-btn-loader">
                             Loading
                             <span class="ti-spinner h-4 w-4" role="status"></span>
                         </button>
