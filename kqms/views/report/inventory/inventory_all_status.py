@@ -130,12 +130,90 @@ def getInventoryAllStatus(request):
         columns = [col[0] for col in cursor.description]
         sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+    # === Query summary (tanpa LIMIT/OFFSET) ===
+    summary_query = f"""
+        SELECT
+            ROUND(SUM(t1.total_ore)::numeric, 2) AS total_ore,
+            ROUND(SUM(t1.released)::numeric, 2) AS total_released,
+            ROUND(SUM(t1.released::numeric * t1.ni::numeric)::numeric, 2) AS sumprod_ni,
+            ROUND(SUM(t1.released::numeric * t1.fe::numeric)::numeric, 2) AS sumprod_fe,
+            ROUND(SUM(t1.released::numeric * t1.al2o3::numeric)::numeric, 2) AS sumprod_al2o3,
+		    ROUND(SUM(t1.released::numeric * t1.co::numeric)::numeric, 2) AS sumprod_co,
+		    ROUND(SUM(t1.released::numeric * t1.mgo::numeric)::numeric, 2) AS sumprod_mgo,
+		    ROUND(SUM(t1.released::numeric * t1.sio2::numeric)::numeric, 2) AS sumprod_sio2,
+		    ROUND(SUM(t1.released::numeric * t1.cao::numeric)::numeric, 2) AS sumprod_cao,
+		    ROUND(SUM(t1.released::numeric * t1.cr2o3::numeric)::numeric, 2) AS sumprod_cr2o3,
+		    ROUND(SUM(t1.released::numeric * t1.mc::numeric)::numeric, 2) AS sumprod_mc
+        FROM inventory_by_dome t1
+        WHERE 1=1
+        {where_clause}
+    """
+
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(summary_query, params)
+        summary_row = cursor.fetchone()   
+
+    # === Query summary Selling (tanpa LIMIT/OFFSET) ===
+    selling_query = f"""
+        SELECT
+            ROUND(SUM(
+                CASE
+                    WHEN t1.nama_material = 'LIM' AND t2.material = 'SAP' THEN t2.tonnage
+                    WHEN t1.nama_material = 'SAP' AND t2.material = 'LIM' THEN t2.tonnage
+                    WHEN t1.nama_material = t2.material THEN t2.tonnage
+                    ELSE 0
+                END
+            )::numeric, 2) AS total_selling
+        FROM inventory_by_dome AS t1
+        LEFT JOIN selling_by_dome AS t2
+            ON t2.stockpile = t1.stockpile AND t2.dome = t1.pile_id
+        WHERE 1=1
+        {where_clause}
+    """
+
+    with connections['kqms_db'].cursor() as cursor:
+        cursor.execute(selling_query, params)
+        selling_row = cursor.fetchone() 
+
+    # === Proses summary di backend ===
+    total_ore       = float(summary_row[0] or 0)
+    total_released  = float(summary_row[1] or 0)
+    sumprod = {
+        'ni'    : float(summary_row[2] or 0),
+        'fe'    : float(summary_row[3] or 0),
+        'al2o3' : float(summary_row[4] or 0),
+        'co'    : float(summary_row[5] or 0),
+        'mgo'   : float(summary_row[6] or 0),
+        'sio2'  : float(summary_row[7] or 0),
+        'cao'   : float(summary_row[8] or 0),
+        'cr2o3' : float(summary_row[9] or 0),
+        'mc'    : float(summary_row[10] or 0),
+        # 'sm': float(summary_row[10] or 0),
+    }
+
+    avg_grade = {
+        k: round((v / total_released), 3) if total_released else 0
+        for k, v in sumprod.items()
+    }
+
+    total_selling = float(selling_row[0] or 0)
+
+    #  perhitungan balance di backend
+    balance = round(total_ore - total_selling, 2)
+
     # Pagination
-    more_data = len(sql_data) == per_page
+    more_data   = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
     return JsonResponse({
         'data': sql_data,
+        'summary': {
+            'total_ore'     : round(total_ore, 2),
+            'total_released': round(total_released, 2),
+            'total_selling' : round(total_selling, 2),
+            'balance'       : round(balance, 2),
+            'avg_grade'     : avg_grade
+        },
         'pagination': {
             'more'          : more_data,
             'total_pages'   : total_pages,
