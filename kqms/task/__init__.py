@@ -13,8 +13,10 @@ from .import_plan_selling import import_plan_selling
 from .import_samples_selling import import_samples_selling
 from .import_selling_official import import_selling_official
 from .cleanup import clean_temp_duplicates,truncate_old_task_imports
+from .auto_sync import auto_sync_dome_status_task
 
 __all__ = [
+    'auto_sync_dome_status_task',
     'clean_temp_duplicates',
     'truncate_old_task_imports',
     'import_waybills',
@@ -30,5 +32,5 @@ __all__ = [
     'import_plan_barging',
     'import_barging_plan',
     'import_plan_selling',
-    'import_selling_official'
+    'import_selling_official',
     ]

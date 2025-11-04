@@ -19,9 +19,9 @@ app.autodiscover_tasks()
 # Baru di sini import task spesifik
 # Karena semua Django app sudah di-load
 import django
-django.setup()  # ✅ WAJIB sebelum import model jika celery dijalankan mandiri
+django.setup()  #  WAJIB sebelum import model jika celery dijalankan mandiri
 
-import kqms.task  # ⬅️ TEMPATKAN SETELAH django.setup()
+import kqms.task  #  TEMPATKAN SETELAH django.setup()
 
 # Set zona waktu
 app.conf.timezone = settings.TIME_ZONE
@@ -31,7 +31,7 @@ app.conf.enable_utc = True
 def debug_task(self):
     print(f'Request: {self.request!r}')
 
-# ✅ Tambahkan beat schedule di bagian bawah
+# Tambahkan beat schedule di bagian bawah
 
 app.conf.beat_schedule = {
     # Hapus file duplikat
@@ -44,5 +44,11 @@ app.conf.beat_schedule = {
         'task': 'kqms.task.cleanup.truncate_task_imports',
         'schedule': crontab(hour=2, minute=30),
         'args': (1,),  # umur data yang dihapus > 1 hari
+    },
+
+    # Auto-sync dome status setiap 1 jam
+    'auto-sync-dome-status-every-1-hour': {
+        'task': 'kqms.task.auto_sync.auto_sync_dome_status_task',
+        'schedule': crontab(minute=0, hour='*/1'),  # <-- setiap 1 jam, di menit ke-0
     },
 }

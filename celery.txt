@@ -1,9 +1,19 @@
 celery -A core worker -l info
 celery -A core worker --pool=solo --loglevel=info
 
-====
+Celery akan otomatis menjalankan semua task dari CELERY_BEAT_SCHEDULE — termasuk:
+celery -A core worker -B --pool=solo --loglevel=info
+
+===========
 celery -A core flower
-=====
+===========
+⚙️ 2. Buat file service untuk Celery Worker
+sudo nano /etc/systemd/system/celery.service
+
+⚙️ 3. Buat file service untuk Celery Beat
+sudo nano /etc/systemd/system/celerybeat.service
+==========================================
+
 python manage.py migrate django_celery_beat
 
 python manage.py makemigrations kqms
