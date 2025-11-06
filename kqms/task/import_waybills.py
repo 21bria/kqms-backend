@@ -37,17 +37,27 @@ def import_waybills(file_path, original_file_name):
 
 
         with transaction.atomic():
+            # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
+            today = datetime.today().date()
+            for idx, row in df.itertuples(index=True):
+                tgl_deliver = getattr(row, 'tgl_deliver', None)
+                if pd.notna(tgl_deliver) and tgl_deliver > today:
+                    raise ValueError(
+                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Tanggal deliver ({tgl_deliver}) "
+                        f"yang melebihi tanggal hari ini ({today})."
+                    )
+                
             for index, row in df.iterrows():
                 try:
-                    tgl_deliver = row.get('tgl_deliver')
-                    delivery_time = row.get('delivery_time')
-                    waybill_number = row.get('waybill_number')
-                    sample_id = row.get('sample_id')
-                    numb_sample = row.get('numb_sample')
-                    mral_order = row.get('mral_order')
-                    roa_order = row.get('roa_order')
-                    remarks = row.get('remarks')
-                    delivery = row.get('delivery')
+                    tgl_deliver     = row.get('tgl_deliver')
+                    delivery_time   = row.get('delivery_time')
+                    waybill_number  = row.get('waybill_number')
+                    sample_id       = row.get('sample_id')
+                    numb_sample     = row.get('numb_sample')
+                    mral_order      = row.get('mral_order')
+                    roa_order       = row.get('roa_order')
+                    remarks         = row.get('remarks')
+                    delivery        = row.get('delivery')
 
                     if Waybills.objects.filter(waybill_number=waybill_number).exists():
                         duplicates.append(f"Duplicate at row {index}: {waybill_number}")

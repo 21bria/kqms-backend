@@ -1,7 +1,7 @@
 import os
 import uuid
 import pandas as pd
-from datetime import datetime, timedelta,time
+from datetime import datetime, date,time
 from celery import shared_task
 from django.db import transaction
 from django.conf import settings
@@ -58,6 +58,7 @@ def parse_time_hauling(raw_value):
     # Gagal parsing
     return None
 
+# Protection for Mining data with  'Date Production' tidak boleh lebih dari hari ini
 @shared_task(name='kqms.task.import_mines_productions.import_mine_productions')
 def import_mine_productions(file_path, original_file_name):
     df = pd.read_excel(file_path)
@@ -75,7 +76,6 @@ def import_mine_productions(file_path, original_file_name):
     df['Date Production'] = df['Date Production'].dt.date
 
     # Buat dictionary dari Tabel untuk pencarian ID berdasarkan nama
-    # source_dict      = dict(SourceMines.objects.values_list('sources_area', 'id'))
     loading_dict     = dict(SourceMinesLoading.objects.values_list('loading_point', 'id'))
     dumping_dict     = dict(SourceMinesDumping.objects.values_list('dumping_point', 'id'))
     dome_dict        = dict(SourceMinesDome.objects.values_list('pile_id', 'id'))
@@ -87,6 +87,16 @@ def import_mine_productions(file_path, original_file_name):
     # Mulai transaksi untuk memastikan rollback jika terjadi error
     try:
         with transaction.atomic():
+            # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
+            today = date.today()
+            for idx, row in df.itertuples(index=True):
+                date_pds = getattr(row, 'Date_Production', None)
+                if pd.notna(date_pds) and date_pds > today:
+                    raise ValueError(
+                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Date Production ({date_pds}) "
+                        f"yang melebihi tanggal hari ini ({today})."
+                    )
+    
             for index, row in df.iterrows():
                 date_pds        = row['Date Production']
                 time            = row['Time Hauling']
@@ -124,7 +134,6 @@ def import_mine_productions(file_path, original_file_name):
                 remarks       = None if pd.isna(remarks) else remarks
 
                 # Cari ID dari Model berdasarkan nama
-                # id_source   = source_dict.get(source, 1)  
                 id_source   = None  
                 id_loading  = loading_dict.get(loading_point, 1)  
                 id_dumping  = dumping_dict.get(dumping_point, 1)  
@@ -144,20 +153,6 @@ def import_mine_productions(file_path, original_file_name):
 
                 # hitung tonnage sesuai formula
                 tonnage = (float(parsing or 0) * float(ritase or 0) * float(bucket_capacity or 0) * float(density_lcm or 0))
-
-                # hitung tonnage sesuai material
-                # if nama_material_str.upper() == "LIM":
-                #     tonnage = 19.5 * float(ritase or 0)
-                # elif nama_material_str.upper() == "SAP":
-                #     tonnage = 19 * float(ritase or 0)
-                # else:
-                #     tonnage = (
-                #         float(parsing or 0) *
-                #         float(ritase or 0) *
-                #         float(bucket_capacity or 0) *
-                #         float(density_lcm or 0)
-                #     )
-
 
                 # Modifikasi hauler
                 type_hauler = None

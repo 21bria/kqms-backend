@@ -40,6 +40,16 @@ def import_samples_selling(file_path, original_file_name):
     # Mulai transaksi untuk memastikan rollback jika terjadi error
     try:
         with transaction.atomic():
+            # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
+            today = datetime.today().date()
+            for idx, row in df.itertuples(index=True):
+                date_pds = getattr(row, 'Date_Sample', None)
+                if pd.notna(date_pds) and date_pds.date() > today:
+                    raise ValueError(
+                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Date Sample ({date_pds.date()}) "
+                        f"yang melebihi tanggal hari ini ({today})."
+                    )
+                
             for index, row in df.iterrows():
                 date_sale       = row['Date_Sample']
                 shift           = row['Shift']

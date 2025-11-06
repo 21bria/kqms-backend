@@ -34,10 +34,20 @@ def import_ore_productions(file_path, original_file_name):
     stockpile_dict  = dict(SourceMinesDumping.objects.values_list('dumping_point', 'id'))
     dome_dict       = dict(SourceMinesDome.objects.values_list('pile_id', 'id'))
       
-
+ 
     # Mulai transaksi untuk memastikan rollback jika terjadi error
     try:
         with transaction.atomic():
+            # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
+            today = datetime.today().date()
+            for idx, row in df.itertuples(index=True):
+                date_pds = getattr(row, 'Date_Production', None)
+                if pd.notna(date_pds) and date_pds.date() > today:
+                    raise ValueError(
+                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Date Production ({date_pds.date()}) "
+                        f"yang melebihi tanggal hari ini ({today})."
+                    )   
+                
             for index, row in df.iterrows():
                 date_pds        = row['Date_Production']
                 shift           = row['Shift']
