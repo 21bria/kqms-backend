@@ -23,8 +23,10 @@ def clean_temp_duplicates():
                 os.remove(file_path)
                 print(f"[Deleted] {file_path}")
 
-@shared_task(name='kqms.task.cleanup.truncate_task_imports')
+@shared_task()
 def truncate_old_task_imports(days=1):
+    print(f"[TASK] Running truncate_old_task_imports at {timezone.now()}")
     threshold = timezone.now() - timedelta(days=days)
     deleted, _ = taskImports.objects.filter(created_at__lt=threshold).delete()
+    print(f"[TASK] Deleted {deleted} records older than {days} days.")
     return f"{deleted} taskImports records deleted older than {days} days."

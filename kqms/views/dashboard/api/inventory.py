@@ -772,15 +772,15 @@ def get_inventory_summary(request):
             row = cursor.fetchone()
 
         return JsonResponse({
-            "lim_in": to_float1(row[0]),
-            "lim_out": to_float1(row[1]),
-            "lim_stock": to_float1(row[2]),
-            "sap_in": to_float1(row[3]),
-            "sap_out": to_float1(row[4]),
-            "sap_stock": to_float1(row[5]),
-            "total_in": to_float1(row[6]),
-            "total_out": to_float1(row[7]),
-            "total_stock": to_float1(row[8]),
+            "lim_in"        : to_float1(row[0]),
+            "lim_out"       : to_float1(row[1]),
+            "lim_stock"     : to_float1(row[2]),
+            "sap_in"        : to_float1(row[3]),
+            "sap_out"       : to_float1(row[4]),
+            "sap_stock"     : to_float1(row[5]),
+            "total_in"      : to_float1(row[6]),
+            "total_out"     : to_float1(row[7]),
+            "total_stock"   : to_float1(row[8]),
         })
 
     except DatabaseError:
@@ -834,11 +834,11 @@ def get_chart_inventory(request):
                                     COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_productions
-                                        WHERE tgl_production <= %s
+                                        WHERE tgl_production < %s
                                     ), 0) - COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_sellings_barging
-                                        WHERE date_barge_out <= %s
+                                        WHERE date_barge_out < %s
                                         AND status_barging='Complete'
                                     ), 0) AS value
                             )         
@@ -937,11 +937,11 @@ def get_chart_inventory(request):
                                 COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_productions
-                                    WHERE tgl_production <= %s
+                                    WHERE tgl_production < %s
                                 ), 0) - COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
-                                    WHERE date_barge_out <= %s
+                                    WHERE date_barge_out < %s
                                     AND status_barging='Complete'
                                 ), 0) AS value
                         )
@@ -1011,11 +1011,11 @@ def get_chart_inventory(request):
                                     COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_productions
-                                        WHERE tgl_production <= %s
+                                        WHERE tgl_production < %s
                                     ), 0) - COALESCE((
                                         SELECT SUM(tonnage)
                                         FROM ore_sellings_barging
-                                        WHERE date_barge_out <= %s
+                                        WHERE date_barge_out < %s
                                         AND status_barging='Complete'
                                     ), 0) AS value
                             )
@@ -1064,11 +1064,11 @@ def get_chart_inventory(request):
                                 COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_productions
-                                    WHERE EXTRACT(YEAR FROM tgl_production) <= %s
+                                    WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) - COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
-                                    WHERE EXTRACT(YEAR FROM date_hauling) <= %s
+                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
                                     AND status_barging='Complete'
                                 ), 0) AS value
                         )

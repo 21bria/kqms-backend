@@ -32,18 +32,18 @@ def debug_task(self):
     print(f'Request: {self.request!r}')
 
 # Tambahkan beat schedule di bagian bawah
-
 app.conf.beat_schedule = {
     # Hapus file duplikat
     'clean-duplicate-files-daily': {
         'task': 'kqms.task.cleanup.clean_temp_duplicates',
         'schedule': crontab(hour=2, minute=0),
     },
+
     # Truncate taskImports setiap hari
     'truncate-task-imports-daily': {
-        'task': 'kqms.task.cleanup.truncate_task_imports',
-        'schedule': crontab(hour=2, minute=30),
-        'args': (1,),  # umur data yang dihapus > 1 hari
+        'task': 'kqms.task.cleanup.truncate_old_task_imports',
+        'schedule': crontab(hour=2, minute=30),  # Setiap jam 02:30 pagi
+        'args': (1,),  # hapus data lebih dari 1 hari
     },
 
     # Auto-sync dome status setiap 1 jam

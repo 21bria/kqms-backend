@@ -4,15 +4,23 @@ celery -A core worker --pool=solo --loglevel=info
 Celery akan otomatis menjalankan semua task dari CELERY_BEAT_SCHEDULE — termasuk:
 celery -A core worker -B --pool=solo --loglevel=info
 
-===========
+======================
 celery -A core flower
-===========
+=====================
 ⚙️ 2. Buat file service untuk Celery Worker
 sudo nano /etc/systemd/system/celery.service
 
 ⚙️ 3. Buat file service untuk Celery Beat
 sudo nano /etc/systemd/system/celerybeat.service
 ==========================================
+
+sudo systemctl daemon-reload
+sudo systemctl enable celery
+sudo systemctl enable celerybeat
+sudo systemctl start celery
+sudo systemctl start celerybeat
+
+====================
 
 python manage.py migrate django_celery_beat
 
@@ -30,19 +38,26 @@ git commit -m "update inventory"
 # update the existing commit message
 git push origin main
 git push --force origin main
-====
+============================
 git pull origin main
-=====
+==============================
 sudo systemctl restart gunicorn
-sudo systemctl restart celery
 
-=====
+==============================
 TRUNCATE TABLE your_table_name RESTART IDENTITY CASCADE;
 
 ALTER SEQUENCE nama_tabel_id_seq RESTART WITH ?;
 
 python manage.py runserver 0.0.0.0:8000
 
+========== update Celery Worker =========
 sudo systemctl daemon-reload
 sudo systemctl start celery.service
 sudo systemctl status celery.service
+sudo systemctl status celerybeat
+
+🚀 1. Restart Celery Worker
+sudo systemctl restart celery.service
+
+🚀 2. Restart Celery Beat
+sudo systemctl restart celery-beat.service
