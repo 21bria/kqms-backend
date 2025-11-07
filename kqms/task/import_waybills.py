@@ -39,13 +39,13 @@ def import_waybills(file_path, original_file_name):
         with transaction.atomic():
             # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
             today = datetime.today().date()
-            for idx, row in df.itertuples(index=True):
-                tgl_deliver = getattr(row, 'tgl_deliver', None)
-                if pd.notna(tgl_deliver) and tgl_deliver > today:
+            for i, row in enumerate(df.itertuples(index=False), start=2):
+                tanggal = getattr(row, 'tgl_deliver')
+                if pd.notna(tanggal) and tanggal > today:
                     raise ValueError(
-                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Tanggal deliver ({tgl_deliver}) "
+                        f"❌ Import dibatalkan: Baris {i} memiliki tgl_deliver ({tanggal}) "
                         f"yang melebihi tanggal hari ini ({today})."
-                    )
+                    )  
                 
             for index, row in df.iterrows():
                 try:

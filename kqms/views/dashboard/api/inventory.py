@@ -808,61 +808,75 @@ def get_chart_inventory(request):
         if filter_type =='range' and date_start and date_end: 
             if db_vendor == 'postgresql':
                 query = """
-                       WITH tanggal AS (
-                                SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
-                            ),
-                            incoming AS (
-                                SELECT
-                                    tgl_production::date AS date,
-                                    SUM(tonnage) AS total_in
+                    WITH tanggal AS (
+                        SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                    ),
+                    incoming AS (
+                        SELECT
+                            tgl_production::date AS date,
+                            SUM(tonnage) AS total_in
+                        FROM ore_productions
+                        WHERE tgl_production BETWEEN %s AND %s
+                        GROUP BY tgl_production
+                    ),
+                    barging AS (
+                        SELECT
+                            date_hauling::date AS date,
+                            SUM(tonnage) AS total_barging
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        WHERE date_hauling BETWEEN %s AND %s
+                        AND s.status_barging = 'Complete'
+                        GROUP BY date_hauling
+                    ),
+                    outgoing AS (
+                        SELECT
+                            date_hauling::date AS date,
+                            SUM(tonnage) AS total_out
+                        FROM ore_sellings_barging s
+                        LEFT JOIN materials m ON m.id = s.id_material
+                        WHERE date_hauling BETWEEN %s AND %s
+                        AND s.status_barging = 'Complete'
+                        GROUP BY date_hauling
+                    ),
+                    saldo_awal AS (
+                        SELECT
+                            COALESCE((
+                                SELECT SUM(tonnage)
                                 FROM ore_productions
-                                WHERE tgl_production BETWEEN %s AND %s
-                                GROUP BY tgl_production
-                            ),
-                            outgoing AS (
-                                SELECT
-                                    date_hauling::date AS date,
-                                    SUM(tonnage) AS total_out
-                                FROM ore_sellings_barging s
-                                LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_hauling BETWEEN %s AND %s
-                                AND s.status_barging='Complete'
-                                GROUP BY date_hauling
-                            ),
-                            saldo_awal AS (
-                                SELECT
-                                    COALESCE((
-                                        SELECT SUM(tonnage)
-                                        FROM ore_productions
-                                        WHERE tgl_production < %s
-                                    ), 0) - COALESCE((
-                                        SELECT SUM(tonnage)
-                                        FROM ore_sellings_barging
-                                        WHERE date_barge_out < %s
-                                        AND status_barging='Complete'
-                                    ), 0) AS value
-                            )         
-                            SELECT
-                                TO_CHAR(t.date, 'YYYY-MM-DD') AS label,
-                                COALESCE(i.total_in, 0) AS total_in,
-                                COALESCE(o.total_out, 0) AS total_out,
-                                SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
-                                    OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-                                    + (SELECT value FROM saldo_awal) AS running_balance
-                            FROM tanggal t
-                            LEFT JOIN incoming i ON t.date = i.date
-                            LEFT JOIN outgoing o ON t.date = o.date
-                            ORDER BY t.date 
+                                WHERE tgl_production < %s
+                            ), 0)
+                            -
+                            COALESCE((
+                                SELECT SUM(tonnage)
+                                FROM ore_sellings_barging
+                                WHERE date_hauling < %s
+                                AND status_barging = 'Complete'
+                            ), 0) AS value
+                    )
+                    SELECT
+                        TO_CHAR(t.date, 'DD') AS label,
+                        COALESCE(i.total_in, 0) AS total_in,
+                        COALESCE(b.total_barging, 0) AS total_barging,
+                        COALESCE(o.total_out, 0) AS total_out,
+                        SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                            OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+                            + (SELECT value FROM saldo_awal) AS running_balance
+                    FROM tanggal t
+                    LEFT JOIN incoming i ON t.date = i.date
+                    LEFT JOIN barging b ON t.date = b.date
+                    LEFT JOIN outgoing o ON t.date = o.date
+                    ORDER BY t.date;
                 """
-            else:
-                 raise ValueError("Unsupported vendor")
-             
-            params = [
-                      date_start, date_end,
-                      date_start, date_end,
-                      date_start, date_end,
-                      date_start,date_start
-                      ]
+
+                params = [
+                    date_start, date_end,
+                    date_start, date_end,
+                    date_start, date_end,
+                    date_start, date_end,
+                    date_start, date_start
+                ]
+
 
         elif filter_type =='weekly' and year and month and week:
             try:
@@ -901,8 +915,8 @@ def get_chart_inventory(request):
             
             # SQL Query
             if db_vendor == 'postgresql':
-                query = """
-                    WITH tanggal AS (
+                  query = """
+                        WITH tanggal AS (
                             SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
                         ),
                         incoming AS (
@@ -913,23 +927,33 @@ def get_chart_inventory(request):
                             WHERE tgl_production BETWEEN %s AND %s
                             GROUP BY tgl_production
                         ),
-                        outgoing AS (
+                        barging AS (
                             SELECT
                                 date_hauling::date AS date,
+                                SUM(tonnage) AS total_barging
+                            FROM ore_sellings_barging
+                            WHERE date_hauling BETWEEN %s AND %s
+                            AND status_barging = 'Complete'
+                            GROUP BY date_hauling::date
+                        ),
+                        outgoing AS (
+                            SELECT
+                                date_barge_out::date AS date,
                                 SUM(tonnage) AS total_out
-                            FROM ore_sellings_barging s
-                            LEFT JOIN materials m ON m.id = s.id_material
+                            FROM ore_sellings_barging
                             WHERE date_barge_out BETWEEN %s AND %s
-                            AND s.status_barging='Complete'
-                            GROUP BY date_hauling
+                            AND status_barging = 'Complete'
+                            GROUP BY date_barge_out::date
                         ),
                         daily AS (
                             SELECT
                                 t.date,
                                 COALESCE(i.total_in, 0) AS total_in,
+                                COALESCE(b.total_barging, 0) AS total_barging,
                                 COALESCE(o.total_out, 0) AS total_out
                             FROM tanggal t
                             LEFT JOIN incoming i ON t.date = i.date
+                            LEFT JOIN barging b ON t.date = b.date
                             LEFT JOIN outgoing o ON t.date = o.date
                         ),
                         saldo_awal AS (
@@ -942,28 +966,30 @@ def get_chart_inventory(request):
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
                                     WHERE date_barge_out < %s
-                                    AND status_barging='Complete'
+                                    AND status_barging = 'Complete'
                                 ), 0) AS value
                         )
                         SELECT
                             TRIM(TO_CHAR(date, 'Day')) AS label,
                             total_in,
+                            total_barging,
                             total_out,
                             SUM(total_in - total_out) OVER (
                                 ORDER BY date
                                 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
                             ) + (SELECT value FROM saldo_awal) AS running_balance
                         FROM daily
-                        GROUP BY TRIM(TO_CHAR(date, 'Day')), total_in, total_out, date
+                        GROUP BY TRIM(TO_CHAR(date, 'Day')), total_in, total_barging, total_out, date
                         ORDER BY ARRAY_POSITION(
                             ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
                             TRIM(TO_CHAR(date, 'Day'))
                         )
-                """
+                        """
             else:
                raise ValueError("Unsupported vendor")
 
             params = [start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'),
+                      start_date.strftime('%Y-%m-%d'),end_date.strftime('%Y-%m-%d'),
                       start_date.strftime('%Y-%m-%d'),end_date.strftime('%Y-%m-%d'),
                       start_date.strftime('%Y-%m-%d'),end_date.strftime('%Y-%m-%d'),
                       start_date.strftime('%Y-%m-%d'),start_date.strftime('%Y-%m-%d')
@@ -981,56 +1007,70 @@ def get_chart_inventory(request):
             tgl_terakhir = datetime(year, month, last_day).date()
 
             # Siapkan parameter untuk query
-            params = [tgl_pertama, tgl_terakhir,tgl_pertama, tgl_terakhir,tgl_pertama, tgl_terakhir,tgl_pertama,tgl_pertama]
+            params = [tgl_pertama, tgl_terakhir,tgl_pertama, tgl_terakhir,tgl_pertama, tgl_terakhir,tgl_pertama, tgl_terakhir,tgl_pertama,tgl_pertama]
 
             if db_vendor == 'postgresql':
                 query = """
-                        WITH tanggal AS (
-                                SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
-                            ),
-                            incoming AS (
-                                SELECT
-                                    tgl_production::date AS date,
-                                    SUM(tonnage) AS total_in
-                                FROM ore_productions
-                                WHERE tgl_production BETWEEN %s AND %s
-                                GROUP BY tgl_production
-                            ),
-                            outgoing AS (
-                                SELECT
-                                    date_hauling::date AS date,
-                                    SUM(tonnage) AS total_out
-                                FROM ore_sellings_barging s
-                                LEFT JOIN materials m ON m.id = s.id_material
-                                WHERE date_barge_out BETWEEN %s AND %s
-                                AND s.status_barging='Complete'
-                                GROUP BY date_hauling
-                            ),
-                            saldo_awal AS (
-                                SELECT
-                                    COALESCE((
-                                        SELECT SUM(tonnage)
-                                        FROM ore_productions
-                                        WHERE tgl_production < %s
-                                    ), 0) - COALESCE((
-                                        SELECT SUM(tonnage)
-                                        FROM ore_sellings_barging
-                                        WHERE date_barge_out < %s
-                                        AND status_barging='Complete'
-                                    ), 0) AS value
-                            )
+                       WITH tanggal AS (
+                            SELECT generate_series(%s::date, %s::date, interval '1 day') AS date
+                        ),
+                        incoming AS (
                             SELECT
-                                TO_CHAR(t.date, 'DD') AS label,
-                                COALESCE(i.total_in, 0) AS total_in,
-                                COALESCE(o.total_out, 0) AS total_out,
-                                SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
-                                    OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
-                                    + (SELECT value FROM saldo_awal) AS running_balance
-                            FROM tanggal t
-                            LEFT JOIN incoming i ON t.date = i.date
-                            LEFT JOIN outgoing o ON t.date = o.date
-                            ORDER BY t.date 
-                """
+                                tgl_production::date AS date,
+                                SUM(tonnage) AS total_in
+                            FROM ore_productions
+                            WHERE tgl_production BETWEEN %s AND %s
+                            GROUP BY tgl_production
+                        ),
+                        barging AS (
+                            SELECT
+                            date_hauling::date AS date,
+                            SUM(tonnage) AS total_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE date_hauling BETWEEN %s AND %s
+                            AND s.status_barging='Complete'
+                            GROUP BY date_hauling
+                        ),
+                        outgoing AS (
+                            SELECT
+                                date_barge_out::date AS date,
+                                SUM(tonnage) AS total_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE date_barge_out BETWEEN %s AND %s
+                            AND s.status_barging = 'Complete'
+                            GROUP BY date_barge_out
+                        ),
+                        saldo_awal AS (
+                            SELECT
+                                COALESCE((
+                                    SELECT SUM(tonnage)
+                                    FROM ore_productions
+                                    WHERE tgl_production < %s
+                                ), 0)
+                                -
+                                COALESCE((
+                                    SELECT SUM(tonnage)
+                                    FROM ore_sellings_barging
+                                    WHERE date_barge_out < %s
+                                    AND status_barging = 'Complete'
+                                ), 0) AS value
+                        )
+                        SELECT
+                            TO_CHAR(t.date, 'DD') AS label,
+                            COALESCE(i.total_in, 0) AS total_in,
+                            COALESCE(b.total_out, 0) AS total_barging,
+                            COALESCE(o.total_out, 0) AS total_out,
+                            SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                                OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+                                + (SELECT value FROM saldo_awal) AS running_balance
+                        FROM tanggal t
+                        LEFT JOIN incoming i ON t.date = i.date
+                        LEFT JOIN barging b ON t.date = b.date
+                        LEFT JOIN outgoing o ON t.date = o.date
+                        ORDER BY t.date;
+                    """
             else:
               raise ValueError("Unsupported vendor")
        
@@ -1038,7 +1078,7 @@ def get_chart_inventory(request):
             year = int(year)
             if db_vendor == 'postgresql':
                 query = """
-                    WITH bulan AS (
+                   WITH bulan AS (
                             SELECT generate_series(1, 12) AS month
                         ),
                         incoming AS (
@@ -1049,15 +1089,25 @@ def get_chart_inventory(request):
                             WHERE EXTRACT(YEAR FROM tgl_production) = %s
                             GROUP BY EXTRACT(MONTH FROM tgl_production)
                         ),
-                        outgoing AS (
+                        barging AS (
                             SELECT
                                 EXTRACT(MONTH FROM date_hauling)::int AS month,
                                 SUM(tonnage) AS total_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
-                            WHERE EXTRACT(YEAR FROM date_barge_out) = %s
-                            AND s.status_barging='Complete'
+                            WHERE EXTRACT(YEAR FROM date_hauling) = %s
+                            AND s.status_barging = 'Complete'
                             GROUP BY EXTRACT(MONTH FROM date_hauling)
+                        ),
+                        outgoing AS (
+                            SELECT
+                                EXTRACT(MONTH FROM date_barge_out)::int AS month,
+                                SUM(tonnage) AS total_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+                            AND s.status_barging = 'Complete'
+                            GROUP BY EXTRACT(MONTH FROM date_barge_out)
                         ),
                         saldo_awal AS (
                             SELECT
@@ -1065,30 +1115,33 @@ def get_chart_inventory(request):
                                     SELECT SUM(tonnage)
                                     FROM ore_productions
                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
-                                ), 0) - COALESCE((
+                                ), 0)
+                                -
+                                COALESCE((
                                     SELECT SUM(tonnage)
                                     FROM ore_sellings_barging
-                                    WHERE EXTRACT(YEAR FROM date_hauling) < %s
-                                    AND status_barging='Complete'
+                                    WHERE EXTRACT(YEAR FROM date_barge_out) < %s
+                                    AND status_barging = 'Complete'
                                 ), 0) AS value
                         )
                         SELECT
                             TO_CHAR(TO_DATE(bulan.month::text, 'MM'), 'Mon') AS label,
                             COALESCE(i.total_in, 0) AS total_in,
+                            COALESCE(b.total_out, 0) AS total_barging,
                             COALESCE(o.total_out, 0) AS total_out,
-                            SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0)) OVER (
-                                ORDER BY bulan.month
-                                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-                            ) + (SELECT value FROM saldo_awal) AS running_balance
+                            SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                                OVER (ORDER BY bulan.month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+                                + (SELECT value FROM saldo_awal) AS running_balance
                         FROM bulan
                         LEFT JOIN incoming i ON bulan.month = i.month
+                        LEFT JOIN barging  b ON bulan.month = b.month
                         LEFT JOIN outgoing o ON bulan.month = o.month
                         ORDER BY bulan.month;
                 """
             else:
                 raise ValueError("Unsupported vendor")
             
-            params = [year,year,year,year]
+            params = [year,year,year,year,year]
 
         elif filter_type =='all':
             if db_vendor == 'postgresql':
@@ -1135,12 +1188,12 @@ def get_chart_inventory(request):
             x_labels.append(str(row[0]))
             data_stock.append(round(float(row[1]), 0))
             data_out.append(round(float(row[2]), 0))
-            balance.append(round(float(row[3]), 0))
+            balance.append(round(float(row[4]), 0))
 
         return JsonResponse({
-            'x_data': x_labels,
-            'y_data_stock': data_stock,
-            'y_data_out': data_out,
+            'x_data'        : x_labels,
+            'y_data_stock'  : data_stock,
+            'y_data_out'    : data_out,
             'y_data_balance': balance,
         })
 

@@ -71,9 +71,9 @@ def import_mine_productions(file_path, original_file_name):
     duplicate_file_path = None
 
     #Konversi kolom ke datetime dengan format yang sesuai
-    df['Date Production'] = pd.to_datetime(df['Date Production'], format='%Y-%m-%d', errors='coerce')
+    df['Date_Production'] = pd.to_datetime(df['Date Production'], format='%Y-%m-%d', errors='coerce')
     # Ambil hanya tanggal (tanpa waktu)
-    df['Date Production'] = df['Date Production'].dt.date
+    df['Date_Production'] = df['Date Production'].dt.date
 
     # Buat dictionary dari Tabel untuk pencarian ID berdasarkan nama
     loading_dict     = dict(SourceMinesLoading.objects.values_list('loading_point', 'id'))
@@ -89,16 +89,16 @@ def import_mine_productions(file_path, original_file_name):
         with transaction.atomic():
             # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
             today = date.today()
-            for idx, row in df.itertuples(index=True):
-                date_pds = getattr(row, 'Date_Production', None)
-                if pd.notna(date_pds) and date_pds > today:
+            for i, row in enumerate(df.itertuples(index=False), start=2):
+                tanggal = getattr(row, 'Date_Production')
+                if pd.notna(tanggal) and tanggal > today:
                     raise ValueError(
-                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Date Production ({date_pds}) "
+                        f"❌ Import dibatalkan: Baris {i} memiliki Date Production ({tanggal}) "
                         f"yang melebihi tanggal hari ini ({today})."
                     )
-    
+                
             for index, row in df.iterrows():
-                date_pds        = row['Date Production']
+                date_pds        = row['Date_Production']
                 time            = row['Time Hauling']
                 jam_ritase      = parse_time_hauling(time)
                 vendors         = row['Vendors']

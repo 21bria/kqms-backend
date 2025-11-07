@@ -65,13 +65,13 @@ def import_assay_roa(file_path, original_file_name):
         with transaction.atomic():
             # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
             today = datetime.today().date()
-            for idx, row in df.itertuples(index=True):
-                date_pds = getattr(row, 'release_date', None)
-                if pd.notna(date_pds) and date_pds > today:
+            for i, row in enumerate(df.itertuples(index=False), start=2):
+                tanggal = getattr(row, 'release_date')
+                if pd.notna(tanggal) and tanggal > today:
                     raise ValueError(
-                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Release Date ({date_pds}) "
+                        f"❌ Import dibatalkan: Baris {i} memiliki Release Date ({tanggal}) "
                         f"yang melebihi tanggal hari ini ({today})."
-                    )
+                    )  
                 
             for index, row in df.iterrows():
                 release_date = row['release_date']

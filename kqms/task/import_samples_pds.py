@@ -38,20 +38,19 @@ def import_sample_GcQa(file_path, original_file_name):
     method_dict     = dict(SampleMethod.objects.values_list('sample_method', 'id'))
     type_dict       = dict(SampleType.objects.values_list('type_sample', 'id'))
    
-
     # Mulai transaksi untuk memastikan rollback jika terjadi error
     try:
         with transaction.atomic():
             # 🔒 Proteksi agar tidak ada tanggal melebihi hari ini
             today = datetime.today().date()
-            for idx, row in df.itertuples(index=True):
-                date_pds = getattr(row, 'Date_Sample', None)
-                if pd.notna(date_pds) and date_pds.date() > today:
+            for i, row in enumerate(df.itertuples(index=False), start=2):
+                tanggal = getattr(row, 'Date_Sample')
+                if pd.notna(tanggal) and tanggal.date() > today:
                     raise ValueError(
-                        f"❌ Import dibatalkan: Baris {idx+2} memiliki Date Sample ({date_pds.date()}) "
+                        f"❌ Import dibatalkan: Baris {i} memiliki Date Sample ({tanggal.date()}) "
                         f"yang melebihi tanggal hari ini ({today})."
                     )
-                
+            # Proses setiap baris dalam DataFrame
             for index, row in df.iterrows():
                 date_pds        = row['Date_Sample']
                 shift           = row['Shift']
