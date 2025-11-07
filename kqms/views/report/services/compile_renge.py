@@ -319,7 +319,7 @@ def fetch_inventory_dome(de: str):
         FROM details_roa
         WHERE
         -- status_dome != 'Finished' AND 
-        direct_sale = 'No' AND 
+        -- direct_sale = 'No' AND 
         tgl_production <= %s
         GROUP BY stockpile, pile_id, nama_material, direct_sale
     ),
