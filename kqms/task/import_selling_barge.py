@@ -300,7 +300,7 @@ def import_selling(file_path, original_file_name):
                     code_batch_in       = code_batch_in,
                     code_batch_ex       = code_batch_ex,
                     code_batch_pulp     = code_batch_pulp,
-                    surv_order          = row.surv_order,
+                    # surv_order          = row.surv_order,
                     code_monitoring     = code_monitoring,
                     code_lot            = code_lot,
                     date_barge_out      = row.date_barging_out,
