@@ -19,9 +19,6 @@ from typing import Optional
  # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
 
-@login_required
-def barging_finish_page(request):
-    return render(request, 'admin-selling/entry/list-finish-barging.html')
 
 class bargingFinishList(View):
     def post(self, request):

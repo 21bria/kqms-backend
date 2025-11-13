@@ -13,9 +13,6 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from ....utils.utils import clean_string
 
-@login_required
-def OreClass_page(request):
-    return render(request, 'master/list-ore-class.html')
 
 class OreClass_List(View):
     def post(self, request):
@@ -91,12 +88,12 @@ class OreClass_List(View):
 @login_required
 @csrf_exempt
 def get_OreClass(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = OreClass.objects.get(id=id)
@@ -115,12 +112,12 @@ def get_OreClass(request, id):
 
 @login_required
 def insert_OreClass(request):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi
@@ -194,12 +191,12 @@ def insert_OreClass(request):
     
 @login_required
 def update_OreClass(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # validasi
@@ -271,12 +268,12 @@ def update_OreClass(request, id):
     
 @login_required    
 def delete_OreClass(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

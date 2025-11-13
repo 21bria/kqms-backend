@@ -17,9 +17,7 @@ from ....models.selling_barging import SellingBarging
 from ....models.source_model import SourceMinesDome
 from ....utils.utils import clean_string
 
-@login_required
-def dome_finish_page(request):
-    return render(request, 'master/list-finish-dome.html')
+
 
 class domeFinishList(View):
     def post(self, request):
@@ -78,10 +76,10 @@ class domeFinishList(View):
             {
                 "id": item.id,
                 "sampling_point": item.sampling_point,
-                "sampling_area": item.sampling_area,
-                "tonnage_dome": item.tonnage_dome,
-                "status_dome": item.status_dome,
-                "description": item.description
+                "sampling_area" : item.sampling_area,
+                "tonnage_dome"  : item.tonnage_dome,
+                "status_dome"   : item.status_dome,
+                "description"   : item.description
             } for item in object_list
         ]
 

@@ -1,32 +1,19 @@
 from django.contrib.auth.decorators import login_required
-from django.db import connections
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from ....models.merge_stock import domeMerge
 from ....models.merge_stock_view import domeMergeView
 from ....models.ore_productions import OreProductions
 from ....models.source_model import SourceMinesDome
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from django.shortcuts import render
 from django.views.generic import View
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ....utils.utils import clean_string
-from ....utils.utils import generate_dome_merger
 
-
-@login_required
-def dome_merge_page(request):
-    dome_merger = generate_dome_merger()
-    context = {
-        'dome_merger': dome_merger,
-
-    }
-    return render(request, 'master/list-merge-dome.html',context)
 
 class domeMergeList(View):
     def post(self, request):
@@ -136,12 +123,12 @@ def get_dome_merge(request, id):
 
 @login_required
 def insert_dome_merge(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi
@@ -224,12 +211,12 @@ def insert_dome_merge(request):
     
 @login_required
 def update_dome_merge(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             rules = {
@@ -303,12 +290,12 @@ def update_dome_merge(request, id):
 
 @login_required
 def delete_dome_merge(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

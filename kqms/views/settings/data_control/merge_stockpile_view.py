@@ -16,20 +16,10 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from ....utils.utils import clean_string
-from ....utils.utils import generate_stockpile_merger
 from ....utils.db_utils import get_db_vendor
-
-
  # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
 
-@login_required
-def stockpile_merge_page(request):
-    stockpile_merger = generate_stockpile_merger()
-    context = {
-        'stockpile_merger': stockpile_merger,
-    }
-    return render(request, 'master/list-merge-stockpile.html',context)
 
 class stockpileMergeList(View):
 
@@ -110,12 +100,12 @@ class stockpileMergeList(View):
 @login_required        
 @csrf_exempt
 def get_stockpile_merge(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             item = stockpileMergeView.objects.get(id=id)
@@ -140,12 +130,12 @@ def get_stockpile_merge(request, id):
 
 @login_required
 def insert_stockpile_merge(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi
@@ -222,12 +212,12 @@ def insert_stockpile_merge(request):
     
 @login_required
 def update_stockpile_merge(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             rules = {

@@ -41,7 +41,7 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'ore-class-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                         <div class="me-3 leading-none">
+                                        <div class="me-3 leading-none">
                                             <span class="avatar avatar-md !rounded-full bg-primary/50 shadow-sm">
                                                 <i class="ri-file-info-line text-[1.125rem] text-white"></i>
                                             </span>
@@ -62,7 +62,7 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'ore-factors-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                         <div class="me-3 leading-none">
+                                        <div class="me-3 leading-none">
                                             <span class="avatar avatar-md !rounded-full bg-primary/50 shadow-sm">
                                                 <i class="ri-file-info-line text-[1.125rem] text-white"></i>
                                             </span>
@@ -83,7 +83,7 @@
                             <div class="box-body p-4">
                                 <a href="{% url 'ore-adjustment-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                         <div class="me-3 leading-none">
+                                        <div class="me-3 leading-none">
                                             <span class="avatar avatar-md !rounded-full bg-primary/50 shadow-sm">
                                                 <i class="ri-guide-line text-[1.125rem] text-white"></i>
                                             </span>
@@ -101,9 +101,29 @@
                     <div class="col-span-12 sm:col-span-6 lg:col-span-3">
                         <div class="box un-read">
                             <div class="box-body p-4">
+                                <a href="{% url 'dome-ore-adjustment-page' %}">
+                                    <div class="flex items-start flex-wrap">
+                                        <div class="me-3 leading-none">
+                                            <span class="avatar avatar-md !rounded-full bg-primary/50 shadow-sm">
+                                                <i class="ri-guide-line text-[1.125rem] text-white"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="mb-0 text-[.875rem] font-semibold">Dome Adjustment</p>
+                                            <p class="mb-0 text-[#8c9097] dark:text-white/50">Ore adjustment by Dome
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                        <div class="box un-read">
+                            <div class="box-body p-4">
                                 <a href="{% url 'dome-close-status-page' %}">
                                     <div class="flex items-start flex-wrap">
-                                         <div class="me-3 leading-none">
+                                        <div class="me-3 leading-none">
                                             <span class="avatar avatar-md !rounded-full bg-primary/50 shadow-sm">
                                                 <i class="ri-guide-line text-[1.125rem] text-white"></i>
                                             </span>
@@ -179,16 +199,13 @@
                     </div>
 
                     <!-- Item baru tinggal tambah div dengan col-span yang sama -->
-
                     <div class="col-span-12 text-center mt-4">
-                        <button type="button" class="ti-btn ti-btn-info ti-btn-loader">
-                            Loading
+                        <button type="button" class="ti-btn ti-btn-primary  ti-btn-loader">
+                           <span>Loading...</span>
                             <span class="ti-spinner h-4 w-4" role="status"></span>
                         </button>
                     </div>
                 </div>
-
-
                 <!--End::row-1 -->
             </div>
 

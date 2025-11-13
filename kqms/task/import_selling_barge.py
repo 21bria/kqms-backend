@@ -196,20 +196,21 @@ def safe_parse_time(val):
 # Protoktif untuk menghindari eksekusi saat tanggal['date_hauling', 'date_barging_in', 'date_barging_load', 'date_barging_out'] tidak boleh lebih dari tangggl saat ini
 @shared_task(name='kqms.task.import_selling_barge.import_selling')
 def import_selling(file_path, original_file_name):
+    from datetime import date
     df = pd.read_excel(file_path)
     errors = []
     list_new = []
     successful_imports = 0
     today = date.today()
 
-    # Konversi tanggal
+    # Konversi datetime dan waktu
     df['date_barging_in']  = pd.to_datetime(df['date_barging_in'], errors='coerce').dt.date
     df['date_hauling']     = pd.to_datetime(df['date_hauling'], errors='coerce').dt.date
     df['date_barging_out'] = pd.to_datetime(df['date_barging_out'], errors='coerce').dt.date
     df['date_barging_load']= pd.to_datetime(df['date_barging_load'], errors='coerce').dt.date
     df['time'] = df['time'].apply(safe_parse_time)  # type: ignore
 
-    # Lookup dictionary
+    # Lookup dictionaries
     material_dict   = dict(Material.objects.annotate(trimmed=Trim('nama_material')).values_list('trimmed', 'id'))
     pile_dict       = dict(SourceMinesDome.objects.annotate(trimmed=Trim('pile_id')).values_list('trimmed', 'id'))
     stockpile_dict  = dict(SourceMinesDome.objects.annotate(trimmed=Trim('pile_id')).values_list('trimmed', 'id'))
@@ -219,7 +220,7 @@ def import_selling(file_path, original_file_name):
 
     try:
         with transaction.atomic():
-            #  Validasi semua tanggal sebelum simpan
+            # 🔒 Validasi tanggal agar tidak melebihi hari ini
             for i, row in enumerate(df.itertuples(index=False), start=2):
                 for field in ['date_hauling', 'date_barging_in', 'date_barging_load', 'date_barging_out']:
                     tanggal = getattr(row, field)
@@ -229,83 +230,87 @@ def import_selling(file_path, original_file_name):
                             f"yang melebihi tanggal hari ini ({today})."
                         )
 
-            # Kalau valid semua, lanjut proses data
-            for row in df.itertuples(index=False):
-                nama_material   = str(row.material or '').strip()
-                pile_name       = str(row.dome_ori or '').strip()
-                stockpile_name  = str(row.stockpile or '').strip()
-                factory_name    = str(row.buyer or '').strip()
-                barge_code_str  = str(row.barge_code or '').strip()
-                load_loc_name   = str(row.barge_load_loc or '').strip()
-                unload_loc_name = str(row.barge_unload_loc or '').strip()
+            # Lanjut proses data jika tanggal valid semua
+            for _, row in df.iterrows():
+                # Lookup nama → ID
+                nama_material   = str(row.get('material', '')).strip()
+                pile_name       = str(row.get('dome_ori', '')).strip()
+                stockpile_name  = str(row.get('stockpile', '')).strip()
+                factory_name    = str(row.get('buyer', '')).strip()
+                barge_code_str  = str(row.get('barge_code', '')).strip()
+                load_loc_name   = str(row.get('barge_load_loc', '')).strip()
+                unload_loc_name = str(row.get('barge_unload_loc', '')).strip()
 
                 validated_load_loc   = port_dict.get(load_loc_name, load_loc_name)
                 validated_unload_loc = port_dict.get(unload_loc_name, unload_loc_name)
 
-                id_material     = material_dict.get(nama_material)
-                id_pile         = pile_dict.get(pile_name)
-                id_stockpile    = stockpile_dict.get(stockpile_name)
-                id_factory      = factory_dict.get(factory_name)
-                id_barge        = barge_dict.get(barge_code_str)
+                id_material_ori  = material_dict.get(nama_material)
+                id_pile          = pile_dict.get(pile_name)
+                id_stockpile     = stockpile_dict.get(stockpile_name)
+                id_factory       = factory_dict.get(factory_name)
+                id_barge         = barge_dict.get(barge_code_str)
 
-                type_selling    = str(row.sale_code or '').strip()
-                code_lot        = str(row.code_lot or '').strip()
-                batch           = str(row.sub_lot or '').strip()
-                truck           = str(row.no_truck or '').strip()
-                group           = str(row.group or '').strip()
+                # Ambil nilai lain
+                type_selling = str(row.get('sale_code', '')).strip()
+                code_lot     = str(row.get('code_lot', '')).strip()
+                batch        = str(row.get('sub_lot', '')).strip()
+                truck        = str(row.get('no_truck', '')).strip()
+                group        = str(row.get('group', '')).strip()
 
                 # Mapping adjust_sale
-                if row.adjust_sale == 'RKEF':
+                if row['adjust_sale'] == 'RKEF':
                     material_name = 'SAP'
                     type_selling  = 'SAS'
-                    type_monitoring  = 'SAS_CKS'
-                elif row.adjust_sale == 'HPAL':
+                    type_monitoring = 'SAS_CKS'
+                elif row['adjust_sale'] == 'HPAL':
                     material_name = 'LIM'
                     type_selling  = 'LIS'
-                    type_monitoring  = 'LIS_CKS'
+                    type_monitoring = 'LIS_CKS'
                 else:
-                    material_name = row.material
+                    material_name = row['material']
                     type_monitoring = f"{type_selling}_CKS"
 
-                id_material = (
+                # Ambil ID hasil mapping (untuk kode)
+                id_material_map = (
                     Material.objects.filter(nama_material=material_name)
                     .values_list('id', flat=True)
                     .first() or 0
                 )
 
-                code_batch_in   = f"{type_selling}{id_material}{code_lot}{batch}"
-                code_monitoring = f"{type_monitoring}{id_material}{code_lot}{batch}{group}"
-                code_batch_ex   = f"{type_selling}{id_material}Split_CAR{code_lot}{batch}"
+                # Buat kode batch
+                code_batch_in   = f"{type_selling}{id_material_map}{code_lot}{batch}"
+                code_monitoring = f"{type_monitoring}{id_material_map}{code_lot}{batch}{group}"
+                code_batch_ex   = f"{type_selling}{id_material_map}Split_CAR{code_lot}{batch}"
                 code_batch_pulp = f"{type_selling}{code_lot}Split_CAR{batch}"
 
+                # Simpan material original ke DB
                 list_new.append(SellingBarging(
-                    date_barge_in       = row.date_barging_in,
-                    date_hauling        = row.date_hauling,
-                    time_hauling        = row.time,
-                    shift               = row.shift,
-                    date_barging        = row.date_barging_load,
+                    date_barge_in       = row['date_barging_in'],
+                    date_hauling        = row['date_hauling'],
+                    time_hauling        = row['time'],
+                    shift               = row['shift'],
+                    date_barging        = row['date_barging_load'],
                     barge_code          = id_barge,
                     barging_load_loc    = validated_load_loc,
                     barging_unload_loc  = validated_unload_loc,
                     unit_code           = truck,
                     type_selling        = type_selling,
-                    id_material         = id_material,
+                    id_material         = id_material_ori,  # <- pakai material asli
                     id_pile             = id_pile,
                     id_stockpile        = id_stockpile,
                     id_factory          = id_factory,
-                    tonnage             = row.tonnage,
+                    tonnage             = row.get('tonnage'),
                     batch               = batch,
                     code_inc            = group,
                     code_sub            = batch,
                     code_batch_in       = code_batch_in,
                     code_batch_ex       = code_batch_ex,
                     code_batch_pulp     = code_batch_pulp,
-                    # surv_order          = row.surv_order,
                     code_monitoring     = code_monitoring,
                     code_lot            = code_lot,
-                    date_barge_out      = row.date_barging_out,
-                    sale_adjust         = row.adjust_sale,
-                    direct              = row.direct,
+                    date_barge_out      = row['date_barging_out'],
+                    sale_adjust         = row['adjust_sale'],
+                    direct              = row['direct'],
                     sale_dome           = 'Continue',
                 ))
                 successful_imports += 1

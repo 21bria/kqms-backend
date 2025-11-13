@@ -29,20 +29,20 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Quality</h3>
+                        Configuration</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
                         <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
                             href="javascript:void(0);">
-                            Tables
+                            Configuration
                             <i
                                 class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
                         </a>
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Merge stockpile
+                        Finished dome
                     </li>
                 </ol>
             </div>
@@ -53,7 +53,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">Data Merge stockpile</h5>
+                            <h5 class="box-title">Data Finished dome</h5>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
@@ -69,13 +69,11 @@
                                     <thead>
                                         <tr>
                                             <th width="5%">No</th>
+                                            <th width="10%">Dome</th>
                                             <th width="10%">Stockpile</th>
-                                            <th width="7%">Tonnage From</th>
-                                            <th width="10%">Stockpile New</th>
                                             <th width="7%">Tonnage</th>
-                                            <th width="7%">Totals</th>
-                                            <th width="7%">Keys</th>
-                                            <th width="7%"></th>
+                                            <th width="7%">Status</th>
+                                            <th width="10%">Description</th>
                                             <th width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -98,7 +96,7 @@
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
                     <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Merge stockpile
+                        Finished dome
                     </h6>
                     <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
                         data-hs-overlay="#add-data">
@@ -138,9 +136,7 @@
                                             aria-labelledby="hs-basic-heading11">
                                             <div class="accordion-body">
                                                 <strong>Note :</strong>
-                                                Pilih stockpile original* [stockpile yang akan digabungkan], next pilih
-                                                stockpile new*
-                                                [stockpile tujuan composting]
+                                                Form untuk update status Dome yang "Continue" menjadi "Finished"
                                             </div>
                                         </div>
                                     </div>
@@ -152,37 +148,21 @@
                     <form id="entryForm" name="entryForm">
                         <div class="grid grid-cols-12 gap-4 mt-3">
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Stockpile Original</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="stockpile_ori"
-                                    name="stockpile_ori">
+                                <label class="form-label">Dome</label>
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="id_dome" name="id_dome">
                                     <option value="">Select</option>
                                 </select>
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Tonnage</label>
-                                <input type="number" class="form-control" id="tonnage_primary" name="tonnage_primary"
+                                <input type="number" class="form-control" id="tonnage_dome" name="tonnage_dome"
                                     placeholder="0">
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Stockpile targets</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="stockpile_second"
-                                    name="stockpile_second">
-                                    <option value="">Select</option>
-                                </select>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Tonnage</label>
-                                <input type="number" class="form-control" id="tonnage_second" name="tonnage_second"
-                                    placeholder="0">
-                            </div>
-                            <div class="xl:col-span-12 col-span-12">
-                                <input type="text" class="form-control" id="ref_id" name="ref_id" readonly />
                             </div>
                         </div>
                         <!-- Description -->
                         <div class="mt-4">
                             <label class="form-label">Description</label>
-                            <textarea id="remarks" name="remarks" rows="3"
+                            <textarea id="description" name="description" rows="3"
                                 class="form-control w-full !rounded-md resize-none"
                                 placeholder="Enter Description"></textarea>
                         </div>
@@ -218,41 +198,24 @@
                     <form>
                         <div class="grid grid-cols-12 gap-4 mt-3">
                             <div class="grid grid-cols-12 gap-4 mt-3">
-                                 <input type="hidden" name="id" id="id">
+                                <input type="hidden" name="id" id="id">
                                 <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Stockpile New</label>
-                                    <input type="text" id="stockpile_new_e" name="stockpile_new_e"
+                                    <label class="form-label">Dome New</label>
+                                    <input type="text" id="sampling_point" name="sampling_point"
                                         class="form-control disabled:pointer-events-none" readonly />
                                 </div>
                                 <div class="xl:col-span-6 col-span-12">
                                     <label class="form-label">Tonnage</label>
-                                    <input type="number" class="form-control" id="tonnage_second_e"
-                                        name="tonnage_second_e" placeholder="0">
+                                    <input type="number" class="form-control" id="tonnage_dome_e" name="tonnage_dome_e"
+                                        placeholder="0">
                                 </div>
-                                <input type="hidden" id="stockpile_second_e" name="stockpile_second_e"
+                                <input type="hidden" id="id_dome_e" name="id_dome_e"
                                     class="form-control disabled:pointer-events-none" readonly />
-
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Stockpile Original</label>
-                                    <input type="text" id="stockpile_e" name="stockpile_e"
-                                        class="form-control disabled:pointer-events-none" readonly />
-                                </div>
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Tonnage</label>
-                                    <input type="number" class="form-control" id="stockpile_ori_e"
-                                        name="stockpile_ori_e" placeholder="0">
-                                </div>
-                                <input type="hidden" id="stockpile_ori_e" name="stockpile_ori_e" class="form-control"
-                                    readonly />
-                                <div class="xl:col-span-12 col-span-12">
-                                    <label class="form-label">Keys</label>
-                                    <input type="text" id="ref_id_e" name="ref_id_e" class="form-control" readonly />
-                                </div>
                             </div>
                             <!-- Description -->
                             <div class="mt-4">
                                 <label class="form-label">Description</label>
-                                <textarea id="remarks_e" name="remarks_e" rows="3"
+                                <textarea id="description_e" name="description_e" rows="3"
                                     class="form-control w-full !rounded-md resize-none"
                                     placeholder="Enter Description"></textarea>
                             </div>
@@ -292,22 +255,20 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".ti-form-select").select2({
-            width: '100%',
-            dropdownParent: $('#add-data .ti-modal-body')
-        });
         /*-- Pass Header Token ---*/
         $.ajaxSetup({
             headers: {
                 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        $(".form-select").select2({
+            width: '100%', // Sesuaikan lebar dengan kontainer
+            // dropdownParent: document.getElementById("filterModal")
+        });
 
-    
-
-        $('#stockpile_ori').select2({
+        $('#id_dome').select2({
             ajax: {
-                url: "{% url 'get-mine-dumping-point' %}",
+                url: "{% url 'get-mine-dome' %}",
                 dataType: 'json',
                 delay: 250,
                 data: function (params) {
@@ -329,45 +290,16 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#add-data .ti-modal-body')
+            allowClear: true
         });
 
-        $('#stockpile_second').select2({
-            ajax: {
-                url: "{% url 'get-mine-dumping-point' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select data',
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('#add-data .ti-modal-body')
-        });
-
-
-        $('#stockpile_ori').change(function (e) {
+        $('#id_dome').change(function (e) {
             // Mendapatkan nilai id yang dipilih
             var id = $(this).val();
-            var url = '/kqms/config/merge-stockpile-get/stock/' + id + '/';
+            var url = '/kqms/config/merge-dome-get/stock/' + id + '/';
+            $('#tonnage_dome').val('');
+            $('#stockpile').val('');
+            $('#id_stockpile').val('');
             $.ajax({
                 url: url,
                 method: "GET",
@@ -376,54 +308,19 @@
                     if (data.list && data.list.length > 0) {
                         // Ambil data dari item pertama dalam list
                         var item = data.list[0];
-                        $('#tonnage_primary').val(item.tonnage);
+                        $('#tonnage_dome').val(item.tonnage);
+                        $('#stockpile').val(item.sampling_area);
+                        $('#id_stockpile').val(item.id_stockpile);
                     } else {
                         console.warn("No data found in the response");
                         // Handle the case where there's no data
                     }
                 }
             });
-        });
-
-        $('#stockpile_second').change(function (e) {
-            // Mendapatkan nilai id yang dipilih
-            var id = $(this).val();
-            var url = '/kqms/config/merge-stockpile-get/stock/' + id + '/';
-            $.ajax({
-                url: url,
-                method: "GET",
-                dataType: "json",
-                success: function (data) {
-                    if (data.list && data.list.length > 0) {
-                        // Ambil data dari item pertama dalam list
-                        var item = data.list[0];
-                        $('#tonnage_second').val(item.tonnage);
-                    } else {
-                        console.warn("No data found in the response");
-                        // Handle the case where there's no data
-                    }
-                }
-            });
-        });
-
-        $.ajax({
-            url: "{% url 'get-stockpile-merge-dropdown' %}",
-            method: "GET",
-            dataType: "json",
-            success: function (data) {
-                var options = '';
-
-                $.each(data.list, function (key, value) {
-                    options += '<option value="' + value.id + '">' + value.sampling_area + '</option>';
-                });
-                // Set options in the Select2 element
-                $('#stockpile_second').append(options);
-                $('#stockpile_second_edit').append(options);
-            }
         });
 
         /*-- Render DataTable --*/
-        let url = '{% url "merge-stockpile-list" %}';
+        let url = '{% url "dome-finish-status-list" %}';
         var table = $('#data_table').DataTable({
             "processing": true,
             "serverSide": true,
@@ -452,32 +349,24 @@
                     }
                 }, // Kolom nomor otomatis
                 {
-                    data: 'stockpile',
-                    name: 'stockpile'
+                    data: 'sampling_point',
+                    name: 'sampling_point'
                 },
                 {
-                    data: 'tonnage_primary',
-                    name: 'tonnage_primary'
+                    data: 'sampling_area',
+                    name: 'sampling_area'
                 },
                 {
-                    data: 'stockpile_new',
-                    name: 'stockpile_new'
+                    data: 'tonnage_dome',
+                    name: 'tonnage_dome'
                 },
                 {
-                    data: 'tonnage_second',
-                    name: 'tonnage_second'
+                    data: 'status_dome',
+                    name: 'status_dome'
                 },
                 {
-                    data: 'sum_tonnage',
-                    name: 'sum_tonnage'
-                },
-                {
-                    data: 'ref_id',
-                    name: 'ref_id'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
+                    data: 'description',
+                    name: 'description'
                 },
 
                 {
@@ -487,15 +376,16 @@
                     'searchable': false,
                     'render': function (data, type, row) {
                         return `
-                                    <div  class="flex gap-2 items-center" >
-                                            <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                                               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
-                                                 <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                               </svg>
-                                            </a>
-                                        </div>
-                                    `;
+                            <div  class="flex gap-2 items-center" >
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </a>
+                             
+                            </div>
+                         `;
                     }
                 }
 
@@ -506,11 +396,7 @@
         /*--- Click New to Button ---*/
         $('#addNew').click(function () {
             $('#entryForm').trigger("reset");
-            $('#tonnage_second').val('');
-            $('#tonnage_primary').val('');
-            $('#stockpile_ori').val('').trigger('change');
-            $('#stockpile_second').val('').trigger('change');
-            window.HSOverlay.open('#add-data');
+              window.HSOverlay.open('#add-data');
         });
 
         /*--- Create ---*/
@@ -519,7 +405,7 @@
             var formData = $('#entryForm').serialize();
             $(this).html('Sending..');
             $.ajax({
-                url: "{% url 'insert-merge-stockpile' %}",
+                url: "{% url 'insert-dome-finish-status' %}",
                 method: 'POST',
                 data: formData,
                 dataType: "json",
@@ -538,13 +424,11 @@
                             html: response.message,
                             padding: '2em',
                         });
-
                         // Membersihkan formulir setelah sukses input
-                        $('#tonnage_second').val('');
-                        $('#tonnage_primary').val('');
-                        $('#stockpile_ori').val('').trigger('change');
-                        $('#stockpile_second').val('').trigger('change');
-                        window.HSOverlay.close('#add-data');
+                        $('#id_dome').val('').trigger('change');
+                        $('#description').val('');
+                        $('#tonnage_dome').val('');
+                          window.HSOverlay.close('#add-data');
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
                     } else {
@@ -605,7 +489,7 @@
         $('#updateBtn').click(function (e) {
             e.preventDefault();
             var id = $('#id').val();
-            var url = '/kqms/config/merge-stockpile/update/' + id + '/';
+            var url = '/kqms/config/dome-finish-status/update/' + id + '/';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -614,10 +498,8 @@
                     'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
-                    stockpile_second: $('#stockpile_second_e').val(),
-                    stockpile_ori: $('#stockpile_ori_e').val(),
-                    ref_id: $('#ref_id_e').val(),
-                    remarks: $('#remarks_e').val(),
+                    id_dome: $('#id_dome_e').val(),
+                    description: $('#description_e').val(),
                 },
 
                 success: function (response) {
@@ -631,25 +513,17 @@
                         });
                         toast.fire({
                             icon: 'success',
-                            // title: 'Insert successfully',
                             html: response.message,
                             padding: '2em',
                         });
 
-                        // Membersihkan formulir setelah sukses input
-                        $('#tonnage_second_e').val('');
-                        $('#stockpile_new_e').val('');
-                        $('#ref_id_e').val('');
-                        $('#stockpile_second_e').val('');
-                        $('#tonnage_primary_e').val('');
-                        $('#stockpile_e').val('');
-                        $('#stockpile_ori_e').val('');
-                        $('#remarks_e').val('');
-                        window.HSOverlay.close('#edit-data');
-                        // Reload Table
+                        $('#sampling_point').val('');
+                        $('#tonnage_dome_e').val('');
+                        $('#id_dome_e').val('');
+                        $('#description_e').val('');
+                         window.HSOverlay.close('#edit-data');
                         $('#data_table').DataTable().clear().draw();
                     } else {
-                        // Handle kesalahan validasi atau kesalahan lainnya
                         alert('Terjadi kesalahan: ' + response.messages);
                     }
                 },
@@ -692,7 +566,6 @@
                         });
                         toast.fire({
                             icon: 'error',
-                            // title: 'Update successfully',
                             html: xhr.responseJSON.message,
                             padding: '2em',
                         });
@@ -704,7 +577,7 @@
         /*--- Delete ---*/
         $('#data_table').on('click', '.deleteData', function () {
             var id = $(this).data('id');
-            var url = '{% url "delete-merge-stockpile" %}?id=' + id;
+            var url = '{% url "delete-dome-finish-status" %}?id=' + id;
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -735,7 +608,6 @@
                         title: 'Deleted!',
                         text: 'Your file has been deleted.',
                         icon: 'success',
-                        // width: 320,
                     })
                 }
             })
@@ -744,11 +616,13 @@
     });
 </script>
 
+
 <!-- Call for Edit Data  -->
 <script>
+    /*--- Click to Edit Button ---*/
     $('body').on('click', '.editData', function () {
         var id = $(this).data('id');
-        var url = '/kqms/config/merge-stockpile/get-id/' + id + '/';
+        var url = '/kqms/config/dome-finish-status/get-id/' + id + '/';
         $.ajax({
             type: "GET",
             url: url,
@@ -756,17 +630,12 @@
             success: function (response) {
                 if (response) {
                     // Mengisi formulir dengan data yang diterima
-                    window.HSOverlay.open('#edit-data');
+                     window.HSOverlay.open('#edit-data');
                     $('#id').val(response.id);
-                    $('#stockpile_new_e').val(response.stockpile_new);
-                    $('#stockpile_second_e').val(response.stockpile_second);
-                    $('#tonnage_second_e').val(response.tonnage_second);
-                    $('#ref_id_e').val(response.ref_id);
-                    $('#tonnage_primary_e').val(response.tonnage_primary);
-                    $('#stockpile_e').val(response.stockpile);
-                    $('#stockpile_ori_e').val(response.stockpile_ori);
-                    $('#remarks_e').val(response.remarks);
-
+                    $('#id_dome_e').val(response.id_dome).trigger('change');
+                    $('#sampling_point').val(response.sampling_point).trigger('change');
+                    $('#tonnage_dome_e').val(response.tonnage_dome).trigger('change');
+                    $('#description_e').val(response.description);
                 } else {
                     alert(
                         'Data tidak ditemukan'
@@ -794,7 +663,6 @@
         });
     });
 </script>
-
 
 </body>
 

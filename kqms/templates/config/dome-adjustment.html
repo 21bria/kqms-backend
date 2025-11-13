@@ -29,20 +29,20 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Quality</h3>
+                        Configuration</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
                         <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
-                            href="javascript:void(0);">
-                            Tables
+                            href="{% url 'data-control-page' %}">
+                            Confinguration
                             <i
                                 class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
                         </a>
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Finished dome
+                        Adjustment
                     </li>
                 </ol>
             </div>
@@ -53,7 +53,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">Data Finished dome</h5>
+                            <h5 class="box-title">Dome adjustment</h5>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
@@ -70,10 +70,11 @@
                                         <tr>
                                             <th width="5%">No</th>
                                             <th width="10%">Dome</th>
-                                            <th width="10%">Stockpile</th>
                                             <th width="7%">Tonnage</th>
-                                            <th width="7%">Status</th>
-                                            <th width="10%">Description</th>
+                                            <th width="10%">Targets</th>
+                                            <th width="7%">Scale</th>
+                                            <th width="7%">Description</th>
+                                            <th width="7%">Created</th>
                                             <th width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -96,7 +97,7 @@
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
                     <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Finished dome
+                        Dome Adjustment Volume
                     </h6>
                     <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
                         data-hs-overlay="#add-data">
@@ -136,7 +137,8 @@
                                             aria-labelledby="hs-basic-heading11">
                                             <div class="accordion-body">
                                                 <strong>Note :</strong>
-                                                Form untuk update status Dome yang "Continue" menjadi "Finished"
+                                                Pilih dome original* [dome yang akan diadjusment],
+                                                next input tonnage targets* [tonnage dari dome yang akan diadjustmen],
                                             </div>
                                         </div>
                                     </div>
@@ -155,9 +157,15 @@
                             </div>
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Tonnage</label>
-                                <input type="number" class="form-control" id="tonnage_dome" name="tonnage_dome"
+                                <input type="text" class="form-control" id="current_total" name="current_total"
+                                    placeholder="0" readonly>
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <label class="form-label">Tonnage Targets</label>
+                                <input type="number" class="form-control" id="target_total" name="target_total"
                                     placeholder="0">
                             </div>
+
                         </div>
                         <!-- Description -->
                         <div class="mt-4">
@@ -166,6 +174,7 @@
                                 class="form-control w-full !rounded-md resize-none"
                                 placeholder="Enter Description"></textarea>
                         </div>
+
                         <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
                             <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
                                 data-hs-overlay="#add-data">
@@ -187,52 +196,105 @@
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
                     <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Restore data
+                        Retore Data
                     </h6>
                     <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
-                        data-hs-overlay="#add-data">
+                        data-hs-overlay="#edit-data">
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
+                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
                 <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <form>
+                    <div class="accordion customized-accordion accordions-items-seperate" id="customizedAccordion">
+                        <div class="hs-accordion-group">
+                            <div class="accordion customized-accordion accordions-items-seperate"
+                                id="customizedAccordion">
+                                <div class="hs-accordion-group">
+                                    <div class="hs-accordion  accordion-item custom-accordion-primary"
+                                        id="hs-basic-heading31">
+                                        <button
+                                            class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
+                                            aria-controls="hs-basic-collapse31" type="button">
+                                            KQMS Info#
+                                            <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                            <svg class="hs-accordion-active:block hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 hidden w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
+                                                width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path
+                                                    d="M2 11L8.16086 5.31305C8.35239 5.13625 8.64761 5.13625 8.83914 5.31305L15 11"
+                                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                        </button>
+                                        <div id="hs-basic-collapse11"
+                                            class="hs-accordion-content accordion-collapse w-full hidde transition-[height] duration-300"
+                                            aria-labelledby="hs-basic-heading11">
+                                            <div class="accordion-body">
+                                                <strong>Note :</strong>
+                                                Ini untuk mengedit data dome adjustment yang sudah ada,
+                                                silahkan ubah data sesuai kebutuhan, (untuk merestore / mengembalikan
+                                                data)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="entryForm" name="entryForm">
                         <div class="grid grid-cols-12 gap-4 mt-3">
-                            <div class="grid grid-cols-12 gap-4 mt-3">
-                                <input type="hidden" name="id" id="id">
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Dome New</label>
-                                    <input type="text" id="sampling_point" name="sampling_point"
-                                        class="form-control disabled:pointer-events-none" readonly />
-                                </div>
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Tonnage</label>
-                                    <input type="number" class="form-control" id="tonnage_dome_e" name="tonnage_dome_e"
-                                        placeholder="0">
-                                </div>
-                                <input type="hidden" id="id_dome_e" name="id_dome_e"
-                                    class="form-control disabled:pointer-events-none" readonly />
+                            <input type="hidden" name="id" id="id">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Dome</label>
+                                <input type="text" class="form-control" id="dome_e" name="dome_e" readonly>
                             </div>
-                            <!-- Description -->
-                            <div class="mt-4">
-                                <label class="form-label">Description</label>
-                                <textarea id="description_e" name="description_e" rows="3"
-                                    class="form-control w-full !rounded-md resize-none"
-                                    placeholder="Enter Description"></textarea>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Tonnage</label>
+                                <input type="text" class="form-control" id="current_total_e" name="current_total_e"
+                                    placeholder="0" readonly>
                             </div>
-                            <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
-                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
-                                    data-hs-overlay="#add-data">
-                                    Cancel
-                                </button>
-                                <button type="button" id="saveBtn"
-                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
-                                </button>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Tonnage Targets</label>
+                                <input type="number" class="form-control" id="target_total_e" name="target_total_e"
+                                    placeholder="0" readonly>
                             </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Scale</label>
+                                <input type="number" class="form-control" id="scale_factor" name="scale_factor"
+                                    placeholder="0" readonly>
+                            </div>
+
+                        </div>
+                        <!-- Description -->
+                        <div class="mt-4">
+                            <label class="form-label">Description</label>
+                            <textarea id="description_e" name="description_e" rows="3"
+                                class="form-control w-full !rounded-md resize-none"
+                                placeholder="Enter Description"></textarea>
+                        </div>
+
+                        <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
+                            <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                                data-hs-overlay="#edit-data">
+                                Cancel
+                            </button>
+                            <button type="button" id="updateBtn"
+                                class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+
 </div>
 <!-- End::add task modal -->
 
@@ -252,18 +314,17 @@
 <!-- Call JS -->
 {% include 'layout/js.html' %}
 
-
 <script type="text/javascript">
     $(document).ready(function () {
+        $(".ti-form-select").select2({
+            width: '100%',
+            dropdownParent: $('#add-data .ti-modal-body')
+        });
         /*-- Pass Header Token ---*/
         $.ajaxSetup({
             headers: {
                 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
             }
-        });
-        $(".form-select").select2({
-            width: '100%', // Sesuaikan lebar dengan kontainer
-            // dropdownParent: document.getElementById("filterModal")
         });
 
         $('#id_dome').select2({
@@ -290,16 +351,15 @@
             },
             minimumInputLength: 2,
             placeholder: 'Select data',
-            allowClear: true
+            allowClear: true,
+            width: '100%',
+            dropdownParent: $('#add-data .ti-modal-body')
         });
 
         $('#id_dome').change(function (e) {
             // Mendapatkan nilai id yang dipilih
             var id = $(this).val();
             var url = '/kqms/config/merge-dome-get/stock/' + id + '/';
-            $('#tonnage_dome').val('');
-            $('#stockpile').val('');
-            $('#id_stockpile').val('');
             $.ajax({
                 url: url,
                 method: "GET",
@@ -308,9 +368,7 @@
                     if (data.list && data.list.length > 0) {
                         // Ambil data dari item pertama dalam list
                         var item = data.list[0];
-                        $('#tonnage_dome').val(item.tonnage);
-                        $('#stockpile').val(item.sampling_area);
-                        $('#id_stockpile').val(item.id_stockpile);
+                        $('#current_total').val(item.tonnage);
                     } else {
                         console.warn("No data found in the response");
                         // Handle the case where there's no data
@@ -320,7 +378,7 @@
         });
 
         /*-- Render DataTable --*/
-        let url = '{% url "dome-finish-status-list" %}';
+        let url = '{% url "ore-adjustment-dome-list" %}';
         var table = $('#data_table').DataTable({
             "processing": true,
             "serverSide": true,
@@ -349,24 +407,28 @@
                     }
                 }, // Kolom nomor otomatis
                 {
-                    data: 'sampling_point',
-                    name: 'sampling_point'
+                    data: 'dome',
+                    name: 'dome'
                 },
                 {
-                    data: 'sampling_area',
-                    name: 'sampling_area'
+                    data: 'current_total',
+                    name: 'current_total'
                 },
                 {
-                    data: 'tonnage_dome',
-                    name: 'tonnage_dome'
+                    data: 'target_total',
+                    name: 'target_total'
                 },
                 {
-                    data: 'status_dome',
-                    name: 'status_dome'
+                    data: 'scale_factor',
+                    name: 'scale_factor'
                 },
                 {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
                 },
 
                 {
@@ -376,27 +438,27 @@
                     'searchable': false,
                     'render': function (data, type, row) {
                         return `
-                            <div  class="flex gap-2 items-center" >
+                             <div  class="flex gap-2 items-center" >
                                 <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
-                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
+                                      <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                      <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    /svg>
                                 </a>
-                             
                             </div>
-                         `;
+                        `;
                     }
                 }
-
             ],
-
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [6, 'desc']
+            ],
         });
-
         /*--- Click New to Button ---*/
         $('#addNew').click(function () {
             $('#entryForm').trigger("reset");
-              window.HSOverlay.open('#add-data');
+            window.HSOverlay.open('#add-data');
         });
 
         /*--- Create ---*/
@@ -405,12 +467,12 @@
             var formData = $('#entryForm').serialize();
             $(this).html('Sending..');
             $.ajax({
-                url: "{% url 'insert-dome-finish-status' %}",
+                url: "{% url 'insert-ore-adjustment-dome' %}",
                 method: 'POST',
                 data: formData,
                 dataType: "json",
                 success: function (response) {
-                    if (response.success) {
+                    if (response.status === "success") {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top-end',
@@ -420,24 +482,38 @@
                         });
                         toast.fire({
                             icon: 'success',
-                            // title: 'Insert successfully',
                             html: response.message,
                             padding: '2em',
                         });
-                        // Membersihkan formulir setelah sukses input
+
+                        // Reset form
                         $('#id_dome').val('').trigger('change');
+                        $('#current_total').val('');
+                        $('#target_total').val('');
                         $('#description').val('');
-                        $('#tonnage_dome').val('');
-                          window.HSOverlay.close('#add-data');
+                        window.HSOverlay.close('#add-data');
+
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
+
                     } else {
-                        // Handle kesalahan validasi atau kesalahan lainnya
-                        alert('Terjadi kesalahan: ' + response.messages);
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: response.message || 'Terjadi kesalahan tidak diketahui.',
+                            padding: '2em',
+                        });
                     }
                 },
+
                 error: function (xhr, status, errorThrown, error) {
-                    if (xhr.status === 400) {
+                    if (xhr.status === 405) {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -451,7 +527,7 @@
                             padding: '2em',
                         });
                     }
-                    else if (xhr.status === 422) {
+                    else if (xhr.status === 400) {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -488,8 +564,8 @@
         /*--- Update---*/
         $('#updateBtn').click(function (e) {
             e.preventDefault();
-            var id = $('#id').val();
-            var url = '/kqms/config/dome-finish-status/update/' + id + '/';
+            const id = $('#id').val();
+            const url = '/kqms/config/ore-adjustment/dome-update/' + id + '/';
             $.ajax({
                 type: "POST",
                 url: url,
@@ -498,12 +574,12 @@
                     'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
-                    id_dome: $('#id_dome_e').val(),
+                    current_total: $('#current_total_e').val(),
+                    target_total: $('#target_total').val(),
                     description: $('#description_e').val(),
                 },
-
                 success: function (response) {
-                    if (response.success) {
+                    if (response.status === "success") {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top-end',
@@ -517,18 +593,31 @@
                             padding: '2em',
                         });
 
-                        $('#sampling_point').val('');
-                        $('#tonnage_dome_e').val('');
-                        $('#id_dome_e').val('');
-                        $('#description_e').val('');
-                         window.HSOverlay.close('#edit-data');
+                        // Reset form
+                        $('#id, #dome_e, #current_total_e, #target_total_e, #scale_factor, #description_e').val('');
+                        window.HSOverlay.close('#edit-data');
+
+                        // Reload Table
                         $('#data_table').DataTable().clear().draw();
+
                     } else {
-                        alert('Terjadi kesalahan: ' + response.messages);
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: response.message || 'Terjadi kesalahan tidak diketahui.',
+                            padding: '2em',
+                        });
                     }
                 },
+
                 error: function (xhr, status, errorThrown, error) {
-                    if (xhr.status === 400) {
+                    if (xhr.status === 405) {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -542,7 +631,7 @@
                             padding: '2em',
                         });
                     }
-                    else if (xhr.status === 422) {
+                    else if (xhr.status === 400) {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -556,6 +645,7 @@
                             padding: '2em',
                         });
                     }
+
                     else {
                         const toast = window.Swal.mixin({
                             toast: true,
@@ -566,6 +656,7 @@
                         });
                         toast.fire({
                             icon: 'error',
+                            // title: 'Update successfully',
                             html: xhr.responseJSON.message,
                             padding: '2em',
                         });
@@ -574,55 +665,19 @@
             });
         });
 
-        /*--- Delete ---*/
-        $('#data_table').on('click', '.deleteData', function () {
-            var id = $(this).data('id');
-            var url = '{% url "delete-dome-finish-status" %}?id=' + id;
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: 'btn btn-success',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Delete it!',
-                // width: 320,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: "DELETE",
-                        dataType: 'json',
-                        data: {
-                            id: id,
-                        },
-                        success: function (data) {
-                            table.draw();
 
-                        },
-                        error: function (data) {
-                            console.log('Error:', data);
-                        }
-                    });
-                    Swal.fire({
-                        title: 'Deleted!',
-                        text: 'Your file has been deleted.',
-                        icon: 'success',
-                    })
-                }
-            })
-        });
+
+
 
     });
 </script>
-
 
 <!-- Call for Edit Data  -->
 <script>
     /*--- Click to Edit Button ---*/
     $('body').on('click', '.editData', function () {
         var id = $(this).data('id');
-        var url = '/kqms/config/dome-finish-status/get-id/' + id + '/';
+        var url = '/kqms/config/ore-adjustment/dome-get-id/' + id + '/';
         $.ajax({
             type: "GET",
             url: url,
@@ -630,11 +685,12 @@
             success: function (response) {
                 if (response) {
                     // Mengisi formulir dengan data yang diterima
-                     window.HSOverlay.open('#edit-data');
+                    window.HSOverlay.open('#edit-data');
                     $('#id').val(response.id);
-                    $('#id_dome_e').val(response.id_dome).trigger('change');
-                    $('#sampling_point').val(response.sampling_point).trigger('change');
-                    $('#tonnage_dome_e').val(response.tonnage_dome).trigger('change');
+                    $('#dome_e').val(response.dome).trigger('change');
+                    $('#current_total_e').val(response.current_total);
+                    $('#target_total_e').val(response.target_total);
+                    $('#scale_factor').val(response.scale_factor);
                     $('#description_e').val(response.description);
                 } else {
                     alert(

@@ -15,10 +15,6 @@ from django.http import JsonResponse
 from ....models.ore_truck_factor_view import OreTruckFactorView
 
 
-@login_required
-def ore_factors_page(request):
-    return render(request, 'master/list-truck-factor.html')
-
 class OreFactorsList(View):
     def post(self, request):
         # Ambil semua data yang valid
@@ -206,12 +202,12 @@ def insert_ore_factors(request):
 
 @login_required
 def update_ore_factors(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # validasi
@@ -287,12 +283,12 @@ def update_ore_factors(request, id):
    
 @login_required
 def delete_ore_factors(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

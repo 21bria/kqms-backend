@@ -15,7 +15,8 @@ from ..views.settings.remove.remove_mine import *
 from ..views.settings.remove.remove_selling_quik import *
 from ..views.settings.remove.remove_barging import *
 from ..views.settings.remove.remove_gc_data import *
-from ..views.settings.data_control.page_config import page_config
+from ..views.settings.data_control.page_config import *
+from ..views.settings.data_control.dome_adjustment import *
 
 
 urlpatterns = [
@@ -45,6 +46,13 @@ urlpatterns = [
     path('ore-adjustment-factor/get-id/<int:id>/', get_ore_adjustment, name='get-ore-adjustment'),
     path('ore-adjustment-factor/update/<int:id>/', update_ore_adjustment, name='update-ore-adjustment'),
     path('ore-adjustment-factor/delete/', delete_ore_adjustment, name='delete-ore-adjustment'), 
+
+    # Table Dome Ore Factor Ajustment
+    path('ore-adjustment/dome/', dome_adjustment_page, name='dome-ore-adjustment-page'), 
+    path('ore-adjustment/dome-list/', domeAdjustmentList.as_view(), name='ore-adjustment-dome-list'),
+    path('ore-adjustment/dome-insert/', adjust_dome_insert, name='insert-ore-adjustment-dome'), 
+    path('ore-adjustment/dome-get-id/<int:id>/', get_id_adjustment_dome, name='get-id-adjustment-dome'),
+    path('ore-adjustment/dome-update/<int:id>/', restore_dome_tonnage, name='update-ore-adjustment-dome'),
 
     # Table Composting Dome
     path('merge-dome/', dome_merge_page, name='merge-dome-page'), 

@@ -6,10 +6,8 @@ from ....models.dome_setup import domeStatusClose
 from ....models.dome_setup_view import domeStatusCloseView
 from ....models.ore_productions import OreProductions
 from ....models.source_model import SourceMinesDome
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from django.shortcuts import render
 from django.views.generic import View
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
@@ -21,9 +19,6 @@ from typing import Optional
  # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
 
-@login_required
-def dome_close_page(request):
-    return render(request, 'master/list-close-dome.html')
 
 class domeCloseList(View):
     def post(self, request):
@@ -123,12 +118,12 @@ def get_dome_close(request, id):
 
 @login_required
 def insert_dome_close(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi
@@ -201,12 +196,12 @@ def insert_dome_close(request):
 
 @login_required
 def update_dome_close(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
 
@@ -260,12 +255,12 @@ def update_dome_close(request, id):
 
 @login_required
 def delete_dome_close(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

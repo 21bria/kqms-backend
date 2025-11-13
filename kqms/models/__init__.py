@@ -36,3 +36,4 @@ from .mine_productions import *
 from .stock_balance import *
 from .tanggal import *
 from .menu_model import *
+from .dome_adjustment import *

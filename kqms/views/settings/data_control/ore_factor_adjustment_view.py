@@ -18,9 +18,6 @@ from ....utils.utils import clean_string
 # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
 
-@login_required
-def ore_adjustment_page(request):
-    return render(request, 'master/list-ore-adjust.html')
 
 class OreFactorsAdjustList(View):
 
@@ -131,12 +128,12 @@ class OreFactorsAdjustList(View):
 @login_required        
 @csrf_exempt
 def get_ore_adjustment(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             item = OreTruckFactorAdjust.objects.get(id=id)
@@ -159,7 +156,7 @@ def get_ore_adjustment(request, id):
 
 @login_required
 def insert_ore_adjustment(request):
-    allowed_groups = ['superadmin','data-control']
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -254,12 +251,12 @@ def insert_ore_adjustment(request):
     
 @login_required
 def update_ore_adjustment(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Validasi menggunakan Django Forms atau manual
@@ -318,12 +315,12 @@ def update_ore_adjustment(request, id):
 
 @login_required
 def delete_ore_adjustment(request):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

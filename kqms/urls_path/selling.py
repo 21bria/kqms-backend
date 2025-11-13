@@ -25,6 +25,7 @@ urlpatterns = [
     path('sample/create/', create_sample_sale, name='create-samples-sale'),
     # Data Selling
     path('ore-selling-totals/', total_selling, name='ore-selling-totals'),
+    path('ore-selling/totals/', total_selling_details, name='ore-selling-totals-details'),
     path('barge/page/', sale_details_page, name='selling-barge-page'), 
     
     path('barge/list/', SellingDetails.as_view(), name='selling-barge-list'),

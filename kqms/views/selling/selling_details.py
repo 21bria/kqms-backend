@@ -148,7 +148,7 @@ class SellingDetails(View):
         }
 
 @login_required()
-def total_selling(request):
+def total_selling_details(request):
     data = SellingDetailsBargingView.objects.all()
 
     # Ambil parameter dari request
@@ -163,9 +163,9 @@ def total_selling(request):
     # Filter berdasarkan tanggal
     if from_date and to_date:
         try:
-            from_date = datetime.strptime(from_date, '%Y-%m-%d').date()
-            to_date = datetime.strptime(to_date, '%Y-%m-%d').date()
-            data = data.filter(date_hauling__range=[from_date, to_date])
+            from_date   = datetime.strptime(from_date, '%Y-%m-%d').date()
+            to_date     = datetime.strptime(to_date, '%Y-%m-%d').date()
+            data        = data.filter(date_hauling__range=[from_date, to_date])
         except ValueError:
             return JsonResponse({'error': 'Invalid date format'}, status=400)
 
@@ -193,9 +193,9 @@ def total_selling(request):
 
     return JsonResponse({
         'Qty': qty,
-        'TotalTonnage': total_ton,
-        'TonnageLIM': lim_total,
-        'TonnageSAP': sap_total,
+        'TotalTonnage'  : total_ton,
+        'TonnageLIM'    : lim_total,
+        'TonnageSAP'    : sap_total,
     })
 
 @login_required    
