@@ -275,18 +275,18 @@
                 newRow.append(`<td class='text-center whitespace-nowrap'><div class='badge ${badgeClass} font-size-12'>${percentage.toFixed(2)}%</div></td>`);
 
                 // Grade
-                let grade = "???";
-                const ni = parseFloat(row.ni) || 0;
-                const fe = parseFloat(row.fe) || 0;
-                const mgo = parseFloat(row.mgo) || 0;
+                // let grade = "???";
+                // const ni = parseFloat(row.ni) || 0;
+                // const fe = parseFloat(row.fe) || 0;
+                // const mgo = parseFloat(row.mgo) || 0;
 
-                if (ni >= 1.6 && mgo >= 9.0 && fe <= 27.0) grade = "HGS";
-                else if (ni >= 1.2 && ni < 1.6 && mgo >= 9.0 && fe <= 27.0) grade = "MGS";
-                else if (ni < 1.2 && mgo >= 9.0 && mgo <= 20.0 && fe <= 27.0) grade = "LGS";
-                else if (ni >= 1.1 && mgo < 9.0 && fe >= 27.0) grade = "HGL";
-                else if (ni < 1.1 && mgo < 9.0 && fe >= 27.0) grade = "LGL";
-                else if (ni < 0.9 && mgo < 9.0 && fe < 27.0) grade = "OB";
-                else if (ni < 1.2 && mgo > 20.0 && fe >= 27.0) grade = "Waste";
+                // if (ni >= 1.6 && mgo >= 9.0 && fe <= 27.0) grade = "HGS";
+                // else if (ni >= 1.2 && ni < 1.6 && mgo >= 9.0 && fe <= 27.0) grade = "MGS";
+                // else if (ni < 1.2 && mgo >= 9.0 && mgo <= 20.0 && fe <= 27.0) grade = "LGS";
+                // else if (ni >= 1.1 && mgo < 9.0 && fe >= 27.0) grade = "HGL";
+                // else if (ni < 1.1 && mgo < 9.0 && fe >= 27.0) grade = "LGL";
+                // else if (ni < 0.9 && mgo < 9.0 && fe < 27.0) grade = "OB";
+                // else if (ni < 1.2 && mgo > 20.0 && fe >= 27.0) grade = "Waste";
 
                 newRow.append(`<td>${row.ni}</td>`);
                 newRow.append(`<td>${row.fe}</td>`);
@@ -298,7 +298,8 @@
                 newRow.append(`<td>${row.cr2o3}</td>`);
                 newRow.append(`<td>${parseFloat(row.sm || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
                 newRow.append(`<td>${row.mc}</td>`);
-                newRow.append(`<td>${grade}</td>`);
+                // newRow.append(`<td>${grade}</td>`);
+                newRow.append(`<td>${row.grade}</td>`);
                 table.append(newRow);
             });
 

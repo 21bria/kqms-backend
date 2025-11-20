@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.db import connections
 import json 
-from ....utils.db_utils import get_db_vendor
+from kqms.utils.class_ore import get_grade_by_rules
+from kqms.utils.db_utils import get_db_vendor
 
 # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
@@ -16,6 +17,7 @@ def inventory_finished_page(request):
 @login_required
 def stockpile_finished_page(request):
     return render(request, 'admin-mgoqa/inventrory/inventory_stockpile_finished.html')
+
 
 @login_required
 def getInventoryFinished(request):
@@ -132,6 +134,9 @@ def getInventoryFinished(request):
         cursor.execute(query, params_with_paging)
         columns = [col[0] for col in cursor.description]
         sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    for row in sql_data:
+            row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
 
     # Pagination
     more_data = len(sql_data) == per_page
@@ -251,6 +256,9 @@ def getStockpileFinished(request):
             sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
         else:
             sql_data = []
+            
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
 
     # --- Pagination metadata ---
     more_data = len(sql_data) == per_page

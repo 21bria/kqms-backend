@@ -71,8 +71,12 @@
                                         <tr>
                                             <th class="bg-soft-secondary" width="3%">No</th>
                                             <th class="bg-soft-secondary" width="10%">Ore Class</th>
-                                            <th class="bg-soft-secondary" width="7%">Min Grade</th>
-                                            <th class="bg-soft-secondary" width="7%">Max Grade</th>
+                                            <th class="bg-soft-secondary" width="7%">Ni Min</th>
+                                            <th class="bg-soft-secondary" width="7%">Ni Max</th>
+                                            <th class="bg-soft-secondary" width="7%">MgO Min</th>
+                                            <th class="bg-soft-secondary" width="7%">MgO Max</th>
+                                            <th class="bg-soft-secondary" width="7%">Fe Min</th>
+                                            <th class="bg-soft-secondary" width="7%">Fe Max</th>
                                             <th class="bg-soft-secondary" width="7%">Active</th>
                                             <th class="bg-soft-secondary" width="7%">Action</th>
                                         </tr>
@@ -105,24 +109,48 @@
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
-                <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
+
                 <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <form id="entryForm" name="entryForm">
+                    {% include 'master/accordion.html' %}
+
+                    <form id="entryForm" name="entryForm" class="mt-4">
                         <div class="grid grid-cols-12 gap-4">
-                            <div class="xl:col-span-12 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Material</label>
+                                <select class="form-control w-full !rounded-md" id="id_material" name="id_material">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Class Ore</label>
                                 <input type="text" id="ore_class" name="ore_class"
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Min Grade</label>
-                                <input type="text" id="min_grade" name="min_grade"
+                                <label class="form-label">Ni Min</label>
+                                <input type="number" id="ni_min" name="ni_min" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Ni Max</label>
+                                <input type="number" id="ni_max" name="ni_max" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">MgO Min</label>
+                                <input type="number" id="mgo_min" name="mgo_min"
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Max Grade</label>
-                                <input type="text" id="max_grade" name="max_grade"
+                                <label class="form-label">MgO Max</label>
+                                <input type="number" id="mgo_max" name="mgo_max"
                                     class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Fe Min</label>
+                                <input type="number" id="fe_min" name="fe_min" class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Fe Max</label>
+                                <input type="number" id="fe_max" name="fe_max" class="form-control w-full !rounded-md">
                             </div>
                         </div>
 
@@ -160,19 +188,45 @@
                     <form>
                         <input type="hidden" name="id" id="id">
                         <div class="grid grid-cols-12 gap-4">
-                            <div class="xl:col-span-12 col-span-12">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Material</label>
+                                <select class="form-control w-full !rounded-md" id="id_material_e" name="id_material_e">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Class Ore</label>
-                                <input type="text" id="ore_class_edit" name="ore_class_edit"
+                                <input type="text" id="ore_class_e" name="ore_class_e"
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Min Grade</label>
-                                <input type="text" id="min_grade_edit" name="min_grade_edit"
+                                <label class="form-label">Ni Min</label>
+                                <input type="number" id="ni_min_e" name="ni_min_e"
                                     class="form-control w-full !rounded-md">
                             </div>
                             <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Max Grade</label>
-                                <input type="text" id="max_grade_edit" name="max_grade_edit"
+                                <label class="form-label">Ni Max</label>
+                                <input type="number" id="ni_max_e" name="ni_max_e"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">MgO Min</label>
+                                <input type="number" id="mgo_min_e" name="mgo_min_e"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">MgO Max</label>
+                                <input type="number" id="mgo_max_e" name="mgo_max_e"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Fe Min</label>
+                                <input type="number" id="fe_min_e" name="fe_min_e"
+                                    class="form-control w-full !rounded-md">
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Fe Max</label>
+                                <input type="number" id="fe_max_e" name="fe_max_e"
                                     class="form-control w-full !rounded-md">
                             </div>
                         </div>
@@ -251,14 +305,29 @@
                     name: 'ore_class'
                 },
                 {
-                    data: 'min_grade',
-                    name: 'min_grade'
+                    data: 'ni_min',
+                    name: 'ni_min'
                 },
                 {
-                    data: 'max_grade',
-                    name: 'max_grade'
+                    data: 'ni_max',
+                    name: 'ni_max'
                 },
-
+                {
+                    data: 'mgo_min',
+                    name: 'mgo_min'
+                },
+                {
+                    data: 'mgo_max',
+                    name: 'mgo_max'
+                },
+                {
+                    data: 'fe_min',
+                    name: 'fe_min'
+                },
+                {
+                    data: 'fe_max',
+                    name: 'fe_max'
+                },
                 {
                     data: 'status',
                     name: 'status',
@@ -332,9 +401,14 @@
                         });
 
                         // Membersihkan formulir setelah sukses input
+                        $('#id_material ').val('');
                         $('#ore_class ').val('');
-                        $('#max_grade').val('');
-                        $('#min_grade').val('');
+                        $('#ni_min').val('');
+                        $('#ni_max').val('');
+                        $('#mgo_min').val('');
+                        $('#mgo_max').val('');
+                        $('#fe_min').val('');
+                        $('#fe_max').val('');
                         window.HSOverlay.close('#add-data');
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
@@ -419,9 +493,14 @@
                     'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
-                    ore_class: $('#ore_class_edit').val(),
-                    min_grade: $('#min_grade_edit').val(),
-                    max_grade: $('#max_grade_edit').val(),
+                    id_material: $('#id_material_e').val(),
+                    ore_class: $('#ore_class_e').val(),
+                    ni_min: $('#ni_min_e').val(),
+                    ni_max: $('#ni_max_e').val(),
+                    mgo_min: $('#mgo_min_e').val(),
+                    mgo_max: $('#mgo_max_e').val(),
+                    fe_min: $('#fe_min_e').val(),
+                    fe_max: $('#fe_max_e').val(),
                 },
 
                 success: function (response) {
@@ -440,9 +519,14 @@
                             padding: '2em',
                         });
                         // Membersihkan formulir setelah sukses input
-                        $('#ore_class_edit').val('');
-                        $('#min_grade_edit').val('');
-                        $('#max_grade_edit').val('');
+                        $('#id_material_e').val('');
+                        $('#ore_class_e').val('');
+                        $('#ni_min_e').val('');
+                        $('#ni_max_e').val('');
+                        $('#mgo_min_e').val('');
+                        $('#mgo_max_e').val('');
+                        $('#fe_min_e').val('');
+                        $('#fe_max_e').val('');
                         window.HSOverlay.close('#edit-data');
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
@@ -512,10 +596,10 @@
             });
         });
 
-        /*--- Delete ---*/
         $('#data_table').on('click', '.deleteData', function () {
             var id = $(this).data('id');
             var url = '{% url "delete-ore-class" %}?id=' + id;
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -524,8 +608,14 @@
                 confirmButtonColor: 'btn btn-success',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Delete it!',
-                // width: 320,
             }).then((result) => {
+
+                //  WAJIB CEK INI!
+                if (!result.isConfirmed) {
+                    return; // stop, jangan teruskan delete
+                }
+
+                // Kalau confirmed baru delete
                 $.ajax({
                     url: url,
                     type: "DELETE",
@@ -535,36 +625,46 @@
                             title: 'Deleted!',
                             text: 'Your file has been deleted.',
                             icon: 'success',
-                        })
-                        // Refresh table or remove row
+                        });
                         table.draw();
-
                     },
                     error: function (xhr) {
                         if (xhr.status === 403) {
-                            Swal.fire(
-                                'Access Denied!',
-                                xhr.responseJSON.message,
-                                'error'
-                            );
+                            Swal.fire('Access Denied!', xhr.responseJSON.message, 'error');
                         } else if (xhr.status === 404) {
-                            Swal.fire(
-                                'Not Found!',
-                                xhr.responseJSON.message,
-                                'error'
-                            );
+                            Swal.fire('Not Found!', xhr.responseJSON.message, 'error');
                         } else {
-                            Swal.fire(
-                                'Error!',
-                                'Something went wrong.',
-                                'error'
-                            );
+                            Swal.fire('Error!', 'Something went wrong.', 'error');
                         }
                     }
                 });
-            })
+
+            });
         });
 
+        $.ajax({
+            url: "{% url 'get-sample-material' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                // Tambah option kosong
+                var options = '<option value="">-- Material --</option>';
+
+                $.each(data.list, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.nama_material + '</option>';
+                });
+                // Set options in the Select2 element
+                $('#id_material').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#add-data .ti-modal-body')
+                });
+                $('#id_material_e').html(options).select2({
+                    width: '100%',
+                    dropdownParent: $('#edit-data .ti-modal-body')
+                });
+                window.materialDropdownReady = true;
+            }
+        });
     });
 </script>
 
@@ -582,9 +682,25 @@
                     // Mengisi formulir dengan data yang diterima
                     window.HSOverlay.open('#edit-data');
                     $('#id').val(response.id);
-                    $('#ore_class_edit').val(response.ore_class);
-                    $('#min_grade_edit').val(response.min_grade);
-                    $('#max_grade_edit').val(response.max_grade);;
+                    // $('#id_material_e').val(response.id_material);
+                    // Tunggu dropdown siap baru set value
+                    let interval = setInterval(function () {
+                        if (window.materialDropdownReady) {
+                            $('#id_material_e')
+                                .val(response.id_material)
+                                .trigger('change');
+
+                            clearInterval(interval);
+                        }
+                    }, 100);
+                    $('#ore_class_e').val(response.ore_class);
+                    $('#ni_min_e').val(response.ni_min);
+                    $('#ni_min_e').val(response.ni_min);
+                    $('#ni_max_e').val(response.ni_max);
+                    $('#mgo_min_e').val(response.mgo_min);
+                    $('#mgo_max_e').val(response.mgo_max);
+                    $('#fe_min_e').val(response.fe_min);
+                    $('#fe_max_e').val(response.fe_max);
                 } else {
                     alert(
                         'Data tidak ditemukan'

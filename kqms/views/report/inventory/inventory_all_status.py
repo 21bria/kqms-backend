@@ -2,12 +2,18 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db import connections
 import json 
-from ....utils.db_utils import get_db_vendor
+from kqms.utils.db_utils import get_db_vendor
+from kqms.utils.class_ore import get_grade_by_rules
 from django.shortcuts import render
 
 # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
-
+def to_float(value):
+    try:
+        return float(value) if value not in [None, "", "null", "None"] else None
+    except:
+        return None
+    
 @login_required
 def inventory_all_status_page(request):
     return render(request, 'admin-mgoqa/inventrory/inventory_all_status.html')
@@ -129,6 +135,9 @@ def getInventoryAllStatus(request):
         cursor.execute(query, params_with_paging)
         columns = [col[0] for col in cursor.description]
         sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
 
     # === Query summary (tanpa LIMIT/OFFSET) ===
     summary_query = f"""

@@ -1,17 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from ....models.ore_class import OreClass
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
-from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
+from ....models.ore_class import OreClass
 from ....utils.utils import clean_string
+
+def to_number_or_none(value):
+    return float(value) if value not in (None, '', 'null') else None
 
 
 class OreClass_List(View):
@@ -71,8 +72,12 @@ class OreClass_List(View):
             {
                 "id":item.id,
                 "ore_class":item.ore_class,
-                "min_grade":item.min_grade,
-                "max_grade":item.max_grade,
+                "ni_min":item.ni_min,
+                "ni_max":item.ni_max,
+                "mgo_min":item.mgo_min,
+                "mgo_max":item.mgo_max,
+                "fe_min":item.fe_min,
+                "fe_max":item.fe_max,
                 "status":item.status,
                 "created_at":item.created_at
             } for item in object_list
@@ -99,9 +104,14 @@ def get_OreClass(request, id):
             job = OreClass.objects.get(id=id)
             data = {
                 'id'         : job.id,
+                'id_material': job.material_id,
                 'ore_class'  : clean_string(job.ore_class), 
-                'min_grade'  : clean_string(job.min_grade),
-                'max_grade'  : clean_string(job.max_grade),
+                'ni_min'     : clean_string(job.ni_min),
+                'ni_max'     : clean_string(job.ni_max),
+                'mgo_min'    : clean_string(job.mgo_min),
+                'mgo_max'    : clean_string(job.mgo_max),
+                'fe_min'     : clean_string(job.fe_min),
+                'fe_max'     : clean_string(job.fe_max),
                 'status'     : job.status
             }
             return JsonResponse(data)
@@ -122,16 +132,14 @@ def insert_OreClass(request):
         try:
             # Aturan validasi
             rules = {
-                'ore_class': ['required'],
-                'min_grade': ['required'],
-                'max_grade': ['required']
+                'id_material': ['required'],
+                'ore_class'  : ['required']
             }
 
             # Pesan kesalahan validasi yang disesuaikan
             custom_messages = {
-                'ore_class.required' : 'Class Ore is required.',
-                'min_grade.required': 'Min is required.',
-                'max_grade.required'  : 'Max is required.'
+                'id_material.required'  : 'Material is required.',
+                'ore_class.required'    : 'Class Ore is required.',
             }
 
             # Validasi request
@@ -158,18 +166,28 @@ def insert_OreClass(request):
             # Gunakan transaksi database untuk memastikan integritas data
             with transaction.atomic():
                 # Dapatkan data dari request
+                id_material = request.POST.get('id_material')
                 ore_class   = request.POST.get('ore_class')
-                min_grade  = request.POST.get('min_grade')
-                max_grade   = request.POST.get('max_grade')
+                ni_min      = to_number_or_none(request.POST.get('ni_min'))
+                ni_max      = to_number_or_none(request.POST.get('ni_max'))
+                mgo_min     = to_number_or_none(request.POST.get('mgo_min'))
+                mgo_max     = to_number_or_none(request.POST.get('mgo_max'))
+                fe_min      = to_number_or_none(request.POST.get('fe_min'))
+                fe_max      = to_number_or_none(request.POST.get('fe_max'))
 
                 if OreClass.objects.filter(ore_class=ore_class).exists():
                         return JsonResponse({'message': f'{ore_class} : already exists.'}, status=422)
     
                 # Simpan data baru
                 OreClass.objects.create(
+                    material_id=id_material,
                     ore_class=ore_class,
-                    min_grade=min_grade,
-                    max_grade=max_grade,
+                    ni_min=ni_min,
+                    ni_max=ni_max,
+                    mgo_min=mgo_min,
+                    mgo_max=mgo_max,
+                    fe_min=fe_min,
+                    fe_max=fe_max,
                     status=1,
                     # id_user=request.user.id  # Sesuaikan dengan cara Anda mendapatkan user ID
                 )
@@ -201,16 +219,14 @@ def update_OreClass(request, id):
         try:
             # validasi
             rules = {
+                'id_material': ['required'],
                 'ore_class': ['required'],
-                'min_grade': ['required'],
-                'max_grade': ['required']
             }
 
             # Pesan kesalahan validasi yang disesuaikan
             custom_messages = {
-                'ore_class.required' : 'Class Ore is required.',
-                'min_grade.required': 'Min is required.',
-                'max_grade.required'  : 'Max is required.'
+                'id_material.required' : 'Material is required.',
+                'ore_class.required'   : 'Class Ore is required.',
             }
 
             # Validasi request
@@ -241,9 +257,14 @@ def update_OreClass(request, id):
             data = OreClass.objects.get(id=id)
 
             # Lakukan update data dengan nilai baru
-            data.ore_class=ore_class
-            data.min_grade=request.POST.get('min_grade')
-            data.max_grade=request.POST.get('max_grade')
+            data.ore_class   = ore_class
+            data.material_id = request.POST.get('id_material')
+            data.ni_min      = to_number_or_none(request.POST.get('ni_min'))
+            data.ni_max      = to_number_or_none(request.POST.get('ni_max'))
+            data.mgo_min     = to_number_or_none(request.POST.get('mgo_min'))
+            data.mgo_max     = to_number_or_none(request.POST.get('mgo_max'))
+            data.fe_min      = to_number_or_none(request.POST.get('fe_min'))
+            data.fe_max      = to_number_or_none(request.POST.get('fe_max'))
 
             # Simpan perubahan ke dalam database
             data.save()

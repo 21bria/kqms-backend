@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db import connections
 import json 
-from ....utils.db_utils import get_db_vendor
+from kqms.utils.db_utils import get_db_vendor
+from kqms.utils.class_ore import get_grade_by_rules
 from django.shortcuts import render
 
 # Memanggil fungsi utility
@@ -148,6 +149,9 @@ def getInventoryAll(request):
         cursor.execute(query, params_with_paging)
         columns = [col[0] for col in cursor.description]
         sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
 
     # === Query summary (tanpa LIMIT/OFFSET) ===
     summary_query = f"""
@@ -193,6 +197,7 @@ def getInventoryAll(request):
     with connections['kqms_db'].cursor() as cursor:
         cursor.execute(selling_query, params)
         selling_row = cursor.fetchone() 
+
  #=== Proses summary di backend ===
     total_ore       = float(summary_row[0] or 0)
     total_released  = float(summary_row[1] or 0)
@@ -344,6 +349,9 @@ def getInventoryHpal(request):
         else:
             sql_data = []
 
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
+
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
@@ -462,6 +470,9 @@ def getInventoryRkef(request):
         else:
             sql_data = []
 
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])
+
     more_data = len(sql_data) == per_page
     total_pages = (total_data // per_page) + (1 if total_data % per_page > 0 else 0)
 
@@ -579,6 +590,9 @@ def getStockpileAll(request):
             sql_data = [dict(zip(columns, row)) for row in cursor.fetchall()]
         else:
             sql_data = []
+            
+    for row in sql_data:
+        row['grade'] = get_grade_by_rules(row['ni'], row['mgo'], row['fe'])  
 
     # --- Pagination metadata ---
     more_data = len(sql_data) == per_page

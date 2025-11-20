@@ -305,34 +305,7 @@
                 newRow.append("<td>" + row.cr2o3 + "</td>")
                 newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
                 newRow.append("<td>" + row.mc + "</td>")
-
-                // Kolom "grade" berdasarkan kondisi Ni dan Mgo
-                var grade = "NULL";
-                if (row.ni >= 1.6 && row.mgo >= 9.0 && row.fe <= 27.0) {
-                    grade = "HGS";
-                } else if (row.ni >= 1.2 && row.ni < 1.6 && row.mgo >= 9.0 && row.fe <= 27.0) {
-                    grade = "MGS";
-                } else if (row.ni < 1.2 && row.mgo >= 9.0 && row.mgo <= 20.0 && row.fe <= 27.0) {
-                    grade = "LGS";
-                } else if (row.ni >= 1.1 && row.mgo < 9.0 && row.fe >= 27.0) {
-                    grade = "HGL";
-                } else if (row.ni < 1.1 && row.mgo < 9.0 && row.fe >= 27.0) {
-                    grade = "LGL";
-                } else if (row.ni < 0.9 && row.mgo < 9.0 && row.fe < 27.0) {
-                    grade = "OB";
-                } else if (row.ni < 1.2 && row.mgo > 20.0 && row.fe >= 27.0) {
-                    grade = "Waste";
-                } else {
-                    grade = "???";
-                }
-
-
-
-                // Tambahkan kelas CSS berdasarkan nilai "grade"
-                var gradeClass = "";
-
-                // Tambahkan elemen <td> ke tabel dengan kelas CSS yang sesuai
-                newRow.append("<td class='" + gradeClass + "'>" + grade + "</td>");
+                newRow.append("<td>" + row.grade + "</td>")
 
                 // Akumulasi ke grand total
                 grandTotalOre += parseFloat(row.total_ore);
