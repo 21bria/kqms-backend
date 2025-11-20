@@ -53,7 +53,7 @@
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">Data Finished dome</h5>
+                            <h5 class="box-title">Data dome finished selling</h5>
                         </div>
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
@@ -74,6 +74,7 @@
                                             <th width="7%">Tonnage</th>
                                             <th width="7%">Status</th>
                                             <th width="10%">Description</th>
+                                            <th width="10%">Created</th>
                                             <th width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -115,7 +116,7 @@
                                         <button
                                             class="hs-accordion-toggle accordion-button  hs-accordion-active:pb-3 group inline-flex items-center justify-between gap-x-3 w-full font-semibold text-start  transition"
                                             aria-controls="hs-basic-collapse31" type="button">
-                                            KQMS Info#
+                                            Information!
                                             <svg class="hs-accordion-active:hidden hs-accordion-active:text-gray-600 hs-accordion-active:group-hover:text-gray-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-[#8c9097] dark:text-white/50"
                                                 width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +137,7 @@
                                             aria-labelledby="hs-basic-heading11">
                                             <div class="accordion-body">
                                                 <strong>Note :</strong>
-                                                Form untuk update status Dome yang "Continue" menjadi "Finished"
+                                                Form untuk update status "Continue" menjadi "Finished" Selling Dome.
                                             </div>
                                         </div>
                                     </div>
@@ -181,58 +182,6 @@
         </div>
     </div>
 
-    <!-- Start::edit modal -->
-    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Restore data
-                    </h6>
-                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
-                        data-hs-overlay="#add-data">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <form>
-                        <div class="grid grid-cols-12 gap-4 mt-3">
-                            <div class="grid grid-cols-12 gap-4 mt-3">
-                                <input type="hidden" name="id" id="id">
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Dome New</label>
-                                    <input type="text" id="sampling_point" name="sampling_point"
-                                        class="form-control disabled:pointer-events-none" readonly />
-                                </div>
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Tonnage</label>
-                                    <input type="number" class="form-control" id="tonnage_dome_e" name="tonnage_dome_e"
-                                        placeholder="0">
-                                </div>
-                                <input type="hidden" id="id_dome_e" name="id_dome_e"
-                                    class="form-control disabled:pointer-events-none" readonly />
-                            </div>
-                            <!-- Description -->
-                            <div class="mt-4">
-                                <label class="form-label">Description</label>
-                                <textarea id="description_e" name="description_e" rows="3"
-                                    class="form-control w-full !rounded-md resize-none"
-                                    placeholder="Enter Description"></textarea>
-                            </div>
-                            <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
-                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
-                                    data-hs-overlay="#add-data">
-                                    Cancel
-                                </button>
-                                <button type="button" id="saveBtn"
-                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
-                                </button>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 <!-- End::add task modal -->
 
@@ -368,6 +317,10 @@
                     data: 'description',
                     name: 'description'
                 },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
 
                 {
                     'data': null,
@@ -377,10 +330,10 @@
                     'render': function (data, type, row) {
                         return `
                             <div  class="flex gap-2 items-center" >
-                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
                                         <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                        <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
                                     </svg>
                                 </a>
                              
@@ -388,15 +341,17 @@
                          `;
                     }
                 }
-
             ],
-
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [6, 'desc']
+            ],
         });
 
         /*--- Click New to Button ---*/
         $('#addNew').click(function () {
             $('#entryForm').trigger("reset");
-              window.HSOverlay.open('#add-data');
+            window.HSOverlay.open('#add-data');
         });
 
         /*--- Create ---*/
@@ -428,7 +383,7 @@
                         $('#id_dome').val('').trigger('change');
                         $('#description').val('');
                         $('#tonnage_dome').val('');
-                          window.HSOverlay.close('#add-data');
+                        window.HSOverlay.close('#add-data');
                         // Reload Table
                         $('#data_table').DataTable().clear().draw();
                     } else {
@@ -485,95 +440,6 @@
             });
         });
 
-        /*--- Update---*/
-        $('#updateBtn').click(function (e) {
-            e.preventDefault();
-            var id = $('#id').val();
-            var url = '/kqms/config/dome-finish-status/update/' + id + '/';
-            $.ajax({
-                type: "POST",
-                url: url,
-                dataType: "json",
-                headers: {
-                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    id_dome: $('#id_dome_e').val(),
-                    description: $('#description_e').val(),
-                },
-
-                success: function (response) {
-                    if (response.success) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'success',
-                            html: response.message,
-                            padding: '2em',
-                        });
-
-                        $('#sampling_point').val('');
-                        $('#tonnage_dome_e').val('');
-                        $('#id_dome_e').val('');
-                        $('#description_e').val('');
-                         window.HSOverlay.close('#edit-data');
-                        $('#data_table').DataTable().clear().draw();
-                    } else {
-                        alert('Terjadi kesalahan: ' + response.messages);
-                    }
-                },
-                error: function (xhr, status, errorThrown, error) {
-                    if (xhr.status === 400) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.error,
-                            padding: '2em',
-                        });
-                    }
-                    else if (xhr.status === 422) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-                    else {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: xhr.responseJSON.message,
-                            padding: '2em',
-                        });
-                    }
-                }
-            });
-        });
-
         /*--- Delete ---*/
         $('#data_table').on('click', '.deleteData', function () {
             var id = $(this).data('id');
@@ -586,7 +452,6 @@
                 confirmButtonColor: 'btn btn-success',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Delete it!',
-                // width: 320,
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -617,52 +482,7 @@
 </script>
 
 
-<!-- Call for Edit Data  -->
-<script>
-    /*--- Click to Edit Button ---*/
-    $('body').on('click', '.editData', function () {
-        var id = $(this).data('id');
-        var url = '/kqms/config/dome-finish-status/get-id/' + id + '/';
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: "json",
-            success: function (response) {
-                if (response) {
-                    // Mengisi formulir dengan data yang diterima
-                     window.HSOverlay.open('#edit-data');
-                    $('#id').val(response.id);
-                    $('#id_dome_e').val(response.id_dome).trigger('change');
-                    $('#sampling_point').val(response.sampling_point).trigger('change');
-                    $('#tonnage_dome_e').val(response.tonnage_dome).trigger('change');
-                    $('#description_e').val(response.description);
-                } else {
-                    alert(
-                        'Data tidak ditemukan'
-                    ); // Atau tindakan lain jika data tidak ditemukan
-                }
-            },
-            error: function (xhr, status, error) {
-                if (xhr.status === 403) {
-                    const toast = window.Swal.mixin({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 2000,
-                        padding: '2em',
-                    });
-                    toast.fire({
-                        icon: 'error',
-                        html: 'You do not have permission',
-                        padding: '2em',
-                    });
-                } else {
-                    alert('Terjadi kesalahan: ' + error);
-                }
-            }
-        });
-    });
-</script>
+
 
 </body>
 

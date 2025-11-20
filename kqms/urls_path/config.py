@@ -5,7 +5,7 @@ from ..views.settings.data_control.ore_factor_adjustment_view import *
 from ..views.settings.data_control.merge_dome_view import *
 from ..views.settings.data_control.merge_stockpile_view import *
 from ..views.settings.data_control.dome_status_view import *
-from ..views.settings.data_control.dome_status_finish_view import *
+from ..views.settings.data_control.dome_status_selling import *
 from ..views.settings.data_control.barging_finish_view import *
 from ..views.settings.remove.remove_home import *
 from ..views.settings.remove.remove_waybill import *
@@ -77,7 +77,6 @@ urlpatterns = [
     path('dome-close-status-list/', domeCloseList.as_view(), name='dome-close-status-list'),
     path('dome-close-status/insert/', insert_dome_close, name='insert-dome-close-status'), 
     path('dome-close-status/get-id/<int:id>/', get_dome_close, name='get-dome-close-status'),
-    path('dome-close-status/update/<int:id>/', update_dome_close, name='update-dome-close-status'),
     path('dome-close-status/delete/', delete_dome_close, name='delete-dome-close-status'), 
     path('dome-close-status-get/stock/<int:id>/', get_oreDomeStock, name='dome-close-status-get-stock'), 
 
@@ -85,8 +84,6 @@ urlpatterns = [
     path('dome-finish-status/', dome_finish_page, name='dome-finish-status-page'), 
     path('dome-finish-status-list/', domeFinishList.as_view(), name='dome-finish-status-list'),
     path('dome-finish-status/insert/', insert_dome_finish, name='insert-dome-finish-status'), 
-    path('dome-finish-status/get-id/<int:id>/', get_dome_finish, name='get-dome-finish-status'),
-    path('dome-finish-status/update/<int:id>/', update_dome_finish, name='update-dome-finish-status'),
     path('dome-finish-status/delete/', delete_dome_finish, name='delete-dome-finish-status'), 
 
     # Set Barging Finish        

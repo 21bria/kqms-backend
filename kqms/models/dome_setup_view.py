@@ -8,6 +8,7 @@ class domeStatusCloseView(models.Model):
     tonnage_dome   = models.FloatField(default=None,null=True,blank=True)
     status_dome    = models.CharField(max_length=15,default=None,null=True,blank=True)
     description    = models.TextField(default=None,null=True,blank=True)
+    created_at     = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed   = False
@@ -23,6 +24,7 @@ class domeStatusFinishView(models.Model):
     tonnage_dome   = models.FloatField(default=None,null=True,blank=True)
     status_dome    = models.CharField(max_length=15,default=None,null=True,blank=True)
     description    = models.TextField(default=None,null=True,blank=True)
+    created_at     = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed   = False

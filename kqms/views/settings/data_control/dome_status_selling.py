@@ -18,7 +18,6 @@ from ....models.source_model import SourceMinesDome
 from ....utils.utils import clean_string
 
 
-
 class domeFinishList(View):
     def post(self, request):
         dataView = self._datatables(request)
@@ -26,45 +25,44 @@ class domeFinishList(View):
 
     def _datatables(self, request):
         datatables = request.POST
-        # Ambil draw
         draw = int(datatables.get('draw'))
-        # Ambil start
         start = int(datatables.get('start'))
-        # Ambil length (limit)
         length = int(datatables.get('length'))
-        # Ambil data search
         search = datatables.get('search[value]')
-        # Ambil order column
         order_column = int(datatables.get('order[0][column]'))
-        # Ambil order direction
         order_dir = datatables.get('order[0][dir]')
 
-        # Set record total
-        records_total = domeStatusFinishView.objects.all().count()
-        # Set records filtered
-        records_filtered = records_total
-        # Ambil semua yang valid
+        columns = [
+            'id',
+            'sampling_point',
+            'sampling_area',
+            'tonnage_dome',
+            'status_dome',
+            'description'
+        ]
+
+        if order_column >= len(columns):
+            order_by = 'created_at'
+        else:
+            order_by = columns[order_column]
+
+        if order_dir == 'desc':
+            order_by = '-' + order_by
+
         data = domeStatusFinishView.objects.all()
 
         if search:
-            data = domeStatusFinishView.objects.filter(
+            data = data.filter(
                 Q(sampling_point__icontains=search) |
                 Q(sampling_area__icontains=search)
             )
-            records_total = data.count()
-            records_filtered = records_total
 
-        # Atur sorting
-        if order_dir == 'desc':
-            order_by = f'-{data.model._meta.fields[order_column].name}'
-        else:
-            order_by = f'{data.model._meta.fields[order_column].name}'
+        records_total = domeStatusFinishView.objects.all().count()
+        records_filtered = data.count()
 
         data = data.order_by(order_by)
 
-        # Atur paginator
         paginator = Paginator(data, length)
-
         try:
             object_list = paginator.page(start // length + 1).object_list
         except PageNotAnInteger:
@@ -72,14 +70,15 @@ class domeFinishList(View):
         except EmptyPage:
             object_list = paginator.page(paginator.num_pages).object_list
 
-        data = [
+        result = [
             {
                 "id": item.id,
                 "sampling_point": item.sampling_point,
                 "sampling_area" : item.sampling_area,
                 "tonnage_dome"  : item.tonnage_dome,
                 "status_dome"   : item.status_dome,
-                "description"   : item.description
+                "description"   : item.description,
+                "created_at"    : item.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             } for item in object_list
         ]
 
@@ -87,35 +86,9 @@ class domeFinishList(View):
             'draw': draw,
             'recordsTotal': records_total,
             'recordsFiltered': records_filtered,
-            'data': data,
+            'data': result,
         }
-
-@csrf_exempt
-def get_dome_finish(request, id):
-    allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
-            status=403
-    )
-    if request.method == 'GET':
-        try:
-            item = domeStatusFinishView.objects.get(id=id)
-            data = {
-                'id':item.id,
-                'id_dome'        :item.id_dome,
-                'sampling_point' :clean_string(item.sampling_point),
-                'sampling_area'  :clean_string(item.sampling_area),
-                'tonnage_dome'   :item.tonnage_dome, 
-                'status_dome'    :item.status_dome, 
-                'description'    :clean_string(item.description)
-            }
-            return JsonResponse(data)
-        except domeStatusFinishView.DoesNotExist:
-            return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
-
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
-
+    
 @login_required
 def insert_dome_finish(request):
     allowed_groups = ['superadmin', 'data-control', 'admin-mgoqa']
@@ -186,83 +159,41 @@ def insert_dome_finish(request):
         return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
 
 @login_required
-def update_dome_finish(request, id):
-    allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
-            status=403
-    )
-    if request.method == 'POST':
-        try:
-            rules = {
-                'id_dome': ['required'],
-            }
-            # Pesan kesalahan validasi yang disesuaikan
-            custom_messages = {
-                'id_dome.required':'Dome is required.'
-            }
-
-            # Validasi request
-            for field, field_rules in rules.items():
-                for rule in field_rules:
-                    if rule == 'required':
-                        if not request.POST.get(field):
-                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
-            # Ambil data dari request
-            id_dome      = int(request.POST['id_dome'])
-            description  = request.POST['description']
-
-            status_dome  ='Continue'
-
-            # Dapatkan objek yang akan diupdate
-            data = get_object_or_404(domeStatusFinish, id=id)
-
-            # Update data
-            data.description = description
-            data.status_dome = status_dome
-            data.save()
-
-            # Update OreProductions
-            OreProductions.objects.filter(
-                    id_pile=id_dome
-                ).update(
-                    status_dome=status_dome
-                )
-
-            # Update Selling Data
-            SellingBarging.objects.filter(id=id_dome).update(sale_dome=status_dome)
-
-            # Update SourceMinesDome
-            SourceMinesDome.objects.filter(id=id_dome).update(dome_finish=status_dome)
-            return JsonResponse({'success': True, 'message': 'Data berhasil diupdate.'})
-
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
-        except ValidationError as e:
-            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Metode tidak diizinkan'}, status=405)
-
-@login_required
 def delete_dome_finish(request):
     allowed_groups = ['superadmin','data-control','admin-mgoqa']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
             status=403
-    )
+        )
+
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = domeStatusFinish.objects.get(id=int(job_id))
-            data.delete()
-            return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+
+        try:
+            # Ambil data domeStatusFinish untuk mendapatkan id_pile / id_dome
+            dome = domeStatusFinish.objects.get(id=int(job_id))
+            id_dome = dome.id_dome  # pastikan fieldnya benar di model kamu
+
+            # Update status kembali ke Continue
+            status_dome = 'Continue'
+
+            OreProductions.objects.filter(id_pile=id_dome).update(status_dome=status_dome)
+            SellingBarging.objects.filter(id_pile=id_dome).update(sale_dome=status_dome)
+            SourceMinesDome.objects.filter(id=id_dome).update(dome_finish=status_dome)
+
+            # Hapus data domeStatusFinish
+            dome.delete()
+
+            return JsonResponse({'status': 'deleted', 'message': 'Status dikembalikan ke Continue'})
+
+        except domeStatusFinish.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})

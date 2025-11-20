@@ -68,13 +68,14 @@
                                     style="width: 100%">
                                     <thead>
                                         <tr>
-                                           <th class="bg-soft-secondary" width="5%">No</th>
-                                        <th class="bg-soft-secondary" width="10%">Dome</th>
-                                        <th class="bg-soft-secondary" width="10%">Stockpile</th>
-                                        <th class="bg-soft-secondary" width="7%">Tonnage</th>
-                                        <th class="bg-soft-secondary" width="7%">Status</th>
-                                        <th class="bg-soft-secondary" width="10%">Description</th>
-                                        <th class="bg-soft-secondary" width="7%">Action</th>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary" width="10%">Dome</th>
+                                            <th class="bg-soft-secondary" width="10%">Stockpile</th>
+                                            <th class="bg-soft-secondary" width="7%">Tonnage</th>
+                                            <th class="bg-soft-secondary" width="7%">Status</th>
+                                            <th class="bg-soft-secondary" width="10%">Description</th>
+                                            <th class="bg-soft-secondary" width="10%">Created</th>
+                                            <th class="bg-soft-secondary" width="7%">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -136,7 +137,7 @@
                                             aria-labelledby="hs-basic-heading11">
                                             <div class="accordion-body">
                                                 <strong>Note :</strong>
-                                                  Form untuk update status Dome yang "Continue" menjadi "Close"
+                                                Form untuk update status Dome yang "Continue" menjadi "Close"
                                             </div>
                                         </div>
                                     </div>
@@ -150,8 +151,7 @@
 
                             <div class="xl:col-span-6 col-span-12">
                                 <label class="form-label">Dome</label>
-                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="id_dome"
-                                    name="id_dome">
+                                <select class="ti-form-select rounded-sm !py-2 !px-3t" id="id_dome" name="id_dome">
                                     <option value="">Select</option>
                                 </select>
                             </div>
@@ -183,58 +183,6 @@
         </div>
     </div>
 
-    <!-- Start::edit modal -->
-    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out lg:!max-w-2xl lg:w-full m-3 lg:!mx-auto">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
-                        Restore data
-                    </h6>
-                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
-                        data-hs-overlay="#add-data">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
-                    <form>
-                        <div class="grid grid-cols-12 gap-4 mt-3">
-                            <div class="grid grid-cols-12 gap-4 mt-3">
-                                 <input type="hidden" name="id" id="id">
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Dome New</label>
-                                    <input type="text" id="sampling_point" name="sampling_point"
-                                        class="form-control disabled:pointer-events-none" readonly />
-                                </div>
-                                <div class="xl:col-span-6 col-span-12">
-                                    <label class="form-label">Tonnage</label>
-                                    <input type="number" class="form-control" id="tonnage_dome_e"
-                                        name="tonnage_dome_e" placeholder="0">
-                                </div>
-                                <input type="hidden" id="id_dome_e" name="id_dome_e"
-                                    class="form-control disabled:pointer-events-none" readonly />
-                            </div>
-                            <!-- Description -->
-                            <div class="mt-4">
-                                <label class="form-label">Description</label>
-                                <textarea id="description_e" name="description_e" rows="3"
-                                    class="form-control w-full !rounded-md resize-none"
-                                    placeholder="Enter Description"></textarea>
-                            </div>
-                            <div class="mb-2 mt-8 flex flex-wrap items-left justify-end gap-2 lg:justify-end">
-                                <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
-                                    data-hs-overlay="#add-data">
-                                    Cancel
-                                </button>
-                                <button type="button" id="saveBtn"
-                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Submit
-                                </button>
-                            </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 <!-- End::add task modal -->
 
@@ -254,415 +202,195 @@
 <!-- Call JS -->
 {% include 'layout/js.html' %}
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            /*-- Pass Header Token ---*/
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+            dropdownParent: $('#add-data .ti-modal-body')
+        });
+
+        $('#id_dome').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select data',
+            allowClear: true,
+            dropdownParent: $('#add-data .ti-modal-body')
+        });
+
+
+        $('#id_dome').change(function (e) {
+            // Mendapatkan nilai id yang dipilih
+            var id = $(this).val();
+            var url = '/kqms/config/merge-dome-get/stock/' + id + '/';
+            $('#tonnage_dome').val('');
+            $.ajax({
+                url: url,
+                method: "GET",
+                dataType: "json",
+                success: function (data) {
+                    if (data.list && data.list.length > 0) {
+                        // Ambil data dari item pertama dalam list
+                        var item = data.list[0];
+                        $('#tonnage_dome').val(item.tonnage);
+                    } else {
+                        console.warn("No data found in the response");
+                    }
                 }
             });
-            $(".form-select").select2({
-                width: '100%',
-                dropdownParent: $('#add-data .ti-modal-body')
-            });
+        });
 
-            $('#id_dome').select2({
-                ajax: {
-                    url: "{% url 'get-mine-dome' %}",
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            q: params.term,
-                            page: params.page || 1
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: {
-                                more: data.pagination.more
-                            }
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 2,
-                placeholder: 'Select data',
-                allowClear: true,
-                dropdownParent: $('#add-data .ti-modal-body')
-            });
-
-
-            $('#id_dome').change(function (e) {
-                // Mendapatkan nilai id yang dipilih
-                var id = $(this).val();
-                var url = '/kqms/config/merge-dome-get/stock/' + id + '/';
-                $('#tonnage_dome').val('');
-                $.ajax({
-                    url: url,
-                    method: "GET",
-                    dataType: "json",
-                    success: function (data) {
-                        if (data.list && data.list.length > 0) {
-                            // Ambil data dari item pertama dalam list
-                            var item = data.list[0];
-                            $('#tonnage_dome').val(item.tonnage);
-                        } else {
-                            console.warn("No data found in the response");
-                        }
-                    }
-                });
-            });
-
-            /*-- Render DataTable --*/
-            let url = '{% url "dome-close-status-list" %}';
-            var table = $('#data_table').DataTable({
-                "processing": true,
-                "serverSide": true,
-                "ordering": true,
-                language: {
+        /*-- Render DataTable --*/
+        let url = '{% url "dome-close-status-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            language: {
                 paginate: {
                     previous: "«",
                     next: "»"
                 }
             },
-                "ajax": {
-                    "url": url,
-                    "type": "POST",
-                    dataType: 'json',
-                    headers: {
-                        'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
-                    },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
                 },
-                columns: [
-                    {
-                        data: null,
-                        searchable: false,
-                        orderable: false,
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    }, // Kolom nomor otomatis
-                    {
-                        data: 'sampling_point',
-                        name: 'sampling_point'
-                    },
-                    {
-                        data: 'sampling_area',
-                        name: 'sampling_area'
-                    },
-                    {
-                        data: 'tonnage_dome',
-                        name: 'tonnage_dome'
-                    },
-                    {
-                        data: 'status_dome',
-                        name: 'status_dome'
-                    },
-                    {
-                        data: 'description',
-                        name: 'description'
-                    },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'sampling_point',
+                    name: 'sampling_point'
+                },
+                {
+                    data: 'sampling_area',
+                    name: 'sampling_area'
+                },
+                {
+                    data: 'tonnage_dome',
+                    name: 'tonnage_dome'
+                },
+                {
+                    data: 'status_dome',
+                    name: 'status_dome'
+                },
+                {
+                    data: 'description',
+                    name: 'description'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
 
-                    {
-                        'data': null,
-                        'name': 'action',
-                        'orderable': false,
-                        'searchable': false,
-                        'render': function (data, type, row) {
-                            return `
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
                                 <div  class="flex gap-2 items-center" >
-                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
                                             <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
-                                            <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
                                         </svg>
                                     </a>
+                                
                                 </div>
                             `;
-                        }
                     }
+                }
 
-                ],
-            });
-
-            /*--- Click New to Button ---*/
-            $('#addNew').click(function () {
-                $('#entryForm').trigger("reset");
-                 window.HSOverlay.open('#add-data');
-            });
-
-            /*--- Create ---*/
-            $('#saveBtn').click(function (e) {
-                e.preventDefault();
-                var formData = $('#entryForm').serialize();
-                $(this).html('Sending..');
-                $.ajax({
-                    url: "{% url 'insert-dome-close-status' %}",
-                    method: 'POST',
-                    data: formData,
-                    dataType: "json",
-                    success: function (response) {
-                        if (response.success) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'success',
-                                // title: 'Insert successfully',
-                                html: response.message,
-                                padding: '2em',
-                            });
-                            // Membersihkan formulir setelah sukses input
-                            $('#id_dome').val('').trigger('change');
-                            $('#description').val('');
-                            $('#tonnage_dome').val('');
-                             window.HSOverlay.close('#add-data');
-                            // Reload Table
-                            $('#data_table').DataTable().clear().draw();
-                        } else {
-                            // Handle kesalahan validasi atau kesalahan lainnya
-                            alert('Terjadi kesalahan: ' + response.messages);
-                        }
-                    },
-                    error: function (xhr, status, errorThrown, error) {
-                        if (xhr.status === 400) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                html: xhr.responseJSON.error,
-                                padding: '2em',
-                            });
-                        }
-                        else if (xhr.status === 422) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                html: xhr.responseJSON.message,
-                                padding: '2em',
-                            });
-                        }
-
-                        else {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                // title: 'Update successfully',
-                                html: xhr.responseJSON.message,
-                                padding: '2em',
-                            });
-                        }
-                    }
-                });
-            });
-
-            /*--- Update---*/
-            $('#updateBtn').click(function (e) {
-                e.preventDefault();
-                var id = $('#id').val();
-                var url = '/kqms/config/dome-close-status/update/' + id + '/';
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    dataType: "json",
-                    headers: {
-                        'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: {
-                        id_dome: $('#id_dome_e').val(),
-                        description: $('#description_e').val(),
-                    },
-
-                    success: function (response) {
-                        if (response.success) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'success',
-                                // title: 'Insert successfully',
-                                html: response.message,
-                                padding: '2em',
-                            });
-
-                            // Membersihkan formulir setelah sukses input
-                            $('#id').val('');
-                            $('#id_dome_e').val('');
-                            $('#tonnage_dome_e').val('');
-                            $('#description_e').val('');
-                           window.HSOverlay.close('#edit-data');
-                            // Reload Table
-                            $('#data_table').DataTable().clear().draw();
-                        } else {
-                            // Handle kesalahan validasi atau kesalahan lainnya
-                            alert('Terjadi kesalahan: ' + response.messages);
-                        }
-                    },
-                    error: function (xhr, status, errorThrown, error) {
-                        if (xhr.status === 400) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                html: xhr.responseJSON.error,
-                                padding: '2em',
-                            });
-                        }
-                        else if (xhr.status === 422) {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                html: xhr.responseJSON.message,
-                                padding: '2em',
-                            });
-                        }
-                        else {
-                            const toast = window.Swal.mixin({
-                                toast: true,
-                                position: 'top',
-                                showConfirmButton: false,
-                                timer: 2000,
-                                padding: '2em',
-                            });
-                            toast.fire({
-                                icon: 'error',
-                                // title: 'Update successfully',
-                                html: xhr.responseJSON.message,
-                                padding: '2em',
-                            });
-                        }
-                    }
-                });
-            });
-
-            /*--- Delete ---*/
-            $('#data_table').on('click', '.deleteData', function () {
-                var id = $(this).data('id');
-                var url = '{% url "delete-dome-close-status" %}?id=' + id;
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: 'btn btn-success',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Delete it!',
-                    // width: 320,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: url,
-                            type: "DELETE",
-                            dataType: 'json',
-                            success: function (data) {
-                                Swal.fire({
-                                    title: 'Deleted!',
-                                    text: 'Your file has been deleted.',
-                                    icon: 'success',
-                                })
-                                // Refresh table or remove row
-                                table.draw();
-
-                            },
-                            error: function (xhr) {
-                                if (xhr.status === 403) {
-                                    Swal.fire(
-                                        'Access Denied!',
-                                        xhr.responseJSON.message,
-                                        'error'
-                                    );
-                                } else if (xhr.status === 404) {
-                                    Swal.fire(
-                                        'Not Found!',
-                                        xhr.responseJSON.message,
-                                        'error'
-                                    );
-                                } else {
-                                    Swal.fire(
-                                        'Error!',
-                                        'Something went wrong.',
-                                        'error'
-                                    );
-                                }
-                            }
-                        });
-                    }
-                })
-            });
-
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [6, 'desc']
+            ],
         });
-    </script>
 
+        /*--- Click New to Button ---*/
+        $('#addNew').click(function () {
+            $('#entryForm').trigger("reset");
+            window.HSOverlay.open('#add-data');
+        });
 
-    <!-- Call for Edit Data  -->
-    <script>
-        /*--- Click to Edit Button ---*/
-        $('body').on('click', '.editData', function () {
-            var id = $(this).data('id');
-            var url = '/kqms/config/dome-close-status/get-id/' + id + '/';
+        /*--- Create ---*/
+        $('#saveBtn').click(function (e) {
+            e.preventDefault();
+            var formData = $('#entryForm').serialize();
+            $(this).html('Sending..');
             $.ajax({
-                type: "GET",
-                url: url,
+                url: "{% url 'insert-dome-close-status' %}",
+                method: 'POST',
+                data: formData,
                 dataType: "json",
                 success: function (response) {
-                    if (response) {
-                        // Mengisi formulir dengan data yang diterima
-                         window.HSOverlay.open('#edit-data');
-                        $('#id').val(response.id);
-                        $('#id_dome_e').val(response.id_dome).trigger('change');
-                        $('#sampling_point').val(response.sampling_point).trigger('change');
-                        // $('#sampling_area').val(response.sampling_area).trigger('change');
-                        $('#tonnage_dome_e').val(response.tonnage_dome).trigger('change');
-                        $('#description_e').val(response.description);
-
+                    if (response.success) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            // title: 'Insert successfully',
+                            html: response.message,
+                            padding: '2em',
+                        });
+                        // Membersihkan formulir setelah sukses input
+                        $('#id_dome').val('').trigger('change');
+                        $('#description').val('');
+                        $('#tonnage_dome').val('');
+                        window.HSOverlay.close('#add-data');
+                        // Reload Table
+                        $('#data_table').DataTable().clear().draw();
                     } else {
-                        alert(
-                            'Data tidak ditemukan'
-                        ); // Atau tindakan lain jika data tidak ditemukan
+                        // Handle kesalahan validasi atau kesalahan lainnya
+                        alert('Terjadi kesalahan: ' + response.messages);
                     }
                 },
-                error: function (xhr, status, error) {
-                    if (xhr.status === 403) {
+                error: function (xhr, status, errorThrown, error) {
+                    if (xhr.status === 400) {
                         const toast = window.Swal.mixin({
                             toast: true,
                             position: 'top',
@@ -672,16 +400,103 @@
                         });
                         toast.fire({
                             icon: 'error',
-                            html: 'You do not have permission',
+                            html: xhr.responseJSON.error,
                             padding: '2em',
                         });
-                    } else {
-                        alert('Terjadi kesalahan: ' + error);
+                    }
+                    else if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            // title: 'Update successfully',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
                     }
                 }
             });
         });
-    </script>
+
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "delete-dome-close-status" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+                // width: 320,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        success: function (data) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'Your file has been deleted.',
+                                icon: 'success',
+                            })
+                            // Refresh table or remove row
+                            table.draw();
+
+                        },
+                        error: function (xhr) {
+                            if (xhr.status === 403) {
+                                Swal.fire(
+                                    'Access Denied!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else if (xhr.status === 404) {
+                                Swal.fire(
+                                    'Not Found!',
+                                    xhr.responseJSON.message,
+                                    'error'
+                                );
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'Something went wrong.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            })
+        });
+
+    });
+</script>
+
 
 </body>
 

@@ -44,7 +44,7 @@ class domeCloseList(View):
         ]
 
         if order_column >= len(columns):
-            order_by = 'id'
+            order_by = 'created_at'
         else:
             order_by = columns[order_column]
 
@@ -79,7 +79,8 @@ class domeCloseList(View):
                 "sampling_area": item.sampling_area,
                 "tonnage_dome": item.tonnage_dome,
                 "status_dome": item.status_dome,
-                "description": item.description
+                "description": item.description,
+                "created_at": item.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             } for item in object_list
         ]
 
@@ -194,85 +195,7 @@ def insert_dome_close(request):
     else:
         return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
-@login_required
-def update_dome_close(request, id):
-    allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
-            status=403
-    )
-    if request.method == 'POST':
-        try:
 
-            rules = {
-                'id_dome': ['required'],
-            }
-            # Pesan kesalahan validasi yang disesuaikan
-            custom_messages = {
-                'id_dome.required':'Dome is required.'
-            }
-
-            # Validasi request
-            for field, field_rules in rules.items():
-                for rule in field_rules:
-                    if rule == 'required':
-                        if not request.POST.get(field):
-                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
-            # Ambil data dari request
-            id_dome      = int(request.POST['id_dome'])
-            description  = request.POST['description']
-            status_dome  ='Continue'
-
-            # Dapatkan objek yang akan diupdate
-            data = get_object_or_404(domeStatusClose, id=id)
-
-            # Update data
-            data.description = description
-            data.status_dome = status_dome
-            data.save()
-
-            # Update OreProductions
-            OreProductions.objects.filter(
-                    id_pile=id_dome
-                ).update(
-                    pile_status=status_dome
-                )
-            
-            # Update SourceMinesDome
-            SourceMinesDome.objects.filter(id=id_dome).update(status_dome=status_dome)
-
-            return JsonResponse({'success': True, 'message': 'Data berhasil diupdate.'})
-
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
-        except ValidationError as e:
-            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Metode tidak diizinkan'}, status=405)
-
-@login_required
-def delete_dome_close(request):
-    allowed_groups = ['superadmin','data-control','admin-mgoqa']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
-            status=403
-    )
-    if request.method == 'DELETE':
-        job_id = request.GET.get('id')
-        if job_id:
-            # Lakukan penghapusan berdasarkan ID di sini
-            data = domeStatusClose.objects.get(id=int(job_id))
-            data.delete()
-            return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
-    else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-    
 @login_required
 def get_oreDomeStock(request, id):
     if request.method == 'GET':
@@ -321,4 +244,45 @@ def get_oreDomeStock(request, id):
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+@login_required
+def delete_dome_close(request):
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+        )
+
+    if request.method == 'DELETE':
+        job_id = request.GET.get('id')
+
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+
+        try:
+            # Ambil data domeStatusFinish untuk mendapatkan id_pile / id_dome
+            dome = domeStatusClose.objects.get(id=int(job_id))
+            id_dome = dome.id_dome  # pastikan fieldnya benar di model kamu
+
+            # Update status kembali ke Continue
+            status_dome = 'Continue'
+
+            OreProductions.objects.filter(id_pile=id_dome).update(pile_status=status_dome)
+            SourceMinesDome.objects.filter(id=id_dome).update(status_dome=status_dome)
+
+            # Hapus data domeStatusFinish
+            dome.delete()
+
+            return JsonResponse({'status': 'deleted', 'message': 'Status dikembalikan ke Continue'})
+
+        except domeStatusClose.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
 
