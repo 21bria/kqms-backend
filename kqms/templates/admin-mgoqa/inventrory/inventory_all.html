@@ -349,21 +349,21 @@
 
         // === Update Summary di Bawah Tabel ===
         function updateSummary(summary) {
-            const avg = summary.avg_grade || {};
-            $("#grand-sum-ni").text((avg.ni || 0).toFixed(2));
-            $("#grand-sum-fe").text((avg.fe || 0).toFixed(2));
-            $("#grand-sum-co").text((avg.co || 0).toFixed(2));
-            $("#grand-sum-mgo").text((avg.mgo || 0).toFixed(2));
-            $("#grand-sum-sio2").text((avg.sio2 || 0).toFixed(2));
-            $("#grand-sum-cao").text((avg.cao || 0).toFixed(2));
-            $("#grand-sum-al2o3").text((avg.al2o3 || 0).toFixed(2));
-            $("#grand-sum-cr2o3").text((avg.cr2o3 || 0).toFixed(2));
-            $("#grand-sum-mc").text((avg.mc || 0).toFixed(2));
-            $("#grand-sum-sm").text((avg.sm || 0).toFixed(2));
+            // const avg = summary.avg_grade || {};
+            $("#grand-sum-ni").text((summary.ni || 0).toFixed(2));
+            $("#grand-sum-fe").text((summary.fe || 0).toFixed(2));
+            $("#grand-sum-co").text((summary.co || 0).toFixed(2));
+            $("#grand-sum-mgo").text((summary.mgo || 0).toFixed(2));
+            $("#grand-sum-sio2").text((summary.sio2 || 0).toFixed(2));
+            $("#grand-sum-cao").text((summary.cao || 0).toFixed(2));
+            $("#grand-sum-al2o3").text((summary.al2o3 || 0).toFixed(2));
+            $("#grand-sum-cr2o3").text((summary.cr2o3 || 0).toFixed(2));
+            $("#grand-sum-mc").text((summary.mc || 0).toFixed(2));
+            $("#grand-sum-sm").text((summary.sm_ratio || 0).toFixed(2));
             $("#grand-total-ore").text((summary.total_ore || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
             $("#grand-total-released").text((summary.total_released || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
             $("#grand-total-selling").text((summary.total_selling || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            $("#grand-total-balance").text((summary.balance || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#grand-total-balance").text((summary.total_balance || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
         }
 
         // === Infinite Scroll ===

@@ -206,6 +206,7 @@
 {% include 'layout/js.html' %}
 
 <!-- Scripts -->
+
 <script type="text/javascript">
     $(document).ready(function () {
         /*--- Pass Header Token ---*/
@@ -215,330 +216,189 @@
             }
         });
 
+        // STATE VARIABLES
         let isLoading = false;
-        // Inisialisasi grand total
-        var grandTotalOre = 0;
-        var grandTotalRelease = 0;
-        var grandTotalSelling = 0;
-        var grandTotalBalance = 0;
-        var sumNi = 0;
-        var sumCo = 0;
-        var sumAl2O3 = 0;
-        var sumCao = 0;
-        var sumCr2O3 = 0;
-        var sumFe = 0;
-        var sumMgo = 0;
-        var sumSiO2 = 0;
-        var sumMC = 0;
-        var sumSM = 0;
-        var data_Ni = [];
-        var data_Co = [];
-        var data_Al2O3 = [];
-        var data_CaO = [];
-        var data_Cr2O3 = [];
-        var data_Fe = [];
-        var data_Mgo = [];
-        var data_SiO2 = [];
-        var data_MC = [];
-        var data_SM = [];
-        var rowCount = 0; // Jumlah baris
-        var table = $("#list-table").find("tbody");
-        var loading = false; // Status loading
-        var page = 1; // Halaman saat ini
-        var loadingComplete = false;
+        let page = 1;
+        let rowCount = 0;
+        let loadingComplete = false;
 
-        // Bersihkan isi tabel sebelum menambahkan data baru
-        table.empty();
-        // Fungsi untuk menambahkan data ke tabel
+        const table = $("#list-table").find("tbody");
+
+        // === Reset & Load Pertama ===
+        resetTable();
+        fetchData(getFilterData());
+
+        // ===  Fungsi Helper ===
+        function getFilterData() {
+            return {
+                saleFilter: $('#saleFilter').val(),
+                areaFilter: JSON.stringify($('#areaFilter').val()),
+                pointFilter: JSON.stringify($('#pointFilter').val())
+            };
+        }
+
+        function resetTable() {
+            table.empty();
+            rowCount = 0;
+            page = 1;
+            loadingComplete = false;
+        }
+
+        // === Tambah Data ke Tabel ===
         function appendDataToTable(data) {
-            // Reset grand total ke nol
-            grandTotalOre = 0;
-            grandTotalRelease = 0;
-            grandTotalSelling = 0;
-            grandTotalBalance = 0;
-            sumNi = 0;
-            sumCo = 0;
-            sumAl2O3 = 0;
-            sumCao = 0;
-            sumCr2O3 = 0;
-            sumFe = 0;
-            sumMgo = 0;
-            sumSiO2 = 0;
-            sumMC = 0;
-            sumSM = 0;
-            // Loop melalui data dan tambahkan ke tabel
             $.each(data, function (index, row) {
-                var newRow = $("<tr>");
-                newRow.append("<td>" + (rowCount + index + 1) + "</td>"); // Menambahkan nomor urut yang benar
-                newRow.append("<td>" + row.stockpile + "</td>");
-                newRow.append("<td>" + row.pile_id + "</td>");
-                newRow.append("<td>" + row.nama_material + "</td>");
-                newRow.append("<td>" + parseFloat(row.total_ore).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.released).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.total_selling).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
-                newRow.append("<td>" + parseFloat(row.balance).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
+                const newRow = $("<tr>");
+                newRow.append(`<td>${rowCount + index + 1}</td>`);
+                newRow.append(`<td>${row.stockpile || '-'}</td>`);
+                newRow.append(`<td>${row.pile_id || '-'}</td>`);
+                newRow.append(`<td>${row.nama_material || '-'}</td>`);
+                newRow.append(`<td>${parseFloat(row.total_ore || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.released || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.total_selling || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.balance || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
 
-                // Hitung persentase (percentage)
-                var percentage = (row.total_selling / row.total_ore) * 100;
-                var badgeClass = '';
+                // Hitung persentase
+                const percentage = (row.total_selling / row.total_ore) * 100 || 0;
+                const badgeClass = percentage >= 90 ? 'badge-soft-success text-success' : 'badge-soft-warning text-warning';
+                newRow.append(`<td class='text-center whitespace-nowrap'><div class='badge ${badgeClass} font-size-12'>${percentage.toFixed(2)}%</div></td>`);
 
-                if (percentage >= 90) {
-                    badgeClass = 'badge-soft-success text-success';
-                } else {
-                    badgeClass = 'badge-soft-warning text-warning';
-                }
-
-                // Membuat string HTML untuk badge dengan kelas yang sesuai
-                var badgeHTML = "<div class='badge " + badgeClass + " font-size-12'>" + percentage.toFixed(2) + "%</div>";
-
-                // Menambahkan badgeHTML ke dalam elemen newRow
-                newRow.append("<td class='text-center whitespace-nowrap'>" + badgeHTML + "</td>");
-
-                newRow.append("<td>" + row.ni + "</td>");
-                newRow.append("<td>" + row.fe + "</td>")
-                newRow.append("<td>" + row.al2o3 + "</td>")
-                newRow.append("<td>" + row.co + "</td>");
-                newRow.append("<td>" + row.mgo + "</td>")
-                newRow.append("<td>" + row.sio2 + "</td>")
-                newRow.append("<td>" + row.cao + "</td>")
-                newRow.append("<td>" + row.cr2o3 + "</td>")
-                newRow.append("<td>" + parseFloat(row.sm).toLocaleString('en-US', { maximumFractionDigits: 2 }) + "</td>");
-                newRow.append("<td>" + row.mc + "</td>")
-                newRow.append("<td>" + row.grade + "</td>")
-                // Akumulasi ke grand total
-                grandTotalOre += parseFloat(row.total_ore);
-                grandTotalRelease += parseFloat(row.released);
-                grandTotalSelling += parseFloat(row.total_selling);
-                grandTotalBalance += parseFloat(row.balance);
-
-                /* Hitung SUM Product */
-                data_Ni.push(row.released * row.ni);
-                data_Co.push(row.released * row.co);
-                data_Al2O3.push(row.released * row.al2o3);
-                data_CaO.push(row.released * row.cao);
-                data_Cr2O3.push(row.released * row.cr2o3);
-                data_Fe.push(row.released * row.fe);
-                data_Mgo.push(row.released * row.mgo);
-                data_SiO2.push(row.released * row.sio2);
-                data_MC.push(row.released * row.mc);
-                data_SM.push(row.released * row.sm);
-                // Tambahkan baris ke tabel
+                newRow.append(`<td>${row.ni}</td>`);
+                newRow.append(`<td>${row.fe}</td>`);
+                newRow.append(`<td>${row.al2o3}</td>`);
+                newRow.append(`<td>${row.co}</td>`);
+                newRow.append(`<td>${row.mgo}</td>`);
+                newRow.append(`<td>${row.sio2}</td>`);
+                newRow.append(`<td>${row.cao}</td>`);
+                newRow.append(`<td>${row.cr2o3}</td>`);
+                newRow.append(`<td>${parseFloat(row.sm || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${row.mc}</td>`);
+                newRow.append(`<td>${row.grade}</td>`);
                 table.append(newRow);
             });
 
-            // Set grand total di bawah footer tabel
-            $("#grand-total-ore").text(grandTotalOre.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            $("#grand-total-released").text(grandTotalRelease.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            $("#grand-total-selling").text(grandTotalSelling.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            $("#grand-total-balance").text(grandTotalBalance.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-
-            // Update rowCount
             rowCount += data.length;
 
-            // Menghitung rentang yang ditampilkan
-            var startEntry = rowCount - data.length + 1; // Menghitung entri awal
-            var endEntry = rowCount; // Menghitung entri akhir
-
-            // Update informasi di bawah tabel
+            const startEntry = rowCount - data.length + 1;
+            const endEntry = rowCount;
             $('#entry-info').text(`Showing ${startEntry} to ${endEntry} entries`);
-
-            // Proses SUM Product Grade
-            var sumProduct = function (dataArray) {
-                return dataArray.reduce((sum, value) => sum + value, 0);
-            };
-
-            // Bagi dengan total released
-            var sumResults = [
-                { id: "grand-sum-ni", value: (sumProduct(data_Ni) / grandTotalRelease) || 0 },
-                { id: "grand-sum-co", value: (sumProduct(data_Co) / grandTotalRelease) || 0 },
-                { id: "grand-sum-al2o3", value: (sumProduct(data_Al2O3) / grandTotalRelease) || 0 },
-                { id: "grand-sum-cao", value: (sumProduct(data_CaO) / grandTotalRelease) || 0 },
-                { id: "grand-sum-cr2o3", value: (sumProduct(data_Cr2O3) / grandTotalRelease) || 0 },
-                { id: "grand-sum-fe", value: (sumProduct(data_Fe) / grandTotalRelease) || 0 },
-                { id: "grand-sum-mgo", value: (sumProduct(data_Mgo) / grandTotalRelease) || 0 },
-                { id: "grand-sum-sio2", value: (sumProduct(data_SiO2) / grandTotalRelease) || 0 },
-                { id: "grand-sum-mc", value: (sumProduct(data_MC) / grandTotalRelease) || 0 }
-            ];
-
-            sumResults.forEach(result => {
-                $("#" + result.id).text(result.value.toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            });
-
-            // Hitung persentase dari grand total
-            var grandTotalPercentage = (grandTotalSelling / grandTotalOre) * 100;
-            var badgeClass = '';
-
-            if (grandTotalPercentage >= 90) {
-                badgeClass = 'badge-soft-success text-success';
-            } else {
-                badgeClass = 'badge-soft-warning text-warning';
-            }
-
-            // Membuat string HTML untuk badge dengan kelas yang sesuai
-            var badgeHTML = "<div class='badge " + badgeClass + " font-size-12'>" + grandTotalPercentage.toFixed(2) + "%</div>";
-            $("#grand-total-percentage").html(badgeHTML);
-
-            loading = false; // Set status loading ke false
         }
 
-        // Panggil fetchData saat halaman dimuat untuk pertama kalinya
-        var areaFilter = $('#areaFilter').val();
-        var pointFilter = $('#pointFilter').val();
-
-        var filter_data = {
-            areaFilter: areaFilter,
-            pointFilter: pointFilter
-        };
-
-        fetchData(filter_data);
-
-        // Fungsi untuk mengambil data dari server
+        // === Ambil Data dari Server ===
         function fetchData(filter_data) {
-            if (loading || loadingComplete) return;
-            loading = true;
-            // Tampilkan loader hanya jika ini adalah pemanggilan awal
+            if (isLoading || loadingComplete) return;
+
+            isLoading = true;
             if (page === 1) {
                 $('#loader').show();
                 $('#table-header').hide();
             }
+
             $.ajax({
                 type: "GET",
                 url: "{% url 'get-inventory-rkef' %}?page=" + page,
                 data: filter_data,
                 dataType: 'json',
                 success: function (response) {
-                    var sqlData = response.data;
-                    console.log("Current Page:", page);
-                    console.log("SQL Data Length:", sqlData.length);
-                    // console.log("SQL Data Response:", sqlData);
+                    const sqlData = response.data || [];
+
                     $('#loader').hide();
-                    if (sqlData.length < 1) {
-                        loadingComplete = true;
+                    $('#table-header').show();
+
+                    // tampilkan total data di judul box
+                    if (response.pagination) {
+                        const totalData = response.pagination.total_data || 0;
+                        $("#total-data").text(`(${totalData})`);
                     }
+
+                    if (sqlData.length === 0) {
+                        loadingComplete = true;
+                        // 🔥 Tampilkan summary sekali di akhir
+                        if (response.summary) updateSummary(response.summary);
+                        return;
+                    }
+
                     appendDataToTable(sqlData);
-                    page++; // Naikkan halaman untuk permintaan berikutnya
+
+                    // kalau masih ada data berikutnya
+                    if (response.pagination && response.pagination.more) {
+                        page++;
+                    } else {
+                        loadingComplete = true;
+                        if (response.summary) updateSummary(response.summary);
+                    }
                 },
                 error: function () {
-                    $('#loader').hide();
                     console.log("Gagal mengambil data dari server.");
-                    loading = false;
                 },
                 complete: function () {
-                    loading = false;
+                    isLoading = false;
                     $('#loader').hide();
                     $('#table-header').show();
                 }
             });
         }
 
+        // === Update Summary di Bawah Tabel ===
+        function updateSummary(summary) {
+            // const avg = summary.avg_grade || {};
+            $("#grand-sum-ni").text((summary.ni || 0).toFixed(2));
+            $("#grand-sum-fe").text((summary.fe || 0).toFixed(2));
+            $("#grand-sum-co").text((summary.co || 0).toFixed(2));
+            $("#grand-sum-mgo").text((summary.mgo || 0).toFixed(2));
+            $("#grand-sum-sio2").text((summary.sio2 || 0).toFixed(2));
+            $("#grand-sum-cao").text((summary.cao || 0).toFixed(2));
+            $("#grand-sum-al2o3").text((summary.al2o3 || 0).toFixed(2));
+            $("#grand-sum-cr2o3").text((summary.cr2o3 || 0).toFixed(2));
+            $("#grand-sum-mc").text((summary.mc || 0).toFixed(2));
+            $("#grand-sum-sm").text((summary.sm_ratio || 0).toFixed(2));
+            $("#grand-total-ore").text((summary.total_ore || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#grand-total-released").text((summary.total_released || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#grand-total-selling").text((summary.total_selling || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+            $("#grand-total-balance").text((summary.total_balance || 0).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+        }
+
+        // === Infinite Scroll ===
         $(".table-scrollable").on("scroll", function () {
-            if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight - 100) {
-                // Ambil kembali nilai filter terbaru
-                var filter_data = {
-                    areaFilter: JSON.stringify($('#areaFilter').val()),
-                    pointFilter: JSON.stringify($('#pointFilter').val())
-                };
-                fetchData(filter_data);
+            if (
+                $(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight - 100 &&
+                !isLoading &&
+                !loadingComplete
+            ) {
+                console.log("Mendekati bawah tabel, ambil data page:", page);
+                fetchData(getFilterData());
             }
         });
 
+        // ===  Apply Filter ===
         $('#applyFilterBtn').click(function () {
-            page = 1; // Reset halaman ke 1
-            loadingComplete = false; // 🔥 Reset agar fetchData mau jalan lagi
-            // Mengambil nilai filter dari elemen-elemen HTML yang sesuai
-            var areaFilter = $('#areaFilter').val();
-            var pointFilter = $('#pointFilter').val();
-            var saleFilter = $('#saleFilter').val();
-            // Bersihkan tabel sebelum memuat data baru
-            var table = $("#list-table").find("tbody");
-            table.empty();
-            // Reset rowCount untuk memulai dari 0
-            rowCount = 0;
-            // Reset array
-            data_Ni = [];
-            data_Co = [];
-            data_Al2O3 = [];
-            data_CaO = [];
-            data_Cr2O3 = [];
-            data_Fe = [];
-            data_Mgo = [];
-            data_SiO2 = [];
-            data_MC = [];
-
-            // Reset total
-            resetGrandTotals();
-
-            var filter_data = {
-                areaFilter: JSON.stringify($('#areaFilter').val()), // Gunakan JSON.stringify
-                pointFilter: JSON.stringify($('#pointFilter').val()) // Gunakan JSON.stringify
-            };
-            // Mulai memuat data baru berdasarkan filter
-            isLoading = true; // Set flag loading
-
-            fetchData(filter_data)
-
+            resetTable();
+            fetchData(getFilterData());
             window.HSOverlay.close('#search-modal');
         });
 
+        // ===  Reload ===
         $('#reload').click(function () {
-            // Tampilkan loader dan sembunyikan header tabel
-            $('#loader').show(); // Tampilkan loader
-            $('#table-header').hide(); // Sembunyikan header tabe
-            page = 1; // Reset halaman ke 1
-            // Bersihkan tabel sebelum memuat data baru
-            var table = $("#list-table").find("tbody");
-            table.empty();
-            // Reset rowCount untuk memulai dari 0
-            rowCount = 0;
-            // Reset array
-            data_Ni = [];
-            data_Co = [];
-            data_Al2O3 = [];
-            data_CaO = [];
-            data_Cr2O3 = [];
-            data_Fe = [];
-            data_Mgo = [];
-            data_SiO2 = [];
-            data_MC = [];
-            // Reset total
-            resetGrandTotals();
-            // Reset filter values
+            resetTable();
             resetFilterValues();
-            loadingComplete = false; // Reset loadingComplete
-            isLoading = true; // Set flag loading
-            // Ambil nilai dari elemen input
-            var filter_data = {
-                areaFilter: $('#areaFilter').val(),
-                pointFilter: $('#pointFilter').val()
-            };
-            fetchData(filter_data)
+            fetchData(getFilterData());
         });
 
-        // Fungsi untuk reset nilai total
-        function resetGrandTotals() {
-            $("#grand-total-ore").text('-');
-            $("#grand-total-released").text('-');
-            $("#grand-total-balance").text('-');
-            $("#grand-total-percentage").text('-');
-            $("#grand-total-selling").text('-');
-            $("#grand-sum-ni").text('-');
-            $("#grand-sum-co").text('-');
-            $("#grand-sum-al2o3").text('-');
-            $("#grand-sum-cao").text('-');
-            $("#grand-sum-cr2o3").text('-');
-            $("#grand-sum-fe").text('-');
-            $("#grand-sum-mgo").text('-');
-            $("#grand-sum-sio2").text('-');
-            $("#grand-sum-sm").text('-');
-            $("#grand-sum-mc").text('-');
+        // === Reset Filter ===
+        function resetFilterValues() {
+            // Reset filter biasa
+            $('#saleFilter').val('').trigger('change');
+
+            // Reset Select2 dengan AJAX dengan benar
+            $('#areaFilter').val(null).empty().trigger('change');
+            $('#pointFilter').val(null).empty().trigger('change');
+
+            // Kalau mau reset placeholder kembali:
+            $('#areaFilter').append('<option value="">-- Select --</option>');
+            $('#pointFilter').append('<option value="">-- Select --</option>');
         }
 
-        // Fungsi untuk reset nilai filter
-        function resetFilterValues() {
-            $('#areaFilter').val('').trigger('change');
-            $('#pointFilter').val('').trigger('change');
-        }
     });
+
 </script>
 
 <!-- /*---  Filter Modal and Apply Filter  ----*/ -->

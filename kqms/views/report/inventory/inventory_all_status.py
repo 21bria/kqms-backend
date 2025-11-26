@@ -5,6 +5,7 @@ import json
 from kqms.utils.db_utils import get_db_vendor
 from kqms.utils.class_ore import get_grade_by_rules
 from django.shortcuts import render
+from decimal import Decimal
 
 # Memanggil fungsi utility
 db_vendor = get_db_vendor('kqms_db')
@@ -18,10 +19,9 @@ def to_float(value):
 def inventory_all_status_page(request):
     return render(request, 'admin-mgoqa/inventrory/inventory_all_status.html')
 
-
 @login_required
 def getInventoryAllStatus(request):
-    saleFilter   = request.GET.get('saleFilter')
+    saleFilter  = request.GET.get('saleFilter')
     areaFilter  = request.GET.get('areaFilter', '[]')  
     pointFilter = request.GET.get('pointFilter', '[]') 
 
@@ -230,4 +230,3 @@ def getInventoryAllStatus(request):
             'total_data'    : total_data
         }
     })
-

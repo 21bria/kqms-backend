@@ -1571,7 +1571,7 @@ def get_data_inventory(request):
 
     # === Filter Dinamis ===
     filters = []
-    params = []
+    params  = []
 
     if saleFilter:
         filters.append("t1.sale_adjust = %s")
@@ -1669,7 +1669,7 @@ def get_data_inventory(request):
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
     def weighted_avg(field):
-        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_balance if total_balance else 0
 
     summary = {
         'total_ore': total_ore,
@@ -1692,7 +1692,7 @@ def get_data_inventory(request):
         'summary': summary,
         'pagination': {
             'more': len(sql_data) == per_page,
-            'total_pages': (total_data // per_page) + (1 if total_data % per_page > 0 else 0),
+            'total_pages' : (total_data // per_page) + (1 if total_data % per_page > 0 else 0),
             'current_page': page,
             'total_data': total_data
         }
@@ -1822,7 +1822,7 @@ def get_inventory_lim(request):
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
     def weighted_avg(field):
-        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_balance if total_balance else 0
 
     sum_results = {
         'total_ore': total_ore,
@@ -1979,7 +1979,7 @@ def get_inventory_sap(request):
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
     def weighted_avg(field):
-        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_released if total_released else 0
 
     sum_results = {
         'total_ore': total_ore,
@@ -2138,7 +2138,7 @@ def get_inventory_stockpile(request):
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
     def weighted_avg(field):
-        return sum(item[field] * item['released'] for item in sql_data if item['released']) / total_released if total_released else 0
+        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_balance if total_balance else 0
 
     sum_results = {
         'total_ore': total_ore,
