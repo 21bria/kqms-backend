@@ -1979,7 +1979,7 @@ def get_inventory_sap(request):
     total_balance  = sum(item['balance'] for item in sql_data if item['balance'])
 
     def weighted_avg(field):
-        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_released if total_released else 0
+        return sum(item[field] * item['balance'] for item in sql_data if item['balance']) / total_balance if total_balance else 0
 
     sum_results = {
         'total_ore': total_ore,
