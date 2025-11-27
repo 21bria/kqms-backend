@@ -49,9 +49,26 @@ class SampleProductions(models.Model):
             models.Index(fields=['selling_pulp']),
             models.Index(fields=['sale_monitoring']),
             models.Index(fields=['kode_batch']),
+            models.Index(fields=['sampling_deskripsi']),
+            models.Index(fields=['sample_dup']),
             models.Index(fields=['gc_expect'])
         ]
         
+    def save(self, *args, **kwargs):
+        original = self.sampling_deskripsi
+
+        # Default None
+        self.sample_dup = None
+
+        if original and isinstance(original, str):
+            desc = original.strip()
+
+            # Jika DUP_, isi sample_dup versi bersih
+            if desc.startswith("DUP_"):
+                self.sample_dup = desc[4:]  # hilangkan DUP_
+
+        super().save(*args, **kwargs)
+
     @classmethod
     def get_samples(cls, sample_from, sample_to):
         return cls.objects.filter(sample_number__gte=sample_from, sample_number__lte=sample_to)

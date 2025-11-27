@@ -84,7 +84,24 @@ def import_sample_GcQa(file_path, original_file_name):
                 remark = None if pd.isna(remark) else remark
                 sampling_deskripsi = None if pd.isna(sampling_deskripsi) else sampling_deskripsi
 
-                
+                # # Bersihkan DUP_
+                # if sampling_deskripsi and isinstance(sampling_deskripsi, str):
+                #     sampling_deskripsi = sampling_deskripsi.strip()
+                #     if sampling_deskripsi.startswith("DUP_"):
+                #         sampling_deskripsi = sampling_deskripsi.replace("DUP_", "", 1)
+
+                original_desc = sampling_deskripsi  # simpan original
+
+                # Default kosong
+                cleaned = None
+
+                # Isi sample_dup hanya jika DUP_
+                if original_desc and isinstance(original_desc, str):
+                    temp = original_desc.strip()
+                    if temp.startswith("DUP_"):
+                        cleaned = temp.replace("DUP_", "", 1)   # hasil bersih)
+
+                                
                 # Cari ID dari Model berdasarkan nama
                 id_type         = type_dict.get(sample_type, None)  
                 id_method       = method_dict.get(sample_method, None)  
@@ -152,7 +169,9 @@ def import_sample_GcQa(file_path, original_file_name):
                         unit_truck=truck,
                         type=type,
                         kode_batch=kode_batch,
-                        sampling_deskripsi=sampling_deskripsi,
+                        # sampling_deskripsi=sampling_deskripsi,
+                        sampling_deskripsi = original_desc,# simpan original
+                        sample_dup = cleaned, # hanya simpan jika DUP_, jika tidak None
                         left_date=left_date,
                     )
                     list_objects.append(data)

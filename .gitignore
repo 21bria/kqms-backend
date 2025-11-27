@@ -24,3 +24,6 @@ db.sqlite3
 
 # Mengabaikan file log besar
 debug.log.env
+
+celery.txt
+note.txt
