@@ -17,6 +17,7 @@ from ..views.settings.remove.remove_barging import *
 from ..views.settings.remove.remove_gc_data import *
 from ..views.settings.data_control.page_config import *
 from ..views.settings.data_control.dome_adjustment import *
+from ..views.settings.remove.batch_double_pds import *
 
 
 urlpatterns = [
@@ -92,6 +93,11 @@ urlpatterns = [
     path('barging-finish-status/insert/', insert_barging_finish, name='insert-barging-finish-status'), 
     path('barging-finish-status/delete/', delete_barging_finish, name='delete-barging-finish-status'), 
     path('barging-finish-status-get/tonnage/<str:code_lot>/', get_tonnage_lot,name='barging-finish-status-get-tonnage'),
+
+    # Table Samples Batch Double
+    path('sample/batch/double/', batch_double_page, name='sample-doble-batch-page'), 
+    path('sample/batch/double/list/', batchSamplesDoubleList.as_view(), name='sample-batch-double-list'),
+    path('sample/batch/double/update/', update_double_batch, name='update-batch-double-sample'),
 
     # Table Remove Data
     path('remove-page/', remove_page, name='remove-page'), 

@@ -1,0 +1,267 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Remove</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Remove
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Batch Double List
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Data Batch Double</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="5%">No</th>
+                                            <th class="bg-soft-secondary" width="10%">Date Sample</th>
+                                            <th class="bg-soft-secondary" width="10%">Type</th>
+                                            <th class="bg-soft-secondary" width="7%">Material</th>
+                                            <th class="bg-soft-secondary" width="10%">Sampling Point</th>
+                                            <th class="bg-soft-secondary" width="10%">Sampling Area</th>
+                                            <th class="bg-soft-secondary" width="7%">Batch</th>
+                                            <th class="bg-soft-secondary" width="7%">Increments</th>
+                                            <th class="bg-soft-secondary" width="7%">Samples</th>
+                                            <th class="bg-soft-secondary" width="7%">Generate</th>
+                                            <th class="bg-soft-secondary" width="10%">Created</th>
+                                            <th class="bg-soft-secondary" width="7%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $(".form-select").select2({
+            width: '100%',
+            dropdownParent: $('#add-data .ti-modal-body')
+        });
+
+        /*-- Render DataTable --*/
+        let url = '{% url "sample-batch-double-list" %}';
+        var table = $('#data_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ordering": true,
+            language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": url,
+                "type": "POST",
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'tgl_sample',
+                    name: 'tgl_sample'
+                },
+                {
+                    data: 'type_sample',
+                    name: 'type_sample'
+                },
+                {
+                    data: 'nama_material',
+                    name: 'nama_material'
+                },
+                {
+                    data: 'sampling_point',
+                    name: 'sampling_point'
+                },
+                {
+                    data: 'sampling_area',
+                    name: 'sampling_area'
+                },
+                {
+                    data: 'batch_code',
+                    name: 'batch_code'
+                },
+                {
+                    data: 'increments',
+                    name: 'increments'
+                },
+                {
+                    data: 'sample_number',
+                    name: 'sample_number'
+                },
+                {
+                    data: 'kode_batch',
+                    name: 'kode_batch'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
+
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                <div  class="flex gap-2 items-center" >
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                        </svg>
+                                    </a>
+                                
+                                </div>
+                            `;
+                    }
+                }
+
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [6, 'desc']
+            ],
+        });
+
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');;
+            var url = '{% url "update-batch-double-sample" %}?id=' + id;
+
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will mark the batch as *Double!",
+                icon: 'warning',
+                showCancelButton: true,
+                // confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, update it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.status === 'success') {
+                                table.draw();
+                                Swal.fire('Updated!', data.message, 'success');
+                            } else {
+                                Swal.fire('Error!', data.message, 'error');
+                            }
+                        },
+                        error: function (xhr) {
+                            Swal.fire('Error!', 'Something went wrong', 'error');
+                            console.log('Error:', xhr);
+                        }
+                    });
+                }
+            });
+
+
+        });
+
+
+    });
+</script>
+
+
+</body>
+
+</html>

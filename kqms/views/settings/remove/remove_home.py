@@ -52,3 +52,7 @@ def remove_mine_bulk_page(request):
         'end_date'   : today.strftime('%Y-%m-%d'),
     }
     return render(request, 'remove/remove-mine.html',context)
+
+@login_required
+def batch_double_page(request):
+    return render(request, 'remove/list-double-batch.html')
