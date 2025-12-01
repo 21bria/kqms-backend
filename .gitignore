@@ -25,5 +25,6 @@ db.sqlite3
 # Mengabaikan file log besar
 debug.log.env
 
-celery.txt
+celery_deploy.txt
 note.txt
+create_user.txt
