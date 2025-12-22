@@ -5,6 +5,7 @@ from celery import shared_task
 from django.db import transaction
 from django.conf import settings
 from ..models.selling_official import SellingOfficial,SellingSurveyor
+from ..models.stock_factories import StockFactories
 from ..models.task_model import taskImports
 import re
 from django.db.models.functions import Trim
@@ -14,23 +15,24 @@ from django.db import transaction
 # Fungsi untuk membersihkan data numerik
 def clean_numeric(value):
     try:
-        if pd.isna(value):  # Cek jika NaN atau None
+        if pd.isna(value):
             return 0
         if isinstance(value, str):
-            value = value.strip()  # Menghapus spasi di awal dan akhir
-            if value == '':  # Jika string kosong
-                return None
-            # Menghapus karakter selain angka dan titik desimal
+            value = value.strip()
+            value = value.replace(',', '')  # hapus ribuan separator
+            if value == '':
+                return 0
+            # hapus karakter selain angka dan titik
             value = re.sub(r"[^0-9.<>]", "", value)
             if value.startswith('<') or value.startswith('>'):
-                value = value[1:]  # Menghapus tanda '<' atau '>'
-            if re.match(r"^\d+(\.\d+)?$", value):  # Cek jika angka valid
+                value = value[1:]
+            if re.match(r"^\d+(\.\d+)?$", value):
                 return float(value)
-            return 0  # Jika tidak valid, kembalikan 0
+            return 0
         return value if isinstance(value, (int, float)) else 0
     except Exception as e:
         print(f"Error processing value: {value}, Error: {e}")
-        return 0  # Kembalikan 0 jika terjadi error
+        return 0
 
 @shared_task(name='kqms.task.import_selling_official.import_selling_official')
 def import_selling_official(file_path, original_file_name):
@@ -51,6 +53,7 @@ def import_selling_official(file_path, original_file_name):
         df['end_date']   = pd.to_datetime(df['Complete Loading']).dt.date
 
         surveyor_dict    = dict(SellingSurveyor.objects.annotate(trimmed=Trim('code_surveyor')).values_list('trimmed', 'id'))
+        buyer_dict       = dict(StockFactories.objects.annotate(trimmed=Trim('factory_stock')).values_list('trimmed', 'id'))
 
         df['tonnage'] = df['Tonnage'].fillna(0).astype(float)
         # Bersihkan semua kolom numerik di DataFrame
@@ -63,10 +66,10 @@ def import_selling_official(file_path, original_file_name):
                 
         with transaction.atomic():
             for index, row in df.iterrows():
-
                 try:
                     surveyor     = row.get('Surveyor')
                     so_number    = None if pd.isna(row.get('So Number')) else str(row.get('So Number')).strip()
+                    buyer        = None if pd.isna(row.get('Buyer')) else str(row.get('Buyer')).strip()
                     product_code = None if pd.isna(row.get('Code Lot')) else str(row.get('Code Lot')).strip()
                     type_selling = None if pd.isna(row.get('Type Selling')) else str(row.get('Type Selling')).strip()
                     start_date   = row.get('start_date')
@@ -85,15 +88,16 @@ def import_selling_official(file_path, original_file_name):
                     mc           = row.get('MC', 0)
 
                     id_surveyor  = surveyor_dict.get(surveyor)
+                    id_buyer     = buyer_dict.get(buyer)
 
-                    if SellingOfficial.objects.filter(product_code=product_code).exists():
-                        duplicates.append(f"Duplicate at row {index}: {product_code}")
-                        duplicate_rows.append(row.to_dict())
-                        duplicate_imports += 1
-                        continue
+                   # Ambil re_assay terakhir dari database, pastikan default 0 jika None
+                    last_obj = SellingOfficial.objects.filter(product_code=product_code).order_by('-re_assay').first()
+                    last_re_assay = last_obj.re_assay if last_obj and last_obj.re_assay is not None else 0
+                    re_assay = last_re_assay + 1
 
                     obj = SellingOfficial(
                         id_surveyor=id_surveyor,
+                        id_factory=id_buyer,
                         so_number=so_number,
                         product_code=product_code,
                         type_selling=type_selling,
@@ -110,12 +114,15 @@ def import_selling_official(file_path, original_file_name):
                         cao=cao,
                         mno=mno,
                         cr2o3=cr2o3,
-                        mc=mc
+                        mc=mc,
+                        re_assay=re_assay  # ← ini kolom baru
                     )
                     list_objects.append(obj)
                     successful_imports += 1
+
                 except Exception as e:
                     errors.append(f"Error at row {index}: {str(e)}")
+
 
             if list_objects:
                 SellingOfficial.objects.bulk_create(list_objects, batch_size=200)

@@ -47,6 +47,131 @@ def fetch_production_quality_year(year: int):
     }
     return {"rows": rows, "summary": summary}
 
+def fetch_production_grade_year(year: int):
+    query = """
+     WITH month_series AS (
+        SELECT 
+            date_trunc('month', gs)::date AS dt,
+            TO_CHAR(gs, 'YYYY-MM') AS dt_key,
+            TO_CHAR(gs, 'FMMonth') AS dt_label
+        FROM generate_series(
+            make_date(%s, 1, 1),
+            make_date(%s, 12, 31),
+            interval '1 month'
+        ) gs
+    ),
+        prod AS (
+            SELECT
+                date_trunc('month', tgl_production)::date AS prod_month,
+                TRIM(nama_material) AS nama_material,
+                SUM(tonnage)::numeric AS total_ore,
+                SUM(
+                    CASE WHEN roa_ni IS NOT NULL AND sample_number IS NOT NULL
+                    THEN tonnage ELSE 0 END
+                )::numeric AS released,
+                SUM(tonnage * roa_ni) AS sum_ton_ni,
+                SUM(tonnage * roa_co) AS sum_ton_co,
+                SUM(tonnage * roa_fe) AS sum_ton_fe,
+                SUM(tonnage * roa_mgo) AS sum_ton_mgo,
+                SUM(tonnage * roa_sio2) AS sum_ton_sio2,
+                SUM(
+                    CASE WHEN sample_number IS NOT NULL AND roa_ni IS NOT NULL
+                    THEN tonnage ELSE 0 END
+                )::numeric AS denom_grade
+            FROM details_roa
+            WHERE direct_sale = 'No'
+            AND EXTRACT(YEAR FROM tgl_production) = %s
+            GROUP BY 1, 2
+        )
+        SELECT
+            ms.dt,
+            TO_CHAR(ms.dt, 'Mon') AS bulan_label,
+            p.nama_material,
+            COALESCE(p.total_ore, 0) AS total_ore,
+            COALESCE(p.released, 0) AS released_ore,
+
+            -- NI
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_ni / p.denom_grade
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS ni,
+
+            -- CO
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_co / p.denom_grade
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS co,
+
+            -- FE
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_fe / p.denom_grade
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS fe,
+
+            -- MGO
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_mgo / p.denom_grade
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS mgo,
+
+            -- SIO2
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_sio2 / p.denom_grade
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS sio2,
+
+            -- SM
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    AND (p.sum_ton_mgo / p.denom_grade) > 0
+                    THEN (p.sum_ton_sio2 / p.denom_grade) /
+                        ((p.sum_ton_mgo / p.denom_grade) + 0.000001)
+                    ELSE 0 END,
+                'FM999990.00'
+            ) AS sm
+        FROM month_series ms
+        LEFT JOIN prod p ON ms.dt = p.prod_month
+        ORDER BY ms.dt, p.nama_material;
+    """
+
+    with connections["kqms_db"].cursor() as cur:
+        cur.execute(query, [year, year, year])
+        grade_rows = [
+            {
+                "dt_key": r[0],
+                "dt": r[1],
+                "nama_material": r[2],
+                "total_ore": float(r[3] or 0),
+                "released_ore": float(r[4] or 0),
+                "ni": r[5],
+                "co": r[6],
+                "fe": r[7],
+                "mgo": r[8],
+                "sio2": r[9],
+                "sm": r[10],
+            }
+            for r in cur.fetchall()
+        ]
+    
+    # === Summary per year
+    summary = {
+        "total": sum(r["total_ore"] for r in grade_rows),
+        "lim":   sum(r["total_ore"] for r in grade_rows if r["nama_material"] == "LIM"),
+        "sap":   sum(r["total_ore"] for r in grade_rows if r["nama_material"] == "SAP"),
+    }
+
+    return {"rows": grade_rows, "summary": summary}
+
 def fetch_selling_year(year: int):
     query = """
        WITH bulan AS (

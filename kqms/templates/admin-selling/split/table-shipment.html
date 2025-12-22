@@ -1,0 +1,273 @@
+<div class="overflow-auto mt-5">
+    <div class="table-responsive">
+        <table id="list-table-shipment"
+            class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+            <thead>
+                <tr>
+                    <th colspan="4" class="center-align">By Shipment</th>
+                    <th colspan="4" class="center-align">Ni </th>
+                    <th colspan="4" class="center-align">Fe</th>
+                    <th colspan="4" class="center-align">S/M</th>
+                </tr>
+                <tr>
+                    <th>#</th>
+                    <th>Completed</th>
+                    <th>Tagboat</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Internal</th>
+                    <th class="text-right">Surveyor</th>
+                    <th class="text-right">diff</th>
+                    <th class="text-right">%diff</th>
+                    <th class="text-right">Internal</th>
+                    <th class="text-right">Surveyor</th>
+                    <th class="text-right">diff</th>
+                    <th class="text-right">%diff</th>
+                    <th class="text-right">Internal</th>
+                    <th class="text-right">Surveyor</th>
+                    <th class="text-right">diff</th>
+                    <th class="text-right">%diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+            </tfoot>
+
+        </table>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    function loadDataShipment() {
+
+        let table = $("#list-table-shipment").find("tbody");
+        table.empty();
+
+        // Hitung Grand Total
+        let grandOre = 0;
+        let grandSumInternalNi = 0;
+        let grandSumOfficialNi = 0;
+        let grandSumDiffNi = 0;
+        let grandSumDiffNiPerc = 0;
+        let grandSumInternalFe = 0, grandSumOfficialFe = 0, grandSumDiffFe = 0, grandSumDiffFePerc = 0;
+        let grandSumInternalSm = 0, grandSumOfficialSm = 0, grandSumDiffSm = 0, grandSumDiffSmPerc = 0;
+
+        // Group helper
+        function groupBy(arr, key) {
+            return arr.reduce((acc, item) => {
+                let groupKey = item[key] || "UNKNOWN";
+                if (!acc[groupKey]) acc[groupKey] = [];
+                acc[groupKey].push(item);
+                return acc;
+            }, {});
+        }
+
+        // Render rows di dalam setiap buyer
+        function renderGroupRows(rows) {
+            let subtotalOre = 0;
+            let internalNi = 0;
+            let officialNi = 0;
+            let diffNi = 0;
+            let diffNiPerc = 0;
+
+            let internalFe = 0, officialFe = 0, diffFe = 0, diffFePerc = 0;
+            let internalSm = 0, officialSm = 0, diffSm = 0, diffSmPerc = 0;
+
+            rows.forEach((row, idx) => {
+                let ton = parseFloat(row.tonnage_official);
+
+                subtotalOre += ton;
+                internalNi += ton * parseFloat(row.ni_split);
+                officialNi += ton * parseFloat(row.ni_official);
+                diffNi += ton * parseFloat(row.ni_diff);
+                diffNiPerc += ton * parseFloat(row.ni_diff_perc);
+
+                internalFe += ton * parseFloat(row.fe_split);
+                officialFe += ton * parseFloat(row.fe_official);
+                diffFe += ton * parseFloat(row.fe_diff);
+                diffFePerc += ton * parseFloat(row.fe_diff_perc);
+
+                internalSm += ton * parseFloat(row.sm_split);
+                officialSm += ton * parseFloat(row.sm_official);
+                diffSm += ton * parseFloat(row.sm_diff);
+                diffSmPerc += ton * parseFloat(row.sm_diff_perc);
+
+            
+                let tr = $("<tr>");
+                tr.append(`<td>${idx + 1}</td>`);
+                tr.append(`<td>${formatValue(row.date_barge_out)}</td>`);
+                tr.append(`<td>${formatValue(row.barge_name)}</td>`);
+
+                tr.append(`<td class="text-right">${ton.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.ni_split).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.ni_official).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.ni_diff).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.ni_diff_perc).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+
+                tr.append(`<td class="text-right">${parseFloat(row.fe_split).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.fe_official).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.fe_diff).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.fe_diff_perc).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+
+                tr.append(`<td class="text-right">${parseFloat(row.sm_split).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.sm_official).toLocaleString('en-US', { maximumFractionDigits: 2})}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.sm_diff).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                tr.append(`<td class="text-right">${parseFloat(row.sm_diff_perc).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+
+                table.append(tr);
+            });
+
+            // HITUNG SUBTOTAL
+            let avgInternalNi = internalNi / subtotalOre;
+            let avgOfficialNi = officialNi / subtotalOre;
+            let avgDiffNi = diffNi / subtotalOre;
+            let avgDiffNiPerc = diffNiPerc / subtotalOre;
+
+            let avgInternalFe = internalFe / subtotalOre;
+            let avgOfficialFe = officialFe / subtotalOre;
+            let avgDiffFe = diffFe / subtotalOre;
+            let avgDiffFePerc = diffFePerc / subtotalOre;
+
+            let avgInternalSm = internalSm / subtotalOre;
+            let avgOfficialSm = officialSm / subtotalOre;
+            let avgDiffSm = diffSm / subtotalOre;
+            let avgDiffSmPerc = diffSmPerc / subtotalOre;
+
+            // Simpan ke Grand Total
+            grandOre += subtotalOre;
+            grandSumInternalNi += internalNi;
+            grandSumOfficialNi += officialNi;
+            grandSumDiffNi += diffNi;
+            grandSumDiffNiPerc += diffNiPerc;
+
+            grandSumInternalFe += internalFe;
+            grandSumOfficialFe += officialFe;
+            grandSumDiffFe += diffFe;
+            grandSumDiffFePerc += diffFePerc;
+
+            grandSumInternalSm += internalSm;
+            grandSumOfficialSm += officialSm;
+            grandSumDiffSm += diffSm;
+            grandSumDiffSmPerc += diffSmPerc;
+
+
+            // SUBTOTAL BARIS
+            let subtotalRow = `
+            <tr style="font-weight:bold;">
+                <td colspan="3" class="text-right">Subtotal</td>
+                <td class="text-right">${subtotalOre.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                
+                <!-- Ni -->
+                <td class="text-right">${avgInternalNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgOfficialNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffNiPerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+
+                <!-- Fe -->
+                <td class="text-right">${avgInternalFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgOfficialFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffFePerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+
+                <!-- Sm -->
+                <td class="text-right">${avgInternalSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgOfficialSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                <td class="text-right">${avgDiffSmPerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+            </tr>
+        `;
+            table.append(subtotalRow);
+        }
+
+        // === AJAX DATA ===
+        $.ajax({
+            type: "GET",
+            url: "{% url 'selling-monitoring-shipment-list'%}",
+            data: {
+                typeFilter: $('#typeFilter').val(),
+                codeFilter: JSON.stringify($('#codeFilter').val()),
+                startDate: $('#startDate').val(),
+                endDate: $('#endDate').val()
+            },
+            success: function (response) {
+                table.empty();
+                let data = response.data;
+
+                // Group berdasarkan BUYER
+                let grouped = groupBy(data, "buyer"); // <= TRIM(t1.factory_stock) as buyer
+
+                Object.keys(grouped).forEach((buyerName) => {
+                    // HEADER BUYER
+                    table.append(`
+                    <tr style=font-weight:bold;">
+                        <td style="font-weight:bold;"colspan="3">Shipment to ${buyerName}</td>
+                    </tr>
+                `);
+
+                    // RENDER ROWS
+                    renderGroupRows(grouped[buyerName]);
+                });
+
+                // ==== GRAND TOTAL ====
+                let grandInternalNi = grandSumInternalNi / grandOre;
+                let grandOfficialNi = grandSumOfficialNi / grandOre;
+                let grandDiffNi = grandSumDiffNi / grandOre;
+                let grandDiffNiPerc = grandSumDiffNiPerc / grandOre;
+
+                let grandInternalFe = grandSumInternalFe / grandOre;
+                let grandOfficialFe = grandSumOfficialFe / grandOre;
+                let grandDiffFe = grandSumDiffFe / grandOre;
+                let grandDiffFePerc = grandSumDiffFePerc / grandOre;
+
+                let grandInternalSm = grandSumInternalSm / grandOre;
+                let grandOfficialSm = grandSumOfficialSm / grandOre;
+                let grandDiffSm = grandSumDiffSm / grandOre;
+                let grandDiffSmPerc = grandSumDiffSmPerc / grandOre;
+
+                table.append(`
+                <tr style=font-weight:bold;">
+                    <td colspan="3" class="text-right">GRAND TOTAL</td>
+                    <td class="text-right">${grandOre.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandInternalNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandOfficialNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffNi.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffNiPerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    
+                    <td class="text-right">${grandInternalFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandOfficialFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffFe.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffFePerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                   
+                    <td class="text-right">${grandInternalSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandOfficialSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffSm.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                    <td class="text-right">${grandDiffSmPerc.toLocaleString("en-US", { maximumFractionDigits: 2 })}</td>
+                   
+                </tr>
+            `);
+            },
+            error: function () {
+                console.log("Load data error");
+            }
+        });
+    }
+</script>

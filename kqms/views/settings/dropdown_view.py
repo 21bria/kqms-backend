@@ -16,6 +16,7 @@ from ...models.selling_official import SellingSurveyor
 from ...models.vendors import Vendors
 from ...models.mine_units import mineUnitsView
 from ...models.source_model import SourceMines,SourceMinesLoading,SourceMinesDumping,SourceMinesDome
+from ...models import UnitStatus, UnitActivity, UnitLocation
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -1516,7 +1517,6 @@ def getMaterialsFactors(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-
 def get_haluer_class(request):
     if request.method == 'GET':
         try:
@@ -1672,3 +1672,81 @@ def get_jetty_in(request):
             return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+def getLocationUnits(request):
+    try:
+        query    = request.GET.get('q', '')
+        page     = int(request.GET.get('page', 1))
+        per_page = 10  # Jumlah item per halaman
+
+        # Filter berdasarkan query
+        data_get = UnitLocation.objects.filter(name__icontains=query).order_by('name')
+        # Pagination
+        start   = (page - 1) * per_page
+        end     = start + per_page
+        results = data_get[start:end]
+        data = {
+            'results'   : [{'id': data_get.id, 'text': data_get.code} for data_get in results],
+            'pagination': {'more': len(data_get) > end}  
+        }
+        return JsonResponse(data, safe=False)
+    
+    except Exception as e:
+        # Log the error if necessary (optional)
+        print(f"Error occurred: {e}")
+        # Return an error response
+        return JsonResponse({'error': 'An error occurred while fetching sample types.'}, status=500)
+    
+def getUnitStatus(request):
+    try:
+        query    = request.GET.get('q', '')
+        page     = int(request.GET.get('page', 1))
+        per_page = 10  # Jumlah item per halaman
+
+        # Filter berdasarkan query
+        data_get = UnitStatus.objects.filter(name__icontains=query).order_by('name')
+        # Pagination
+        start   = (page - 1) * per_page
+        end     = start + per_page
+        results = data_get[start:end]
+        data = {
+            'results'   : [{'id': data_get.id, 'text': data_get.name} for data_get in results],
+            'pagination': {'more': len(data_get) > end}  
+        }
+        return JsonResponse(data, safe=False)
+    
+    except Exception as e:
+        # Log the error if necessary (optional)
+        print(f"Error occurred: {e}")
+        # Return an error response
+        return JsonResponse({'error': 'An error occurred while fetching sample types.'}, status=500)
+    
+def getUnitActivity(request):
+    try:
+        query     = request.GET.get('q', '')
+        page      = int(request.GET.get('page', 1))
+        per_page  = 10
+        status_id = request.GET.get('status_id')  # ← ambil status id dari request
+
+        # Filter berdasarkan query
+        qs = UnitActivity.objects.filter(name__icontains=query)
+        if status_id:
+            qs = qs.filter(status_id=status_id)
+
+        qs = qs.order_by('name')
+
+        # Pagination
+        start  = (page - 1) * per_page
+        end    = start + per_page
+        results = qs[start:end]
+
+        data = {
+            'results': [{'id': act.id, 'text': act.name} for act in results],
+            'pagination': {'more': len(qs) > end}
+        }
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        return JsonResponse({'error': 'An error occurred while fetching activities.'}, status=500)
+
+    

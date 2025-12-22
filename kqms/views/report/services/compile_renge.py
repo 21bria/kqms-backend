@@ -4,6 +4,9 @@ from django.db import connections
 from ....utils.db_utils import get_db_vendor
 db_vendor = get_db_vendor('kqms_db')
 
+def g(row, key):
+    return row.get(key, 0) or 0
+
 def fetch_production_quality(ds: str, de: str):
     query = """
         SELECT op.tgl_production::date AS dt,
@@ -26,6 +29,114 @@ def fetch_production_quality(ds: str, de: str):
         "sap"   :sum(r["prod_sap"] or 0 for r in rows),
     }
     return {"rows": rows, "summary": summary}
+
+def fetch_production_grade(ds: str, de: str):
+    query = """
+      WITH day_series AS (
+            SELECT generate_series(%s::date, %s::date, interval '1 day')::date AS dt
+        ),
+        prod AS (
+            SELECT
+                DATE(tgl_production) AS prod_date,
+                TRIM(nama_material) AS nama_material,
+                SUM(tonnage)::numeric AS total_ore,
+                SUM(
+                    CASE WHEN roa_ni IS NOT NULL AND sample_number IS NOT NULL
+                    THEN tonnage ELSE 0 END
+                )::numeric AS released,
+                SUM(tonnage * roa_ni) AS sum_ton_ni,
+                SUM(tonnage * roa_co) AS sum_ton_co,
+                SUM(tonnage * roa_fe) AS sum_ton_fe,
+                SUM(tonnage * roa_mgo) AS sum_ton_mgo,
+                SUM(tonnage * roa_sio2) AS sum_ton_sio2,
+                SUM(
+                    CASE WHEN sample_number IS NOT NULL AND roa_ni IS NOT NULL
+                    THEN tonnage ELSE 0 END
+                )::numeric AS denom_grade
+            FROM details_roa
+            WHERE direct_sale = 'No'
+            AND tgl_production BETWEEN %s AND %s
+            GROUP BY DATE(tgl_production), TRIM(nama_material)
+        )
+        SELECT
+            ds.dt,
+            p.nama_material,
+            COALESCE(p.total_ore, 0) AS total_ore,
+            COALESCE(p.released, 0) AS released_ore,
+
+            -- NI
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_ni / p.denom_grade
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS ni,
+
+            -- CO
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_co / p.denom_grade
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS co,
+
+            -- FE
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_fe / p.denom_grade
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS fe,
+
+            -- MGO
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_mgo / p.denom_grade
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS mgo,
+
+            -- SIO2
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    THEN p.sum_ton_sio2 / p.denom_grade
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS sio2,
+
+            -- SM
+            to_char(
+                CASE WHEN p.denom_grade > 0
+                    AND (p.sum_ton_mgo / p.denom_grade) > 0
+                    THEN (p.sum_ton_sio2 / p.denom_grade) /
+                        ((p.sum_ton_mgo / p.denom_grade) + 0.000001)
+                    ELSE 0 END,
+                'FM999999990.00'
+            ) AS sm
+        FROM day_series ds
+        LEFT JOIN prod p ON ds.dt = p.prod_date
+        ORDER BY ds.dt, p.nama_material;
+    """
+
+    with connections["kqms_db"].cursor() as cur:
+        cur.execute(query, [ds, de, ds, de])
+        grade_rows = [
+            {
+                "dt": r[0],
+                "nama_material": r[1],
+                "total_ore": float(r[2] or 0),
+                "released_ore": float(r[3] or 0),
+                "ni": r[4],
+                "co": r[5],
+                "fe": r[6],
+                "mgo": r[7],
+                "sio2": r[8],
+                "sm": r[9],
+            }
+            for r in cur.fetchall()
+        ]
+    return {"rows": grade_rows}
+
 
 def fetch_selling(ds: str, de: str):
     query = """
@@ -204,16 +315,16 @@ def fetch_production_mining(ds: str, de: str):
         rows = [dict(zip([c[0] for c in cur.description], r)) for r in cur.fetchall()]
 
     summary = {
-        "total": sum(r["actual_total"] or 0 for r in rows),
-        "plan":  sum(r["plan_total"] or 0 for r in rows),
-        "lim":   sum(r["lim"] or 0 for r in rows),
-        "sap":   sum(r["sap"] or 0 for r in rows),
-        "waste": sum(r["waste"] or 0 for r in rows),
-        "quarry":sum(r["quarry"] or 0 for r in rows),
-        "topsoil":sum(r["topsoil"] or 0 for r in rows),
-        "ob":    sum(r["ob"] or 0 for r in rows),
-        "ballast":sum(r["ballast"] or 0 for r in rows),
-        "biomass":sum(r["biomass"] or 0 for r in rows),
+        "total"     : sum(r["actual_total"] or 0 for r in rows),
+        "plan"      : sum(r["plan_total"] or 0 for r in rows),
+        "lim"       : sum(r["lim"] or 0 for r in rows),
+        "sap"       : sum(r["sap"] or 0 for r in rows),
+        "waste"     : sum(r["waste"] or 0 for r in rows),
+        "quarry"    : sum(r["quarry"] or 0 for r in rows),
+        "topsoil"   : sum(r["topsoil"] or 0 for r in rows),
+        "ob"        : sum(r["ob"] or 0 for r in rows),
+        "ballast"   : sum(r["ballast"] or 0 for r in rows),
+        "biomass"   : sum(r["biomass"] or 0 for r in rows),
     }
 
     return {"rows": rows, "summary": summary}
@@ -433,6 +544,13 @@ def fetch_summary_to_date(end_date):
             "actual_total"  : mining_row[8],
             "plan_total"    : mining_row[9]
         }
+
+        # hitung setelah mining dict siap
+        mining["ore"] = mining["lim_total"] + mining["sap_total"]
+        mining["non_ore"] = (
+            mining["waste_total"] + mining["quarry_total"] + mining["topsoil_total"] +
+            mining["ob_total"] + mining["ballast_total"] + mining["biomass_total"]
+        )
 
        # === Quality (summary sampai end_date) ===
         cur.execute("""

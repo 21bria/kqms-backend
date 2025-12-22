@@ -24,7 +24,9 @@ sudo systemctl start celerybeat
 
 python manage.py migrate django_celery_beat
 
-python manage.py makemigrations kqms
+python manage.py makemigrations
+python manage.py migrate 
+
 python manage.py migrate --database=kqms_db
 
 
@@ -61,3 +63,4 @@ sudo systemctl restart celery.service
 
 🚀 2. Restart Celery Beat
 sudo systemctl restart celerybeat.service
+

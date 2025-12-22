@@ -7,6 +7,7 @@ from ..views.selling.selling_official import *
 from ..views.selling.split_sample.selling_split_range import *
 from ..views.selling.split_sample.selling_split_chart import *
 from ..views.selling.split_sample.barging_monitoring_range import *
+from ..views.selling.split_sample.barging_range_summary import *
 from ..views.selling.blending.source_inventoy import *
 from ..views.selling.blending.target_blending import *
 from ..views.selling.blending.create_data import *
@@ -16,6 +17,7 @@ from ..views.selling.entry.daily_summary import *
 from ..views.selling.entry.daily_summary_barging import *
 from ..views.selling.direct.staging_data import *
 from ..views.selling.sale_analysis import *
+
 
 
 urlpatterns = [
@@ -60,6 +62,13 @@ urlpatterns = [
     path('monitoring/sample/page/', monitoringSamplePage, name='monitoring-sample-page'),
     path('monitoring/chart/page/', monitoringChartPage, name='monitoring-chart-page'),
     path('monitoring/sample/list/', samplesMonitoring, name='barging-monitoring-sample-list'),
+
+    # Summary   
+    path('monitoring/sample/summary/', samplesMonitoringSummary, name='selling-monitoring-sample-list'),
+    path('monitoring/sample/summary/re-assay/', samplesReAssaySummary, name='selling-monitoring-sample-re-assay'),
+    path('monitoring/shipment/summary/', shipmentSummaryBuyer, name='selling-monitoring-shipment-list'),
+    path('monitoring/shipment/summary/by-month/', shipmentSummaryByMonth, name='selling-monitoring-shipment-by-month'),
+
 
     # Split  Selling
     path('split/sample/page/', splitSamplePage, name='sale-split-sample-page'),

@@ -67,7 +67,7 @@
                                 <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
                                     <div class="grid grid-cols-5 gap-2 xl:grid-cols-5">
 
-                                        <div class="mb-0" id="form-pilih">
+                                        <!-- <div class="mb-0" id="form-pilih">
                                             <label class="form-label">Select</label>
                                             <select name="filter" class="ti-form-select rounded-sm !py-2 !px-3t"
                                                 id="filter">
@@ -75,7 +75,7 @@
                                                 <option value="1">By Range</option>
                                                 <option value="2">By Code</option>
                                             </select>
-                                        </div>
+                                        </div> -->
                                         <div class="mb-0">
                                             <label class="form-label">Type </label>
                                             <select name="typeFilter" class="ti-form-select rounded-sm !py-2 !px-3t"
@@ -95,75 +95,78 @@
                                             <input class="form-control w-full !rounded-md" type="date" id='endDate'
                                                 name='endDate' value="{{end_date}}">
                                         </div>
-                                    </div>
 
+                                    </div>
+                                    <div class="mb-3">
+                                        <a id="search" href="#"
+                                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Apply
+                                            Filter</a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-12 gap-4 mb-3">
+                            <!-- <div class="grid grid-cols-12 gap-4 mb-3">
                                 <div class="xl:col-span-6 col-span-12">
                                     <div class="mb-0" id="form-code">
                                         <label class="form-label">Code Lot</label>
                                         <div class="form-group">
                                             <select class="ti-form-select w-full !rounded-mdt" id="codeFilter"
                                                 name="codeFilter" multiple="multiple">
-                                                <!-- <option value="">-- Select --</option> -->
                                             </select>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="mb-3">
-                                <a id="search" href="#" class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Apply
-                                    Filter</a>
-                            </div>
-                            <div class="overflow-auto">
-                                <div class="table-responsive">
-                                    <table id="list-table"
-                                        class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Code</th>
-                                                <!-- <th>Tugboat</th> -->
-                                                <th>No. Barge</th>
-                                                <th>Quantity Load</th>
-                                                <th>Sumber Sample</th>
-                                                <th>Ni</th>
-                                                <th>Fe</th>
-                                                <th>Co</th>
-                                                <th>MgO</th>
-                                                <th>SiO2</th>
-                                                <th>SM</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>-</td>
-                                                <td>-</td>
-                                                <td>-</td>
-                                                <td>-</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                                <td>0.00</td>
-                                            </tr>
-                                        </tbody>
-                                        <!-- <tfoot>
-                                            <tr>
-                                                <th colspan="3"></th>
-                                                <th id="total-ore">-</th>
-                                                <th id="sum-ni">-</th>
-                                                <th id="sum-co">-</th>
-                                                <th id="sum-fe">-</th>
-                                                <th id="sum-mgo">-</th>
-                                                <th id="sum-sio2">-</th>
-                                                <th id="sum-sm">-</th>
-                                            </tr>
-                                        </tfoot> -->
-                                    </table>
+                            </div> -->
+
+                            <div class="col-span-12 md:col-span-6 xxl:!col-span-4">
+                                <div
+                                    class="sm:flex bg-gray-100 hover:bg-gray-200 rounded-sm transition p-1 dark:bg-black/20 dark:hover:bg-black/20">
+                                    <nav class="sm:flex sm:space-x-2 sm:rtl:space-x-reverse" role="tablist">
+                                        <a class="w-full sm:w-auto hs-tab-active:bg-white hs-tab-active:text-gray-700 dark:hs-tab-active:bg-light dark:hs-tab-active:text-defaulttextcolor/70 py-2 px-3 inline-flex items-center gap-2 bg-transparent text-sm text-defaulttextcolor hover:text-gray-700 font-medium rounded-sm hover:hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white active"
+                                            href="javascript:void(0);" id="segment-item-1" data-hs-tab="#segment-1"
+                                            aria-controls="segment-1">
+                                            Monitoring
+                                        </a>
+                                        <a class="w-full sm:w-auto hs-tab-active:bg-white hs-tab-active:text-gray-700 dark:hs-tab-active:bg-light dark:hs-tab-active:text-defaulttextcolor/70 py-2 px-3 inline-flex items-center gap-2 bg-transparent text-sm text-defaulttextcolor hover:text-gray-700 font-medium rounded-sm hover:hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                                            href="javascript:void(0);" id="segment-item-2" data-hs-tab="#segment-2"
+                                            aria-controls="segment-2">
+                                            Summary
+                                        </a>
+                                        <a class="w-full sm:w-auto hs-tab-active:bg-white hs-tab-active:text-gray-700 dark:hs-tab-active:bg-light dark:hs-tab-active:text-defaulttextcolor/70 py-2 px-3 inline-flex items-center gap-2 bg-transparent text-sm text-defaulttextcolor hover:text-gray-700 font-medium rounded-sm hover:hover:text-primary dark:text-[#8c9097] dark:text-white/50 dark:hover:text-white"
+                                            href="javascript:void(0);" id="segment-item-3" data-hs-tab="#segment-3"
+                                            aria-controls="segment-3">
+                                            By Month
+                                        </a>
+                                        <!-- <a class="w-full sm:w-auto hs-tab-active:bg-white hs-tab-active:text-gray-700 dark:hs-tab-active:bg-light dark:hs-tab-active:text-defaulttextcolor/70 py-2 px-3 inline-flex items-center gap-2 bg-transparent text-sm text-defaulttextcolor font-medium rounded-sm pointer-events-none dark:text-white/50 dark:hover:text-white"
+                                            href="javascript:void(0);" id="segment-item-4" data-hs-tab="#segment-4">
+                                            Disabled
+                                        </a> -->
+                                    </nav>
+                                </div>
+
+                                <div class="mt-3">
+                                    <div id="segment-1" role="tabpanel" aria-labelledby="segment-item-1">
+                                        {% include 'admin-selling/split/table-monitoring.html' %}
+                                    </div>
+                                    <div id="segment-2" class="hidden" role="tabpanel" aria-labelledby="segment-item-2">
+                                        {% include 'admin-selling/split/table-summary.html' %}
+                                        {% include 'admin-selling/split/table-summary-re-assay.html' %}
+                                        {% include 'admin-selling/split/table-shipment.html' %}
+                                    </div>
+                                    <div id="segment-3" class="hidden" role="tabpanel" aria-labelledby="segment-item-3">
+                                        <!-- <p
+                                            class="text-gray-500 dark:text-[#8c9097] dark:text-white/50 p-5 border rounded-sm dark:border-white/10 border-gray-200">
+                                            Developer aplikasi berpengalaman dalam merancang, membangun, dan
+                                            mengoptimalkan sistem berbasis web maupun mobile dengan fokus pada kinerja,
+                                            skalabilitas, dan kemudahan penggunaan.
+                                            Terampil dalam mengelola arsitektur aplikasi, integrasi API, pemodelan
+                                            database, serta penerapan praktik clean code untuk memastikan pengembangan
+                                            yang terstruktur dan berkelanjutan.
+                                            Mampu bekerja kolaboratif dalam tim pengembangan dengan pendekatan
+                                            agile,melakukan analisis kebutuhan bisnis, serta menerjemahkannya menjadi
+                                            solusi digital yang efektif dan siap produksi."
+                                        </p> -->
+                                        {% include 'admin-selling/split/table-summary-by-month.html' %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -198,31 +201,6 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#btn_filter,#form-tanggal,#form-tanggal-akhir, #form-code').hide();
-        $('#filter').change(function () {
-            if ($(this).val() == '1') { // Jika filter nya 1 (per tanggal)
-                $(' #form-code').hide(); // Sembunyikan form bulan dan tahun
-                $('#startDate').val();
-                $('#endDate').val();
-                $('#codeFilter').val('').trigger('change');
-                $('#form-tanggal,#form-tanggal-akhir').show(); // Tampilkan form tanggal
-            } else if ($(this).val() == '2') { // Jika filter nya 2 
-                $('#startDate').val('');
-                $('#endDate').val('');
-                $('#codeFilter').val('').trigger('change');
-                $('#form-tanggal,#form-tanggal-akhir').hide(); // Sembunyikan form tanggal
-                $('#form-code').show(); // Tampilkan form bulan dan tahun
-
-            } else {
-                $('#startDate').val('');
-                $('#endDate').val('');
-                $('#codeFilter').val('').trigger('change');
-                $('#form-tanggal,#form-tanggal-akhir,#form-bulan').hide(); // Sembunyikan form
-            }
-        })
-    });
-
     $.ajax({
         url: "{% url 'get-sale-product' %}",
         method: "GET",
@@ -271,17 +249,13 @@
                 $('#filter').select2('open');
                 return false;
             }
-            else if (typeFilter == '') {
-                $('#typeFilter').select2('open');
-                return false;
-            }
-            else if (filter == '1' && startDate == '') {
+            else if (startDate == '') {
                 $('#startDate').focus();
                 return false;
-            } else if (filter == '1' && endDate == '') {
+            } else if (endDate == '') {
                 $('#endDate').focus();
                 return false;
-            } else if (filter == '2' && codeFilter == '') {
+            } else if (codeFilter == '') {
                 $('#codeFilter').select2('open');
                 return false;
             }
@@ -309,6 +283,10 @@
             }
 
             loadData();
+            loadDataSummary();
+            loadDataSummaryReAssay();
+            loadDataShipment();
+            loadDataSummaryMonth();
 
         });
 
@@ -319,9 +297,7 @@
                 $('#code_lot').select2('open');
                 return false;
             } else {
-                // Panggil function Group,Awk,Scci
-                // devSplitAwk();
-                // devOfficialAwk();
+                // Panggil function Group,Awk,Scc
             }
 
         });
@@ -357,12 +333,11 @@
             let no = 1;
 
             data.forEach(row => {
-                // Ambil barge utama
                 const barge = row.barge_code;
                 const tugboat = row.code_lot;
                 const qty = row.tonnage_split;
 
-                // Buat array sample sumber (manual grouping)
+                // Static samples (plan, monitoring, split)
                 const samples = [
                     {
                         source: "Barging Plan",
@@ -371,7 +346,6 @@
                         co: row.co_plan,
                         mgo: row.mgo_plan,
                         sio2: row.sio2_plan,
-                        sm: row.mgo_plan > 0 ? (row.sio2_plan / row.mgo_plan).toFixed(2) : 0,
                         cls: "sample-barging"
                     },
                     {
@@ -381,7 +355,6 @@
                         co: row.co_monitoring,
                         mgo: row.mgo_monitoring,
                         sio2: row.sio2_monitoring,
-                        sm: row.mgo_monitoring > 0 ? (row.sio2_monitoring / row.mgo_monitoring).toFixed(2) : 0,
                         cls: "sample-kawi"
                     },
                     {
@@ -391,24 +364,28 @@
                         co: row.co_split,
                         mgo: row.mgo_split,
                         sio2: row.sio2_split,
-                        sm: row.mgo_split > 0 ? (row.sio2_split / row.mgo_split).toFixed(2) : 0,
                         cls: "sample-kawi"
-                    },
-                    {
-                        source: "Carsurin (CoA)",
-                        ni: row.ni_official,
-                        fe: row.fe_official,
-                        co: row.co_official,
-                        mgo: row.mgo_official,
-                        sio2: row.sio2_official,
-                        sm: row.mgo_official > 0 ? (row.sio2_official / row.mgo_official).toFixed(2) : 0,
-                        cls: "sample-coa"
                     }
                 ];
 
+                // Masukkan Official & Re-Assay
+                if (row.officials && row.officials.length > 0) {
+                    row.officials.forEach((o, idx) => {
+                        samples.push({
+                            source: `Surveyor (COA) - ${o.re_assay}`,
+                            ni: o.ni,
+                            fe: o.fe,
+                            co: o.co,
+                            mgo: o.mgo,
+                            sio2: o.sio2,
+                            cls: "sample-coa"
+                        });
+                    });
+                }
 
-                // Row pertama (barge info + sample pertama)
                 const rowspan = samples.length;
+
+                // ================= First row =================
                 const tr = $("<tr>");
                 tr.append(`<td rowspan="${rowspan}">${no++}</td>`);
                 tr.append(`<td rowspan="${rowspan}">${tugboat}</td>`);
@@ -417,34 +394,39 @@
 
                 const s = samples[0];
                 tr.append(`<td class="${s.cls}">${s.source}</td>`);
-                tr.append(`<td>${formatValue(s.ni)}</td>`);
-                tr.append(`<td>${formatValue(s.fe)}</td>`);
-                tr.append(`<td>${formatValue(s.co)}</td>`);
-                tr.append(`<td>${formatValue(s.mgo)}</td>`);
-                tr.append(`<td>${formatValue(s.sio2)}</td>`);
-                tr.append(`<td>${formatValue(s.sm)}</td>`); //  Tambah kolom SM
+                tr.append(`<td class="text-right">${formatValue(s.ni)}</td>`);
+                tr.append(`<td class="text-right">${formatValue(s.fe)}</td>`);
+                tr.append(`<td class="text-right">${formatValue(s.co)}</td>`);
+                tr.append(`<td class="text-right">${formatValue(s.mgo)}</td>`);
+                tr.append(`<td class="text-right">${formatValue(s.sio2)}</td>`);
+                tr.append(`<td class="text-right">${formatValue(calcSM(s.mgo, s.sio2))}</td>`);
                 table.append(tr);
 
-                // Row berikutnya
+                // ================= Next rows =================
                 for (let i = 1; i < samples.length; i++) {
                     const s = samples[i];
                     const r = $("<tr>");
                     r.append(`<td class="${s.cls}">${s.source}</td>`);
-                    r.append(`<td>${formatValue(s.ni)}</td>`);
-                    r.append(`<td>${formatValue(s.fe)}</td>`);
-                    r.append(`<td>${formatValue(s.co)}</td>`);
-                    r.append(`<td>${formatValue(s.mgo)}</td>`);
-                    r.append(`<td>${formatValue(s.sio2)}</td>`);
-                    r.append(`<td>${formatValue(s.sm)}</td>`); //  Tambah kolom SM
+                    r.append(`<td class="text-right">${formatValue(s.ni)}</td>`);
+                    r.append(`<td class="text-right">${formatValue(s.fe)}</td>`);
+                    r.append(`<td class="text-right">${formatValue(s.co)}</td>`);
+                    r.append(`<td class="text-right">${formatValue(s.mgo)}</td>`);
+                    r.append(`<td class="text-right">${formatValue(s.sio2)}</td>`);
+                    r.append(`<td class="text-right">${formatValue(calcSM(s.mgo, s.sio2))}</td>`);
                     table.append(r);
                 }
             });
         }
 
-        function formatValue(val) {
-            return val === null || val === 0 ? "-" : parseFloat(val).toFixed(2);
+        function calcSM(mgo, sio2) {
+            if (!mgo || mgo == 0) return "-";
+            return (sio2 / mgo).toFixed(2);
         }
 
+        function formatValue(val) {
+            if (val === null || val === 0 || isNaN(val)) return "-";
+            return parseFloat(val).toFixed(2);
+        }
 
         function getSampleClass(source) {
             if (source.toLowerCase().includes('barging')) return 'sample-barging';
@@ -493,6 +475,20 @@
 </html>
 
 <style>
+    .text-right {
+        text-align: right !important;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.35rem;
+        text-align: start;
+        vertical-align: middle;
+        font-size: 0.813rem;
+        font-weight: 500;
+        line-height: 1.462;
+    }
+
     tbody,
     td,
     tfoot,
@@ -518,15 +514,11 @@
         position: relative;
         border-collapse: collapse;
         font-size: 11px;
-        /* perkecil font tabel */
         line-height: 1.2;
-        /* rapatkan jarak antar teks */
     }
 
     th,
     td {
-        /* padding: 2px 6px; */
-        /* lebih kecil dari 0.25rem (4px) */
         border-bottom: 1px solid #ddd;
         /* tambahkan garis pemisah */
     }
@@ -557,17 +549,6 @@
         padding: 10px;
     }
 
-    /* .sample-barging {
-        background-color: #e4dace;
-    }
-
-    .sample-kawi {
-        background-color: #b2a7bb;
-    }
-
-    .sample-coa {
-        background-color: #a2b39d;
-    } */
     table th,
     .table td {
         padding: 0.35rem;
@@ -576,5 +557,144 @@
         font-size: 0.813rem;
         font-weight: 500;
         line-height: 1.262;
+    }
+
+    /* Pastikan semua styling hanya untuk table summary */
+    #list-table-summary th,
+    #list-table-summary td {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-summary th:first-child,
+    #list-table-summary td:first-child {
+        border-left: 1px solid #ddd;
+    }
+
+    #list-table-summary tfoot th {
+        font-weight: 600;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    /* numeric alignment */
+    #list-table-summary td:nth-child(n+4),
+    #list-table-summary th:nth-child(n+4) {
+        text-align: right !important;
+    }
+
+    /* Header group center */
+    #list-table-summary thead tr:first-child th {
+        text-align: center !important;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-summary thead tr:first-child th:first-child {
+        border-left: 1px solid #ddd;
+    }
+
+    /* Pastikan semua styling hanya untuk table summary */
+    #list-table-re-assay th,
+    #list-table-re-assay td {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-re-assay th:first-child,
+    #list-table-re-assay td:first-child {
+        border-left: 1px solid #ddd;
+    }
+
+    #list-table-re-assay tfoot th {
+        font-weight: 600;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    /* numeric alignment */
+    #list-table-re-assay td:nth-child(n+4),
+    #list-table-re-assay th:nth-child(n+4) {
+        text-align: right !important;
+    }
+
+    /* Header group center */
+    #list-table-re-assay thead tr:first-child th {
+        text-align: center !important;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-re-assay thead tr:first-child th:first-child {
+        border-left: 1px solid #ddd;
+    }
+
+    /* Pastikan semua styling hanya untuk table shipment */
+    #list-table-shipment th,
+    #list-table-shipment td {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-shipment th:first-child,
+    #list-table-shipment td:first-child {
+        border-left: 1px solid #ddd;
+    }
+
+    #list-table-shipment tfoot th {
+        font-weight: 600;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    /* numeric alignment */
+    #list-table-shipment td:nth-child(n+4),
+    #list-table-shipment th:nth-child(n+4) {
+        text-align: right !important;
+    }
+
+    /* Header group center */
+    #list-table-shipment thead tr:first-child th {
+        text-align: center !important;
+        border-right: 1px solid #ddd;
+    }
+/* 
+    #list-table-shipment thead tr:first-child th:first-child {
+        border-left: 1px solid #ddd;
+    } */
+    /* Pastikan semua styling hanya untuk table month */
+    #list-table-summary-month th,
+    #list-table-summary-month td {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        /* border-right: 1px solid #ddd; */
+    }
+
+    /* #list-table-summary-month th:first-child,
+    #list-table-summary-month td:first-child {
+        border-left: 1px solid #ddd;
+    } */
+
+    #list-table-summary-month tfoot th {
+        font-weight: 600;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    /* numeric alignment */
+    #list-table-summary-month td:nth-child(n+4),
+    #list-table-summary-month th:nth-child(n+4) {
+        text-align: right !important;
+    }
+
+    /* Header group center */
+    #list-table-summary-month thead tr:first-child th {
+        text-align: center !important;
+        border-right: 1px solid #ddd;
+    }
+
+    #list-table-summary-month thead tr:first-child th:first-child {
+        border-left: 1px solid #ddd;
     }
 </style>

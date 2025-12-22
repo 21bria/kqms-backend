@@ -12,6 +12,8 @@ from ..views.mining.Quick.productions_entry_quick_view import *
 from ..views.mining.mine_summary import *
 from ..views.mining.truck_factors import *
 from ..views.mining.volume_adjustment_view import *
+from ..views.mining.weather import *
+from ..views.mining.timesheet_unit import *
 
 
 urlpatterns = [
@@ -80,6 +82,28 @@ urlpatterns = [
     path('mine-production/truck-factors/get/', getIdTruckFactors, name='mine-production-truck-factor-get'),
     path('mine-production/truck-factors/update/<int:id>/', update_truck_factors, name='mine-production-truck-factor-update'),
     path('mine-production/truck-factors/delete/',delete_truck_factors,name='mine-production-truck-factor-delete'),
+
+    # Weather Data
+    path('mine-production/weather/page/',weather_page,name='mine-production-weather-page'),
+    path('mine-production/weather/list/',dataWeather.as_view(),name='mine-production-weather-list'),
+    path('mine-production/weather/create/', create_weather, name='mine-production-weather-create'),
+    path('mine-production/weather/get/', getIdWeather, name='mine-production-weather-get'),
+    path('mine-production/weather/update/<int:id>/', update_weather, name='mine-production-weather-update'),
+    path('mine-production/weather/delete/',delete_weather,name='mine-production-weather-delete'),
+
+    # Timesheet Data
+    path('mine-production/timesheet/page/',timesheet_page,name='mine-production-timesheet-page'),
+    # path('mine-production/timesheet/list/',dataTimesheet.as_view(),name='mine-production-timesheet-list'),
+    path('mine-production/ajax/hm-unit/',ajax_hm_unit_by_date_shift,name='ajax_hm_unit_by_date_shift'),
+    path('mine-production/ajax/append-all-fleet/',append_all_fleet,name='ajax_append_all_fleet'),
+    path('mine-production/get-hm-unit/<uuid:id>/',getIdHmUnit,name='mine-production-get-hm-unit'),
+    path('mine-production/hm-unit/update/<uuid:id>/', update_hm_unit, name='mine-production-hm-unit-update'),
+
+    path('mine-production/ajax/hm-unit/<uuid:hm_unit_id>/',ajax_hm_unit_detail,name='ajax_hm_unit_detail'),
+    path('mine-production/timesheet/create/', create_timesheet, name='mine-production-timesheet-create'),
+    path('mine-production/get-detail-hm/<uuid:id>/',getIdDetailHm,name='mine-production-get-detail-hm'),
+    path('mine-production/detail-hm/update/<uuid:id>/', update_detail_hm, name='mine-production-detail-hm-update'),
+    path('mine-production/hm-detail/delete/',delete_hm_detail,name='mine-production-hm-detail-delete'),
 
     # Volume adjustment
     path('mine-production/volume-adjustment/page/',volume_adjustment_page,name='mine-production-volume-adjustment-page'),

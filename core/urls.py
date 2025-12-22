@@ -20,6 +20,7 @@ urlpatterns = [
     # path('oidc/google/', GoogleLoginView.as_view(), name='google_login'),
     # path('oidc/microsoft/', MicrosoftLoginView.as_view(), name='microsoft_login'),
      path("kqms/", include("kqms.urls")),
+     path("notifications/", include("notifications.urls")),
 ]
 
 # Menyajikan file statis dan media selama pengembangan

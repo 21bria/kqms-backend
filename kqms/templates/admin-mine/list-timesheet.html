@@ -1,0 +1,1908 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Timesheet List</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Pages
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Timesheet List
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-3 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-0">
+                            <div class="p-4 grid border-b border-dashed dark:border-defaultborder/10">
+                                <div class="box-header  !justify-between">
+                                    <h6 class="font-semibold mb-0">All Units</h6>
+                                    <div>
+                                        <button type="button"
+                                            class="hs-dropdown-toggle ti-btn ti-btn-primary !text-[0.75rem] !py-1 !px-2"
+                                            id="add-all-fleet-btn">
+                                            Append All Fleet<i class="ri-add-line ms-1 align-middle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                <form class="grid grid-cols-12 gap-4 mt-0">
+                                    <div class="md:col-span-6 col-span-12">
+                                        <label class="form-label">Date</label>
+                                        <input type="date" class="form-control" placeholder="Date" aria-label="Date"
+                                            value="{{day_date}}" id="timesheet_date" name="timesheet_date">
+                                    </div>
+                                    <div class="md:col-span-6 col-span-12">
+                                        <label for="shift_type" class="form-label">Shift</label>
+                                        <!-- <select class="form-select !py-[0.59rem]" id="shift_type" name="shift_type"> -->
+                                        <select class="ti-form-select" data-trigger name="shift_type" id="shift_type">
+                                            <option value="">Choose...</option>
+                                            <option value="Day">Day</option>
+                                            <option value="Night">Night</option>
+                                        </select>
+                                    </div>
+                                </form>
+                                <div class="input-group mt-2">
+                                    <input type="text"
+                                        class="form-control w-full !rounded-md !bg-light border-0 !rounded-e-none"
+                                        placeholder="Search Units Here" id="search_unit">
+                                    <button type="button" aria-label="button"
+                                        class="ti-btn ti-btn-light !rounded-s-none !mb-0"><i
+                                            class="ri-search-line text-[#8c9097] dark:text-white/50"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="teams-nav" id="teams-nav" data-simplebar="init">
+                                <div class="simplebar-wrapper" style="margin: 0px;">
+                                    <div class="simplebar-height-auto-observer-wrapper">
+                                        <div class="simplebar-height-auto-observer"></div>
+                                    </div>
+                                    <div class="simplebar-mask">
+                                        <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                                            <div class="simplebar-content-wrapper" tabindex="0" role="region"
+                                                aria-label="scrollable content"
+                                                style="height: auto; overflow: hidden scroll;">
+                                                <div class="simplebar-content" style="padding: 0px;">
+                                                    <div
+                                                        class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                                        <table
+                                                            class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="text-start">Units</th>
+                                                                    <th scope="col" class="text-start">Start (HM)</th>
+                                                                    <th scope="col" class="text-start">End (HM)</th>
+                                                                    <th scope="col" class="text-start">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="files-list" id="files-list">
+
+                                                            </tbody>
+                                                            <tfoot>
+
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="simplebar-placeholder" style="width: auto; height: 986px;"></div>
+                                </div>
+                                <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+                                    <div class="simplebar-scrollbar" style="width: 0px; display: none;"></div>
+                                </div>
+                                <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+                                    <div class="simplebar-scrollbar"
+                                        style="height: 394px; transform: translate3d(0px, 0px, 0px); display: block;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-9 col-span-12">
+                    <div class="grid grid-cols-12 gap-x-6">
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-body !p-0">
+                                    <div class="md:flex px-4 py-6 items-center justify-between">
+                                        <div>
+                                            <h6 class="font-semibold mb-0 text-[1rem]" id="unit_code_head">Tasks</h6>
+                                        </div>
+                                        <div class="mt-2 md:mt-0">
+                                            <nav class="-mb-0.5 sm:flex sm:space-x-6 rtl:space-x-reverse flex-wrap"
+                                                role="tablist">
+                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm active"
+                                                    href="javascript:void(0);" id="alltasks-item"
+                                                    data-hs-tab="#all-tasks" aria-controls="all-tasks">
+                                                    Activity
+                                                </a>
+                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
+                                                    href="javascript:void(0);" id="pending-item" data-hs-tab="#pending"
+                                                    aria-controls="pending">
+                                                    Fueling
+                                                </a>
+                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
+                                                    href="javascript:void(0);" id="in-progress-item"
+                                                    data-hs-tab="#in-progress" aria-controls="in-progress">
+                                                    Chart
+                                                </a>
+
+                                            </nav>
+                                        </div>
+                                        <div class="mt-2 md:mt-0">
+                                            <div class="hs-dropdown ti-dropdown">
+                                                <button type="button" aria-label="button"
+                                                    class="ti-btn ti-btn-sm ti-btn-light !mb-0" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical"></i>
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="tab-content task-tabs-container">
+                                <div class="tab-pane show active !p-0" id="all-tasks" aria-labelledby="alltasks-item"
+                                    role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-x-6" id="tasks-container">
+                                        <div class="xl:col-span-12 col-span-12 task-card">
+                                            <div class="box task-pending-card">
+                                                <div class="box-body">
+                                                    <div class="grid grid-cols-12 sm:gap-x-6 sm:gap-y-4">
+                                                        <div class="md:col-span-2 col-span-12 mb-4">
+                                                            <label class="form-label">Units</label>
+                                                            <input type="text" class="form-control" placeholder="-"
+                                                                id="unit_code" name="unit_code" readonly>
+                                                        </div>
+                                                        <div class="md:col-span-3 col-span-12 mb-4">
+                                                            <label class="form-label">HM Start</label>
+                                                            <input type="text" class="form-control"
+                                                                placeholder="HM start" id="hm_start" name="hm_start">
+                                                        </div>
+                                                        <div class="md:col-span-3 col-span-12 mb-4">
+                                                            <label class="form-label">HM End</label>
+                                                            <input type="text" class="form-control" placeholder="HM end"
+                                                                id="hm_end" name="hm_end">
+                                                        </div>
+                                                        <div class="md:col-span-3 col-span-12 mb-4">
+                                                            <label class="form-label">Duration</label>
+                                                            <input type="text" class="form-control" placeholder="0"
+                                                                id="duration" name="duration" readonly>
+                                                        </div>
+                                                        <!-- <div class="md:col-span-3 col-span-12 mb-4">
+                                                            <label class="form-label">-</label>
+                                                            <input type="text" class="form-control" placeholder="0"
+                                                                id="hm_unit_id" name="hm_unit_id" readonly>
+                                                        </div> -->
+
+                                                    </div>
+                                                    <div class="table-responsive">
+                                                        <table
+                                                            class="table whitespace-nowrap table-bordered min-w-full">
+                                                            <thead>
+                                                                <tr>
+                                                                    <!-- <th scope="col">
+                                                                        <input class="form-check-input check-all"
+                                                                            type="checkbox" id="all-tasks" value=""
+                                                                            aria-label="...">
+                                                                    </th> -->
+                                                                    <th scope="col" class="text-start">Start Time</th>
+                                                                    <th scope="col" class="text-start">End Time</th>
+                                                                    <th scope="col" class="text-start">Duration</th>
+                                                                    <th scope="col" class="text-start">Status</th>
+                                                                    <th scope="col" class="text-start">Activity</th>
+                                                                    <th scope="col" class="text-start">Location</th>
+                                                                    <th scope="col" class="text-start">Action</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="hmDetailsBody" id="hmDetailsBody">
+                                                            </tbody>
+                                                        </table>
+
+                                                        <form id="multiRowForm" name="multiRowForm">
+                                                            <table id="TimesheetTable"
+                                                                class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                                                style="width: 100%">
+                                                                <!-- <thead>
+
+                                                                    </thead> -->
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                            <!-- button -->
+                                                            <div
+                                                                class="mb-2 mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
+                                                                <a href="javascript:void(0)" id="addRow"
+                                                                    class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">
+                                                                    Add item
+                                                                </a>
+                                                                <button type="button" id="save"
+                                                                    class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave btn-sm">Save
+                                                                    data
+                                                                </button>
+                                                            </div>
+                                                        </form>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="tab-pane !p-0 hidden" id="pending" aria-labelledby="pending-item"
+                                    role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-6">
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-pending-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>New
+                                                                Project Blueprint</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">13,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">20,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/2.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/8.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/2.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/10.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-warning/10 text-warning block">High</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-pending-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center">
+                                                                <a aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Updating
+                                                                Old Ui
+                                                            </p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">30,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">05,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/14.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/13.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/21.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/16.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-warning/10 text-warning block">High</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane !p-0 hidden" id="in-progress" role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-x-6">
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-inprogress-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Design
+                                                                New Landing Pages </p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">21,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/1.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/5.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/12.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-primary/10 text-primary block">Medium</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-inprogress-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Designing
+                                                                New Authentication Pages</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">26,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">12,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/6.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/15.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-success/10 text-success block">Low</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-inprogress-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Improving
+                                                                Ui Of Updated Templates</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">4,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">20,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/9.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/13.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-primary/10 text-primary block">Medium</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane !p-0 hidden" id="completed" aria-labelledby="completed-item"
+                                    role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-x-6">
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-completed-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>New
+                                                                Plugin Development</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Oct
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/3.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/8.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/9.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-success/10 text-success block">Low</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-completed-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Documentation
+                                                                For New Template</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">25,Nov
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">10,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/8.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/10.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/11.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-danger/10 text-danger block">Critical</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-completed-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center">
+                                                                <a aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Developing
+                                                                New Events in Plugin
+                                                            </p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">5,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">10,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/5.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/8.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/11.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-primary/10 text-primary block">Medium</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-4 col-span-12">
+                                            <div class="box task-completed-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
+                                                        <div>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Designing
+                                                                Of New Ecommerce Pages</p>
+                                                            <p class="mb-4">Assigned On : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">1,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-4">Target Date : <span
+                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">15,Dec
+                                                                    2022</span></p>
+                                                            <p class="mb-0">Assigned To :
+                                                                <span class="avatar-list-stacked ms-1">
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/1.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/3.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded">
+                                                                        <img src="../assets/images/faces/6.jpg"
+                                                                            alt="img">
+                                                                    </span>
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <div class="btn-list">
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
+                                                                        class="ri-edit-line"></i></button>
+                                                                <button type="button" aria-label="button"
+                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
+                                                                        class="ri-delete-bin-line"></i></button>
+                                                            </div>
+                                                            <span
+                                                                class="badge bg-success/10 text-success block">Low</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit Data
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body !overflow-visible px-4">
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="xl:col-span-8 col-span-12">
+                            <!-- <label for="task-name" class="ti-form-label">Task Id</label> -->
+                            <input type="hidden" class="form-control w-full" id="id-hm" name="id-hm"
+                                placeholder="Task Id" readonly>
+                        </div>
+                        <div class="xl:col-span-3 col-span-12">
+                            <!-- <label for="task-name" class="ti-form-label">Task Id</label> -->
+                            <input type="hidden" class="form-control w-full" id="unit_id" name="unit_id"
+                                placeholder="Unit Id" readonly>
+                        </div>
+
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">Start Time</label>
+                            <div class="inline-flex w-full">
+                                <div
+                                    class="input-group-text text-[#8c9097] dark:text-white/50 !rounded-e-none border border-defaultborder">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <input type="time" class="form-control w-full !rounded-s-none" id="start-time"
+                                    name="start-time" placeholder="Choose time">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">End Time</label>
+                            <div class="inline-flex w-full">
+                                <div
+                                    class="input-group-text text-[#8c9097] dark:text-white/50 !rounded-e-none border border-defaultborder">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <input type="time" class="form-control w-full !rounded-s-none" id="end-time"
+                                    name="end-time" placeholder="Choose time">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">Status</label>
+                            <select class="ti-form-select" name="status-edit" id="status-edit">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">Activity</label>
+                            <select class="ti-form-select" name="activity-edit" id="activity-edit">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="ti-form-label">Location</label>
+                            <select class="ti-form-select" name="location-edit" id="location-edit">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                        data-hs-overlay="#edit-data">Cancel
+                    </button>
+                    <button type="button" class="ti-btn bg-primary text-white !font-medium"
+                        id="update-value">Updated</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <!-- Edit HM -->
+    <div id="edit-hm" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Edit HM
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#edit-hm">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body !overflow-visible px-4">
+                    <div class="grid grid-cols-12 gap-2">
+                        <div class="xl:col-span-8 col-span-12">
+                            <input type="hidden" class="form-control w-full" id="id-unit" name="id-unit"
+                                placeholder="Unit Id" readonly>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <input type="text" class="form-control w-full" id="units-code" name="units-code" placeholder="Units" disabled>
+                        </div>
+
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">Start HM</label>
+                            <div class="inline-flex w-full">
+                                <div
+                                    class="input-group-text text-[#8c9097] dark:text-white/50 !rounded-e-none border border-defaultborder">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <input type="text" class="form-control w-full !rounded-s-none" id="start-hm"
+                                    name="start-hm" placeholder="Start HM">
+                            </div>
+                        </div>
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="ti-form-label">End HM</label>
+                            <div class="inline-flex w-full">
+                                <div
+                                    class="input-group-text text-[#8c9097] dark:text-white/50 !rounded-e-none border border-defaultborder">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <input type="text" class="form-control w-full !rounded-s-none" id="end-hm"
+                                    name="end-hm" placeholder="End HM">
+                            </div>
+                        </div>
+                    
+                    </div>
+                </div>
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                        data-hs-overlay="#edit-hm">Cancel
+                    </button>
+                    <button type="button" class="ti-btn bg-warning text-white !font-medium"
+                        id="update-hm">Updated</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const dateInput = document.getElementById('timesheet_date');
+        const shiftInput = document.getElementById('shift_type');
+        const searchInput = document.getElementById("search_unit");
+        const tbody = document.querySelector('.files-list');
+
+        // --- Reset function ---
+        function resetHmDetails() {
+            document.getElementById("hmDetailsBody").innerHTML = "";
+            document.getElementById("unit_code_head").innerText = "-";
+            document.getElementById("unit_code").value = "";
+            // document.getElementById("hm_unit_id").value = "";
+            document.getElementById("hm_start").value = "";
+            document.getElementById("hm_end").value = "";
+            // Jika ada input duration
+            document.getElementById("duration").value = "";
+        }
+
+
+        let debounceTimer = null;
+
+        // Pastikan attribute value ditransfer ke input.value
+        if (!dateInput.value) {
+            dateInput.value = dateInput.getAttribute('value');
+        }
+
+        // =========================
+        // GLOBAL FUNCTION
+        // =========================
+        window.loadHmUnits = function () {
+            const date = dateInput.value;
+            const shift = shiftInput.value;
+            const search = searchInput.value.trim();
+
+
+            console.log('CALL loadHmUnits()', date, shift, search);
+
+            if (!date || !shift) {
+                console.warn('ABORT (date/shift empty)');
+                return;
+            }
+
+            fetch(`/kqms/mining/mine-production/ajax/hm-unit/?date=${date}&shift=${shift}&search=${search}`)
+                .then(res => res.json())
+                .then(res => {
+                    tbody.innerHTML = '';
+                    if (!res.success || res.data.length === 0) {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center text-gray-400">
+                                No data available
+                            </td>
+                        </tr>
+                    `;
+                        return;
+                    }
+
+                    res.data.forEach(item => {
+                        tbody.innerHTML += `
+                        <tr class="border border-x-0 hover:bg-gray-100">
+                            <td class="font-semibold">
+                                <a href="javascript:void(0);" class="font-semibold text-primary edit-hm" data-id="${item.hm_unit_id}">
+                                    ${item.unit_code} <i class="ti ti-external-link"></i>
+                                </a>
+                               </td>
+                            <td>${item.hm_start}</td>
+                            <td>${item.hm_end}</td>
+                         <td>
+                            <div class="hs-tooltip ti-main-tooltip show">
+                                <a href="javascript:void(0);" onclick="viewHmDetail('${item.hm_unit_id}')" class="hs-tooltip-toggle ti-btn ti-btn-primary ti-btn-sm">
+                                    <i class="ri-edit-line"></i>
+                                </a>
+                            </div>
+                        </td>
+                        </tr>
+                    `;
+                    });
+                });
+        };
+
+        // Listener untuk DATE
+        dateInput.addEventListener('change', loadHmUnits);
+
+        // Init SELECT2
+        // $("#shift_type").select2({ width: '100%' });
+
+        // Listener SELECT2
+        // $("#shift_type").on("change.select2", function () {
+        //     console.log('Shift changed via select2 =>', this.value);
+        //     loadHmUnits();
+        // });
+
+        // Listener untuk DATE
+        // dateInput.addEventListener('change', loadHmUnits);
+
+        // Listener untuk DATE
+        dateInput.addEventListener('change', function () {
+            console.log('Date changed =>', this.value);
+            loadHmUnits();     // load daftar HM Unit baru
+            resetHmDetails();  // reset detail dulu
+        });
+
+        // Listener untuk SHIFT
+        $("#shift_type").on("change", function () {
+            console.log('Shift changed =>', this.value);
+            loadHmUnits();
+            resetHmDetails();  // reset detail dulu
+
+        });
+
+        // Listener SEARCH
+        searchInput.addEventListener("keyup", function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(loadHmUnits, 400);
+        });
+
+        // Auto-load pertama
+        if (dateInput.value && shiftInput.value) {
+            loadHmUnits();
+        }
+
+        // =========================
+        // APPEND ALL FLEET BUTTON
+        // =========================
+        document.getElementById('add-all-fleet-btn').addEventListener('click', function () {
+            const date = dateInput.value;
+            const shift = shiftInput.value;
+
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 2000,
+                padding: '2em',
+            });
+
+            if (!date || !shift) {
+                toast.fire({ icon: 'error', html: 'Date dan Shift wajib diisi' });
+                return;
+            }
+
+            fetch('/kqms/mining/mine-production/ajax/append-all-fleet/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ date, shift })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    toast.fire({
+                        icon: res.success ? 'success' : 'error',
+                        html: res.message
+                    });
+
+                    if (res.success) {
+                        loadHmUnits(); // reload tabel kiri
+                    }
+                });
+        });
+
+
+        window.viewHmDetail = function (hm_unit_id) {
+            fetch(`/kqms/mining/mine-production/ajax/hm-unit/${hm_unit_id}/`)
+                .then(res => res.json())
+                .then(res => {
+                    if (!res.success) {
+                        panel.innerHTML = `<p class='text-red-500'>${res.message}</p>`;
+                        return;
+                    }
+                    document.getElementById("unit_code_head").innerText = res.unit_code;
+                    document.getElementById("unit_code").value = res.unit_code;
+                    // document.getElementById("hm_unit_id").value = res.hm_unit_id;
+                    document.getElementById("hm_start").value = res.hm_start;
+                    document.getElementById("hm_end").value = res.hm_end;
+                    document.getElementById("duration").value = res.total_hours;
+                    //  isi table detail
+                    renderHmDetails(res.details);
+
+                });
+        };
+        // Listener untuk DETAIL
+        function renderHmDetails(details) {
+            const tbody = document.getElementById("hmDetailsBody");
+            tbody.innerHTML = "";
+
+            if (!details.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center text-gray-400">
+                            No activity record
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            details.forEach(d => {
+                tbody.innerHTML += `
+                <tr class="border border-defaultborder task-list">
+                <td><span class="font-semibold">${d.start_time ?? "-"}</span></td>
+                <td><span class="font-semibold">${d.end_time ?? "-"}</span></td>
+                <td><span class="font-semibold">${d.duration}</span></td>
+                <td><span class="font-semibold text-primary">${d.status ?? ""}</span></td>
+                <td><span class="font-semibold">${d.activity}</span></td>
+                <td><span class="font-semibold">${d.location ?? "-"}</span></td>
+                <td>
+                    <button class="edit-btn ti-btn ti-btn-primary ti-btn-sm" data-id="${d.id}">
+                        <i class="ri-edit-line"></i>
+                    </button>
+                    <button class="delete-btn ti-btn ti-btn-danger ti-btn-sm ms-1" data-id="${d.id}">
+                        <i class="ri-delete-bin-5-line"></i>
+                    </button>
+
+                </td>
+            </tr>
+            `;
+            });
+        }
+
+        // Edit HM Sidebar
+        $('#files-list').on('click', '.edit-hm', function () {
+            const id = $(this).data('id');
+            var url = '/kqms/mining/mine-production/get-hm-unit/' + id + '/';
+             $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        const d = res.data;
+                        window.HSOverlay.open('#edit-hm');
+
+                        $('#saveBtn').html('Update');
+                        $('#id-unit').val(d.id);
+                        $('#units-code').val(d.unit_code);
+                        $('#start-hm').val(d.hm_start);
+                        $('#end-hm').val(d.hm_end);
+           
+                    } else {
+                        alert('Data tidak ditemukan');
+                    }
+                },
+
+                error: function (xhr, status, error) {
+                    if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    } else {
+                        alert('Terjadi kesalahan: ' + error);
+                    }
+                }
+            });
+        });
+
+        // Update data HM
+        $('#update-hm').on('click', function () {
+            const id        = $('#id-unit').val();
+            const hm_start  = $('#start-hm').val();
+            const hm_end    = $('#end-hm').val();
+            const unit_id   = $('#units-code').val();
+
+            var updatedData = {
+                hm_start: hm_start,
+                hm_end: hm_end,
+                unit_id: unit_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+            var url = '/kqms/mining/mine-production/hm-unit/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id-unit').val('');
+                        $('#start-hm').val('');
+                        $('#end-hm').val('');
+                        window.HSOverlay.close('#edit-hm');
+                        // Tampilkan notifikasi sukses
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        loadHmUnits();
+
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, status, errorThrown, error) {
+                    if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+
+            });
+        });
+
+
+        // Delete Detail HM
+        $('#hmDetailsBody').on('click', '.delete-btn', function () {
+            const id = $(this).data('id');
+            const url = '{% url "mine-production-hm-detail-delete" %}?id=' + id;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: "POST",  // <-- Ganti DELETE jadi POST
+                        data: {
+                            id: id,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'  // wajib untuk POST
+                        },
+                        success: function (data) {
+                            if (data.status === 'deleted') {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: 'Data has been deleted.',
+                                    icon: 'success',
+                                });
+                                // Hapus row dari DOM
+                                $(`#hmDetailsBody button[data-id="${id}"]`).closest('tr').remove();
+                            } else {
+                                Swal.fire('Error!', data.message, 'error');
+                            }
+                        },
+                        error: function (xhr) {
+                            let msg = xhr.responseJSON?.message || 'Something went wrong';
+                            Swal.fire('Error!', msg, 'error');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Save multi-row
+        $('#save').on('click', function (e) {
+            e.preventDefault();
+
+            const unitCode = $('#unit_code').val().trim();
+            const hm_start = $('#hm_start').val();
+            const hm_end = $('#hm_end').val();
+            // if (!unitCode) return alert("Unit Code harus diisi!");
+
+            const rows = $('#TimesheetTable tbody tr');
+            // if (rows.length === 0) return alert("Tidak ada row untuk disimpan!");
+
+            // Ambil data
+            const startTimeArr = [], endTimeArr = [], durationArr = [],
+                statusArr = [], activityArr = [], locationArr = [];
+
+            rows.each(function () {
+                const row = $(this);
+                startTimeArr.push(row.find('input[name="start_time[]"]').val());
+                endTimeArr.push(row.find('input[name="end_time[]"]').val());
+                durationArr.push(row.find('input[name="duration[]"]').val());
+                statusArr.push(row.find('select[name="status[]"]').val());
+                activityArr.push(row.find('select[name="activity[]"]').val());
+                locationArr.push(row.find('select[name="location[]"]').val());
+            });
+
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 2000,
+                padding: '2em',
+            });
+
+            // Kirim ke backend
+            $.ajax({
+                url: "{% url 'mine-production-timesheet-create' %}",
+                method: "POST",
+                data: {
+                    unit_code: unitCode,
+                    hm_start: hm_start,
+                    hm_end: hm_end,
+                    start_time: startTimeArr,
+                    end_time: endTimeArr,
+                    duration: durationArr,
+                    status: statusArr,
+                    activity: activityArr,
+                    location: locationArr,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.success) {
+                        toast.fire({ icon: 'success', title: 'Data berhasil disimpan!' });
+
+                        // Kosongkan table input
+                        $('#TimesheetTable tbody').empty();
+
+                        // Ambil hm_unit_id dari response
+                        const hm_unit_id = response.hm_unit_id;
+                        if (hm_unit_id) {
+                            viewHmDetail(hm_unit_id); // reload detail otomatis
+                        }
+                        loadHmUnits();
+                    } else {
+                        toast.fire({ icon: 'error', text: response.message || "Terjadi kesalahan" });
+                    }
+                },
+                error: function (xhr) {
+                    toast.fire({ icon: 'error', text: xhr.responseJSON?.error || "Terjadi kesalahan" });
+                }
+            });
+        });
+
+        // Get Details HM
+        $('#hmDetailsBody').on('click', '.edit-btn', function () {
+            const id = $(this).data('id');
+            // open modal edit atau fetch data untuk edit
+            var url = '/kqms/mining/mine-production/get-detail-hm/' + id + '/';
+
+            $.ajax({
+                type: "GET",
+                url: url,
+                dataType: "json",
+                success: function (res) {
+                    if (res.success) {
+                        const d = res.data;
+                        window.HSOverlay.open('#edit-data');
+
+                        $('#saveBtn').html('Update Data');
+                        $('#id-hm').val(d.id);
+                        $('#hm_unit_id').val(d.hm_unit_id);
+                        $('#unit_id').val(d.unit_id);
+                        $('#unit_code_edit').val(d.unit_code);
+                        $('#start-time').val(d.start_time);
+                        $('#end-time').val(d.end_time);
+                        $('#duration').val(d.duration);
+
+                        // $('#remark-edit').val(d.remark);
+                        // SET DEFAULT SELECT2 VALUE
+                        setSelect2Default($('#status-edit'), d.status_id, d.status_name);
+                        setSelect2Default($('#activity-edit'), d.activity_id, d.activity_name);
+                        setSelect2Default($('#location-edit'), d.location_id, d.location_name);
+
+                        // load select2 
+                        initEditSelect2($('#edit-data'));
+                    } else {
+                        alert('Data tidak ditemukan');
+                    }
+                },
+
+                error: function (xhr, status, error) {
+                    if (xhr.status === 403) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: 'You do not have permission',
+                            padding: '2em',
+                        });
+                    } else {
+                        alert('Terjadi kesalahan: ' + error);
+                    }
+                }
+            });
+        });
+        function setSelect2Default(select, id, text) {
+            var option = new Option(text, id, true, true);
+            select.append(option).trigger('change');
+        }
+
+        function initEditSelect2(modal) {
+
+            modal.find('select').select2({
+                width: '100%',
+            });
+
+            // --- LOCATION ---
+            modal.find('select[name="location-edit"]').select2({
+                placeholder: '-- Select Location --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-locations' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: { more: data.pagination.more }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            });
+
+            // --- STATUS ---
+            modal.find('select[name="status-edit"]').select2({
+                placeholder: '-- Select Status --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-status' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: { more: data.pagination.more }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            });
+
+            // --- ACTIVITY (DEPEND ON STATUS) ---
+            modal.find('select[name="activity-edit"]').select2({
+                placeholder: '-- Select Activity --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-activities' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        let statusId = modal.find('select[name="status-edit"]').val();
+                        return {
+                            q: params.term,
+                            page: params.page || 1,
+                            status_id: statusId
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: { more: data.pagination.more }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            });
+
+            // reset activity jika status berubah
+            modal.find('select[name="status-edit"]').on('change', function () {
+                modal.find('select[name="activity-edit"]').val(null).trigger('change');
+            });
+        }
+
+        // Update data
+        $('#update-value').on('click', function () {
+            const id = $('#id-hm').val();
+            const start_time = $('#start-time').val();
+            const end_time = $('#end-time').val();
+            const status = $('#status-edit').val();
+            const activity = $('#activity-edit').val();
+            const location = $('#location-edit').val();
+            const unit_id = $('#unit_id').val();
+
+            var updatedData = {
+                start_time: start_time,
+                end_time: end_time,
+                status: status,
+                activity: activity,
+                location: location,
+                unit_id: unit_id,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+            var url = '/kqms/mining/mine-production/detail-hm/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id-hm').val('');
+                        $('#status-edit').val('').trigger('change');
+                        $('#activity-edit').val('').trigger('change');
+                        $('#location-edit').val('').trigger('change');
+                        $('#start_time').val('');
+                        $('#end_time').val('');
+                        $('#duration').val('');
+                        window.HSOverlay.close('#edit-data');
+                        // Tampilkan notifikasi sukses
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'success',
+                            html: response.message,
+                            padding: '2em',
+                        });
+
+                        // Ambil hm_unit_id dari response
+                        const hm_unit_id = response.hm_unit_id;
+                        if (hm_unit_id) {
+                            viewHmDetail(hm_unit_id); // reload detail otomatis
+                        }
+
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, status, errorThrown, error) {
+                    if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+
+            });
+        });
+
+    });
+
+</script>
+<!-- Create new Data -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 2000,
+            padding: '2em',
+        });
+        function initializeSelect2(element) {
+            element.find('select').select2({
+                width: '100%',
+                // dropdownParent: $('#add-data .ti-modal-body')
+            });
+
+            element.find('select[name="location[]"]').select2({
+                placeholder: '-- Select Location --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-locations' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,       // search term
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            })
+
+            element.find('select[name="status[]"]').select2({
+                placeholder: '-- Select Status --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-status' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,       // search term
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            })
+            // Activity dropdown, dependent
+            element.find('select[name="activity[]"]').select2({
+                placeholder: '-- Select Activity --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-unit-activities' %}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        let statusId = element.find('select[name="status[]"]').val();  // ambil status terpilih
+                        return {
+                            q: params.term,
+                            page: params.page || 1,
+                            status_id: statusId  // kirim ke backend
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: { more: data.pagination.more }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            });
+            element.find('select[name="status[]"]').on('change', function () {
+                let activitySelect = element.find('select[name="activity[]"]');
+                activitySelect.val(null).trigger('change');  // reset
+            });
+
+        }
+        // Fungsi hitung duration
+        function calculateDuration(row) {
+            let startTime = row.find('input[name="start_time[]"]').val();
+            let endTime = row.find('input[name="end_time[]"]').val();
+            let durationInput = row.find('input[name="duration[]"]');
+
+            if (startTime && endTime) {
+                let start = startTime.split(':');
+                let end = endTime.split(':');
+
+                let startMinutes = parseInt(start[0]) * 60 + parseInt(start[1]);
+                let endMinutes = parseInt(end[0]) * 60 + parseInt(end[1]);
+
+                let diffMinutes = endMinutes - startMinutes;
+                if (diffMinutes < 0) diffMinutes += 24 * 60; // melewati tengah malam
+
+                let decimalHours = (diffMinutes / 60).toFixed(2); // 2 desimal
+                durationInput.val(decimalHours);
+            } else {
+                1
+                durationInput.val('');
+            }
+        }
+
+        function sumDurations() {
+            let total = 0;
+            $('input[name="duration[]"]').each(function () {
+                let val = parseFloat($(this).val());
+                if (!isNaN(val)) total += val;
+            });
+            return total.toFixed(2);
+        }
+
+        $('#TimesheetTable tbody').on('change', 'input[name="start_time[]"], input[name="end_time[]"]', function () {
+            let row = $(this).closest('tr');
+            calculateDuration(row);
+        });
+
+        $('#addRow').on('click', function () {
+            let unitCodeVal = $('#unit_code').val().trim();
+
+            if (!unitCodeVal) {
+                // alert("pilih unit sebelum menambahkan row baru!");
+                toast.fire(
+                    {
+                        icon: 'error',
+                        html: 'Pilih unit terlebih dahulu!'
+                    }
+                );
+                $('#unit_code').focus();
+                return; // hentikan penambahan row
+            }
+
+            // Kalau unit_code ada, lanjut buat row baru
+            var newRow = '<tr>' +
+                '<td><input type="time" name="start_time[]" class="form-control !rounded-md"></td>' +
+                '<td><input type="time" name="end_time[]" class="form-control !rounded-md"></td>' +
+                '<td><input type="text" name="duration[]" class="form-control !rounded-md" style="width:95px;"></td>' +
+                '<td>' +
+                '<select name="status[]" class="form-select" style="width: 100%;">' +
+                '<option value="">-- Select --</option>' +
+                '</select>' +
+                '</td>' +
+                '<td>' +
+                '<select name="activity[]" class="form-select" style="width: 100%;">' +
+                '<option value="">-- Select --</option>' +
+                '</select>' +
+                '</td>' +
+                '<td>' +
+                '<select name="location[]" class="form-select" style="width: 100%;">' +
+                '<option value="">-- Select --</option>' +
+                '</select>' +
+                '</td>' +
+                '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
+                '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
+                '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +
+                '</button></td></div>' +
+                '</tr>';
+
+            $('#TimesheetTable tbody').append(newRow);
+            var newRowElement = $('#TimesheetTable tbody tr:last');
+            // Inisialisasi select2
+            initializeSelect2(newRowElement);
+
+            // Hitung durasi langsung untuk row baru
+            calculateDuration(newRowElement);
+        });
+
+        // Remove row
+        $('#TimesheetTable').on('click', '.removeRow', function () {
+            $(this).closest('tr').remove();
+        });
+
+    });
+</script>
+
+</body>
+
+</html>
+
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.50rem;
+        text-align: start;
+        vertical-align: middle;
+        font-size: 0.813rem;
+        font-weight: 500;
+        line-height: 1.462;
+    }
+</style>

@@ -1,0 +1,33 @@
+
+
+tabel lebih lengkap berdasarkan standar mining operation, dengan menandai mana yang dihitung untuk MA, UA, dan PA
+
+| Status Code | Keterangan              | Hitung untuk MA | Hitung untuk UA | Hitung untuk PA |
+| ----------- | ----------------------- | --------------- | --------------- | --------------- |
+| OPR         | Operating / Beroperasi  | ✅ Ya           | ✅ Ya            | ✅ Ya           |
+| STB         | Standby / Waiting       | ⚠️ Bisa         | ❌ Tidak         | ⚠️ Bisa         |
+| BD          | Breakdown / Rusak       | ✅ Ya           | ❌ Tidak         | ✅ Ya           |
+| PM          | Maintenance / Perawatan | ✅ Ya           | ❌ Tidak         | ✅ Ya           |
+| SUPPORT     | Support work            | ❌ Tidak        | ❌ Tidak         | ❌ Tidak        |
+| OFF         | Off / Non Shift         | ❌ Tidak        | ❌ Tidak         | ❌ Tidak        |
+| WX          | Weather / Cuaca         | ❌ Tidak        | ❌ Tidak         | ❌ Tidak        |
+| SLP         | Slippery / hazard       | ❌ Tidak        | ❌ Tidak         | ❌ Tidak        |
+
+Penjelasan:
+
+1. MA (Machine Availability) → dihitung dari waktu unit tersedia untuk operasi. Jadi OPR, BD, PM dihitung; OFF, SUPPORT, WX, SLP tidak.
+
+2.UA (Unit Activity / productive time) → dihitung dari aktivitas produktif saja, misal Load, Haul, Dump, Dozing. Standby, BD, PM, SUPPORT, OFF, WX, SLP biasanya tidak dihitung.
+
+3.PA (Planned Availability) → dihitung dari planned time termasuk downtime terencana seperti PM; OFF, SUPPORT, WX, SLP tetap tidak dihitung.
+
+4.STB / Standby → bisa dihitung sebagai downtime planned/unplanned, tergantung tujuan analisis
+
+=================================================
+Tabel Indikator MA, UA, PA
+
+| Indikator | Fokus                                         | Rumus utama                                   | Status / Activity dihitung                               |
+| --------- | --------------------------------------------- | --------------------------------------------- | -------------------------------------------------------- |
+| MA        | Ketersediaan alat                             | (Operating + Planned Downtime)/Scheduled ×100 | OPR, PM, BD                                              |
+| UA        | Waktu produktif / aktivitas produktif         |  Productive / Operating ×100                  | Load, Haul, Dump, Dozing, Grader, Compactor, Water Truck |
+| PA        | Ketersediaan terencana / planned availability | (Operating + Planned Downtime)/Planned ×100   | OPR, PM, BD                                              |

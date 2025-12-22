@@ -4,9 +4,10 @@ from django.contrib.auth.models import Group
 from django.utils.module_loading import import_string
 from ..models import TaskList
 
+
 class TaskListForm(forms.ModelForm):
     allowed_group_names_field = forms.MultipleChoiceField(
-        choices=[(g.name, g.name) for g in Group.objects.all()],
+        choices=[],
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-checkbox'}),
         required=False,
         label="Allowed Groups"
@@ -14,7 +15,7 @@ class TaskListForm(forms.ModelForm):
 
     class Meta:
         model = TaskList
-        fields = ['type_table', 'task_path', 'status']  # tidak masukkan allowed_group_names langsung
+        fields = ['type_table', 'task_path', 'status']
         widgets = {
             'type_table': forms.TextInput(attrs={
                 'class': 'form-control flex-1',
@@ -30,14 +31,23 @@ class TaskListForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # 🔒 AMAN: query DB hanya di sini
+        groups = Group.objects.using('default').all()
+        self.fields['allowed_group_names_field'].choices = [
+            (g.name, g.name) for g in groups
+        ]
+
         if self.instance and self.instance.allowed_group_names:
             self.fields['allowed_group_names_field'].initial = self.instance.allowed_group_names
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        instance.allowed_group_names = self.cleaned_data.get('allowed_group_names_field', [])
+        instance.allowed_group_names = self.cleaned_data.get(
+            'allowed_group_names_field', []
+        )
         if commit:
-            instance.save()
+            instance.save(using='kqms_db')
         return instance
 
     def clean_task_path(self):
@@ -61,13 +71,14 @@ class TaskListForm(forms.ModelForm):
         if not type_table:
             self.add_error('type_table', "Type Table tidak boleh kosong.")
 
-        existing_type = TaskList.objects.filter(type_table=type_table).exclude(id=self.instance.id).first()
-        if existing_type:
+        if TaskList.objects.using('kqms_db').filter(
+            type_table=type_table
+        ).exclude(id=self.instance.id).exists():
             self.add_error('type_table', "Type Table sudah ada.")
 
-        if task_path:
-            existing_path = TaskList.objects.filter(task_path=task_path).exclude(id=self.instance.id).first()
-            if existing_path:
-                self.add_error('task_path', "Task Path sudah terdaftar di data lain.")
+        if task_path and TaskList.objects.using('kqms_db').filter(
+            task_path=task_path
+        ).exclude(id=self.instance.id).exists():
+            self.add_error('task_path', "Task Path sudah terdaftar di data lain.")
 
         return cleaned_data

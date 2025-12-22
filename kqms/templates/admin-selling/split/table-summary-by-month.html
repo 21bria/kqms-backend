@@ -1,0 +1,240 @@
+<div class="overflow-auto">
+    <div class="table-responsive">
+        <table id="list-table-summary-month"
+            class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+            <thead>
+                <tr>
+                    <th colspan="5" class="center-align">All Selling</th>
+                    <th colspan="3" class="center-align">Internal </th>
+                    <th colspan="3" class="center-align">Surveyor</th>
+                </tr>
+                <tr>
+                    <!-- <th>No</th> -->
+                    <th>Month</th>
+                    <th>Type</th>
+                    <th>Destination</th>
+                    <th>Barge</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Ni</th>
+                    <th class="text-right">Fe</th>
+                    <th class="text-right">S/M</th>
+                    <th class="text-right">Ni</th>
+                    <th class="text-right">Fe</th>
+                    <th class="text-right">S/M</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                    <td class="text-right">0.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4">Grand Total</th>
+                    <th id="total-ore-month" class="text-right">-</th>
+                    <th id="sum-ni-internal-month" class="text-right">-</th>
+                    <th id="sum-fe-internal-month" class="text-right">-</th>
+                    <th id="sum-sm-internal-month" class="text-right">-</th>
+
+                    <th id="sum-ni-official-month" class="text-right">-</th>
+                    <th id="sum-fe-official-month" class="text-right">-</th>
+                    <th id="sum-sm-official-month" class="text-right">-</th>
+
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+
+</div>
+
+
+
+<script type="text/javascript">
+    function loadDataSummaryMonth() {
+        var rowCount = 0; // Jumlah baris
+        var table = $("#list-table-summary-month").find("tbody");
+        var grandTotalOre = 0;
+        var internalNi = [];
+        var internalFe = [];
+        var internalSM = [];
+        var OfficialNi = [];
+        var OfficialFe = [];
+        var OfficialSM = [];
+
+
+        // Bersihkan isi tabel sebelum menambahkan data baru
+        table.empty();
+        // Fungsi untuk menambahkan data ke tabel
+        function appendData(data) {
+            let lastMonth = null;
+
+            // ---- VARIABEL PER BULAN ----
+            let tonTotal = 0;
+            let intNi = [], intFe = [], intSM = [];
+            let offNi = [], offFe = [], offSM = [];
+
+            // ---- VARIABEL GRAND TOTAL ----
+            let GtonTotal = 0;
+            let GintNi = [], GintFe = [], GintSM = [];
+            let GoffNi = [], GoffFe = [], GoffSM = [];
+
+            const nf = (value, dec = 2) => {
+                let v = parseFloat(value);
+                if (isNaN(v) || !isFinite(v)) return "-";
+                return v.toFixed(dec);
+            };
+            const sumProduct = arr => arr.reduce((a, b) => a + b, 0);
+
+            function appendMonthSummary() {
+                const avgIntNi = tonTotal ? sumProduct(intNi) / tonTotal : 0;
+                const avgIntFe = tonTotal ? sumProduct(intFe) / tonTotal : 0;
+                const avgIntSM = tonTotal ? sumProduct(intSM) / tonTotal : 0;
+
+                const avgOffNi = tonTotal ? sumProduct(offNi) / tonTotal : 0;
+                const avgOffFe = tonTotal ? sumProduct(offFe) / tonTotal : 0;
+                const avgOffSM = tonTotal ? sumProduct(offSM) / tonTotal : 0;
+
+                table.append(`
+                    <tr style="font-weight:bold;">
+                        <td colspan="4">Total ${lastMonth}</td>
+                        <td class="text-right">${tonTotal.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                        <td class="text-right">${nf(avgIntNi)}</td>
+                        <td class="text-right">${nf(avgIntFe)}</td>
+                        <td class="text-right">${nf(avgIntSM)}</td>
+                        <td class="text-right">${nf(avgOffNi)}</td>
+                        <td class="text-right">${nf(avgOffFe)}</td>
+                        <td class="text-right">${nf(avgOffSM)}</td>
+                    </tr>
+                `);
+            }
+
+            $.each(data, function (index, row) {
+
+                // ==== CEK BULAN BARU ====
+                if (row.month_name !== lastMonth) {
+                    if (lastMonth !== null) appendMonthSummary();
+
+                    table.append(`
+                        <tr style=font-weight:bold;">
+                            <td colspan="12">${row.month_name}</td>
+                        </tr>
+                    `);
+
+                    tonTotal = 0;
+                    intNi = []; intFe = []; intSM = [];
+                    offNi = []; offFe = []; offSM = [];
+                    lastMonth = row.month_name;
+                }
+
+                const ton = parseFloat(row.tonnage_official) || 0;
+                const aliasMap = {
+                    'LIS': 'Limonite',
+                    'SAS': 'Saprolite'
+                };
+                const typeAlias = aliasMap[row.type_selling] || row.type_selling;
+
+                table.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${typeAlias}</td>
+                        <td>${row.buyer}</td>
+                        <td>${row.total_barge}</td>
+                        <td class="text-right">${ton.toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>
+                        <td class="text-right">${nf(row.ni_split)}</td>
+                        <td class="text-right">${nf(row.fe_split)}</td>
+                        <td class="text-right">${nf(row.sm_split)}</td>
+                        <td class="text-right">${nf(row.ni_official)}</td>
+                        <td class="text-right">${nf(row.fe_official)}</td>
+                        <td class="text-right">${nf(row.sm_official)}</td>
+                    </tr>
+                `);
+
+                // ===== HITUNG BULANAN ====
+                tonTotal += ton;
+                intNi.push(ton * (parseFloat(row.ni_split) || 0));
+                intFe.push(ton * (parseFloat(row.fe_split) || 0));
+                intSM.push(ton * (parseFloat(row.sm_split) || 0));
+                offNi.push(ton * (parseFloat(row.ni_official) || 0));
+                offFe.push(ton * (parseFloat(row.fe_official) || 0));
+                offSM.push(ton * (parseFloat(row.sm_official) || 0));
+
+                // ===== HITUNG GRAND TOTAL ====
+                GtonTotal += ton;
+                GintNi.push(ton * (parseFloat(row.ni_split) || 0));
+                GintFe.push(ton * (parseFloat(row.fe_split) || 0));
+                GintSM.push(ton * (parseFloat(row.sm_split) || 0));
+                GoffNi.push(ton * (parseFloat(row.ni_official) || 0));
+                GoffFe.push(ton * (parseFloat(row.fe_official) || 0));
+                GoffSM.push(ton * (parseFloat(row.sm_official) || 0));
+
+                if (index === data.length - 1) {
+                    appendMonthSummary();
+
+                    // ===== OUTPUT KE FOOTER =====
+                    const avgGIntNi = GtonTotal ? sumProduct(GintNi) / GtonTotal : 0;
+                    const avgGIntFe = GtonTotal ? sumProduct(GintFe) / GtonTotal : 0;
+                    const avgGIntSM = GtonTotal ? sumProduct(GintSM) / GtonTotal : 0;
+
+                    const avgGOffNi = GtonTotal ? sumProduct(GoffNi) / GtonTotal : 0;
+                    const avgGOffFe = GtonTotal ? sumProduct(GoffFe) / GtonTotal : 0;
+                    const avgGOffSM = GtonTotal ? sumProduct(GoffSM) / GtonTotal : 0;
+
+                    $("#total-ore-month").text(
+                        GtonTotal.toLocaleString('en-US', { maximumFractionDigits: 2 })
+                    );
+                    $("#sum-ni-internal-month").text(nf(avgGIntNi));
+                    $("#sum-fe-internal-month").text(nf(avgGIntFe));
+                    $("#sum-sm-internal-month").text(nf(avgGIntSM));
+
+                    $("#sum-ni-official-month").text(nf(avgGOffNi));
+                    $("#sum-fe-official-month").text(nf(avgGOffFe));
+                    $("#sum-sm-official-month").text(nf(avgGOffSM));
+                }
+            });
+        }
+
+
+
+        // Lakukan permintaan Ajax ke endpoint controller 
+        var table = $("#list-table-summary-month").find("tbody");
+        table.empty();
+        var typeFilter = $('#typeFilter').val();
+        var startDate = $('#startDate').val();
+        var endDate = $('#endDate').val();
+        var codeFilter = $('#codeFilter').val();
+
+        // Menjalankan filter berdasarkan parameter yang dipilih
+        $.ajax({
+            type: "GET",
+            url: "{% url 'selling-monitoring-shipment-by-month'%}",
+            data: {
+                typeFilter: typeFilter,
+                codeFilter: JSON.stringify(codeFilter), // Convert to JSON string,
+                startDate: startDate,
+                endDate: endDate
+            },
+            success: function (response) {
+                // Data berhasil diterima dari server
+                table.empty();
+                var sqlData = response.data;
+                appendData(sqlData);
+            },
+            error: function () {
+                console.log("Gagal mengambil data dari server.");
+            },
+        });
+    }
+
+</script>

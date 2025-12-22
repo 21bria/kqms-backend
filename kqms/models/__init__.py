@@ -37,3 +37,7 @@ from .stock_balance import *
 from .tanggal import *
 from .menu_model import *
 from .dome_adjustment import *
+from .mine_status_units import *
+from .mine_fuel_consumption import *
+from .mine_weather import *
+from .mine_units import *

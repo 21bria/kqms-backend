@@ -10,6 +10,9 @@ class MineUnits(models.Model):
     supports    = models.CharField(max_length=50, default=None, null=True, blank=True)
     status      = models.IntegerField(default=None, null=True, blank=True)
     description = models.CharField(max_length=255, default=None, null=True, blank=True)
+    commisioning_date = models.DateField(default=None, null=True, blank=True)
+    on_hire     = models.DateField(default=None, null=True, blank=True)
+    off_hire    = models.DateField(default=None, null=True, blank=True)
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now_add=True)
 
@@ -28,6 +31,7 @@ class mineUnitsView(models.Model):
     supports    = models.CharField(max_length=25, default=None, null=True, blank=True)
     category    = models.CharField(max_length=50, default=None, null=True, blank=True)
     vendor_name = models.CharField(max_length=25, default=None, null=True, blank=True)
+    
     status      = models.IntegerField(default=None, null=True, blank=True)
     
     class Meta:
@@ -36,7 +40,7 @@ class mineUnitsView(models.Model):
         app_label   = 'kqms'
 
 class unitsCategories(models.Model):
-    category  = models.CharField(max_length=50, default=None, null=True, blank=True)
+    category    = models.CharField(max_length=50, default=None, null=True, blank=True)
     created_at  = models.DateTimeField(auto_now_add=True)
     updated_at  = models.DateTimeField(auto_now_add=True)
 
