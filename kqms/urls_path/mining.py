@@ -14,6 +14,9 @@ from ..views.mining.truck_factors import *
 from ..views.mining.volume_adjustment_view import *
 from ..views.mining.weather import *
 from ..views.mining.timesheet_unit import *
+from ..views.mining.timesheet_unit_summary import *
+from ..views.fueling.daily_fuel import *
+from ..views.mining.status_activity_unit import *
 
 
 urlpatterns = [
@@ -93,17 +96,30 @@ urlpatterns = [
 
     # Timesheet Data
     path('mine-production/timesheet/page/',timesheet_page,name='mine-production-timesheet-page'),
-    # path('mine-production/timesheet/list/',dataTimesheet.as_view(),name='mine-production-timesheet-list'),
     path('mine-production/ajax/hm-unit/',ajax_hm_unit_by_date_shift,name='ajax_hm_unit_by_date_shift'),
     path('mine-production/ajax/append-all-fleet/',append_all_fleet,name='ajax_append_all_fleet'),
     path('mine-production/get-hm-unit/<uuid:id>/',getIdHmUnit,name='mine-production-get-hm-unit'),
     path('mine-production/hm-unit/update/<uuid:id>/', update_hm_unit, name='mine-production-hm-unit-update'),
+
+    path('mine-production/ajax/hm-unit/fuel/<str:unit_id>/',get_fuel_by_unit,name='ajax_hm_unit_by_date_fuel'),
+
+    # Status Activity units
+    path('mine-production/timesheet/status-activity/page/',activity_unit_page,name='mine-production-status-activity-page'),
+    path('mine-production/timesheet/status-activity-list/',viewUnitActivity.as_view(),name='mine-production-status-activity-list'),
+    path('mine-production/insert/status-activity/', insert_activity_unit, name='insert-status-activity-unit'), 
+    path('mine-production/timesheet/delete/status-activity/',delete_activity_unit,name='mine-production-status-activity-delete'),
+    path('mine-production/timesheet/get/status-activity/',get_id_activity_unit,name='mine-production-status-activity-get-id'),
+    path('mine-production/timesheet/status-activity/update/<int:id>/', update_activity_unit, name='mine-production-status-activity-update'),
 
     path('mine-production/ajax/hm-unit/<uuid:hm_unit_id>/',ajax_hm_unit_detail,name='ajax_hm_unit_detail'),
     path('mine-production/timesheet/create/', create_timesheet, name='mine-production-timesheet-create'),
     path('mine-production/get-detail-hm/<uuid:id>/',getIdDetailHm,name='mine-production-get-detail-hm'),
     path('mine-production/detail-hm/update/<uuid:id>/', update_detail_hm, name='mine-production-detail-hm-update'),
     path('mine-production/hm-detail/delete/',delete_hm_detail,name='mine-production-hm-detail-delete'),
+    path('mine-production/ajax/kpi-unit/<uuid:hm_unit_id>/',ajax_hm_unit_kpi,name='ajax_hm_kpi_unit'),
+    # Summary
+    path('mine-production/kpi-unit/summary/page/',timesheet__summary_page,name='mine-summary-hm-kpi-unit-page'),
+    path('mine-production/ajax/kpi-unit/summary/',summary_hm_unit_kpi,name='mine-summary-hm-kpi-unit'),
 
     # Volume adjustment
     path('mine-production/volume-adjustment/page/',volume_adjustment_page,name='mine-production-volume-adjustment-page'),
@@ -121,5 +137,9 @@ urlpatterns = [
     path('mine-production/truck-factors/get_hauler_mine/',get_hauler_class_volume,name='get-truck-factors-get-hauler-mine'),
     path('mine-production/truck-factors/get_material_mine/',get_material_volume,name='get-truck-factors-get-material-mine'),
     path('mine-production/truck-factors/get_volume_mine/',get_volume_data,name='get-truck-factors-get-volume-mine'),
+
+    # Fueling
+    path('mine/fueling/daily/page/', daily_fuel_page, name='mine-daily-fuel-page'), 
+    path('mine/fueling/daily/list/', viewDailyFuel.as_view(), name='mine-daily-fuel-list'),
 
 ]

@@ -11,7 +11,6 @@ from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from ...utils.utils import clean_string
 from datetime import datetime
-from uuid import UUID
 from django.views.decorators.http import require_http_methods
 
 

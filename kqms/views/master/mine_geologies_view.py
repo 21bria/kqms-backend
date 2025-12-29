@@ -113,7 +113,7 @@ def get_geologies(request, id):
 
 @login_required    
 def insert_geologies(request):
-    allowed_groups = ['superadmin','admin-mgoqa']
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 

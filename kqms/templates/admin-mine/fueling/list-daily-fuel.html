@@ -1,0 +1,393 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Daily fuel consumption</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Fuel
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Daily fuel consumption</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse"> 
+                                    <button id="openFilter" type="button"
+                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
+                                    <a id="reload" href="#"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                                </div>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="bg-soft-secondary" width="4%">No</th>
+                                            <th class="bg-soft-secondary">Date</th>
+                                            <th class="bg-soft-secondary">Shift</th>
+                                            <th class="bg-soft-secondary">Unit</th>
+                                            <th class="bg-soft-secondary" width="5%">Category</th>
+                                            <th class="bg-soft-secondary">Hours metre</th>
+                                            <th class="bg-soft-secondary">Drivers</th>
+                                            <th class="bg-soft-secondary">Time</th>
+                                            <th class="bg-soft-secondary">Volume</th>
+                                            <th class="bg-soft-secondary">Storage</th>
+                                            <th class="bg-soft-secondary">Fuelman</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+    <!-- ========== Search Modal ========== -->
+    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#search-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    <div class="ti-modal-body px-4 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4 ">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Start date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="startDate" name="startDate"
+                                        placeholder="Choose date" value="{{start_date}}">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">End date</label>
+                                <div class="input-group">
+                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
+                                            class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control" id="endDate" name="endDate"
+                                        placeholder="Choose date" value="{{end_date}}">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="batch_status">Batch Status</label> -->
+                                <select id="category" name="category" class="ti-form-select w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="source_filter">Source</label> -->
+                                <select id="sources" name="sources" class="ti-form-select w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <!-- <label for="vendors">Vendors</label> -->
+                                <select id="vendors" name="vendors" class="ti-form-select w-full !rounded-md">
+                                    <option value="">--- Select ---</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
+                            id="exportButton"> Export
+                        </button>
+                        <button type="button" id="applyFilterBtn"
+                            class="ti-btn bg-primary text-white !font-medium">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        flatpickr("#startDate", { dateFormat: "Y-m-d" });
+        flatpickr("#endDate", { dateFormat: "Y-m-d" });
+
+        $(".ti-form-select").select2({
+            width: '100%',
+            // dropdownParent: $('#search-modal'),
+            dropdownParent: $('#search-modal .ti-modal-body')
+        });
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "mine-daily-fuel-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true, language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+                "data": function (data) {
+                    data.startDate = $('#startDate').val();
+                    data.endDate = $('#endDate').val();
+                    data.category = $('#category').val();
+                    return data;
+                },
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, 
+                {
+                    data: 'date',
+                    name: 'date'
+                },
+                {
+                    data: 'shift',
+                    name: 'shift'
+                },
+                {
+                    data: 'unit',
+                    name: 'unit',
+                    searchable: true
+                },
+                 {
+                    data: 'category',
+                    name: 'category',
+                    searchable: true
+                },
+                {
+                    data: 'hours_metre',
+                    name: 'hours_metre',
+                    searchable: true
+                },
+                {
+                    data: 'drivers',
+                    name: 'drivers',
+                    searchable: true
+                },
+                {
+                    data: 'charging_time',
+                    name: 'charging_time',
+                    searchable: true
+                },
+
+                {
+                    data: 'volume',
+                    name: 'volume',
+                    searchable: false,
+                    render: function (data) {
+                        return parseFloat(data).toFixed(2);
+                    }
+                },
+               
+                {
+                    data: 'storage',
+                    name: 'storage',
+                    searchable: true
+                },
+                {
+                    data: 'operator',
+                    name: 'operator',
+                    searchable: true
+                },
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+            // Menambahkan opsi footerCallback
+
+        });
+
+        /*--Filter Modal and Apply Filter---*/
+        $('#applyFilterBtn').click(function () {
+            window.HSOverlay.close('#search-modal');
+            table.ajax.reload();
+        });
+
+        /*  Reset */
+        $('#reload').on('click', function () {
+            $('#startDate').val('');
+            $('#endDate').val('');
+            $('#category').val('').trigger('change');
+            table.ajax.reload(); //just reload table
+        });
+
+        /*--- Delete Modal ---*/
+        $('#applyRemoveBtn').click(function () {
+            window.HSOverlay.open('#delete-modal');
+        });
+
+        /*--- Delete ---*/
+        $('#applyDeleteBtn').click(function () {
+            var month_date = $('#month_date').val();
+            var materials = $('#materials').val();
+            var url = '{% url "mine-production-plan-delete" %}';
+            if (month_date == '') {
+                $("#month_date").focus();
+                return false;
+            }
+            else {
+                window.HSOverlay.close('#delete-modal');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Delete :" + " " + month_date,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: 'btn btn-success',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Delete it!',
+                    // width: 320,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: "DELETE",
+                            contentType: 'application/json',
+                            data: JSON.stringify(
+                                {
+                                    month_date: month_date,
+                                    materials: materials
+                                }
+
+                            ), // Sending data in the body
+                            success: function (data) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    data.message,
+                                    'success'
+                                );
+                                table.draw();
+                                $('#btn_clear').hide(); // 
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 403) {
+                                    Swal.fire(
+                                        'Access Denied!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else if (xhr.status === 404) {
+                                    Swal.fire(
+                                        'Not Found!',
+                                        xhr.responseJSON.message,
+                                        'error'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Something went wrong.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+
+        });
+
+    });
+</script>
+
+
+</body>
+
+</html>

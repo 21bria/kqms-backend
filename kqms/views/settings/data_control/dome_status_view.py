@@ -93,12 +93,12 @@ class domeCloseList(View):
 
 @csrf_exempt
 def get_dome_close(request, id):
-    # allowed_groups = ['superadmin','data-control']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','data-control','admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             item = domeStatusCloseView.objects.get(id=id)

@@ -160,7 +160,7 @@
                                                     Activity
                                                 </a>
                                                 <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
-                                                    href="javascript:void(0);" id="pending-item" data-hs-tab="#pending"
+                                                    href="javascript:void(0);" id="fuel-item" data-hs-tab="#pending"
                                                     aria-controls="pending">
                                                     Fueling
                                                 </a>
@@ -214,23 +214,12 @@
                                                             <input type="text" class="form-control" placeholder="0"
                                                                 id="duration" name="duration" readonly>
                                                         </div>
-                                                        <!-- <div class="md:col-span-3 col-span-12 mb-4">
-                                                            <label class="form-label">-</label>
-                                                            <input type="text" class="form-control" placeholder="0"
-                                                                id="hm_unit_id" name="hm_unit_id" readonly>
-                                                        </div> -->
-
                                                     </div>
                                                     <div class="table-responsive">
                                                         <table
                                                             class="table whitespace-nowrap table-bordered min-w-full">
                                                             <thead>
                                                                 <tr>
-                                                                    <!-- <th scope="col">
-                                                                        <input class="form-check-input check-all"
-                                                                            type="checkbox" id="all-tasks" value=""
-                                                                            aria-label="...">
-                                                                    </th> -->
                                                                     <th scope="col" class="text-start">Start Time</th>
                                                                     <th scope="col" class="text-start">End Time</th>
                                                                     <th scope="col" class="text-start">Duration</th>
@@ -276,110 +265,96 @@
 
                                     </div>
                                 </div>
-                                <div class="tab-pane !p-0 hidden" id="pending" aria-labelledby="pending-item"
+                                <div class="tab-pane !p-0 hidden" id="pending" aria-labelledby="fuel-item"
                                     role="tabpanel">
                                     <div class="grid grid-cols-12 gap-6">
-                                        <div class="xl:col-span-4 col-span-12">
+                                        <div class="xl:col-span-5 col-span-12">
                                             <div class="box task-pending-card">
                                                 <div class="box-body">
                                                     <div class="flex justify-between flex-wrap gap-2">
                                                         <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                            <p class="font-semibold mb-5 flex items-center"><a
                                                                     aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>New
-                                                                Project Blueprint</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">13,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">20,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/2.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/8.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/2.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/10.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Day
+                                                                Shift</p>
                                                         </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-warning/10 text-warning block">High</span>
+                                                        <div
+                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                                            <table
+                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="text-start">Hours
+                                                                            Metre</th>
+                                                                        <th scope="col" class="text-start">Time</th>
+                                                                        <th scope="col" class="text-start">Volume
+                                                                        </th>
+                                                                        <th scope="col" class="text-start">Fuelman
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="fuel-list-day" id="fuel-list-day">
+                                                                </tbody>
+                                                                <tfoot>
+                                                                </tfoot>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="xl:col-span-4 col-span-12">
+                                        <div class="xl:col-span-5 col-span-12">
                                             <div class="box task-pending-card">
                                                 <div class="box-body">
                                                     <div class="flex justify-between flex-wrap gap-2">
                                                         <div>
                                                             <p class="font-semibold mb-4 flex items-center">
                                                                 <a aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Updating
-                                                                Old Ui
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Night
+                                                                Shift
                                                             </p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">30,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">05,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/14.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/13.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/21.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/16.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
+
                                                         </div>
+                                                        <div
+                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                                            <table
+                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="text-start">Hours
+                                                                            Metre</th>
+                                                                        <th scope="col" class="text-start">Time</th>
+                                                                        <th scope="col" class="text-start">Volume
+                                                                        </th>
+                                                                        <th scope="col" class="text-start">Fuelman
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="fuel-list-night" id="fuel-list-night">
+                                                                </tbody>
+                                                                <tfoot>
+
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="xl:col-span-2 col-span-12">
+                                            <div class="box task-completed-card">
+                                                <div class="box-body">
+                                                    <div class="flex justify-between flex-wrap gap-2">
                                                         <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-warning/10 text-warning block">High</span>
+                                                            <p class="font-semibold mb-4 flex items-center"><a
+                                                                    aria-label="anchor" href="javascript:void(0);"><i
+                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-success"></i></a>Total
+                                                                Fuel
+                                                            </p>
+                                                            <p class="font-semibold  mb-4 text-[#8c9097] dark:text-white/50 text-[1rem]"
+                                                                id="total_fuel">0.0</p>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -388,342 +363,68 @@
                                 </div>
                                 <div class="tab-pane !p-0 hidden" id="in-progress" role="tabpanel">
                                     <div class="grid grid-cols-12 gap-x-6">
-                                        <div class="xl:col-span-4 col-span-12">
+                                        <div class="xl:col-span-7 col-span-12">
                                             <div class="box task-inprogress-card">
                                                 <div class="box-body">
                                                     <div class="flex justify-between flex-wrap gap-2">
                                                         <div>
                                                             <p class="font-semibold mb-4 flex items-center"><a
                                                                     aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Design
-                                                                New Landing Pages </p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">21,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/1.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/5.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/12.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
+                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>KPI
+                                                                Units</p>
+
                                                         </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-primary/10 text-primary block">Medium</span>
+                                                        <div
+                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                                            <table
+                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col" class="text-start">Working</th>
+                                                                        <th scope="col" class="text-start">Standby</th>
+                                                                        <th scope="col" class="text-start">Maintenance
+                                                                        </th>
+                                                                        <th scope="col" class="text-start">PA</th>
+                                                                        <th scope="col" class="text-start">MA</th>
+                                                                        <th scope="col" class="text-start">UA</th>
+                                                                        <th scope="col" class="text-start">EU</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody class="kpi-list" id="kpi-list">
+                                                                </tbody>
+                                                                <tfoot>
+
+                                                                </tfoot>
+                                                            </table>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="xl:col-span-4 col-span-12">
+                                        <div class="xl:col-span-5 col-span-12">
                                             <div class="box task-inprogress-card">
                                                 <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Designing
-                                                                New Authentication Pages</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">26,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">12,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/6.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/15.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-success/10 text-success block">Low</span>
-                                                        </div>
+
+                                                    <!-- Judul tetap kiri -->
+                                                    <div class="mb-3">
+                                                        <p class="font-semibold flex items-center">
+                                                            <i class="ri-star-s-fill text-[1rem] me-1 text-warning"></i>
+                                                            Chart KPI
+                                                        </p>
                                                     </div>
+
+                                                    <!-- Chart di tengah -->
+                                                    <div class="flex justify-center items-center">
+                                                        <div id="chart"></div>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="xl:col-span-4 col-span-12">
-                                            <div class="box task-inprogress-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Improving
-                                                                Ui Of Updated Templates</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">4,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">20,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/9.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/13.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-primary/10 text-primary block">Medium</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
-                                <div class="tab-pane !p-0 hidden" id="completed" aria-labelledby="completed-item"
-                                    role="tabpanel">
-                                    <div class="grid grid-cols-12 gap-x-6">
-                                        <div class="xl:col-span-4 col-span-12">
-                                            <div class="box task-completed-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>New
-                                                                Plugin Development</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Oct
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">28,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/3.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/8.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/9.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-success/10 text-success block">Low</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-4 col-span-12">
-                                            <div class="box task-completed-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Documentation
-                                                                For New Template</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">25,Nov
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">10,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/8.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/10.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/11.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-danger/10 text-danger block">Critical</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-4 col-span-12">
-                                            <div class="box task-completed-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center">
-                                                                <a aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Developing
-                                                                New Events in Plugin
-                                                            </p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">5,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">10,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/5.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/8.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/11.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-primary/10 text-primary block">Medium</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-4 col-span-12">
-                                            <div class="box task-completed-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Designing
-                                                                Of New Ecommerce Pages</p>
-                                                            <p class="mb-4">Assigned On : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">1,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-4">Target Date : <span
-                                                                    class="text-[0.75rem] mb-1 text-[#8c9097] dark:text-white/50">15,Dec
-                                                                    2022</span></p>
-                                                            <p class="mb-0">Assigned To :
-                                                                <span class="avatar-list-stacked ms-1">
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/1.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/3.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                    <span class="avatar avatar-sm avatar-rounded">
-                                                                        <img src="../assets/images/faces/6.jpg"
-                                                                            alt="img">
-                                                                    </span>
-                                                                </span>
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <div class="btn-list">
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm  ti-btn-primary me-[0.375rem]"><i
-                                                                        class="ri-edit-line"></i></button>
-                                                                <button type="button" aria-label="button"
-                                                                    class="ti-btn ti-btn-sm ti-btn-danger me-0"><i
-                                                                        class="ri-delete-bin-line"></i></button>
-                                                            </div>
-                                                            <span
-                                                                class="badge bg-success/10 text-success block">Low</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -816,7 +517,7 @@
 
         </div>
     </div>
-    
+
     <!-- Edit HM -->
     <div id="edit-hm" class="hs-overlay hidden ti-modal" tabindex="-1">
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
@@ -837,7 +538,8 @@
                                 placeholder="Unit Id" readonly>
                         </div>
                         <div class="xl:col-span-12 col-span-12">
-                            <input type="text" class="form-control w-full" id="units-code" name="units-code" placeholder="Units" disabled>
+                            <input type="text" class="form-control w-full" id="units-code" name="units-code"
+                                placeholder="Units" disabled>
                         </div>
 
                         <div class="xl:col-span-6 col-span-12">
@@ -858,11 +560,11 @@
                                     class="input-group-text text-[#8c9097] dark:text-white/50 !rounded-e-none border border-defaultborder">
                                     <i class="ri-calendar-line"></i>
                                 </div>
-                                <input type="text" class="form-control w-full !rounded-s-none" id="end-hm"
-                                    name="end-hm" placeholder="End HM">
+                                <input type="text" class="form-control w-full !rounded-s-none" id="end-hm" name="end-hm"
+                                    placeholder="End HM">
                             </div>
                         </div>
-                    
+
                     </div>
                 </div>
                 <div class="ti-modal-footer">
@@ -914,6 +616,12 @@
             document.getElementById("hm_end").value = "";
             // Jika ada input duration
             document.getElementById("duration").value = "";
+        }
+        function resetGetHM() {
+            document.getElementById("fuel-list-day").innerHTML = "";
+            document.getElementById("fuel-list-night").innerText = "";
+            document.getElementById("total_fuel").innerText = "-";
+
         }
 
 
@@ -967,7 +675,8 @@
                             <td>${item.hm_end}</td>
                          <td>
                             <div class="hs-tooltip ti-main-tooltip show">
-                                <a href="javascript:void(0);" onclick="viewHmDetail('${item.hm_unit_id}')" class="hs-tooltip-toggle ti-btn ti-btn-primary ti-btn-sm">
+                                <a href="javascript:void(0);" onclick="viewHmDetail('${item.hm_unit_id}')" 
+                                    class="hs-tooltip-toggle ti-btn ti-btn-primary ti-btn-sm get-fuel"data-id="${item.unit_code}" >
                                     <i class="ri-edit-line"></i>
                                 </a>
                             </div>
@@ -981,23 +690,13 @@
         // Listener untuk DATE
         dateInput.addEventListener('change', loadHmUnits);
 
-        // Init SELECT2
-        // $("#shift_type").select2({ width: '100%' });
-
-        // Listener SELECT2
-        // $("#shift_type").on("change.select2", function () {
-        //     console.log('Shift changed via select2 =>', this.value);
-        //     loadHmUnits();
-        // });
-
-        // Listener untuk DATE
-        // dateInput.addEventListener('change', loadHmUnits);
 
         // Listener untuk DATE
         dateInput.addEventListener('change', function () {
             console.log('Date changed =>', this.value);
             loadHmUnits();     // load daftar HM Unit baru
             resetHmDetails();  // reset detail dulu
+            resetGetHM();
         });
 
         // Listener untuk SHIFT
@@ -1079,7 +778,20 @@
                     renderHmDetails(res.details);
 
                 });
+
+            // get KPI
+            fetch(`/kqms/mining/mine-production/ajax/kpi-unit/${hm_unit_id}/`)
+                .then(res => res.json())
+                .then(res => {
+                    if (!res.success) {
+                        panel.innerHTML = `<p class='text-red-500'>${res.message}</p>`;
+                        return;
+                    }
+                    renderKPI(res.kpi);
+                    renderKPIDonut(res.kpi);
+                });
         };
+
         // Listener untuk DETAIL
         function renderHmDetails(details) {
             const tbody = document.getElementById("hmDetailsBody");
@@ -1118,11 +830,180 @@
             });
         }
 
+        // Listener untuk KPI
+        function renderKPI(kpi) {
+            const tbody = document.getElementById("kpi-list");
+            tbody.innerHTML = "";
+            if (!kpi) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-gray-400">
+                        No KPI data
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = `
+                <tr class="border border-defaultborder task-list">
+                    <td><span class="font-semibold">${kpi.working ?? 0}</span></td>
+                    <td><span class="font-semibold">${kpi.standby ?? 0}</span></td>
+                    <td><span class="font-semibold">${kpi.maintenance ?? 0}</span></td>
+                    <td><span class="font-semibold">${kpi.pa?.toFixed(0) ?? 0}%</span></td>
+                    <td><span class="font-semibold">${kpi.ma?.toFixed(0) ?? 0}%</span></td>
+                    <td><span class="font-semibold">${kpi.ua?.toFixed(0) ?? 0}%</span></td>
+                    <td><span class="font-semibold">${kpi.eu?.toFixed(0) ?? 0}%</span></td>
+                </tr>
+            `;
+        }
+
+        let kpiChart = null;
+
+        function renderKPIDonut(kpi) {
+            const series = [
+                kpi.pa ?? 0,
+                kpi.ma ?? 0,
+                kpi.ua ?? 0,
+                kpi.eu ?? 0
+            ];
+
+            const options = {
+                chart: {
+                    type: 'donut',
+                    height: 300
+                },
+                labels: ['PA', 'MA', 'UA', 'EU'],
+                series: series,
+                colors: ['#3b82f6', '#22c55e', '#facc15', '#ef4444'],
+
+                // dataLabels: {
+                //     enabled: true,
+                //     formatter: function (_, opts) {
+                //         const val = opts.w.config.series[opts.seriesIndex];
+                //         return val.toFixed(1) + '%';
+                //     }
+                // },
+                dataLabels: {
+                    enabled: true,
+                    style: {
+                        fontSize: '10px',
+                        // fontWeight: '600',
+                        // colors: ['#111'],   // tanpa shadow
+                    },
+                    dropShadow: {
+                        enabled: false
+                    },
+                    formatter: function (_, opts) {
+                        const val = opts.w.config.series[opts.seriesIndex];
+                        return val.toFixed(0) + '%';
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                },
+
+                legend: {
+                    position: 'bottom'
+                },
+
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'AVG KPI',
+                                    formatter: function () {
+                                        const avg =
+                                            (series[0] + series[1] + series[2] + series[3]) / 4;
+                                        return avg.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (window.kpiChart) {
+                window.kpiChart.updateOptions(options);
+                window.kpiChart.updateSeries(series);
+            } else {
+                window.kpiChart = new ApexCharts(
+                    document.querySelector("#chart"),
+                    options
+                );
+                window.kpiChart.render();
+            }
+        }
+
+
+
+        // Get fuel
+        $(document).on('click', '.get-fuel', function () {
+            const unitId = $(this).data('id');
+            viewFuel(unitId);
+            // alert(unitId);
+        });
+
+        function viewFuel(unit_id) {
+            const date = dateInput.value;
+
+            if (!date) {
+                alert("Pilih tanggal dulu!");
+                return;
+            }
+
+            fetch(`/kqms/mining/mine-production/ajax/hm-unit/fuel/${unit_id}/?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert(data.message);
+                        return;
+                    }
+                    renderFuelTable('#fuel-list-day', data.day);
+                    renderFuelTable('#fuel-list-night', data.night);
+                    // TOTAL FUEL
+                    document.getElementById('total_fuel').innerText =
+                        Number(data.total_volume).toFixed(2);
+                });
+        }
+
+        function renderFuelTable(selector, rows) {
+            const tbody = document.querySelector(selector);
+            tbody.innerHTML = '';
+
+            if (!rows.length) {
+                tbody.innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center text-gray-400">No data</td>
+            </tr>`;
+                return;
+            }
+
+            rows.forEach(row => {
+                tbody.innerHTML += `
+            <tr>
+                <td>${row.hours_metre}</td>
+                <td>${row.start_time}</td>
+                <td>${row.volume}</td>
+                <td>${row.operator}</td>
+            </tr>
+        `;
+            });
+        }
+
         // Edit HM Sidebar
         $('#files-list').on('click', '.edit-hm', function () {
             const id = $(this).data('id');
             var url = '/kqms/mining/mine-production/get-hm-unit/' + id + '/';
-             $.ajax({
+            $.ajax({
                 type: "GET",
                 url: url,
                 dataType: "json",
@@ -1136,7 +1017,7 @@
                         $('#units-code').val(d.unit_code);
                         $('#start-hm').val(d.hm_start);
                         $('#end-hm').val(d.hm_end);
-           
+
                     } else {
                         alert('Data tidak ditemukan');
                     }
@@ -1165,10 +1046,10 @@
 
         // Update data HM
         $('#update-hm').on('click', function () {
-            const id        = $('#id-unit').val();
-            const hm_start  = $('#start-hm').val();
-            const hm_end    = $('#end-hm').val();
-            const unit_id   = $('#units-code').val();
+            const id = $('#id-unit').val();
+            const hm_start = $('#start-hm').val();
+            const hm_end = $('#end-hm').val();
+            const unit_id = $('#units-code').val();
 
             var updatedData = {
                 hm_start: hm_start,
@@ -1255,7 +1136,6 @@
 
             });
         });
-
 
         // Delete Detail HM
         $('#hmDetailsBody').on('click', '.delete-btn', function () {
@@ -1639,6 +1519,7 @@
     });
 
 </script>
+
 <!-- Create new Data -->
 <script type="text/javascript">
     $(document).ready(function () {
@@ -1904,5 +1785,189 @@
         font-size: 0.813rem;
         font-weight: 500;
         line-height: 1.462;
+    }
+
+
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Select 2 */
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Styling untuk Select2 container */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Styling untuk Select2 selection */
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 12px !important;
+        background-color: #fff !important;
+    }
+
+    /* Styling untuk rendered text (teks yang dipilih) */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+        line-height: normal !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    /* Styling untuk placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af !important;
+    }
+
+    /* Styling untuk tombol clear (X) */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+        text-align: center !important;
+        line-height: 18px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+
+    /* Styling untuk dropdown arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 8px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #6b7280 transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
+        height: 0 !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        width: 0 !important;
+    }
+
+    /* Styling untuk dropdown */
+    .select2-dropdown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Styling untuk search box di dropdown */
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+    }
+
+    /* Styling untuk options */
+    .select2-results__option {
+        padding: 8px 12px !important;
+        color: #374151 !important;
+    }
+
+    .select2-results__option--highlighted {
+        background-color: #6466f1 !important;
+        color: white !important;
+    }
+
+    /* Styling untuk container dengan allowClear */
+    .select2-container--default.select2-container--allowclear .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        /* Beri ruang untuk tombol clear dan arrow */
+    }
+
+    /* Styling khusus untuk multiple select jika diperlukan */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #6466f1 !important;
+        border: 1px solid #6466f1 !important;
+        border-radius: 4px !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        margin: 2px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 6px !important;
+        font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fecaca !important;
+    }
+
+    /* Styling untuk focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6466f1 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Styling untuk disabled state */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #f9fafb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
     }
 </style>

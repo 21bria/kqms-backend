@@ -1,0 +1,638 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Status Unit Activity</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Tables
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Status units
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">List Data</h5>
+                        </div>
+                        <div class="box-body">
+                            <div class="flex justify-end mb-2">
+                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
+                                    <button id="addNew" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Add New</button>
+                                </div>
+                            </div>
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                                <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
+                            </div>
+                            <div class="overflow-auto">
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                    style="width: 100%">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="text-start" width="3%">No</th>
+                                            <th scope="col" class="text-start" width="6%">Code</th>
+                                            <th scope="col" class="text-start">Name</th>
+                                            <!-- <th scope="col" class="text-start">Status</th> -->
+                                            <th scope="col" class="text-start">Category</th>
+                                            <th scope="col" class="text-start" width="5%">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+    <!-- Start::add modal -->
+    <div id="add-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
+                        id="mail-ComposeLabel"></h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#add-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form id="entryForm" name="entryForm">
+                    <div class="ti-modal-body px-4 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4 ">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Code</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="code" name="code"
+                                        placeholder="Enter Code">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Category</label>
+                                <select id="status" name="status" class="ti-form-select w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <label class="form-label">Activity</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="activity" name="activity"
+                                        placeholder="Enter Activity">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                            data-hs-overlay="#add-modal">
+                            Cancel
+                        </button>
+                        <button type="button" value="edit" id="saveBtn"
+                            class="ti-btn bg-primary text-white">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Start::edit modal -->
+    <div id="edit-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">Delete
+                        Data Plan Production
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
+                        data-hs-overlay="#edit-modal">
+                        <span class="sr-only">Close</span>
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <form>
+                    <div class="ti-modal-body px-4 !overflow-visible">
+                        <div class="grid grid-cols-12 gap-6 px-4 ">
+                            <input type="hidden" class="form-control" id="id" name="id">
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Code</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="code_edit" name="code_edit"
+                                        placeholder="Enter Code">
+                                </div>
+                            </div>
+                            <div class="xl:col-span-6 col-span-12">
+                                <label class="form-label">Category</label>
+                                <select id="status_edit" name="status_edit" class="ti-form-select w-full !rounded-md">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            <div class="xl:col-span-12 col-span-12">
+                                <label class="form-label">Activity</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="activity_edit" name="activity_edit"
+                                        placeholder="Enter Activity">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="ti-modal-footer">
+                        <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                            data-hs-overlay="#edit-modal">
+                            Cancel
+                        </button>
+                        <a href="javascript:void(0)" id="updateButton"
+                            class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">Update
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".ti-form-select").select2({
+            width: '100%',
+            dropdownParent: $('#add-modal .ti-modal-body')
+        });
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        table = $('#data_table').DataTable().clear().destroy();
+        /*-- Render DataTable --*/
+        let data_url = '{% url "mine-production-status-activity-list" %}';
+        var table = $('#data_table').DataTable({
+            'processing': true,
+            'serverSide': true,
+            'responsive': true,
+            'autoWidth': true, language: {
+                paginate: {
+                    previous: "«",
+                    next: "»"
+                }
+            },
+            "ajax": {
+                "url": data_url,
+                "type": "POST",
+                dataType: 'json',
+            },
+            columns: [
+                {
+                    data: null,
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                }, // Kolom nomor otomatis
+                {
+                    data: 'code',
+                    name: 'code'
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                // {
+                //     data: 'status',
+                //     name: 'status'
+                // },
+                {
+                    data: 'category',
+                    name: 'category',
+                    // searchable: true
+                },
+                {
+                    'data': null,
+                    'name': 'action',
+                    'orderable': false,
+                    'searchable': false,
+                    'render': function (data, type, row) {
+                        return `
+                                <div  class="flex gap-2 items-center" >
+                                    <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-info editData">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                                  <path d="M8.5 12.5L10.5 14.5L15.5 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                               </svg>
+                                        </a>
+                                        <a href="javascript:void(0)" data-toggle="tooltip" data-id='${row.id}' class="hover:text-danger deleteData">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-danger">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"></circle>
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                            </svg>
+                                        </a>
+                                </div>
+                                `;
+                    }
+                }
+            ],
+            // Mengatur default sort pada kolom secara desc
+            order: [
+                [1, 'desc']
+            ],
+
+        });
+
+        /*--- Create ---*/
+        $('#saveBtn').on('click', function (e) {
+            e.preventDefault();
+            let btn = $(this);
+            let formData = $('#entryForm').serialize();
+
+            btn.prop('disabled', true).text('Saving...');
+            const toast = window.Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 2000,
+                padding: '2em',
+            });
+            $.ajax({
+                url: "{% url 'insert-status-activity-unit' %}",
+                type: "POST",
+                data: formData,
+                dataType: "json",
+                success: function (data) {
+                    if (data.status === 'success') {
+                        table.draw();
+                        $('#entryForm')[0].reset();
+                        $('#status').val(null).trigger('change');
+                        window.HSOverlay.close('#add-modal');
+                        $('#success-entry')
+                            .find('strong').text('Success!')
+                            .end()
+                            .find('span').text('Data saved successfully.')
+                            .end()
+                            .show();
+
+                        setTimeout(() => $('#success-entry').hide(), 2500);
+
+                    } else {
+                        // alert(data.message);
+
+                        toast.fire({
+                            icon: 'error',
+                            padding: '2em',
+                            html: data.message
+                        });
+                    }
+
+                    btn.prop('disabled', false).text('Submit');
+                },
+
+                error: function (xhr) {
+                    let msg = xhr.responseJSON?.message || 'Something went wrong';
+
+                    toast.fire({
+                        icon: 'error',
+                        padding: '2em',
+                        html: msg
+                    });
+
+                    btn.prop('disabled', false).text('Submit');
+                }
+            });
+        });
+
+        /* Update Data*/
+        $('#updateButton').click(function () {
+            var id = $('#id').val();
+            var code = $('#code_edit').val();
+            var name = $('#activity_edit').val();
+            var status = $('#status_edit').val();
+
+            var updatedData = {
+                code: code,
+                name: name,
+                status: status,
+            };
+            var url = '/kqms/mining/mine-production/timesheet/status-activity/update/' + id + '/';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: updatedData,
+                success: function (response) {
+                    if (response.success) {
+                        $('#id').val('');
+                        $('#code_deit').val('');
+                        $('#status_edit').val('').trigger('change');
+                        $('#activity_edit').val('');
+                        window.HSOverlay.close('#edit-modal');
+                        // Tampilkan notifikasi sukses
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        // toast.fire({
+                        //     icon: 'success',
+                        //     html: response.message,
+                        //     padding: '2em',
+                        // });
+                        $('#success-entry').find('strong').text('Success!');
+                        $('#success-entry').find('span').text('Data update successfully.');
+                        $('#success-entry').show();
+                        // Sembunyikan notifikasi setelah beberapa detik
+                        setTimeout(function () {
+                            $('#success-entry').hide();
+                        }, 2500); // 2500 milidetik = 2.5 detik
+
+                        table.clear().draw();
+
+                    } else {
+                        alert('Terjadi kesalahan: ' + response.message);
+                    }
+                },
+                error: function (xhr, textStatus, status, errorThrown, error) {
+                    if (xhr.status === 422) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+
+                    if (xhr.status === 400) {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.error,
+                            padding: '2em',
+                        });
+                    }
+                    else {
+                        const toast = window.Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            padding: '2em',
+                        });
+                        toast.fire({
+                            icon: 'error',
+                            html: xhr.responseJSON.message,
+                            padding: '2em',
+                        });
+                    }
+                }
+
+            });
+        });
+
+        /*--- Delete ---*/
+        $('#data_table').on('click', '.deleteData', function () {
+            var id = $(this).data('id');
+            var url = '{% url "mine-production-status-activity-delete" %}?id=' + id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'btn btn-success',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Delete',
+                // width: 380,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: "DELETE",
+                        dataType: 'json',
+                        data: {
+                            id: id,
+                        },
+                        success: function (data) {
+                            table.draw();
+
+                        },
+                        error: function (data) {
+                            console.log('Error:', data);
+                        }
+                    });
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Your file has been deleted.',
+                        icon: 'success',
+                        width: 380,
+                    })
+                }
+            })
+        });
+    });
+</script>
+
+<!-- add New -->
+<script>
+    $(document).ready(function () {
+        $('#addNew').click(function () {
+            window.HSOverlay.open('#add-modal');
+        });
+
+        // Ambil data dropdwon
+        $('#status').select2({
+            placeholder: '-- Select --',
+            width: '100%',
+            dropdownParent: $('#add-modal .ti-modal-body'),
+            allowClear: true,
+            ajax: {
+                url: "{% url 'get-unit-status' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+
+    });
+</script>
+
+<!-- Get Data for Edit -->
+<script>
+    $(document).ready(function () {
+        $('#status_edit').select2({
+            placeholder: '-- Select --',
+            width: '100%',
+            dropdownParent: $('#edit-modal .ti-modal-body'),
+            allowClear: false,
+            ajax: {
+                url: "{% url 'get-unit-status' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            }
+        });
+
+
+
+    });
+
+    /* Button Edit Click */
+    $('body').on('click', '.editData', function () {
+        var id = $(this).data('id');
+        var url = '{% url "mine-production-status-activity-get-id" %}';
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "json",
+            data: {
+                id: id,
+            },
+            success: function (response) {
+                if (response) {
+                    window.HSOverlay.open('#edit-modal');
+                    // Mengisi formulir dengan data yang diterima
+                    $('#id').val(response.id);
+                    $('#code_edit').val(response.code);
+                    $('#activity_edit').val(response.name);
+                    let option = new Option(response.status_text, response.status, true, true);
+                    $('#status_edit').append(option).trigger('change');
+                } else {
+                    alert(
+                        'Data tidak ditemukan'
+                    );
+                }
+            },
+            error: function (xhr, status, error) {
+                const toast = window.Swal.mixin({
+                    toast: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    padding: '2em',
+                });
+                toast.fire({
+                    icon: 'error',
+                    html: 'Oppss!! : ' + error,
+                    padding: '2em',
+                });
+
+            }
+        });
+    });
+</script>
+
+</body>
+
+</html>

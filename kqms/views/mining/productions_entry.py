@@ -130,6 +130,12 @@ class viewproductionsCreate(View):
 @login_required
 @csrf_exempt
 def create_production(request):
+    allowed_groups = ['superadmin','data-control','admin-mining']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             # Aturan validasi (tetap)
@@ -268,6 +274,12 @@ def create_production(request):
 @login_required
 @require_http_methods(["POST"])
 def update_Production(request,id):
+    allowed_groups = ['superadmin','data-control','admin-mining']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     try:
         # Aturan validasi
         rules = {
@@ -465,9 +477,14 @@ def delete_mine_production(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
-
 @login_required
 def getIdProduction(request):
+    allowed_groups = ['superadmin','data-control','admin-mining']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             get_id = request.GET.get('id')

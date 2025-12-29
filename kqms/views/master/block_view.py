@@ -86,12 +86,12 @@ class AjaxBlockList(View):
 
 @csrf_exempt 
 def get_block(request, id):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = Block.objects.get(id=id)
@@ -110,12 +110,12 @@ def get_block(request, id):
 
 @login_required
 def insert_block(request):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         mine_block = request.POST.get('mine_block')
         keterangan = request.POST.get('keterangan')
@@ -145,12 +145,12 @@ def insert_block(request):
     
 @login_required
 def update_block(request, id):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         try:
             job = Block.objects.get(id=id)
@@ -181,12 +181,12 @@ def update_block(request, id):
 
 @login_required
 def delete_block(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

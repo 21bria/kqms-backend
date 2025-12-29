@@ -92,7 +92,7 @@ class SampleType_List(View):
 @login_required      
 @csrf_exempt
 def get_sampleType(request, id):
-    allowed_groups = ['superadmin','admin-mgoqa']
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -120,7 +120,7 @@ def get_sampleType(request, id):
 
 @login_required
 def insert_sampleType(request):
-    allowed_groups = ['superadmin', 'admin-mgoqa']
+    allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -181,7 +181,7 @@ def insert_sampleType(request):
 
 @login_required    
 def update_sampleType(request, id):
-    allowed_groups = ['superadmin','admin-mgoqa']
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 

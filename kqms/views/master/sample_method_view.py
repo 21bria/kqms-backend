@@ -91,12 +91,12 @@ class SampleMethod_List(View):
 @login_required
 @csrf_exempt
 def get_method(request, id):
-    # allowed_groups = ['superadmin','admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = SampleMethod.objects.get(id=id)
@@ -114,7 +114,12 @@ def get_method(request, id):
 
 @login_required
 def insert_method(request):
-    
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'POST':
         sample_method = request.POST.get('sample_method', '').strip()
         keterangan    = request.POST.get('keterangan', '').strip()
@@ -153,7 +158,7 @@ def insert_method(request):
 
 @login_required
 def update_method(request, id):
-    allowed_groups = ['superadmin','admin-mgoqa']
+    allowed_groups = ['superadmin','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -186,12 +191,12 @@ def update_method(request, id):
 
 @login_required
 def delete_method(request):
-    # allowed_groups = ['superadmin']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission'}, 
+            status=403
+    )
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
         if job_id:

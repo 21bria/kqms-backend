@@ -1,0 +1,773 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Timesheet Compile</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Pages
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Timesheet
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="xl:col-span-3 col-span-12">
+                    <div class="box">
+                        <div class="box-body !p-0">
+                            <div class="p-4 grid border-b border-dashed dark:border-defaultborder/10">
+                                <div class="box-header  !justify-between">
+                                    <h6 class="font-semibold mb-0">Filters</h6>
+                                    <div>
+                                        <button type="button"
+                                            class="hs-dropdown-toggle ti-btn ti-btn-primary !text-[0.75rem] !py-1 !px-2"
+                                            id="filter-btn">
+                                            Append data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 border-b border-dashed dark:border-defaultborder/10">
+                                <form class="grid grid-cols-12 gap-4 mt-0">
+                                    <div class="md:col-span-6 col-span-12">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="date" class="form-control" placeholder="Date" aria-label="Date"
+                                            value="{{day_date}}" id="date_start" name="date_start">
+                                    </div>
+                                    <div class="md:col-span-6 col-span-12">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" placeholder="Date" aria-label="Date"
+                                            value="{{day_date}}" id="date_end" name="date_end">
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="p-4 task-navigation border-b border-dashed dark:border-defaultborder/10">
+                                <ul class="list-none task-main-nav mb-0">
+                                    <li class="!px-0 !pt-0">
+                                        <span
+                                            class="text-[.6875rem] text-[#8c9097] dark:text-white/50 opacity-[0.7] font-semibold">CATEGORIES</span>
+                                    </li>
+                                    <div class="md:col-span-12 col-span-12">
+                                        <select id="categories" name="categories"
+                                            class="form-control  w-full !rounded-md" multiple="multiple">
+                                            <option value="">--- Select ---</option>
+                                        </select>
+                                    </div>
+<!-- 
+                                    <li class="!px-0 !pt-2">
+                                        <span
+                                            class="text-[.6875rem] text-[#8c9097] dark:text-white/50 op-7 font-semibold">UNITS</span>
+                                    </li>
+                                    <li>
+                                        <div class="md:col-span-12 col-span-12">
+                                            <select id="unit_code" name="unit_code"
+                                                class="form-control  w-full !rounded-md" multiple="multiple">
+                                                <option value="">--- Select ---</option>
+                                            </select>
+                                        </div>
+                                    </li> -->
+
+                                </ul>
+                            </div>
+                            <div class="p-4 !flex items-center justify-center">
+                                <!-- <img src="../assets/images/media/media-66.png" alt=""> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="xl:col-span-8 col-span-12">
+                    <div class="grid grid-cols-12 gap-x-6">
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="box">
+                                <div class="box-body !p-0">
+                                    <div class="md:flex px-3 py-3 items-center justify-between">
+                                        <div>
+                                            <h6 class="font-semibold mb-0 text-[1rem]" id="appaly_filter">All Equipments
+                                            </h6>
+                                        </div>
+                                        <div class="mt-2 md:mt-0">
+                                            <nav class="-mb-0.5 sm:flex sm:space-x-6 rtl:space-x-reverse flex-wrap"
+                                                role="tablist">
+                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm active"
+                                                    href="javascript:void(0);" id="alltasks-item"
+                                                    data-hs-tab="#all-tasks" aria-controls="all-tasks">
+                                                    Activity
+                                                </a>
+
+                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
+                                                    href="javascript:void(0);" id="in-progress-item"
+                                                    data-hs-tab="#in-progress" aria-controls="in-progress">
+                                                    Chart
+                                                </a>
+
+                                            </nav>
+                                        </div>
+                                        <div class="mt-2 md:mt-0">
+                                            <div class="hs-dropdown ti-dropdown">
+                                                <button type="button" aria-label="button"
+                                                    class="ti-btn ti-btn-sm ti-btn-light !mb-0" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical"></i>
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <div class="tab-content task-tabs-container">
+                                <div class="tab-pane show active !p-0" id="all-tasks" aria-labelledby="alltasks-item"
+                                    role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-x-6" id="tasks-container">
+                                        <div class="xl:col-span-12 col-span-12 task-card">
+                                            <div class="box task-pending-card">
+                                                <div class="box-body">
+
+                                                    <div class="table-responsive">
+                                                        <table
+                                                            class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover min-w-full">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="text-start">No</th>
+                                                                    <th scope="col" class="text-start">Units</th>
+                                                                    <th scope="col" class="text-start">Type</th>
+                                                                    <th scope="col" class="text-start">Fuel</th>
+                                                                    <th scope="col" class="text-start">Working</th>
+                                                                    <th scope="col" class="text-start">Standby</th>
+                                                                    <th scope="col" class="text-start">Maintenance </th>
+                                                                    <th scope="col" class="text-start">PA</th>
+                                                                    <th scope="col" class="text-start">MA</th>
+                                                                    <th scope="col" class="text-start">UA</th>
+                                                                    <th scope="col" class="text-start">EU</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="table-kpi-unit" id="table-kpi-unit">
+                                                            </tbody>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane !p-0 hidden" id="in-progress" role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-x-6">
+                                        <div class="xl:col-span-12 col-span-12">
+                                            <div class="box task-inprogress-card">
+                                                <div class="box-body">
+
+                                                    <!-- Judul tetap kiri -->
+                                                    <div class="mb-3">
+                                                        <p class="font-semibold flex items-center">
+                                                            <i class="ri-star-s-fill text-[1rem] me-1 text-warning"></i>
+                                                            Chart KPI
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- Chart di tengah -->
+                                                    <div class="flex justify-center items-center">
+                                                        <div id="chart"></div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--End::row-1 -->
+
+        </div>
+        <!-- Start::main-content -->
+
+    </div>
+
+
+</div>
+
+
+<!-- End::add task modal -->
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // --- Reset function ---
+        function resetFilter() {
+            document.getElementById("table-kpi-unit").innerHTML = "";
+            document.getElementById("unit_code").value = "";
+            document.getElementById("categories").value = "";
+
+        }
+
+
+
+        //   Filter Aplly
+        document.getElementById('filter-btn').addEventListener('click', function () {
+            const date_start = document.getElementById('date_start').value;
+            const date_end = document.getElementById('date_end').value;
+            const categories = Array.from(
+                document.getElementById('categories').selectedOptions
+            ).map(opt => opt.value);
+
+            // const unit_code = Array.from(
+            //     document.getElementById('unit_code').selectedOptions
+            // ).map(opt => opt.value);
+
+
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 2000,
+                padding: '2em',
+            });
+
+            if (!date_start || !date_end) {
+                toast.fire({
+                    icon: 'error',
+                    html: 'Tanggal mulai dan akhir wajib diisi'
+                });
+                return;
+            }
+            
+            fetchKPI(date_start, date_end, categories);
+
+        });
+
+        function fetchKPI(date_start, date_end, categories) {
+            const params = new URLSearchParams({
+                date_start,
+                date_end,
+                categories: JSON.stringify(categories),
+                // unit_code: JSON.stringify(unit_code),
+            });
+
+            fetch(`/kqms/mining/mine-production/ajax/kpi-unit/summary/?${params.toString()}`)
+                .then(res => res.json())
+                .then(res => {
+                    if (!res.success) {
+                        document.getElementById("table-kpi-unit").innerHTML =
+                            `<tr><td colspan="9" class="text-center text-red-500">${res.message}</td></tr>`;
+                        return;
+                    }
+
+                    renderKPI(res.data);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Gagal mengambil data KPI");
+                });
+        }
+
+        // Render KPI Table
+        function renderKPI(data) {
+            const tbody = document.getElementById("table-kpi-unit");
+            tbody.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+            <tr>
+                <td colspan="9" class="text-center text-gray-400">
+                    No KPI data
+                </td>
+            </tr>`;
+                return;
+            }
+            data.forEach((kpi, index) => {
+                const row = `
+                    <tr class="border border-defaultborder task-list">
+                        <td class="text-center font-semibold">${index + 1}</td>
+                        <td><span class="font-semibold">${kpi.unit ?? '-'}</span></td>
+                        <td><span class="font-semibold">${kpi.category ?? '-'}</span></td>
+                        <td><span class="font-semibold">${kpi.fuel ?? 0}</span></td>
+                        <td><span class="font-semibold">${kpi.op ?? 0}</span></td>
+                        <td><span class="font-semibold">${kpi.st ?? 0}</span></td>
+                        <td><span class="font-semibold">${kpi.mt ?? 0}</span></td>
+                        <td><span class="font-semibold">${(kpi.pa ?? 0).toFixed(0)}%</span></td>
+                        <td><span class="font-semibold">${(kpi.ma ?? 0).toFixed(0)}%</span></td>
+                        <td><span class="font-semibold">${(kpi.ua ?? 0).toFixed(0)}%</span></td>
+                        <td><span class="font-semibold">${(kpi.eu ?? 0).toFixed(0)}%</span></td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML("beforeend", row);
+            });
+
+        }
+
+        let kpiChart = null;
+
+        function renderKPIChart(kpi) {
+            const series = [
+                kpi.pa ?? 0,
+                kpi.ma ?? 0,
+                kpi.ua ?? 0,
+                kpi.eu ?? 0
+            ];
+
+            const options = {
+                chart: {
+                    type: 'donut',
+                    height: 300
+                },
+                labels: ['PA', 'MA', 'UA', 'EU'],
+                series: series,
+                colors: ['#3b82f6', '#22c55e', '#facc15', '#ef4444'],
+
+                dataLabels: {
+                    enabled: true,
+                    style: {
+                        fontSize: '10px',
+                        // fontWeight: '600',
+                        // colors: ['#111'],   // tanpa shadow
+                    },
+                    dropShadow: {
+                        enabled: false
+                    },
+                    formatter: function (_, opts) {
+                        const val = opts.w.config.series[opts.seriesIndex];
+                        return val.toFixed(0) + '%';
+                    }
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return val.toFixed(2) + '%';
+                        }
+                    }
+                },
+
+                legend: {
+                    position: 'bottom'
+                },
+
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '70%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    label: 'AVG KPI',
+                                    formatter: function () {
+                                        const avg =
+                                            (series[0] + series[1] + series[2] + series[3]) / 4;
+                                        return avg.toFixed(1) + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            if (window.kpiChart) {
+                window.kpiChart.updateOptions(options);
+                window.kpiChart.updateSeries(series);
+            } else {
+                window.kpiChart = new ApexCharts(
+                    document.querySelector("#chart"),
+                    options
+                );
+                window.kpiChart.render();
+            }
+        }
+
+
+
+    });
+
+</script>
+
+<!-- Create new Data -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        const toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 2000,
+            padding: '2em',
+        });
+
+        $('#categories').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select dome',
+            allowClear: true,
+        });
+        $('#unit_code').select2({
+            ajax: {
+                url: "{% url 'get-mine-dome' %}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term,
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
+                        pagination: {
+                            more: data.pagination.more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            placeholder: 'Select dome',
+            allowClear: true,
+        });
+    });
+</script>
+
+</body>
+
+</html>
+
+
+<style>
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.50rem;
+        text-align: start;
+        vertical-align: middle;
+        font-size: 0.813rem;
+        font-weight: 500;
+        line-height: 1.462;
+    }
+
+
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Select 2 */
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Styling untuk Select2 container */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Styling untuk Select2 selection */
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 12px !important;
+        background-color: #fff !important;
+    }
+
+    /* Styling untuk rendered text (teks yang dipilih) */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+        line-height: normal !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    /* Styling untuk placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af !important;
+    }
+
+    /* Styling untuk tombol clear (X) */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+        text-align: center !important;
+        line-height: 18px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+
+    /* Styling untuk dropdown arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 8px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #6b7280 transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
+        height: 0 !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        width: 0 !important;
+    }
+
+    /* Styling untuk dropdown */
+    .select2-dropdown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Styling untuk search box di dropdown */
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+    }
+
+    /* Styling untuk options */
+    .select2-results__option {
+        padding: 8px 12px !important;
+        color: #374151 !important;
+    }
+
+    .select2-results__option--highlighted {
+        background-color: #6466f1 !important;
+        color: white !important;
+    }
+
+    /* Styling untuk container dengan allowClear */
+    .select2-container--default.select2-container--allowclear .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        /* Beri ruang untuk tombol clear dan arrow */
+    }
+
+    /* Styling khusus untuk multiple select jika diperlukan */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #6466f1 !important;
+        border: 1px solid #6466f1 !important;
+        border-radius: 4px !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        margin: 2px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 6px !important;
+        font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fecaca !important;
+    }
+
+    /* Styling untuk focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6466f1 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Styling untuk disabled state */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #f9fafb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+    }
+</style>

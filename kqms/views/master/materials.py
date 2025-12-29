@@ -89,12 +89,12 @@ class Materials_List(View):
 @csrf_exempt
 @login_required
 def get_material(request, id):
-    # allowed_groups = ['superadmin', 'admin-mgoqa']
-    # if not request.user.groups.filter(name__in=allowed_groups).exists():
-    #     return JsonResponse(
-    #         {'status': 'error', 'message': 'You do not have permission get data.'}, 
-    #         status=403
-    # )
+    allowed_groups = ['superadmin', 'admin-mgoqa','data-control']
+    if not request.user.groups.filter(name__in=allowed_groups).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'You do not have permission get data.'}, 
+            status=403
+    )
     if request.method == 'GET':
         try:
             job = Material.objects.get(id=id)

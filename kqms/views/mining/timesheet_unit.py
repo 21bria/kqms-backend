@@ -1,19 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from ...models.mine_weather import Weather
 from django.shortcuts import render
-from django.db.models import Q
-from django.views.generic import View
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
-from django.views import View
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from ...utils.utils import clean_string
 from datetime import datetime
-from uuid import UUID
 from decimal import Decimal
 from django.views.decorators.http import require_http_methods
 from kqms.models import  MineUnits,HmUnit, HmUnitDetail
@@ -263,6 +256,65 @@ def ajax_hm_unit_detail(request, hm_unit_id):
         # status HmUnit kalau CharField akses langsung
         "status"     : hm.status,
         "details"    : detail_rows,
+    })
+
+@login_required
+def ajax_hm_unit_kpi(request, hm_unit_id):
+    try:
+        hm = HmUnit.objects.get(id=hm_unit_id)
+    except HmUnit.DoesNotExist:
+        return JsonResponse({"success": False, "message": "HM unit not found"}, status=404)
+
+    details = hm.details.select_related("status")
+
+    STATUS_MAP = {
+        "OPR": "OP",
+        "STB": "ST",
+        "PM":  "MT",
+        "BD":  "BD",
+        "SUPPORT": "ST",
+        "WX": "ST",
+        "SLP": "ST",
+    }
+
+    summary = {
+        "OP": 0,
+        "ST": 0,
+        "MT": 0,
+        "BD": 0,
+    }
+
+    for d in details:
+        code = d.status.code
+        group = STATUS_MAP.get(code)
+        if group:
+            summary[group] += d.duration_min or 0
+
+    OP = summary["OP"]
+    ST = summary["ST"]
+    MT = summary["MT"]
+    BD = summary["BD"]
+
+    MR = MT + BD  # Maintenance + Breakdown
+
+    TOTAL_TIME = 24 * 60  # 1 hari
+
+    MA = (OP / (OP + MT + BD) * 100) if (OP + MT + BD) else 0
+    PA = ((OP + ST) / TOTAL_TIME * 100) if TOTAL_TIME else 0
+    UA = (OP / (OP + ST) * 100) if (OP + ST) else 0
+    EU = (OP / TOTAL_TIME * 100) if TOTAL_TIME else 0
+
+    return JsonResponse({
+        "success": True,
+        "kpi": {
+            "working": OP,
+            "standby": ST,
+            "maintenance": MR,
+            "pa": round(PA, 2),
+            "ma": round(MA, 2),
+            "ua": round(UA, 2),
+            "eu": round(EU, 2),
+        }
     })
 
 @login_required
