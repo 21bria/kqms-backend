@@ -87,7 +87,7 @@ def export_inventory_dome(de: str):
             ) AS sm
         FROM details_roa
         WHERE 
-        --status_dome != 'Finished' AND direct_sale = 'No' AND 
+        status_dome != 'Finished' AND direct_sale = 'No' AND 
         tgl_production <= %s
         GROUP BY stockpile, pile_id, nama_material
     ),
