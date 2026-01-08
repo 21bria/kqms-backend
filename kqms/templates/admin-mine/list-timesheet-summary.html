@@ -82,30 +82,11 @@
 
                             </div>
                             <div class="p-4 task-navigation border-b border-dashed dark:border-defaultborder/10">
-                                <ul class="list-none task-main-nav mb-0">
-                                    <li class="!px-0 !pt-0">
+                                <ul id="category-list" class="list-group">
+                                    <li class="!px-0 !pt-0 mb-3">
                                         <span
                                             class="text-[.6875rem] text-[#8c9097] dark:text-white/50 opacity-[0.7] font-semibold">CATEGORIES</span>
                                     </li>
-                                    <div class="md:col-span-12 col-span-12">
-                                        <select id="categories" name="categories"
-                                            class="form-control  w-full !rounded-md" multiple="multiple">
-                                            <option value="">--- Select ---</option>
-                                        </select>
-                                    </div>
-<!-- 
-                                    <li class="!px-0 !pt-2">
-                                        <span
-                                            class="text-[.6875rem] text-[#8c9097] dark:text-white/50 op-7 font-semibold">UNITS</span>
-                                    </li>
-                                    <li>
-                                        <div class="md:col-span-12 col-span-12">
-                                            <select id="unit_code" name="unit_code"
-                                                class="form-control  w-full !rounded-md" multiple="multiple">
-                                                <option value="">--- Select ---</option>
-                                            </select>
-                                        </div>
-                                    </li> -->
 
                                 </ul>
                             </div>
@@ -115,7 +96,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="xl:col-span-8 col-span-12">
+                <div class="xl:col-span-9 col-span-12">
                     <div class="grid grid-cols-12 gap-x-6">
                         <div class="xl:col-span-12 col-span-12">
                             <div class="box">
@@ -163,8 +144,7 @@
                                         <div class="xl:col-span-12 col-span-12 task-card">
                                             <div class="box task-pending-card">
                                                 <div class="box-body">
-
-                                                    <div class="table-responsive">
+                                                    <div class="table-responsive table-scrollable">
                                                         <table
                                                             class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover min-w-full">
                                                             <thead>
@@ -209,10 +189,18 @@
                                                     </div>
 
                                                     <!-- Chart di tengah -->
-                                                    <div class="flex justify-center items-center">
-                                                        <div id="chart"></div>
+                                                    <div class="w-full flex justify-center items-center">
+                                                        <div id="chart-digger" class="w-full"></div>
                                                     </div>
-
+                                                    <div class="w-full flex justify-center items-center">
+                                                        <div id="chart-hauler" class="w-full"></div>
+                                                    </div>
+                                                    <div class="w-full flex justify-center items-center">
+                                                        <div id="chart-support" class="w-full"></div>
+                                                    </div>
+                                                    <div class="w-full flex justify-center items-center">
+                                                        <div id="chart-lv" class="w-full"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,19 +252,15 @@
 
         }
 
-
+        loadCategories();
 
         //   Filter Aplly
         document.getElementById('filter-btn').addEventListener('click', function () {
             const date_start = document.getElementById('date_start').value;
             const date_end = document.getElementById('date_end').value;
-            const categories = Array.from(
-                document.getElementById('categories').selectedOptions
-            ).map(opt => opt.value);
+            const categories = getSelectedCategories();
 
-            // const unit_code = Array.from(
-            //     document.getElementById('unit_code').selectedOptions
-            // ).map(opt => opt.value);
+            console.log("Selected categories:", categories);
 
 
             const toast = Swal.mixin({
@@ -294,12 +278,16 @@
                 });
                 return;
             }
-            
+
             fetchKPI(date_start, date_end, categories);
 
         });
 
         function fetchKPI(date_start, date_end, categories) {
+            console.log("=== FILTER PARAMS ===");
+            console.log("date_start:", date_start);
+            console.log("date_end:", date_end);
+            console.log("categories:", categories);
             const params = new URLSearchParams({
                 date_start,
                 date_end,
@@ -317,11 +305,19 @@
                     }
 
                     renderKPI(res.data);
+                    const grouped = groupByCategory(res.data);
+
+                    renderCategoryChart("#chart-digger", "Digger", grouped.digger);
+                    renderCategoryChart("#chart-hauler", "Hauler", grouped.hauler);
+                    renderCategoryChart("#chart-support", "Support", grouped.support);
+                    renderCategoryChart("#chart-lv", "Light Vehicle", grouped.lv);
+
                 })
                 .catch(err => {
                     console.error(err);
                     alert("Gagal mengambil data KPI");
                 });
+
         }
 
         // Render KPI Table
@@ -359,166 +355,125 @@
 
         }
 
-        let kpiChart = null;
 
-        function renderKPIChart(kpi) {
-            const series = [
-                kpi.pa ?? 0,
-                kpi.ma ?? 0,
-                kpi.ua ?? 0,
-                kpi.eu ?? 0
-            ];
+        function getSelectedCategories() {
+            return Array.from(
+                document.querySelectorAll(".category-checkbox:checked")
+            ).map(cb => cb.value);
+        }
+
+        function loadCategories() {
+            fetch("{% url 'get-units-categories' %}")
+                .then(res => res.json())
+                .then(data => {
+                    const container = document.getElementById("category-list");
+
+                    // hapus hanya item lama, bukan header
+                    container.querySelectorAll("li:not(:first-child)").forEach(el => el.remove());
+
+                    if (!data.list || data.list.length === 0) {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item text-gray-400";
+                        li.innerText = "No category available";
+                        container.appendChild(li);
+                        return;
+                    }
+
+                    data.list.forEach(item => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item";
+
+                        li.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input category-checkbox"
+                            value="${item.category}"
+                            id="cat_${item.id}">
+                        <label for="cat_${item.id}" class="font-semibold cursor-pointer">
+                            ${item.category}
+                        </label>
+                    </div>
+                `;
+                        container.appendChild(li);
+                    });
+                })
+                .catch(err => {
+                    console.error("Failed load categories:", err);
+                });
+        }
+
+        function groupByCategory(data) {
+            const groups = {
+                digger: [],
+                hauler: [],
+                lv: [],
+                support: []
+            };
+
+            data.forEach(item => {
+                if (item.category === 'Digger') {
+                    groups.digger.push(item);
+                } else if (item.category === 'Hauler') {
+                    groups.hauler.push(item);
+                } else if (item.category === 'Light Vehicle') {
+                    groups.lv.push(item);
+                } else {
+                    groups.support.push(item);
+                }
+            });
+
+            return groups;
+        }
+
+        function renderCategoryChart(selector, title, data) {
+            if (!data.length) return;
+
+            const categories = data.map(d => d.unit);
+            const maValues = data.map(d => d.ma);
+            const uaValues = data.map(d => d.ua);
 
             const options = {
                 chart: {
-                    type: 'donut',
-                    height: 300
+                    type: 'bar',
+                    height: 320,
+                    width: '100%'
                 },
-                labels: ['PA', 'MA', 'UA', 'EU'],
-                series: series,
-                colors: ['#3b82f6', '#22c55e', '#facc15', '#ef4444'],
-
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        fontSize: '10px',
-                        // fontWeight: '600',
-                        // colors: ['#111'],   // tanpa shadow
-                    },
-                    dropShadow: {
-                        enabled: false
-                    },
-                    formatter: function (_, opts) {
-                        const val = opts.w.config.series[opts.seriesIndex];
-                        return val.toFixed(0) + '%';
+                title: {
+                    text: title,
+                    align: 'left'
+                },
+                plotOptions: {
+                    bar: {
+                        columnWidth: '60%'
                     }
+                },
+                series: [
+                    { name: 'MA (%)', data: maValues },
+                    { name: 'UA (%)', data: uaValues }
+                ],
+                xaxis: {
+                    categories
                 },
                 tooltip: {
                     y: {
-                        formatter: function (val) {
-                            return val.toFixed(2) + '%';
-                        }
+                        formatter: val => `${val}%`
                     }
                 },
-
-                legend: {
-                    position: 'bottom'
-                },
-
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '70%',
-                            labels: {
-                                show: true,
-                                total: {
-                                    show: true,
-                                    label: 'AVG KPI',
-                                    formatter: function () {
-                                        const avg =
-                                            (series[0] + series[1] + series[2] + series[3]) / 4;
-                                        return avg.toFixed(1) + '%';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                colors: [ '#ef4444', '#facc15','#22c55e','#3b82f6'],
             };
 
-            if (window.kpiChart) {
-                window.kpiChart.updateOptions(options);
-                window.kpiChart.updateSeries(series);
-            } else {
-                window.kpiChart = new ApexCharts(
-                    document.querySelector("#chart"),
-                    options
-                );
-                window.kpiChart.render();
-            }
+            const el = document.querySelector(selector);
+            el.innerHTML = ""; // reset
+            new ApexCharts(el, options).render();
         }
 
 
-
     });
 
 </script>
 
-<!-- Create new Data -->
-<script type="text/javascript">
-    $(document).ready(function () {
-        const toast = Swal.mixin({
-            toast: true,
-            position: 'top',
-            showConfirmButton: false,
-            timer: 2000,
-            padding: '2em',
-        });
 
-        $('#categories').select2({
-            ajax: {
-                url: "{% url 'get-mine-dome' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: $.map(data.results, function (item) {
-                            return {
-                                id: item.text,
-                                text: item.text
-                            };
-                        }),
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select dome',
-            allowClear: true,
-        });
-        $('#unit_code').select2({
-            ajax: {
-                url: "{% url 'get-mine-dome' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term,
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-                    return {
-                        results: $.map(data.results, function (item) {
-                            return {
-                                id: item.text,
-                                text: item.text
-                            };
-                        }),
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            },
-            minimumInputLength: 2,
-            placeholder: 'Select dome',
-            allowClear: true,
-        });
-    });
-</script>
 
 </body>
 
@@ -537,7 +492,14 @@
         border-width: 0;
     }
 
-
+    .table-scrollable {
+        max-height: 764px;
+        /* Setel tinggi maksimum */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
+        overflow-x: auto;
+        /* Disable horizontal scrolling jika tidak diperlukan */
+    }
 
     table {
         text-align: left;
@@ -584,21 +546,7 @@
         vertical-align: middle;
         font-size: 0.813rem;
         font-weight: 500;
-        line-height: 1.462;
-    }
-
-
-    .select2-container {
-        z-index: 999999 !important;
-    }
-
-    .select2-dropdown {
-        z-index: 999999 !important;
-    }
-
-    /* Khusus untuk HSOverlay modal */
-    .select2-container--open .select2-dropdown {
-        z-index: 99999999 !important;
+        line-height: 1.12;
     }
 
     /* Select 2 */
@@ -769,5 +717,23 @@
         background-color: #f9fafb !important;
         color: #9ca3af !important;
         cursor: not-allowed !important;
+    }
+
+    /* default di luar modal (table) */
+    .select2-container {
+        z-index: 1050 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 1060 !important;
+    }
+
+    /* di dalam modal */
+    .modal .select2-container {
+        z-index: 2000 !important;
+    }
+
+    .modal .select2-dropdown {
+        z-index: 2100 !important;
     }
 </style>

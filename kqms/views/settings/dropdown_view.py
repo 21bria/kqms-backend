@@ -948,7 +948,7 @@ def get_units_categories(request):
     if request.method == 'GET':
         try:
             sql_query = """
-                SELECT *
+                SELECT id,TRIM(category) as category
                 FROM units_categories
                 ORDER BY category ASC;
             """

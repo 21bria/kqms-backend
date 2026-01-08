@@ -137,7 +137,6 @@ def fetch_production_grade(ds: str, de: str):
         ]
     return {"rows": grade_rows}
 
-
 def fetch_selling(ds: str, de: str):
     query = """
         WITH day_series AS (
@@ -332,12 +331,20 @@ def fetch_production_mining(ds: str, de: str):
 def fetch_inventory_balance(ds: str, de: str):
     query = """
         WITH tanggal AS (
-            SELECT generate_series(%s::date, %s::date, interval '1 day')::date AS dt
+            SELECT generate_series(%s::date,%s::date,interval '1 day')::date AS dt
         ),
         incoming AS (
             SELECT
                 tgl_production::date AS dt,
-                SUM(tonnage) AS total_in
+                -- RAW incoming
+                SUM(tonnage) AS total_in,
+                -- incoming untuk stock (exclude Finished)
+                SUM(
+                    CASE
+                        WHEN status_dome = 'Finished' THEN 0
+                        ELSE tonnage
+                    END
+                ) AS in_stock
             FROM ore_productions
             WHERE tgl_production BETWEEN %s AND %s
             GROUP BY tgl_production::date
@@ -345,31 +352,64 @@ def fetch_inventory_balance(ds: str, de: str):
         outgoing AS (
             SELECT
                 date_hauling::date AS dt,
-                SUM(tonnage) AS total_out
+                -- RAW outgoing
+                SUM(tonnage) AS total_out,
+                -- outgoing untuk stock (exclude Finished)
+                SUM(
+                    CASE
+                        WHEN sale_dome = 'Finished' THEN 0
+                        ELSE tonnage
+                    END
+                ) AS out_stock
             FROM ore_sellings_barging
-            WHERE 
-            date_hauling >= %s AND date_barge_out <= %s
+            WHERE date_hauling BETWEEN %s AND %s
             AND status_barging = 'Complete'
             GROUP BY date_hauling::date
         ),
         saldo_awal AS (
             SELECT
-                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < %s), 0)
-                - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_hauling < %s AND status_barging = 'Complete'), 0) 
-                AS value
+                COALESCE((
+                    SELECT SUM(
+                        CASE
+                            WHEN status_dome = 'Finished' THEN 0
+                            ELSE tonnage
+                        END
+                    )
+                    FROM ore_productions
+                    WHERE tgl_production < %s
+                ), 0)
+                -
+                COALESCE((
+                    SELECT SUM(
+                        CASE
+                            WHEN sale_dome = 'Finished' THEN 0
+                            ELSE tonnage
+                        END
+                    )
+                    FROM ore_sellings_barging
+                    WHERE date_hauling < %s
+                    AND status_barging = 'Complete'
+                ), 0) AS opening_balance
         )
         SELECT
             t.dt,
+            -- RAW movement (buat laporan)
             COALESCE(i.total_in, 0) AS total_in,
             COALESCE(o.total_out, 0) AS total_out,
-            (SELECT value FROM saldo_awal) AS opening_balance,
-            (SELECT value FROM saldo_awal)
-              + SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0)) 
-                OVER (ORDER BY t.dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) 
-              AS running_balance
+            -- SALDO AWAL
+            sa.opening_balance,
+            -- RUNNING BALANCE (stock logic)
+            sa.opening_balance
+            + SUM(
+                    COALESCE(i.in_stock, 0) - COALESCE(o.out_stock, 0)
+                ) OVER (
+                    ORDER BY t.dt
+                    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                ) AS running_balance
         FROM tanggal t
         LEFT JOIN incoming i ON t.dt = i.dt
         LEFT JOIN outgoing o ON t.dt = o.dt
+        CROSS JOIN saldo_awal sa
         ORDER BY t.dt;
     """
     with connections['kqms_db'].cursor() as cur:
@@ -611,29 +651,43 @@ def fetch_summary_to_date(end_date):
 
         # === Inventory ===
         cur.execute("""
-            WITH incoming AS (
-                SELECT SUM(tonnage) AS total_in
+          WITH incoming AS (
+                SELECT
+                    -- untuk current stock (exclude Finished)
+                    SUM(
+                        CASE
+                            WHEN status_dome = 'Finished' THEN 0
+                            ELSE tonnage
+                        END
+                    ) AS in_stock,
+                    -- total incoming asli
+                    SUM(tonnage) AS total_in
                 FROM ore_productions
                 WHERE tgl_production <= %s
             ),
             outgoing AS (
-                SELECT SUM(tonnage) AS total_out
+                SELECT
+                    -- untuk current stock (exclude Finished)
+                    SUM(
+                        CASE
+                            WHEN sale_dome = 'Finished' THEN 0
+                            ELSE tonnage
+                        END
+                    ) AS out_stock,
+                    -- total outgoing asli
+                    SUM(tonnage) AS total_out
                 FROM ore_sellings_barging
                 WHERE date_barge_out <= %s
                 AND status_barging = 'Complete'
-            ),
-            saldo_awal AS (
-                SELECT
-                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production <= %s), 0)
-                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out <= %s AND status_barging = 'Complete'), 0)
-                    AS current_stock
             )
             SELECT
-                (SELECT current_stock FROM saldo_awal) AS current_stock,
-                COALESCE((SELECT total_in FROM incoming), 0) AS total_in,
-                COALESCE((SELECT total_out FROM outgoing), 0) AS total_out
+                COALESCE(i.in_stock, 0) - COALESCE(o.out_stock, 0) AS current_stock,
+                COALESCE(i.total_in, 0) AS total_in,
+                COALESCE(o.total_out, 0) AS total_out
+            FROM incoming i
+            CROSS JOIN outgoing o;
                     
-        """, [end_date, end_date, end_date, end_date])
+        """, [end_date, end_date])
 
         current_stock, inv_in, inv_out = cur.fetchone()
 

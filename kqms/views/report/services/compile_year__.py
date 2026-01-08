@@ -387,101 +387,53 @@ def fetch_production_mining_year(year: int):
 
 def fetch_inventory_balance_year(year: int):
     query = """
-      WITH bulan AS (
-        SELECT
-            TO_CHAR(gs::date, 'YYYY-MM') AS dt,
-            TO_CHAR(gs::date, 'FMMonth') AS bulan_label
-        FROM generate_series(
-            make_date(%s, 1, 1),
-            make_date(%s, 12, 1),
-            interval '1 month'
-        ) gs
-    ),
-    incoming AS (
-        SELECT
-            TO_CHAR(tgl_production, 'YYYY-MM') AS dt,
-
-            -- RAW incoming
-            SUM(tonnage) AS total_in,
-
-            -- incoming untuk stock (exclude Finished)
-            SUM(
-                CASE
-                    WHEN status_dome = 'Finished' THEN 0
-                    ELSE tonnage
-                END
-            ) AS in_stock
-        FROM ore_productions
-        WHERE EXTRACT(YEAR FROM tgl_production) = %s
-        GROUP BY TO_CHAR(tgl_production, 'YYYY-MM')
-    ),
-    outgoing AS (
-        SELECT
-            TO_CHAR(date_hauling, 'YYYY-MM') AS dt,
-
-            -- RAW outgoing
-            SUM(tonnage) AS total_out,
-
-            -- outgoing untuk stock (exclude Finished)
-            SUM(
-                CASE
-                    WHEN sale_dome = 'Finished' THEN 0
-                    ELSE tonnage
-                END
-            ) AS out_stock
-        FROM ore_sellings_barging
-        WHERE EXTRACT(YEAR FROM date_hauling) = %s
-        AND status_barging = 'Complete'
-        GROUP BY TO_CHAR(date_hauling, 'YYYY-MM')
-    ),
-
-    saldo_awal AS (
-        SELECT
-            COALESCE((
-                SELECT SUM(
-                    CASE
-                        WHEN status_dome = 'Finished' THEN 0
-                        ELSE tonnage
-                    END
-                )
-                FROM ore_productions
-                WHERE tgl_production < make_date(%s, 1, 1)
-            ), 0)
-            -
-            COALESCE((
-                SELECT SUM(
-                    CASE
-                        WHEN sale_dome = 'Finished' THEN 0
-                        ELSE tonnage
-                    END
-                )
-                FROM ore_sellings_barging
-                WHERE date_hauling < make_date(%s, 1, 1)
-                AND status_barging = 'Complete'
-            ), 0) AS opening_balance
-    )
-    SELECT
-        b.dt,
-        b.bulan_label,
-        -- RAW movement (laporan)
-        COALESCE(i.total_in, 0)  AS total_in,
-        COALESCE(o.total_out, 0) AS total_out,
-        -- saldo awal tahun
-        sa.opening_balance,
-        -- running stock bulanan
-        sa.opening_balance
-        + SUM(
-                COALESCE(i.in_stock, 0)
-            - COALESCE(o.out_stock, 0)
-            ) OVER (
-                ORDER BY b.dt
-                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-            ) AS running_balance
-    FROM bulan b
-    LEFT JOIN incoming i ON b.dt = i.dt
-    LEFT JOIN outgoing o ON b.dt = o.dt
-    CROSS JOIN saldo_awal sa
-    ORDER BY b.dt;
+        WITH bulan AS (
+            SELECT 
+                TO_CHAR(gs::date, 'YYYY-MM') AS dt,
+                TO_CHAR(gs::date, 'FMMonth') AS bulan_label
+            FROM generate_series(
+                make_date(%s, 1, 1),
+                make_date(%s, 12, 31),
+                interval '1 month'
+            ) gs
+        ),
+        incoming AS (
+            SELECT
+                TO_CHAR(tgl_production, 'YYYY-MM') AS dt,
+                SUM(tonnage) AS total_in
+            FROM ore_productions
+            WHERE EXTRACT(YEAR FROM tgl_production) = %s
+            GROUP BY TO_CHAR(tgl_production, 'YYYY-MM')
+        ),
+        outgoing AS (
+            SELECT
+                TO_CHAR(date_barge_out, 'YYYY-MM') AS dt,
+                SUM(tonnage) AS total_out
+            FROM ore_sellings_barging
+            WHERE EXTRACT(YEAR FROM date_barge_out) = %s
+            AND status_barging = 'Complete'
+            GROUP BY TO_CHAR(date_barge_out, 'YYYY-MM')
+        ),
+        saldo_awal AS (
+            SELECT
+                COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE tgl_production < make_date(%s,1,1)),0)
+               - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE date_barge_out < make_date(%s,1,1) AND status_barging = 'Complete'),0) 
+            AS value
+        )
+        SELECT 
+            b.dt,
+            b.bulan_label,
+            COALESCE(i.total_in,0) AS total_in,
+            COALESCE(o.total_out,0) AS total_out,
+            (SELECT value FROM saldo_awal) AS opening_balance,
+            (SELECT value FROM saldo_awal)
+            + SUM(COALESCE(i.total_in,0) - COALESCE(o.total_out,0)) 
+                OVER (ORDER BY b.dt ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) 
+            AS running_balance
+        FROM bulan b
+        LEFT JOIN incoming i ON b.dt = i.dt
+        LEFT JOIN outgoing o ON b.dt = o.dt
+        ORDER BY b.dt;
     """
     with connections['kqms_db'].cursor() as cur:
         cur.execute(query, [year, year, year, year, year, year])
@@ -538,7 +490,7 @@ def fetch_inventory_dome_year(year: int):
             ) AS sm
         FROM details_roa
         WHERE 
-          status_dome != 'Finished' AND 
+        --status_dome != 'Finished' AND 
           direct_sale = 'No'
           AND EXTRACT(YEAR FROM tgl_production) <= %s
         GROUP BY stockpile, pile_id, nama_material
@@ -711,70 +663,26 @@ def fetch_summary_to_year(year: int):
         # === Inventory ===
         cur.execute("""
             WITH incoming AS (
-                SELECT
-                    -- incoming tahun berjalan (untuk stock)
-                    SUM(
-                        CASE
-                            WHEN status_dome = 'Finished' THEN 0
-                            ELSE tonnage
-                        END
-                    ) AS in_stock,
-                    -- total incoming asli (raw)
-                    SUM(tonnage) AS total_in
+                SELECT SUM(tonnage) AS total_in
                 FROM ore_productions
-                WHERE EXTRACT(YEAR FROM tgl_production) = %s
+                WHERE EXTRACT(YEAR FROM tgl_production) = %s  
             ),
             outgoing AS (
-                SELECT
-                    -- outgoing tahun berjalan (untuk stock)
-                    SUM(
-                        CASE
-                            WHEN sale_dome = 'Finished' THEN 0
-                            ELSE tonnage
-                        END
-                    ) AS out_stock,
-                    -- total outgoing asli (raw)
-                    SUM(tonnage) AS total_out
+                SELECT SUM(tonnage) AS total_out
                 FROM ore_sellings_barging
                 WHERE EXTRACT(YEAR FROM date_barge_out) = %s
                 AND status_barging = 'Complete'
             ),
             saldo_awal AS (
                 SELECT
-                    COALESCE((
-                        SELECT SUM(
-                            CASE
-                                WHEN status_dome = 'Finished' THEN 0
-                                ELSE tonnage
-                            END
-                        )
-                        FROM ore_productions
-                        WHERE EXTRACT(YEAR FROM tgl_production) < %s
-                    ), 0)
-                    -
-                    COALESCE((
-                        SELECT SUM(
-                            CASE
-                                WHEN sale_dome = 'Finished' THEN 0
-                                ELSE tonnage
-                            END
-                        )
-                        FROM ore_sellings_barging
-                        WHERE EXTRACT(YEAR FROM date_barge_out) < %s
-                        AND status_barging = 'Complete'
-                    ), 0) AS opening_balance
+                    COALESCE((SELECT SUM(tonnage) FROM ore_productions WHERE EXTRACT(YEAR FROM tgl_production) < %s), 0)
+                    - COALESCE((SELECT SUM(tonnage) FROM ore_sellings_barging WHERE EXTRACT(YEAR FROM date_barge_out) < %s AND status_barging = 'Complete'), 0)
+                    AS current_stock
             )
             SELECT
-                -- STOCK AKHIR TAHUN
-                sa.opening_balance
-                + COALESCE(i.in_stock, 0)
-                - COALESCE(o.out_stock, 0) AS current_stock,
-                -- MOVEMENT TAHUN BERJALAN (RAW)
-                COALESCE(i.total_in, 0) AS total_in,
-                COALESCE(o.total_out, 0) AS total_out
-            FROM saldo_awal sa
-            CROSS JOIN incoming i
-            CROSS JOIN outgoing o;
+                (SELECT current_stock FROM saldo_awal) AS current_stock,
+                COALESCE((SELECT total_in FROM incoming), 0) AS total_in,
+                COALESCE((SELECT total_out FROM outgoing), 0) AS total_out
                     
         """, [year, year, year, year])
 

@@ -17,20 +17,17 @@ def timesheet__summary_page(request):
     }
     return render(request, 'admin-mine/list-timesheet-summary.html', context)
 
-@login_required
+# @login_required
 def summary_hm_unit_kpi(request):
-    date_start = request.GET.get('date_start')
-    date_end   = request.GET.get('date_end')
-    categories = request.GET.get('categories', '[]')  
-    unit_code  = request.GET.get('unit_code', '[]') 
+    date_start     = request.GET.get('date_start')
+    date_end       = request.GET.get('date_end')
+    categories_raw = request.GET.get('categories', '[]')
 
-   # Parsing JSON
-    categories  = json.loads(categories)  
-    unit_code   = json.loads(unit_code) 
+    try:
+        categories = json.loads(categories_raw)
+    except:
+        categories = []
 
-    if not date_start or not date_end:
-        date_start = '2025-12-10'
-        date_end   = '2025-12-23'
 
     # Optional validasi
     try:
@@ -46,7 +43,7 @@ def summary_hm_unit_kpi(request):
         query = """
             SELECT
                 u.unit_code,
-                c.category,
+                TRIM(c.category) as category,
                 -- FUEL
                 COALESCE(SUM(f.volume), 0) AS fuel,
                 -- DURATIONS
@@ -103,15 +100,19 @@ def summary_hm_unit_kpi(request):
         
         # filter kategori
         if categories:
-            query += f" AND c.category IN ({','.join(['%s'] * len(categories))})"
-            params.extend(categories)
+            placeholders = ','.join(['%s'] * len(categories))
+            query += f" AND LOWER(TRIM(c.category)) IN ({placeholders})"
+            params.extend([c.lower().strip() for c in categories])
 
         # filter unit
-        if unit_code:
-            query += f" AND u.unit_code IN ({','.join(['%s'] * len(unit_code))})"
-            params.extend(unit_code)
+        # if unit_code:
+        #     query += f" AND u.unit_code IN ({','.join(['%s'] * len(unit_code))})"
+        #     params.extend(unit_code)
 
         query += "GROUP BY h.id, u.unit_code,c.category ORDER BY u.unit_code"
+
+        print("RAW:", categories_raw)
+        print("PARSED:", categories)
 
         with connections['kqms_db'].cursor() as cursor:
             cursor.execute(query, params)

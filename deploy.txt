@@ -33,15 +33,17 @@ python manage.py migrate --database=kqms_db
 !! Menu :
 python manage.py populate_menu
 
-======git========
+====== git push ========
 # make changes to a repo and git add
 git add .
 git commit -m "update inventory"
 # update the existing commit message
 git push origin main
 git push --force origin main
-============================
+
+======== git pull=============
 git pull origin main
+
 ==============================
 sudo systemctl restart gunicorn
 

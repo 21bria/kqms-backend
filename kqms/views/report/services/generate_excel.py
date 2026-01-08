@@ -27,7 +27,7 @@ def safe_float(v):
     except:
         return 0.0
     
-from .compile_renge import (
+from .compile_range import (
     fetch_production_quality,
     fetch_production_grade,
     fetch_selling,

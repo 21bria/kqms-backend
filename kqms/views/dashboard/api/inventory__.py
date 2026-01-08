@@ -46,31 +46,13 @@ def get_inventory_summary(request):
                             SELECT
                                 -- Limonite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
@@ -78,31 +60,13 @@ def get_inventory_summary(request):
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
@@ -111,46 +75,16 @@ def get_inventory_summary(request):
                         ),
                         incoming AS (
                             SELECT
-                                  SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_in,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_in
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
                             FROM ore_productions op
                             LEFT JOIN materials m ON m.id = op.id_material
                             WHERE tgl_production BETWEEN %s AND %s
                         ),
                         outgoing AS (
-                             SELECT
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_out,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_out
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE date_barge_out BETWEEN %s AND %s
@@ -161,10 +95,12 @@ def get_inventory_summary(request):
                             COALESCE(i.lim_in, 0) AS lim_in,
                             COALESCE(o.lim_out, 0) AS lim_out,
                             sa.lim_awal + (COALESCE(i.lim_in, 0) - COALESCE(o.lim_out, 0)) AS lim_stock,
+
                             -- SAP
                             COALESCE(i.sap_in, 0) AS sap_in,
                             COALESCE(o.sap_out, 0) AS sap_out,
                             sa.sap_awal + (COALESCE(i.sap_in, 0) - COALESCE(o.sap_out, 0)) AS sap_stock,
+
                             -- TOTAL
                             COALESCE(i.lim_in, 0) + COALESCE(i.sap_in, 0) AS total_in,
                             COALESCE(o.lim_out, 0) + COALESCE(o.sap_out, 0) AS total_out,
@@ -174,7 +110,68 @@ def get_inventory_summary(request):
                         FROM incoming i, outgoing o, saldo_awal sa
                 """
             else:
-                raise ValueError("Unsupported database vendor.")
+                query = """
+                        WITH saldo_awal AS (
+                            SELECT
+                                -- Limonite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS lim_awal,
+
+                                -- Saprolite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS sap_awal
+                        ),
+                        incoming AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
+                            FROM ore_productions op
+                            LEFT JOIN materials m ON m.id = op.id_material
+                            WHERE tgl_production BETWEEN %s AND %s
+                        ),
+                        outgoing AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE date_hauling BETWEEN %s AND %s
+                        )
+                        SELECT
+                            ISNULL(i.lim_in, 0) AS lim_in,
+                            ISNULL(o.lim_out, 0) AS lim_out,
+                            sa.lim_awal + (ISNULL(i.lim_in, 0) - ISNULL(o.lim_out, 0)) AS lim_stock,
+
+                            ISNULL(i.sap_in, 0) AS sap_in,
+                            ISNULL(o.sap_out, 0) AS sap_out,
+                            sa.sap_awal + (ISNULL(i.sap_in, 0) - ISNULL(o.sap_out, 0)) AS sap_stock,
+
+                            ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0) AS total_in,
+                            ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0) AS total_out,
+                            (sa.lim_awal + sa.sap_awal)
+                                + ((ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0)) - (ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0))) AS total_stock
+                        FROM incoming i, outgoing o, saldo_awal sa
+                """
             params = [date_start] * 4 + [date_start, date_end] * 2
 
         elif filter_type =='weekly' and year and month and week:
@@ -219,31 +216,13 @@ def get_inventory_summary(request):
                             SELECT
                                 -- Limonite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
@@ -251,31 +230,13 @@ def get_inventory_summary(request):
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
@@ -284,45 +245,16 @@ def get_inventory_summary(request):
                         ),
                         incoming AS (
                             SELECT
-                                    SUM(
-                                        CASE
-                                            WHEN m.nama_material = 'LIM'
-                                                AND op.status_dome <> 'Finished'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    ) AS lim_in,
-                                    SUM(
-                                        CASE
-                                            WHEN m.nama_material = 'SAP'
-                                                AND op.status_dome <> 'Finished'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    ) AS sap_in
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
                             FROM ore_productions op
                             LEFT JOIN materials m ON m.id = op.id_material
                             WHERE tgl_production BETWEEN %s AND %s
                         ),
                         outgoing AS (
-                                SELECT
-                                    SUM(
-                                        CASE
-                                            WHEN m.nama_material = 'LIM'
-                                                AND s.sale_dome <> 'Finished'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    ) AS lim_out,
-
-                                    SUM(
-                                        CASE
-                                            WHEN m.nama_material = 'SAP'
-                                                AND s.sale_dome <> 'Finished'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    ) AS sap_out
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE date_barge_out BETWEEN %s AND %s
@@ -333,10 +265,12 @@ def get_inventory_summary(request):
                             COALESCE(i.lim_in, 0) AS lim_in,
                             COALESCE(o.lim_out, 0) AS lim_out,
                             sa.lim_awal + (COALESCE(i.lim_in, 0) - COALESCE(o.lim_out, 0)) AS lim_stock,
+
                             -- SAP
                             COALESCE(i.sap_in, 0) AS sap_in,
                             COALESCE(o.sap_out, 0) AS sap_out,
                             sa.sap_awal + (COALESCE(i.sap_in, 0) - COALESCE(o.sap_out, 0)) AS sap_stock,
+
                             -- TOTAL
                             COALESCE(i.lim_in, 0) + COALESCE(i.sap_in, 0) AS total_in,
                             COALESCE(o.lim_out, 0) + COALESCE(o.sap_out, 0) AS total_out,
@@ -346,7 +280,68 @@ def get_inventory_summary(request):
                         FROM incoming i, outgoing o, saldo_awal sa
                 """
             else:
-                raise ValueError("Unsupported database vendor.")
+                query = """
+                        WITH saldo_awal AS (
+                            SELECT
+                                -- Limonite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS lim_awal,
+
+                                -- Saprolite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS sap_awal
+                        ),
+                        incoming AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
+                            FROM ore_productions op
+                            LEFT JOIN materials m ON m.id = op.id_material
+                            WHERE tgl_production BETWEEN %s AND %s
+                        ),
+                        outgoing AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE date_hauling BETWEEN %s AND %s
+                        )
+                        SELECT
+                            ISNULL(i.lim_in, 0) AS lim_in,
+                            ISNULL(o.lim_out, 0) AS lim_out,
+                            sa.lim_awal + (ISNULL(i.lim_in, 0) - ISNULL(o.lim_out, 0)) AS lim_stock,
+
+                            ISNULL(i.sap_in, 0) AS sap_in,
+                            ISNULL(o.sap_out, 0) AS sap_out,
+                            sa.sap_awal + (ISNULL(i.sap_in, 0) - ISNULL(o.sap_out, 0)) AS sap_stock,
+
+                            ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0) AS total_in,
+                            ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0) AS total_out,
+                            (sa.lim_awal + sa.sap_awal)
+                                + ((ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0)) - (ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0))) AS total_stock
+                        FROM incoming i, outgoing o, saldo_awal sa
+                """
             
             params = [
                 start_date.strftime('%Y-%m-%d'),  # 1: tgl_production <= %s
@@ -377,139 +372,134 @@ def get_inventory_summary(request):
                 query = """
                         WITH saldo_awal AS (
                             SELECT
-                                -- LIM
+                                -- Limonite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
-                                ), 0)
-                                -
+                                ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
-                                    AND s.status_barging = 'Complete'
+                                    AND s.status_barging='Complete'
                                 ), 0) AS lim_awal,
-                                -- SAP
+                                -- Saprolite
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE tgl_production < %s
-                                ), 0)
-                                -
+                                ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'SAP'
-                                            THEN 0
-                                            WHEN m.nama_material = 'SAP'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE date_barge_out < %s
-                                    AND s.status_barging = 'Complete'
+                                    AND s.status_barging='Complete'
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
                             SELECT
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_in,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_in
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
                             FROM ore_productions op
                             LEFT JOIN materials m ON m.id = op.id_material
                             WHERE tgl_production BETWEEN %s AND %s
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_out,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_out
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE date_barge_out BETWEEN %s AND %s
-                            AND s.status_barging = 'Complete'
+                            AND s.status_barging='Complete'
                         )
                         SELECT
                             -- LIM
                             COALESCE(i.lim_in, 0) AS lim_in,
                             COALESCE(o.lim_out, 0) AS lim_out,
                             sa.lim_awal + (COALESCE(i.lim_in, 0) - COALESCE(o.lim_out, 0)) AS lim_stock,
+
                             -- SAP
                             COALESCE(i.sap_in, 0) AS sap_in,
                             COALESCE(o.sap_out, 0) AS sap_out,
                             sa.sap_awal + (COALESCE(i.sap_in, 0) - COALESCE(o.sap_out, 0)) AS sap_stock,
+
                             -- TOTAL
                             COALESCE(i.lim_in, 0) + COALESCE(i.sap_in, 0) AS total_in,
                             COALESCE(o.lim_out, 0) + COALESCE(o.sap_out, 0) AS total_out,
                             (sa.lim_awal + sa.sap_awal) +
                             ((COALESCE(i.lim_in, 0) + COALESCE(i.sap_in, 0)) -
                             (COALESCE(o.lim_out, 0) + COALESCE(o.sap_out, 0))) AS total_stock
-                        FROM incoming i, outgoing o, saldo_awal sa;
+                        FROM incoming i, outgoing o, saldo_awal sa
                 """
             else:
-                raise ValueError("Unsupported database vendor.")
+                query = """
+                        WITH saldo_awal AS (
+                            SELECT
+                                -- Limonite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS lim_awal,
+
+                                -- Saprolite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS sap_awal
+                        ),
+                        incoming AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
+                            FROM ore_productions op
+                            LEFT JOIN materials m ON m.id = op.id_material
+                            WHERE tgl_production BETWEEN %s AND %s
+                        ),
+                        outgoing AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE date_hauling BETWEEN %s AND %s
+                        )
+                        SELECT
+                            ISNULL(i.lim_in, 0) AS lim_in,
+                            ISNULL(o.lim_out, 0) AS lim_out,
+                            sa.lim_awal + (ISNULL(i.lim_in, 0) - ISNULL(o.lim_out, 0)) AS lim_stock,
+
+                            ISNULL(i.sap_in, 0) AS sap_in,
+                            ISNULL(o.sap_out, 0) AS sap_out,
+                            sa.sap_awal + (ISNULL(i.sap_in, 0) - ISNULL(o.sap_out, 0)) AS sap_stock,
+
+                            ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0) AS total_in,
+                            ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0) AS total_out,
+                            (sa.lim_awal + sa.sap_awal)
+                                + ((ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0)) - (ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0))) AS total_stock
+                        FROM incoming i, outgoing o, saldo_awal sa
+                """
        
         elif filter_type =='yearly' and year: 
             year = int(year)
@@ -520,31 +510,13 @@ def get_inventory_summary(request):
                             SELECT
                                 -- Limonite
                                 COALESCE((
-                                    SELECT SUM(
-                                            CASE
-                                                WHEN op.status_dome = 'Finished'
-                                                    AND m.nama_material = 'LIM'
-                                                THEN 0
-                                                WHEN m.nama_material = 'LIM'
-                                                THEN op.tonnage
-                                                ELSE 0
-                                            END
-                                        )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) -
                                 COALESCE((
-                                    SELECT SUM(
-                                            CASE
-                                                WHEN s.sale_dome = 'Finished'
-                                                    AND m.nama_material = 'LIM'
-                                                THEN 0
-                                                WHEN m.nama_material = 'LIM'
-                                                THEN s.tonnage
-                                                ELSE 0
-                                            END
-                                        )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE EXTRACT(YEAR FROM date_barge_out) < %s
@@ -552,31 +524,13 @@ def get_inventory_summary(request):
                                 ), 0) AS lim_awal,
                                 -- Saprolite
                                 COALESCE((
-                                    SELECT SUM(
-                                            CASE
-                                                WHEN op.status_dome = 'Finished'
-                                                    AND m.nama_material = 'SAP'
-                                                THEN 0
-                                                WHEN m.nama_material = 'SAP'
-                                                THEN op.tonnage
-                                                ELSE 0
-                                            END
-                                        )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                     FROM ore_productions op
                                     LEFT JOIN materials m ON m.id = op.id_material
                                      WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0) -
                                 COALESCE((
-                                      SELECT SUM(
-                                                CASE
-                                                    WHEN s.sale_dome = 'Finished'
-                                                        AND m.nama_material = 'SAP'
-                                                    THEN 0
-                                                    WHEN m.nama_material = 'SAP'
-                                                    THEN s.tonnage
-                                                    ELSE 0
-                                                END
-                                            )
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                     FROM ore_sellings_barging s
                                     LEFT JOIN materials m ON m.id = s.id_material
                                     WHERE EXTRACT(YEAR FROM date_barge_out) < %s
@@ -584,47 +538,17 @@ def get_inventory_summary(request):
                                 ), 0) AS sap_awal
                         ),
                         incoming AS (
-                             SELECT
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_in,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND op.status_dome <> 'Finished'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_in
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
                             FROM ore_productions op
                             LEFT JOIN materials m ON m.id = op.id_material
                             WHERE EXTRACT(YEAR FROM tgl_production) = %s
                         ),
                         outgoing AS (
                             SELECT
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'LIM'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS lim_out,
-
-                                SUM(
-                                    CASE
-                                        WHEN m.nama_material = 'SAP'
-                                            AND s.sale_dome <> 'Finished'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                ) AS sap_out
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE EXTRACT(YEAR FROM date_barge_out) = %s
@@ -649,7 +573,68 @@ def get_inventory_summary(request):
                         FROM incoming i, outgoing o, saldo_awal sa
                 """
             else:
-              raise ValueError("Unsupported database vendor.")
+                query = """
+                        WITH saldo_awal AS (
+                            SELECT
+                                -- Limonite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS lim_awal,
+
+                                -- Saprolite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS sap_awal
+                        ),
+                        incoming AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
+                            FROM ore_productions op
+                            LEFT JOIN materials m ON m.id = op.id_material
+                            WHERE YEAR(tgl_production) = %s
+                        ),
+                        outgoing AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                            WHERE YEAR(date_hauling) = %s
+                        )
+                        SELECT
+                            ISNULL(i.lim_in, 0) AS lim_in,
+                            ISNULL(o.lim_out, 0) AS lim_out,
+                            sa.lim_awal + (ISNULL(i.lim_in, 0) - ISNULL(o.lim_out, 0)) AS lim_stock,
+
+                            ISNULL(i.sap_in, 0) AS sap_in,
+                            ISNULL(o.sap_out, 0) AS sap_out,
+                            sa.sap_awal + (ISNULL(i.sap_in, 0) - ISNULL(o.sap_out, 0)) AS sap_stock,
+
+                            ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0) AS total_in,
+                            ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0) AS total_out,
+                            (sa.lim_awal + sa.sap_awal)
+                                + ((ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0)) - (ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0))) AS total_stock
+                        FROM incoming i, outgoing o, saldo_awal sa
+                """
             
             params = [year,year,year,year,year,year]
 
@@ -659,62 +644,27 @@ def get_inventory_summary(request):
                     WITH saldo_awal AS (
                         SELECT
                             COALESCE((
-                                SELECT SUM(
-                                        CASE
-                                            WHEN op.status_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN op.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
                                 FROM ore_productions op
                                 LEFT JOIN materials m ON m.id = op.id_material
                                 WHERE tgl_production <= %s
                             ), 0) -
                             COALESCE((
-                                SELECT SUM(
-                                        CASE
-                                            WHEN s.sale_dome = 'Finished'
-                                                AND m.nama_material = 'LIM'
-                                            THEN 0
-                                            WHEN m.nama_material = 'LIM'
-                                            THEN s.tonnage
-                                            ELSE 0
-                                        END
-                                    )
+                                SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
                                 FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
                                 WHERE date_barge_out <= %s
                                 AND s.status_barging='Complete'
                             ), 0) AS lim_awal,
+
                             COALESCE((
-                                SELECT SUM(
-                                    CASE
-                                        WHEN op.status_dome = 'Finished'
-                                            AND m.nama_material = 'SAP'
-                                        THEN 0
-                                        WHEN m.nama_material = 'SAP'
-                                        THEN op.tonnage
-                                        ELSE 0
-                                    END
-                                )
+                                SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
                                 FROM ore_productions op
                                 LEFT JOIN materials m ON m.id = op.id_material
                                 WHERE tgl_production <= %s
                             ), 0) -
                             COALESCE((
-                                 SELECT SUM(
-                                    CASE
-                                        WHEN s.sale_dome = 'Finished'
-                                            AND m.nama_material = 'SAP'
-                                        THEN 0
-                                        WHEN m.nama_material = 'SAP'
-                                        THEN s.tonnage
-                                        ELSE 0
-                                    END
-                                )
+                                SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
                                 FROM ore_sellings_barging s
                                 LEFT JOIN materials m ON m.id = s.id_material
                                 WHERE date_barge_out <= %s
@@ -723,43 +673,15 @@ def get_inventory_summary(request):
                     ),
                     incoming AS (
                         SELECT
-                            SUM(
-                                CASE
-                                    WHEN m.nama_material = 'LIM'
-                                        AND op.status_dome <> 'Finished'
-                                    THEN op.tonnage
-                                    ELSE 0
-                                END
-                            ) AS lim_in,
-                            SUM(
-                                CASE
-                                    WHEN m.nama_material = 'SAP'
-                                        AND op.status_dome <> 'Finished'
-                                    THEN op.tonnage
-                                    ELSE 0
-                                END
-                            ) AS sap_in
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
                         FROM ore_productions op
                         LEFT JOIN materials m ON m.id = op.id_material
                     ),
                     outgoing AS (
                         SELECT
-                            SUM(
-                                CASE
-                                    WHEN m.nama_material = 'LIM'
-                                        AND s.sale_dome <> 'Finished'
-                                    THEN s.tonnage
-                                    ELSE 0
-                                END
-                            ) AS lim_out,
-                            SUM(
-                                CASE
-                                    WHEN m.nama_material = 'SAP'
-                                        AND s.sale_dome <> 'Finished'
-                                    THEN s.tonnage
-                                    ELSE 0
-                                END
-                            ) AS sap_out
+                            SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                            SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
                         WHERE s.status_barging='Complete'
@@ -768,9 +690,11 @@ def get_inventory_summary(request):
                         COALESCE(i.lim_in, 0) AS lim_in,
                         COALESCE(o.lim_out, 0) AS lim_out,
                         sa.lim_awal + (COALESCE(i.lim_in, 0) - COALESCE(o.lim_out, 0)) AS lim_stock,
+
                         COALESCE(i.sap_in, 0) AS sap_in,
                         COALESCE(o.sap_out, 0) AS sap_out,
                         sa.sap_awal + (COALESCE(i.sap_in, 0) - COALESCE(o.sap_out, 0)) AS sap_stock,
+
                         COALESCE(i.lim_in, 0) + COALESCE(i.sap_in, 0) AS total_in,
                         COALESCE(o.lim_out, 0) + COALESCE(o.sap_out, 0) AS total_out,
                         (sa.lim_awal + sa.sap_awal)
@@ -779,7 +703,66 @@ def get_inventory_summary(request):
                     FROM incoming i, outgoing o, saldo_awal sa
                 """
             else:
-                raise ValueError("Unsupported database vendor.")
+                query = """
+                        WITH saldo_awal AS (
+                            SELECT
+                                -- Limonite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS lim_awal,
+
+                                -- Saprolite
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END)
+                                    FROM ore_productions op
+                                    LEFT JOIN materials m ON m.id = op.id_material
+                                    WHERE tgl_production <= %s
+                                ), 0) -
+                                ISNULL((
+                                    SELECT SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END)
+                                    FROM ore_sellings_barging s
+                                    LEFT JOIN materials m ON m.id = s.id_material
+                                    WHERE date_barge_out <= %s
+                                ), 0) AS sap_awal
+                        ),
+                        incoming AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN tonnage ELSE 0 END) AS lim_in,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN tonnage ELSE 0 END) AS sap_in
+                            FROM ore_productions op
+                            LEFT JOIN materials m ON m.id = op.id_material
+                        ),
+                        outgoing AS (
+                            SELECT
+                                SUM(CASE WHEN m.nama_material = 'LIM' THEN s.tonnage ELSE 0 END) AS lim_out,
+                                SUM(CASE WHEN m.nama_material = 'SAP' THEN s.tonnage ELSE 0 END) AS sap_out
+                            FROM ore_sellings_barging s
+                            LEFT JOIN materials m ON m.id = s.id_material
+                        )
+                        SELECT
+                            ISNULL(i.lim_in, 0) AS lim_in,
+                            ISNULL(o.lim_out, 0) AS lim_out,
+                            sa.lim_awal + (ISNULL(i.lim_in, 0) - ISNULL(o.lim_out, 0)) AS lim_stock,
+
+                            ISNULL(i.sap_in, 0) AS sap_in,
+                            ISNULL(o.sap_out, 0) AS sap_out,
+                            sa.sap_awal + (ISNULL(i.sap_in, 0) - ISNULL(o.sap_out, 0)) AS sap_stock,
+
+                            ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0) AS total_in,
+                            ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0) AS total_out,
+                            (sa.lim_awal + sa.sap_awal)
+                                + ((ISNULL(i.lim_in, 0) + ISNULL(i.sap_in, 0)) - (ISNULL(o.lim_out, 0) + ISNULL(o.sap_out, 0))) AS total_stock
+                        FROM incoming i, outgoing o, saldo_awal sa
+                """
             params = ['1900-01-01'] * 4
         else:
             return JsonResponse({'error': 'Invalid or incomplete filter parameters'}, status=400)
