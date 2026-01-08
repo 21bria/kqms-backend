@@ -831,6 +831,14 @@ def get_chart_inventory(request):
                     incoming AS (
                         SELECT
                             tgl_production::date AS date,
+                             -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN status_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS in_stock,
+						        -- total incoming asli
                             SUM(tonnage) AS total_in
                         FROM ore_productions
                         WHERE tgl_production BETWEEN %s AND %s
@@ -839,6 +847,14 @@ def get_chart_inventory(request):
                     barging AS (
                         SELECT
                             date_hauling::date AS date,
+                            -- untuk current stock (exclude Finished)
+						    SUM(
+						        CASE
+						            WHEN sale_dome = 'Finished' THEN 0
+						            ELSE tonnage
+						        END
+						    ) AS out_stock,
+						    -- total outgoing asli
                             SUM(tonnage) AS total_barging
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
@@ -849,6 +865,14 @@ def get_chart_inventory(request):
                     outgoing AS (
                         SELECT
                             date_hauling::date AS date,
+                            -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN sale_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS out_stock,
+						    -- total outgoing asli
                             SUM(tonnage) AS total_out
                         FROM ore_sellings_barging s
                         LEFT JOIN materials m ON m.id = s.id_material
@@ -859,13 +883,23 @@ def get_chart_inventory(request):
                     saldo_awal AS (
                         SELECT
                             COALESCE((
-                                SELECT SUM(tonnage)
+                                SELECT SUM(
+									CASE
+									    WHEN status_dome = 'Finished' THEN 0
+									    ELSE tonnage
+									END
+									)
                                 FROM ore_productions
                                 WHERE tgl_production < %s
                             ), 0)
                             -
                             COALESCE((
-                                SELECT SUM(tonnage)
+                                SELECT SUM(
+								    CASE
+								        WHEN sale_dome = 'Finished' THEN 0
+								        ELSE tonnage
+								    END
+									)
                                 FROM ore_sellings_barging
                                 WHERE date_hauling < %s
                                 AND status_barging = 'Complete'
@@ -876,7 +910,7 @@ def get_chart_inventory(request):
                         COALESCE(i.total_in, 0) AS total_in,
                         COALESCE(b.total_barging, 0) AS total_barging,
                         COALESCE(o.total_out, 0) AS total_out,
-                        SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                        SUM(COALESCE(i.in_stock, 0) - COALESCE(o.out_stock, 0))
                             OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
                             + (SELECT value FROM saldo_awal) AS running_balance
                     FROM tanggal t
@@ -893,7 +927,6 @@ def get_chart_inventory(request):
                     date_start, date_end,
                     date_start, date_start
                 ]
-
 
         elif filter_type =='weekly' and year and month and week:
             try:
@@ -939,14 +972,30 @@ def get_chart_inventory(request):
                         incoming AS (
                             SELECT
                                 tgl_production::date AS date,
+                                -- stock logic
+                                SUM(
+                                    CASE
+                                        WHEN status_dome = 'Finished' THEN 0
+                                        ELSE tonnage
+                                    END
+                                ) AS in_stock,
+                                -- laporan
                                 SUM(tonnage) AS total_in
                             FROM ore_productions
                             WHERE tgl_production BETWEEN %s AND %s
-                            GROUP BY tgl_production
+                            GROUP BY tgl_production::date
                         ),
                         barging AS (
                             SELECT
                                 date_hauling::date AS date,
+                                -- stock logic
+                                SUM(
+                                    CASE
+                                        WHEN sale_dome = 'Finished' THEN 0
+                                        ELSE tonnage
+                                    END
+                                ) AS out_barging,
+                                -- laporan
                                 SUM(tonnage) AS total_barging
                             FROM ore_sellings_barging
                             WHERE date_hauling BETWEEN %s AND %s
@@ -956,51 +1005,81 @@ def get_chart_inventory(request):
                         outgoing AS (
                             SELECT
                                 date_barge_out::date AS date,
+                                -- stock logic
+                                SUM(
+                                    CASE
+                                        WHEN sale_dome = 'Finished' THEN 0
+                                        ELSE tonnage
+                                    END
+                                ) AS out_stock,
+                                -- laporan
                                 SUM(tonnage) AS total_out
                             FROM ore_sellings_barging
                             WHERE date_barge_out BETWEEN %s AND %s
                             AND status_barging = 'Complete'
                             GROUP BY date_barge_out::date
                         ),
-                        daily AS (
-                            SELECT
-                                t.date,
-                                COALESCE(i.total_in, 0) AS total_in,
-                                COALESCE(b.total_barging, 0) AS total_barging,
-                                COALESCE(o.total_out, 0) AS total_out
-                            FROM tanggal t
-                            LEFT JOIN incoming i ON t.date = i.date
-                            LEFT JOIN barging b ON t.date = b.date
-                            LEFT JOIN outgoing o ON t.date = o.date
-                        ),
-                        saldo_awal AS (
-                            SELECT
-                                COALESCE((
-                                    SELECT SUM(tonnage)
-                                    FROM ore_productions
-                                    WHERE tgl_production < %s
-                                ), 0) - COALESCE((
-                                    SELECT SUM(tonnage)
-                                    FROM ore_sellings_barging
-                                    WHERE date_barge_out < %s
-                                    AND status_barging = 'Complete'
-                                ), 0) AS value
-                        )
+                    daily AS (
                         SELECT
-                            TRIM(TO_CHAR(date, 'Day')) AS label,
-                            total_in,
-                            total_barging,
-                            total_out,
-                            SUM(total_in - total_out) OVER (
-                                ORDER BY date
-                                ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-                            ) + (SELECT value FROM saldo_awal) AS running_balance
-                        FROM daily
-                        GROUP BY TRIM(TO_CHAR(date, 'Day')), total_in, total_barging, total_out, date
-                        ORDER BY ARRAY_POSITION(
-                            ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-                            TRIM(TO_CHAR(date, 'Day'))
-                        )
+                            t.date,
+                            COALESCE(i.total_in, 0)      AS total_in,
+                            COALESCE(b.total_barging, 0) AS total_barging,
+                            COALESCE(o.total_out, 0)     AS total_out,
+                            COALESCE(i.in_stock, 0)      AS in_stock,
+                            COALESCE(o.out_stock, 0)     AS out_stock
+                        FROM tanggal t
+                        LEFT JOIN incoming i ON t.date = i.date
+                        LEFT JOIN barging b ON t.date = b.date
+                        LEFT JOIN outgoing o ON t.date = o.date
+                    ),
+                    saldo_awal AS (
+                        SELECT
+                            COALESCE((
+                                SELECT SUM(
+                                    CASE
+                                        WHEN status_dome = 'Finished' THEN 0
+                                        ELSE tonnage
+                                    END
+                                )
+                                FROM ore_productions
+                                WHERE tgl_production < %s
+                            ), 0)
+                            -
+                            COALESCE((
+                                SELECT SUM(
+                                    CASE
+                                        WHEN sale_dome = 'Finished' THEN 0
+                                        ELSE tonnage
+                                    END
+                                )
+                                FROM ore_sellings_barging
+                                WHERE date_barge_out < %s
+                                AND status_barging = 'Complete'
+                            ), 0) AS value
+                    )
+                    SELECT
+                        TRIM(TO_CHAR(date, 'Day')) AS label,
+                        total_in,
+                        total_barging,
+                        total_out,
+                        SUM(in_stock - out_stock) OVER (
+                            ORDER BY date
+                            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+                        ) + (SELECT value FROM saldo_awal) AS running_balance
+
+                    FROM daily
+                    GROUP BY
+                        label,
+                        total_in,
+                        total_barging,
+                        total_out,
+                        in_stock,
+                        out_stock,
+                        date
+                    ORDER BY ARRAY_POSITION(
+                        ARRAY['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                        TRIM(TO_CHAR(date, 'Day'))
+                    );
                         """
             else:
                raise ValueError("Unsupported vendor")
@@ -1034,7 +1113,15 @@ def get_chart_inventory(request):
                         incoming AS (
                             SELECT
                                 tgl_production::date AS date,
-                                SUM(tonnage) AS total_in
+                                -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN status_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS in_stock,
+						        -- total incoming asli
+						        SUM(tonnage) AS total_in
                             FROM ore_productions
                             WHERE tgl_production BETWEEN %s AND %s
                             GROUP BY tgl_production
@@ -1042,6 +1129,14 @@ def get_chart_inventory(request):
                         barging AS (
                             SELECT
                             date_hauling::date AS date,
+                            -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN sale_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS out_stock,
+						    -- total outgoing asli
                             SUM(tonnage) AS total_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
@@ -1052,6 +1147,14 @@ def get_chart_inventory(request):
                         outgoing AS (
                             SELECT
                                 date_barge_out::date AS date,
+                                -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN sale_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS out_stock,
+						        -- total outgoing asli
                                 SUM(tonnage) AS total_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
@@ -1062,13 +1165,23 @@ def get_chart_inventory(request):
                         saldo_awal AS (
                             SELECT
                                 COALESCE((
-                                    SELECT SUM(tonnage)
+                                    SELECT SUM(
+									    CASE
+									        WHEN status_dome = 'Finished' THEN 0
+									        ELSE tonnage
+									    END
+									)
                                     FROM ore_productions
                                     WHERE tgl_production < %s
                                 ), 0)
                                 -
                                 COALESCE((
-                                    SELECT SUM(tonnage)
+                                    SELECT SUM(
+								    CASE
+								        WHEN sale_dome = 'Finished' THEN 0
+								        ELSE tonnage
+								    END
+									)
                                     FROM ore_sellings_barging
                                     WHERE date_barge_out < %s
                                     AND status_barging = 'Complete'
@@ -1079,7 +1192,7 @@ def get_chart_inventory(request):
                             COALESCE(i.total_in, 0) AS total_in,
                             COALESCE(b.total_out, 0) AS total_barging,
                             COALESCE(o.total_out, 0) AS total_out,
-                            SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                            SUM(COALESCE(i.in_stock, 0) - COALESCE(o.out_stock, 0))
                                 OVER (ORDER BY t.date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
                                 + (SELECT value FROM saldo_awal) AS running_balance
                         FROM tanggal t
@@ -1101,7 +1214,15 @@ def get_chart_inventory(request):
                         incoming AS (
                             SELECT
                                 EXTRACT(MONTH FROM tgl_production)::int AS month,
-                                SUM(tonnage) AS total_in
+                                 -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN status_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS in_stock,
+						        -- total incoming asli
+						        SUM(tonnage) AS total_in
                             FROM ore_productions
                             WHERE EXTRACT(YEAR FROM tgl_production) = %s
                             GROUP BY EXTRACT(MONTH FROM tgl_production)
@@ -1109,7 +1230,15 @@ def get_chart_inventory(request):
                         barging AS (
                             SELECT
                                 EXTRACT(MONTH FROM date_hauling)::int AS month,
-                                SUM(tonnage) AS total_out
+                                -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN sale_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS out_stock,
+						        -- total outgoing asli
+						        SUM(tonnage) AS total_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE EXTRACT(YEAR FROM date_hauling) = %s
@@ -1119,7 +1248,15 @@ def get_chart_inventory(request):
                         outgoing AS (
                             SELECT
                                 EXTRACT(MONTH FROM date_barge_out)::int AS month,
-                                SUM(tonnage) AS total_out
+                                -- untuk current stock (exclude Finished)
+						        SUM(
+						            CASE
+						                WHEN sale_dome = 'Finished' THEN 0
+						                ELSE tonnage
+						            END
+						        ) AS out_stock,
+						        -- total outgoing asli
+						        SUM(tonnage) AS total_out
                             FROM ore_sellings_barging s
                             LEFT JOIN materials m ON m.id = s.id_material
                             WHERE EXTRACT(YEAR FROM date_barge_out) = %s
@@ -1129,13 +1266,24 @@ def get_chart_inventory(request):
                         saldo_awal AS (
                             SELECT
                                 COALESCE((
-                                    SELECT SUM(tonnage)
+                                    SELECT SUM(
+									    CASE
+									        WHEN status_dome = 'Finished' THEN 0
+									        ELSE tonnage
+									    END
+									)
                                     FROM ore_productions
                                     WHERE EXTRACT(YEAR FROM tgl_production) < %s
                                 ), 0)
                                 -
                                 COALESCE((
-                                    SELECT SUM(tonnage)
+                                    select
+                                    SUM(
+								    CASE
+								        WHEN sale_dome = 'Finished' THEN 0
+								        ELSE tonnage
+								    END
+									)
                                     FROM ore_sellings_barging
                                     WHERE EXTRACT(YEAR FROM date_barge_out) < %s
                                     AND status_barging = 'Complete'
@@ -1146,7 +1294,7 @@ def get_chart_inventory(request):
                             COALESCE(i.total_in, 0) AS total_in,
                             COALESCE(b.total_out, 0) AS total_barging,
                             COALESCE(o.total_out, 0) AS total_out,
-                            SUM(COALESCE(i.total_in, 0) - COALESCE(o.total_out, 0))
+                            SUM(COALESCE(i.in_stock, 0) - COALESCE(o.out_stock, 0))
                                 OVER (ORDER BY bulan.month ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
                                 + (SELECT value FROM saldo_awal) AS running_balance
                         FROM bulan
