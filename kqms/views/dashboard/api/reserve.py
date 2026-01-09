@@ -22,14 +22,16 @@ class NaNEncoder(json.JSONEncoder):
             return None
         return super().default(obj)
 
-
-
 def to_float1(value):
     try:
         return round(float(value or 0), 1)
     except Exception:
         return 0.0
 
+def dictfetchone(cursor):
+    desc = [col[0] for col in cursor.description]
+    row = cursor.fetchone()
+    return dict(zip(desc, row)) if row else {}
 
 # ======================================
 # Query Builder
@@ -37,42 +39,46 @@ def to_float1(value):
 def build_summary_query(db_vendor: str, where_clause: str, where_barge: str) -> str:
     if db_vendor == 'postgresql':
         return f"""
-            SELECT 
-                -- Total Reserve (dari mine_reserve)
-                COALESCE(SUM(r.tonnage), 0) AS reserve_ton,
-
-                -- Total Production (pakai filter dinamis)
-                COALESCE((
-                    SELECT ROUND(SUM(CASE WHEN nama_material IN ('LIM', 'SAP') THEN tonnage ELSE 0 END)::numeric, 2)
-                    FROM ore_production {where_clause}
-                ), 0) AS prod_ton,
-
-                -- Total Sales (pakai filter date_barge_out dan status_barging)
-                COALESCE((
-                    SELECT ROUND(SUM(s.tonnage)::numeric, 2)
-                    FROM ore_sellings_barging s
-                    {where_barge}
-                ), 0) AS sales_ton,
-
-                -- Persentase produksi vs reserve
-                COALESCE((
-                    (SELECT SUM(CASE WHEN nama_material IN ('LIM', 'SAP') THEN tonnage ELSE 0 END)
-                     FROM ore_production {where_clause}) /
-                    NULLIF(SUM(r.tonnage), 0) * 100
-                ), 0) AS percent_mined,
-
-                -- Persentase penjualan vs reserve
-                COALESCE((
-                    (SELECT SUM(s.tonnage)
-                     FROM ore_sellings_barging s {where_barge}) /
-                    NULLIF(SUM(r.tonnage), 0) * 100
-                ), 0) AS percent_sold
-
+            WITH base AS (
+            SELECT
+                -- Reserve awal
+                COALESCE(SUM(r.tonnage), 0) AS reserve_awal
             FROM mine_reserve r
+        ),
+        prod AS (
+            SELECT
+                COALESCE(SUM(
+                    CASE WHEN nama_material IN ('LIM', 'SAP') THEN tonnage ELSE 0 END
+                ), 0) AS prod_ton
+            FROM ore_production
+            {where_clause}
+        ),
+        sales AS (
+            SELECT
+                COALESCE(SUM(s.tonnage), 0) AS sales_ton
+            FROM ore_sellings_barging s
+            {where_barge}
+        )
+        SELECT
+            base.reserve_awal,
+            prod.prod_ton,
+            sales.sales_ton,
+            -- remaining reserve
+            (base.reserve_awal - prod.prod_ton - sales.sales_ton) AS remaining_reserve,
+            -- percent mined
+            CASE
+                WHEN base.reserve_awal = 0 THEN 0
+                ELSE (prod.prod_ton / base.reserve_awal) * 100
+            END AS percent_mined,
+            -- percent sold
+            CASE
+                WHEN base.reserve_awal = 0 THEN 0
+                ELSE (sales.sales_ton / base.reserve_awal) * 100
+            END AS percent_sold
+        FROM base, prod, sales;
         """
     else:
         raise ValueError("Unsupported vendor")
-
 
 # ======================================
 # Main Function
@@ -105,32 +111,39 @@ def get_reserve_summary(request):
 
         elif filter_type == 'weekly' and week:
             if db_vendor == 'postgresql':
+                # week format: YYYY-WW
                 where_clause += """
-                    AND (
-                        (EXTRACT(YEAR FROM tgl_production)::int < SPLIT_PART(%s, '-', 1)::int)
-                        OR
-                        (EXTRACT(YEAR FROM tgl_production)::int = SPLIT_PART(%s, '-', 1)::int
-                        AND EXTRACT(WEEK FROM tgl_production)::int <= SPLIT_PART(%s, '-', 2)::int)
+                    AND tgl_production < (
+                        DATE_TRUNC('week', TO_DATE(%s || '-1', 'IYYY-IW-ID')) + INTERVAL '7 day'
                     )
                 """
                 where_barge += """
-                    AND (
-                        (EXTRACT(YEAR FROM date_barge_out)::int < SPLIT_PART(%s, '-', 1)::int)
-                        OR
-                        (EXTRACT(YEAR FROM date_barge_out)::int = SPLIT_PART(%s, '-', 1)::int
-                        AND EXTRACT(WEEK FROM date_barge_out)::int <= SPLIT_PART(%s, '-', 2)::int)
+                    AND date_barge_out < (
+                        DATE_TRUNC('week', TO_DATE(%s || '-1', 'IYYY-IW-ID')) + INTERVAL '7 day'
                     )
                 """
-                params = [week, week, week, week, week, week]
+                params = [week, week]
 
         elif filter_type == 'monthly' and year and month:
-            if db_vendor == 'postgresql':
-                where_clause += " AND EXTRACT(YEAR FROM tgl_production) = %s AND EXTRACT(MONTH FROM tgl_production) <= %s"
-                where_barge  += " AND EXTRACT(YEAR FROM date_barge_out) = %s AND EXTRACT(MONTH FROM date_barge_out) <= %s"
-            else:
-                where_clause += " AND YEAR(tgl_production) = %s AND MONTH(tgl_production) <= %s"
-                where_barge  += " AND YEAR(date_barge_out) = %s AND MONTH(date_barge_out) <= %s"
-            params = [year, month, year, month]
+            where_clause += """
+                AND (
+                    EXTRACT(YEAR FROM tgl_production) < %s
+                    OR (
+                        EXTRACT(YEAR FROM tgl_production) = %s
+                        AND EXTRACT(MONTH FROM tgl_production) <= %s
+                    )
+                )
+            """
+            where_barge += """
+                AND (
+                    EXTRACT(YEAR FROM date_barge_out) < %s
+                    OR (
+                        EXTRACT(YEAR FROM date_barge_out) = %s
+                        AND EXTRACT(MONTH FROM date_barge_out) <= %s
+                    )
+                )
+            """
+            params = [year, year, month, year, year, month]
 
         elif filter_type == 'yearly' and year:
             if db_vendor == 'postgresql':
@@ -151,27 +164,28 @@ def get_reserve_summary(request):
         query = build_summary_query(db_vendor, where_clause, where_barge)
 
         # === DUPLICATE PARAMS (karena subquery dipakai dua kali) ===
-        params = params * 2
+        # params = params * 2
 
         # === PARAM CHECK ===
         expected = query.count("%s")
         if expected != len(params):
-            logger.warning(f"⚠️ Param mismatch: query expects {expected}, got {len(params)}")
+            logger.warning(f"Param mismatch: query expects {expected}, got {len(params)}")
             logger.warning(f"Params: {params}")
 
         # === EXECUTE QUERY ===
         with connections['kqms_db'].cursor() as cursor:
             cursor.execute(query, params)
-            row = cursor.fetchone()
+            row = dictfetchone(cursor)
 
-        # === RESPONSE ===
         return JsonResponse({
-            "reserve_ton"   : to_float1(row[0]),
-            "prod_ton"      : to_float1(row[1]),
-            "sales_ton"     : to_float1(row[2]),
-            "percent_mined" : to_float1(row[3]),
-            "percent_sold"  : to_float1(row[4]),
+            "reserve_ton"       : to_float1(row["reserve_awal"]),
+            "prod_ton"          : to_float1(row["prod_ton"]),
+            "sales_ton"         : to_float1(row["sales_ton"]),
+            "remaining_reserve" : to_float1(row["remaining_reserve"]),
+            "percent_mined"     : round(to_float1(row["percent_mined"]), 2),
+            "percent_sold"      : round(to_float1(row["percent_sold"]), 2),
         })
+
 
     except DatabaseError:
         logger.exception("Database query failed.")
