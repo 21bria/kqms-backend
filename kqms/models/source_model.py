@@ -1,15 +1,43 @@
 from django.db import models
 from django.contrib.gis.db import models as geomodels
 
+class MineIUP(models.Model):
+    iup_code     = models.CharField(max_length=50, unique=True)
+    iup_name     = models.CharField(max_length=100)
+    geometry     = geomodels.MultiPolygonField(srid=4326, null=True, blank=True)
+    center_lat   = models.DecimalField(max_digits=9, decimal_places=6)
+    center_lng   = models.DecimalField(max_digits=9, decimal_places=6)
+    default_zoom = models.PositiveSmallIntegerField(default=14)
+    created_at   = models.DateTimeField(auto_now_add=True)
+    updated_at   = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.iup_name
+
+    class Meta:
+        db_table = 'mine_iup'
+        app_label= 'kqms'
+    
+    indexes = [
+        models.Index(fields=['iup_name'])
+    ]
+
+
 # For Mines Sources
 class SourceMines(models.Model):
     sources_area = models.CharField(max_length=50, unique=True)
     remarks      = models.CharField(max_length=255, default=None, null=True, blank=True)
     category     = models.CharField(max_length=25, default=None, null=True, blank=True)
+    id_iup       = models.ForeignKey(
+        MineIUP, 
+        related_name='mine_iup_mine_sources_FK', 
+        on_delete=models.SET_NULL,null=True,blank=True,db_column='id_iup' 
+    )
     status       = models.IntegerField(default=None, null=True, blank=True)
     latitude     = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
     longitude    = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
-    geometry     = geomodels.PolygonField(null=True, blank=True)  # area loading point
+    geometry     = geomodels.MultiPolygonField(srid=4326, null=True, blank=True)
+    extra_properties = models.JSONField(null=True, blank=True)
     created_at   = models.DateTimeField(auto_now_add=True)
     updated_at   = models.DateTimeField(auto_now_add=True)
 
@@ -36,7 +64,8 @@ class SourceMinesLoading(models.Model):
     status        = models.IntegerField(default=None, null=True, blank=True)
     latitude      = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
     longitude     = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
-    geometry      = geomodels.PolygonField(null=True, blank=True)  # area loading point
+    geometry      = geomodels.MultiPolygonField(null=True, blank=True)  # area loading point
+    extra_properties = models.JSONField(null=True, blank=True)
     created_at    = models.DateTimeField(auto_now_add=True)
     updated_at    = models.DateTimeField(auto_now_add=True)
 
@@ -57,7 +86,7 @@ class SourceMinesDumping(models.Model):
     category      = models.CharField(max_length=25, default=None, null=True, blank=True)
     compositing   = models.CharField(max_length=5, default=None, null=True, blank=True)
     status        = models.IntegerField(default=None, null=True, blank=True)
-    geometry      = geomodels.PolygonField(null=True, blank=True)
+    geometry      = geomodels.MultiPolygonField(null=True, blank=True)
     latitude      = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
     longitude     = models.DecimalField(max_digits=20, decimal_places=10, null=True, blank=True)
     created_at    = models.DateTimeField(auto_now_add=True)
@@ -132,8 +161,6 @@ class detailsDome(models.Model):
     status        = models.IntegerField(default=None, null=True, blank=True)
     direct_sale   = models.CharField(max_length=10,default=None, null=True, blank=True)
     id_dumping    = models.BigIntegerField(default=None, null=True, blank=True)
-
-    
 
     class Meta:
         managed   = False

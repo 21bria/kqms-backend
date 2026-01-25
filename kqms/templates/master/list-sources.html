@@ -61,16 +61,20 @@
                                         class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave"> Add New</button>
                                 </div>
                             </div>
-                                <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
+                            <div id="success-entry" class="alert alert-success !border-success/10 hidden" role="alert">
                                 <span class="ltr:pr-2 rtl:pl-2">Data saved successfully..</span>
                             </div>
                             <div class="overflow-auto">
-                                <table id="data_table" class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
+                                <table id="data_table"
+                                    class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
                                     style="width: 100%">
                                     <thead>
                                         <tr>
                                             <th width="5%">No</th>
                                             <th width="10%">Name</th>
+                                            <th width="15%">IUP</th>
+                                            <th width="12%">latitude</th>
+                                              <th width="12%">longitude</th>
                                             <th>Description</th>
                                             <th width="7%">Active</th>
                                             <th width="7%">Action</th>
@@ -104,16 +108,21 @@
                     </button>
                 </div>
                 <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                <div class="ti-modal-body px-4 py-3 max-h-[90vh] overflow-y-auto">
                     <form id="entryForm" name="entryForm">
                         <div class="grid grid-cols-12 gap-4">
-                            <!-- Date -->
+                            <div class="xl:col-span-12 col-span-12">
+                                <label class="form-label">IUP Boundary</label>
+                                <select class="form-control w-full !rounded-md" id="id_iup" name="id_iup">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
                             <div class="xl:col-span-12 col-span-12">
                                 <label class="form-label">Source</label>
-                                <input type="text" id="sources_area" name="sources_area" class="form-control w-full !rounded-md">
+                                <input type="text" id="sources_area" name="sources_area"
+                                    class="form-control w-full !rounded-md">
                             </div>
                         </div>
-
                         <!-- Description -->
                         <div class="mt-4">
                             <label class="form-label">Description</label>
@@ -121,7 +130,6 @@
                                 class="form-control w-full !rounded-md resize-none"
                                 placeholder="Enter Description"></textarea>
                         </div>
-
                         <!-- Actions -->
                         <div class="mt-6 flex justify-end gap-2">
                             <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
@@ -152,9 +160,15 @@
                     </button>
                 </div>
                 <!-- <div class="ti-modal-body px-4 !overflow-visible"> -->
-                <div class="ti-modal-body px-4 py-2 max-h-[90vh] overflow-y-auto">
+                <div class="ti-modal-body px-4 py-3 max-h-[90vh] overflow-y-auto">
                     <form>
                         <input type="hidden" name="id" id="id">
+                        <div class="xl:col-span-6 col-span-12">
+                            <label class="form-label">IUP Boundary</label>
+                            <select class="form-control w-full !rounded-md" id="edit_id_iup" name="edit_id_iup">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
                         <div class="grid grid-cols-12 gap-4">
                             <div class="xl:col-span-12 col-span-12">
                                 <label class="form-label">Source</label>
@@ -216,13 +230,33 @@
             }
         });
 
+        $.ajax({
+            url: "{% url 'get-mine-iup' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.results, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.text + '</option>';
+                });
+                $('#id_iup').append(options).select2({
+                    width: '100%',
+
+                });
+                $('#edit_id_iup').append(options).select2({
+                    width: '100%',
+
+                });
+
+            }
+        });
         /*-- Render DataTable --*/
         let url = '{% url "source-list" %}';
         var table = $('#data_table').DataTable({
             "processing": true,
             "serverSide": true,
             "ordering": true,
-               language: {
+            language: {
                 paginate: {
                     previous: "«",
                     next: "»"
@@ -248,6 +282,18 @@
                 {
                     data: 'sources_area',
                     name: 'sources_area'
+                },
+                {
+                    data: 'mine_iup',
+                    name: 'mine_iup'
+                },
+                {
+                    data: 'latitude',
+                    name: 'latitude'
+                },
+                {
+                    data: 'longitude',
+                    name: 'longitude'
                 },
                 {
                     data: 'remarks',
@@ -300,31 +346,21 @@
         $('#createNew').click(function () {
             $('#id').val('');
             $('#entryForm').trigger("reset");
-             window.HSOverlay.open('#add-data');
+            window.HSOverlay.open('#add-data');
             $('#duplicateError').hide();
-            $('#PileId').hide();
             $('#saveBtn').html('Submit');
         });
 
         /*--- Create ---*/
         $('#saveBtn').click(function (e) {
             e.preventDefault();
-            if ($('#sources_area').val().trim() === '') {
-                const toast = window.Swal.mixin({
-                    toast: true,
-                    position: 'top',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    padding: '2em',
-                });
-                toast.fire({
-                    icon: 'error',
-                    html: 'Source is required',
-                    padding: '2em',
-                });
-
-                return;
-            }
+            const toast = window.Swal.mixin({
+                toast: true,
+                position: 'top',
+                showConfirmButton: false,
+                timer: 2000,
+                padding: '2em',
+            });
             $(this).html('Sending..');
             $.ajax({
                 data: $('#entryForm').serialize(),
@@ -338,6 +374,7 @@
                 success: function (data) {
                     if (data.status === 'success') {
                         $('#duplicateError').hide();
+                        $('#sourcesError').hide();
                         table.draw();
                         window.HSOverlay.close('#add-data');
                         // Tampilkan notifikasi sukses
@@ -345,39 +382,71 @@
                         $('#success-entry').find('span').text('Data saved successfully.');
                         $('#success-entry').show();
                         // Sembunyikan notifikasi setelah beberapa detik
+                        $("#id_iup").val('').trigger('change');
+                         $("#sources_area").val('');
                         setTimeout(function () {
                             $('#success-entry').hide();
                         }, 2500); // 2500 milidetik = 2.5 detik
 
                     } else {
                         alert('Error: ' + data.message);
-                        // Handle error, jika perlu
                     }
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    $('#duplicateError').hide();
-                    if (xhr.status === 403) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
+                    let message = 'Terjadi kesalahan server';
+                    const toast = window.Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        padding: '2em',
+                    });
+
+                    if (xhr.responseJSON) {
+                        message = xhr.responseJSON.message || xhr.responseJSON.error || message;
+                    }
+                    if (xhr.status === 422) {
                         toast.fire({
                             icon: 'error',
-                            html: 'You do not have permission',
+                            html: message,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 400) {
+                        toast.fire({
+                            icon: 'error',
+                            html: message,
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 403) {
+                        toast.fire({
+                            icon: 'error',
+                            html: message || 'You do not have permission.',
                             padding: '2em',
                         });
                     } else if (xhr.status === 404) {
-                        // alert('Error 403: ' + xhr.responseJSON.message);
-                        $('#duplicateError').text(xhr.responseJSON.message).show();
+                        toast.fire({
+                            icon: 'error',
+                            html: essage || 'Data tidak ditemukan.',
+                            padding: '2em',
+                        });
+                    } else if (xhr.status === 500) {
+                        toast.fire({
+                            icon: 'error',
+                            html: 'Data already exists.',
+                            padding: '2em',
+                        });
                     } else {
-                        alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
+                        toast.fire({
+                            icon: 'error',
+                            html: message,
+                            padding: '2em',
+                        });
                     }
+
                 }
             });
         });
+
         /*--- Click to Edit Button ---*/
         $('body').on('click', '.editData', function () {
             var id = $(this).data('id');
@@ -391,10 +460,16 @@
                 dataType: "json",
                 success: function (response) {
                     if (response) {
-                         window.HSOverlay.open('#edit-data');
+                        window.HSOverlay.open('#edit-data');
                         $('#id').val(response.id);
                         $('#edit_sources_area').val(response.sources_area);
                         $('#edit_remarks').val(response.remarks);
+                        if (response.mine_iup && response.mine_iup.id) {
+                            $('#edit_id_iup').val(response.mine_iup.id).trigger('change');
+                        } else {
+                            $('#edit_id_iup').val('').trigger('change');
+                        }
+
                         $('#edit_duplicateError').hide();
 
                     } else {
@@ -430,21 +505,6 @@
             e.preventDefault();
             var id = $('#id').val();
             var url = '/kqms/master/source/update_source/' + id + '/';
-            if ($('#edit_sources_area').val().trim() === '') {
-                const toast = window.Swal.mixin({
-                    toast: true,
-                    position: 'top',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    padding: '2em',
-                });
-                toast.fire({
-                    icon: 'error',
-                    html: 'Source is required',
-                    padding: '2em',
-                });
-                return;
-            }
             $.ajax({
                 type: "POST",
                 url: url,
@@ -455,13 +515,18 @@
                 data: {
                     sources_area: $('#edit_sources_area').val(),
                     remarks: $('#edit_remarks').val(),
+                    id_iup: $('#edit_id_iup').val(),
                 },
                 success: function (data) {
                     if (data) {
-                         window.HSOverlay.close('#edit-data');
+                        $('#edit_duplicateError').hide();
+                        $('#edit_sourcesError').hide();
+                        window.HSOverlay.close('#edit-data');
                         table.draw()
                         $('#success-entry').find('strong').text('Success!');
                         $('#success-entry').find('span').text('Data update successfully.');
+                        $("#edit_id_iup").val('').trigger('change');
+                        $("#edit_sources_area").val('');
                         $('#success-entry').show();
                         // Sembunyikan notifikasi setelah beberapa detik
                         setTimeout(function () {
@@ -473,34 +538,20 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    if (xhr.status === 403) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: 'You do not have permission',
-                            padding: '2em',
-                        });
+                    let message = 'Terjadi kesalahan server';
+                    if (xhr.responseJSON) {
+                        message = xhr.responseJSON.message || xhr.responseJSON.error || message;
+                    }
+                    if (xhr.status === 422) {
+                        showToast(message, 'danger');
                     } else if (xhr.status === 400) {
-                        const toast = window.Swal.mixin({
-                            toast: true,
-                            position: 'top',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            padding: '2em',
-                        });
-                        toast.fire({
-                            icon: 'error',
-                            html: 'Data already exists',
-                            padding: '2em',
-                        });
+                        showToast('Data already exists.', 'danger');
+                    } else if (xhr.status === 403) {
+                        showToast(message || 'You do not have permission.', 'danger');
+                    } else if (xhr.status === 404) {
+                        showToast(message || 'Data tidak ditemukan.', 'danger');
                     } else {
-                        alert('Error: ' + xhr.status + ', ' + xhr.responseJSON.message);
+                        showToast(message, 'danger');
                     }
                 }
             });

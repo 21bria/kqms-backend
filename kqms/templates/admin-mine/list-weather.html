@@ -169,7 +169,7 @@
                                     <tr>
                                         <th scope="col" width="20%" class="text-danger">Date</th>
                                         <th scope="col" width="11%" class="text-danger">Shift</th>
-                                         <th scope="col" width="10%" class="text-danger">Category</th>
+                                        <th scope="col" width="10%" class="text-danger">Category</th>
                                         <th scope="col" width="10%" class="text-danger">Start Time</th>
                                         <th scope="col" width="10%" class="text-danger">End Time</th>
                                         <th scope="col" width="10%" class="text-danger">Duration</th>
@@ -181,8 +181,8 @@
                                         <input type="hidden" name="id" id="id">
                                         <td>
                                             <div>
-                                                <input type="text" name="date" id="date"
-                                                    class="form-control text-black" data-row="0">
+                                                <input type="text" name="date" id="date" class="form-control text-black"
+                                                    data-row="0">
                                             </div>
                                         </td>
                                         <td>
@@ -209,14 +209,14 @@
                                         </td>
                                         <td>
                                             <div>
-                                                <input type="time" name="end_time" id="end_time"
-                                                    class="form-control" placeholder="hh:mm">
+                                                <input type="time" name="end_time" id="end_time" class="form-control"
+                                                    placeholder="hh:mm">
                                             </div>
                                         </td>
                                         <td>
                                             <div>
-                                                <input type="text" name="duration" id="duration"
-                                                    class="form-control" placeholder="0.00">
+                                                <input type="text" name="duration" id="duration" class="form-control"
+                                                    placeholder="0.00">
                                             </div>
                                         </td>
                                         <td>
@@ -666,6 +666,37 @@
         $('#addNew').click(function () {
             window.HSOverlay.open('#add-data');
         });
+        function calculateDuration(row) {
+            let startTime = row.find('input[name="start_time[]"]').val();
+            let endTime = row.find('input[name="end_time[]"]').val();
+            let durationInput = row.find('input[name="duration[]"]');
+
+            if (!startTime || !endTime) {
+                durationInput.val('');
+                return;
+            }
+
+            let [sh, sm] = startTime.split(':').map(Number);
+            let [eh, em] = endTime.split(':').map(Number);
+
+            let startMinutes = sh * 60 + sm;
+            let endMinutes = eh * 60 + em;
+
+            let diffMinutes = endMinutes - startMinutes;
+            if (diffMinutes < 0) diffMinutes += 1440; // lewat tengah malam
+
+            let h = Math.floor(diffMinutes / 60);
+            let m = diffMinutes % 60;
+
+            durationInput.val(
+                `${String(h).padStart(2, '0')}.${String(m).padStart(2, '0')}`
+            );
+        }
+
+        $('#weatherTable tbody').on('change', 'input[name="start_time[]"], input[name="end_time[]"]', function () {
+            let row = $(this).closest('tr');
+            calculateDuration(row);
+        });
 
         $('#addRow').on('click', function () {
             initializeSelect2($('#weatherTable tbody tr:first'));
@@ -691,7 +722,7 @@
                 '</td>' +
                 '<td><input type="time" class="form-control w-full !rounded-md" name="start_time[]"></td>' +
                 '<td><input type="time" class="form-control w-full !rounded-md" name="end_time[]"></td>' +
-                '<td><input type="text" class="form-control w-full !rounded-md" name="duration[]"></td>' +
+                '<td><input type="text" class="form-control w-full !rounded-md" name="duration[]" readonly></td>' +
                 // '<td><input type="text" class="form-control w-full !rounded-md" name="remark[]"></td>' +
                 '</tr>';
 
@@ -699,7 +730,8 @@
             var newRowElement = $('#weatherTable tbody tr:last');
 
             initializeSelect2(newRowElement);
-
+            // Hitung durasi langsung untuk row baru
+            calculateDuration(newRowElement);
             $('#weatherTable').on('click', '.removeRow', function () {
                 $(this).closest('tr').remove();
             });

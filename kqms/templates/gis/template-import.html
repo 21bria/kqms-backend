@@ -1,0 +1,390 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            GIS
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Geo-Json
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Import Json Geo (UTM) to convert</h5>
+                        </div>
+                        <div class="box-body">
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="grid grid-cols-12 gap-4 mb-5">
+                                    <div class="xl:col-span-4 col-span-12">
+                                        <div>
+                                            <label for="small-file-input" class="sr-only">Choose file</label>
+                                            <input type="file" name="file" id="file" required class="block w-full border border-gray-200 focus:shadow-sm dark:focus:shadow-white/10 rounded-sm text-sm focus:z-10 focus:outline-0 focus:border-gray-200 dark:focus:border-white/10 dark:border-white/10 dark:text-white/50
+                                                file:border-0
+                                                file:bg-light file:me-4
+                                                file:py-2 file:px-4
+                                                dark:file:bg-black/20 dark:file:text-white/50">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-12 gap-4 mb-5">
+                                    <div class="xl:col-span-4 col-span-12">
+                                        <select name="import_type" id="import_type" class="form-select">
+                                            <option value="">-- Sources to targets --</option>
+                                            <option value="mine_sources">Sources Mining - Table</option>
+                                            <option value="point_loading">Loading Point - Table</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="xl:col-span-2 col-span-12">
+                                    <button type="submit" class="ti-btn ti-btn-primary-full !py-1 !px-2">
+                                        Upload & Preview
+                                    </button>
+                                    <button type="button" id="btnDownload"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 hidden">
+                                        Download JSON
+                                    </button>
+                                    <button type="button" id="btnUpdate"
+                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 hidden">
+                                        Sync to database
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="overflow-auto">
+                                <div id="map" style="height:650px;margin-top:10px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- <script>
+    let map;
+    let geojsonLayer;
+
+    function initMap() {
+        map = L.map('map').setView([-0.07, 129.41], 14);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+    }
+
+    $(document).ready(function () {
+        initMap();
+    });
+</script> -->
+
+<script>
+    let map;
+    let geojsonLayer;
+
+    function initMap() {
+        map = L.map('map');
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // ambil lokasi user
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    map.setView([lat, lng], 14);
+                    L.circleMarker([lat, lng], {
+                        radius: 6,
+                        color: 'blue',
+                        fillOpacity: 0.8
+                    }).addTo(map).bindPopup("Lokasi Anda").openPopup();
+                },
+                function () {
+                    fallbackLocation();
+                }
+            );
+        } else {
+            fallbackLocation();
+        }
+    }
+
+    function fallbackLocation() {
+        // fallback ke lokasi tambang / kantor
+        map.setView([-0.07, 129.41], 12);
+    }
+
+    $(document).ready(function () {
+        initMap();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // GLOBAL STATE
+        let geojsonLayer = null;
+        let currentGeojson = null;
+        // CSRF
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        // TOAST
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+        // UPLOAD & PREVIEW
+        $("#uploadForm").on("submit", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+
+            $.ajax({
+                url: '{% url "upload_convert_geojson" %}',
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+
+                success: function (res) {
+                    Toast.fire({
+                        icon: 'success',
+                        text: 'GeoJSON successfully converted',
+                    });
+                    // SIMPAN HASIL KONVERSI (INI KUNCI DOWNLOAD)
+                    currentGeojson = res.geojson;
+                    // ambil PIT dari properties feature pertama
+                    if (
+                        res.geojson.features &&
+                        res.geojson.features.length > 0
+                    ) {
+                        currentPitName =
+                            res.geojson.features[0].properties?.pit || "pit";
+                    }
+
+                    // hapus layer lama
+                    if (geojsonLayer) {
+                        map.removeLayer(geojsonLayer);
+                    }
+                    // render geojson ke map
+                    geojsonLayer = L.geoJSON(currentGeojson, {
+                        style: function () {
+                            return {
+                                color: '#2563eb',
+                                weight: 2,
+                                fillOpacity: 0.4
+                            };
+                        },
+                        onEachFeature: function (feature, layer) {
+                            const props = feature.properties || {};
+                            const popup = `
+                            <b>PIT:</b> ${props.pit || '-'}<br>
+                            <b>Luas:</b> ${props.Luas || '-'} ha<br>
+                            <b>X:</b> ${props.X || '-'}<br>
+                            <b>Y:</b> ${props.Y || '-'}
+                        `;
+                            layer.bindPopup(popup);
+                        }
+                    }).addTo(map);
+
+                    // zoom otomatis ke polygon
+                    map.fitBounds(geojsonLayer.getBounds(), { padding: [30, 30] });
+
+                    // tampilkan tombol download
+                    $("#btnDownload").removeClass("hidden");
+                },
+
+                error: function (xhr) {
+                    Toast.fire({
+                        icon: 'error',
+                        text: xhr.responseJSON?.error || 'Opss gagal, file geojson??',
+                    });
+                }
+            });
+        });
+
+        $("#btnDownload").on("click", function () {
+            if (!currentGeojson) {
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Belum ada data untuk didownload',
+                });
+                return;
+            }
+
+            const filename =
+                // `${currentPitName}_converted_wgs84.geojson`
+                `${currentPitName}_converted_wgs84.json`
+                    .replace(/\s+/g, "_")
+                    .toLowerCase();
+
+            const blob = new Blob(
+                [JSON.stringify(currentGeojson, null, 2)],
+                { type: "application/geo+json" }
+            );
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        $("#btnUpdate").on("click", function () {
+            if (!currentGeojson) {
+                Toast.fire({ icon: 'error', text: 'Belum ada data GeoJSON' });
+                return;
+            }
+
+            const importType = $("#import_type").val();
+
+            if (!importType) {
+                Toast.fire({
+                    icon: 'error',
+                    text: 'Pilih target tabel dulu'
+                });
+
+                $("#import_type")
+                    .focus()
+                    .addClass("ring-2 ring-red-500");
+
+                return;
+            }
+
+            $.ajax({
+                url: '{% url "sync_geojson_to_db" %}',
+                type: "POST",
+                data: JSON.stringify({
+                    import_type: importType,
+                    geojson: currentGeojson
+                }),
+                contentType: "application/json",
+
+                // success: function (res) {
+                //     Toast.fire({
+                //         icon: 'success',
+                //         text: res.message || 'Data berhasil disimpan'
+                //     });
+                // },
+
+                success: function (res) {
+                    let msg = `${res.updated} data berhasil diupdate`;
+
+                    if (res.updated_keys?.length) {
+                        msg += `:\n${res.updated_keys.join(", ")}`;
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        html: msg,
+                    });
+
+                    if (res.has_error) {
+                        const skippedNames = res.skipped
+                            .map(s => s.key)
+                            .filter(Boolean)
+                            .join(", ");
+
+                        Swal.fire({
+                            icon: 'error',
+                            width: 400,
+                            title: 'Opps',
+                            html: `
+                                <b>${res.skipped.length}</b> data tidak ditemukan di database<br>
+                                <small>${skippedNames}</small>
+                            `,
+
+                        });
+                    }
+                }
+                ,
+                error: function (xhr) {
+                    Toast.fire({
+                        icon: 'error',
+                        text: xhr.responseJSON?.error || 'Gagal sync ke DB'
+                    });
+                }
+            });
+        });
+
+    });
+</script>
+
+</body>
+
+</html>
+
+<style>
+
+
+</style>

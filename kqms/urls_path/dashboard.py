@@ -3,6 +3,7 @@ from ..views.dashboard.index import *
 
 # Reserve
 from ..views.dashboard.api.reserve import *
+from ..views.dashboard.api.daily.reserve import *
 # Quality
 from ..views.dashboard.api.geology import *
 from ..views.dashboard.api.details.quality import *
@@ -23,6 +24,9 @@ from ..views.dashboard.mining.details_waste import *
 from ..views.dashboard.mining.details_quarry import *
 from ..views.dashboard.mining.details_others import *
 
+# Get Daily Report Mining
+from ..views.dashboard.api.daily.mining import *
+from ..views.dashboard.api.daily.productions import *
 
 urlpatterns = [
     # Reserve Dashboard
@@ -84,6 +88,22 @@ urlpatterns = [
     path('api/inventory-finish-stockpile/', get_stockpile_finished, name='get-finish-stockpile-inventory'),
 
 
-
+    # For Daily Report Mining Page
+    path('api/reserve-daily/', get_reserve_summary_daily, name='get_reserve_daily'),
+    path('api/daily/mining/productions/', get_chart_daily_mining, name='get_chart_daily_mining'),
+    path('api/summary/daily/mining/', get_summary_daily_mining, name='get_summary_daily_mining'),
+    path('api/summary/daily/mining/materials/', get_summary_materials, name='get_summary_materials'),
+    path('api/summary/daily/mining/materials/grouped/', get_summary_materials_grouped, name='get_summary_materials_grouped'),
+    path('api/summary/daily/mining/weather/grouped/', get_weather_grouped, name='get_summary_weather_grouped'),
+    path('api/summary/daily/mining/weather/grouped/', get_weather_grouped, name='get_summary_weather_grouped'),
+    path('api/summary/daily/mining/fuel/', get_fuel_daily_report, name='get_summary_fuel_daily'),
+    path('api/summary/daily/mining/fuel/ratio/', get_daily_fuel_ratio, name='get_summary_fuel_daily_ratio'),
+    path('api/summary/daily/mining/fuel/ratio/ore/', get_daily_fuel_ratio_ore, name='get_summary_fuel_daily_ratio_ore'),
+    # Kpi Hauler
+    path('api/daily/mining/kpi/hauler/', get_kpi_daily_hauler, name='get_kpi_hauler'),
+    # Kpi Digger
+    path('api/daily/mining/kpi/digger/', get_kpi_daily_digger, name='get_kpi_digger'),
+    # Detail productions
+    path('api/daily/mining/productions/details/', get_daily_detail_productions, name='get_daily_detail_productions'),
 ]
     

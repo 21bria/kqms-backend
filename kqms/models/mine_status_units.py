@@ -13,13 +13,10 @@ class HmUnit(models.Model):
         on_delete=models.PROTECT,
         related_name='hm_units'
     )
-
     date = models.DateField()
     shift = models.CharField(max_length=10, choices=SHIFT_CHOICES)
-
     hm_start = models.DecimalField(max_digits=15, decimal_places=2)
     hm_end   = models.DecimalField(max_digits=15, decimal_places=2)
-
     status = models.CharField(
         max_length=20,
         default='DRAFT',
@@ -29,7 +26,6 @@ class HmUnit(models.Model):
             ('APPROVED', 'Approved'),
         ]
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -86,18 +82,22 @@ class HmUnitDetail(models.Model):
         on_delete=models.CASCADE,
         related_name='details'
     )
-
     start_time = models.TimeField()
     end_time   = models.TimeField()
-
     duration_min = models.PositiveIntegerField()
-
     status   = models.ForeignKey('UnitStatus', on_delete=models.PROTECT)
     activity = models.ForeignKey('UnitActivity', on_delete=models.PROTECT)
     location = models.ForeignKey('UnitLocation', on_delete=models.PROTECT)
-
+    category = models.CharField(
+        max_length=20,
+        blank=True, 
+        null=True,
+        choices=[
+            ('Mining', 'Mining'),
+            ('Project', 'Project')
+        ]
+    )
     remark = models.TextField(blank=True)
-
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -106,4 +106,7 @@ class HmUnitDetail(models.Model):
         indexes = [
         models.Index(fields=['hm_unit']),
         models.Index(fields=['start_time', 'end_time']),
+        models.Index(fields=['category'])
         ]
+
+    

@@ -2,10 +2,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http import HttpResponse
 from ...models.source_model import SourceMinesLoading,SourceMines
+from ...models.mine_status_units import UnitLocation
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+from django.db import transaction, IntegrityError
 from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
@@ -18,7 +20,6 @@ from openpyxl.utils import get_column_letter
 @login_required
 def minesLoading_page(request):
     return render(request, 'master/list-source-loading-point.html')
-
 
 class sourceMinesLoading_List(View):
 
@@ -178,13 +179,22 @@ def insert_minesLoading(request):
             if SourceMinesLoading.objects.filter(loading_point=loading_point).exists():
                 return JsonResponse({'error': f'Data {loading_point} already exists.'}, status=400)
 
-            # Membuat objek baru SourceMinesLoading dengan instance SourceMines
-            new_job = SourceMinesLoading.objects.create(
-                loading_point = loading_point,
-                remarks       = remarks,
-                id_sources    = source_instance,  # Gunakan instance SourceMines
-                status        = status
-            )
+            with transaction.atomic():
+                # INSERT / UPDATE UnitLocation
+                code = loading_point.upper().replace(" ", "_")
+                unit_location, _ = UnitLocation.objects.update_or_create(
+                    code=code,
+                    defaults={
+                        "name": loading_point
+                    }
+                )
+                # INSERT SourceMinesLoading
+                new_job = SourceMinesLoading.objects.create(
+                    loading_point = loading_point,
+                    remarks       = remarks,
+                    id_sources    = source_instance,
+                    status        = status,
+                )
 
             return JsonResponse({
                 'status': 'success',
@@ -213,77 +223,89 @@ def update_minesLoading(request, id):
     allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
-            {'status': 'error', 'message': 'You do not have permission'}, 
+            {'status': 'error', 'message': 'You do not have permission'},
             status=403
-    )
+        )
+
     if request.method == 'POST':
         try:
-            # Ambil data job yang ada berdasarkan id
             job = SourceMinesLoading.objects.get(id=id)
 
-            # Aturan validasi
-            rules = {
-                'loading_point': ['required'],
-                'sources'      : ['required']
-            }
+            loading_point = request.POST.get('loading_point')
+            remarks       = request.POST.get('remarks')
+            sources_id    = request.POST.get('sources')
 
-            # Pesan kesalahan validasi yang disesuaikan
-            custom_messages = {
-                'loading_point.required': 'Loading point is required.',
-                'sources.required'      : 'Source is required.'
-            }
+            if not loading_point:
+                return JsonResponse({'error': 'Loading point is required.'}, status=400)
+            if not sources_id:
+                return JsonResponse({'error': 'Source is required.'}, status=400)
 
-            # Validasi request
-            for field, field_rules in rules.items():
-                for rule in field_rules:
-                    if rule == 'required':
-                        if not request.POST.get(field):
-                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
-                                                
-            
-            # Ambil data dari request POST
-            job.loading_point = request.POST.get('loading_point')
-            job.remarks       = request.POST.get('remarks')
-            
-            # Ambil id_sources dari POST dan temukan instance SourceMines yang sesuai
-            sources_id = request.POST.get('sources')  # Ini mengasumsikan bahwa 'sources' adalah ID dari SourceMines
-            if sources_id:
-                job.id_sources = SourceMines.objects.get(id=sources_id)  # Ambil objek SourceMines dengan ID tersebut
+            if SourceMinesLoading.objects.filter(
+                loading_point=loading_point
+            ).exclude(id=job.id).exists():
+                return JsonResponse(
+                    {'error': f'Data {loading_point} already exists.'},
+                    status=400
+                )
 
-            # exclude(id=job.id): Mengecualikan data dengan ID yang sedang di-update agar validasi tidak menganggap data tersebut sebagai duplikat.
-            if SourceMinesLoading.objects.filter(loading_point=job.loading_point).exclude(id=job.id).exists():
-                return JsonResponse({'error': f'Data {job.loading_point} already exists.'}, status=400)
+            source_instance = SourceMines.objects.get(id=sources_id)
 
+            with transaction.atomic():
+                # UPDATE / CREATE UnitLocation
+                # old_code = job.loading_point.upper().replace(" ", "_")
 
-            # Simpan perubahan
-            job.save()
+                # unit_location = UnitLocation.objects.get(code=old_code)
+                # unit_location.name = loading_point   # nama baru, misal "A 1"
+                # unit_location.save()
 
-            # Kembalikan response JSON
+                old_code = job.loading_point.upper().replace(" ", "_")
+                new_code = loading_point.upper().replace(" ", "_")
+
+                if old_code != new_code:
+                    if UnitLocation.objects.filter(code=new_code).exists():
+                        raise ValueError("Code baru sudah dipakai lokasi lain")
+
+                    unit_location = UnitLocation.objects.get(code=old_code)
+                    unit_location.code = new_code
+                    unit_location.name = loading_point
+                    unit_location.save()
+
+                # UPDATE SourceMinesLoading
+                job.loading_point = loading_point
+                job.remarks       = remarks
+                job.id_sources    = source_instance
+
+                job.save()
+
             return JsonResponse({
+                'status': 'success',
                 'id'            : job.id,
                 'loading_point' : job.loading_point,
                 'remarks'       : job.remarks,
-                'sources'       : job.id_sources.id,  # Kembalikan ID sumber yang diperbarui
+                'sources'       : job.id_sources.id,
                 'created_at'    : job.created_at,
                 'updated_at'    : job.updated_at
             })
-        
+
         except SourceMinesLoading.DoesNotExist:
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
-        
-        except SourceMines.DoesNotExist:
-            return JsonResponse({'error': 'SourceMines dengan ID yang diberikan tidak ditemukan'}, status=400)
-        
-        except IntegrityError as e:
-            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
 
-        except ValidationError as e:
-            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
+        except SourceMines.DoesNotExist:
+            return JsonResponse({'error': 'Source tidak ditemukan'}, status=400)
+
+        except IntegrityError as e:
+            return JsonResponse(
+                {'error': 'Terjadi kesalahan integritas database', 'message': str(e)},
+                status=400
+            )
 
         except Exception as e:
-            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
+            return JsonResponse(
+                {'error': 'Terjadi kesalahan', 'message': str(e)},
+                status=500
+            )
+
+    return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
 @login_required
 def delete_minesLoading(request):

@@ -1092,5 +1092,45 @@ class Command(BaseCommand):
             order=3,
             allowed_group_names=['superadmin','admin-demo','data-control']
         )
-      
+
+        # Kategory Gis
+        gis = Menu.objects.create(
+            title="GIS",
+            is_category=True,
+            category_title="gis",
+            order=31,
+            allowed_group_names=['superadmin','admin-demo','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab']
+        )
+       
+        
+        #  Geo Json
+        # Menu.objects.create(
+        #     title="Geo JSON",
+        #     icon="bx bx-map",
+        #     url="data-control-page",
+        #     order=33,
+        #    allowed_group_names=['superadmin','admin-demo','data-control','admin-mgoqa','admin-mining','admin-selling','admin-lab']
+        # )
+
+        gis = Menu.objects.create(
+            title="Geo JSON",
+            icon="bx bx-map",
+            order=32,
+             allowed_group_names=['superadmin','data-control','admin-mgoqa','admin-mining','admin-lab']
+        )
+
+        Menu.objects.create(
+            title="Import GoeJson(UTM)",
+            url="gis-import-page",
+            parent=gis,
+            order=1
+        )
+        Menu.objects.create(
+            title="IUP Boundary",
+            url="gis-mine-iup-page",
+            parent=gis,
+            order=2,
+            allowed_group_names=['superadmin','admin-demo','data-control','admin-mgoqa','admin-mining','admin-lab']
+        )
+   
         self.stdout.write(self.style.SUCCESS('Successfully created menu'))

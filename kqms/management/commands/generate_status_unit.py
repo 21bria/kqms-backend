@@ -33,22 +33,26 @@ class Command(BaseCommand):
         # === Insert UnitActivity linked to UnitStatus ===
         activity_data = [
             # OPERATING
-            ("OPR", "P2H", "Pre-Start Check"),
             ("OPR", "LOAD", "Loading Ore"),
+            ("OPR", "LOAD", "Loading Waste"),
             ("OPR", "HAUL", "Hauling Ore"),
-            ("OPR", "DUMP", "Dumping Ore"),
+            ("OPR", "HAUL", "Hauling Waste"),
             ("OPR", "DOZ", "Dozing"),
             ("OPR", "GRD", "Grader"),
             ("OPR", "CMP", "Compactor"),
             ("OPR", "WTR", "Water Truck"),
             
             # STANDBY
+            ("STB", "P2H", "Pre-Start Check"),
             ("STB", "WAIT", "Waiting"),
             ("STB", "IDLE", "Idle"),
+            ("STB", "MEAL", "Meal Break"),
             
             # PM / Maintenance
             ("PM", "PM250", "PM 250 HM"),
+            ("BD", "TR", "Tyre Problem"),
             ("BD", "HYD", "Hydraulic Problem"),
+            ("BD", "UNC", "Unschedule"),
             
             # SUPPORT / OFF
             ("SUPPORT", "SUP", "Support Work"),

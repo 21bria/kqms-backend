@@ -1,0 +1,229 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <!-- <div class="block justify-between page-header md:flex">
+                <div>
+
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            GIS
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Geo-Json
+                    </li>
+                </ol>
+            </div> -->
+            <!-- Page Header Close -->
+            <!-- Start::row-1 -->
+            <div class="grid grid-cols-12 gap-6">
+
+                <div class="col-span-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h5 class="box-title">Mine IUP - GEO JSON </h5>
+                        </div>
+                        <div class="box-body">
+                            <form id="uploadForm" enctype="multipart/form-data">
+                                <div class="grid grid-cols-12 gap-4 mb-5">
+                                    <div class="xl:col-span-4 col-span-12">
+                                        <select name="id_iup" id="id_iup" class="form-select">
+                                            <option value="">-- Select input --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="overflow-auto">
+                                <div id="map" style="height:700px;margin-top:5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End::row-1 -->
+        </div>
+        <!-- Start::main-content -->
+    </div>
+
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    let map;
+    let geojsonLayer;
+    let iupLayer = null;
+    let sourceLayer = null;
+    function initMap() {
+        map = L.map('map');
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // ambil lokasi user
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    map.setView([lat, lng], 14);
+                    L.circleMarker([lat, lng], {
+                        radius: 6,
+                        color: 'blue',
+                        fillOpacity: 0.8
+                    }).addTo(map).bindPopup("Lokasi Anda").openPopup();
+                },
+                function () {
+                    fallbackLocation();
+                }
+            );
+        } else {
+            fallbackLocation();
+        }
+    }
+
+    function fallbackLocation() {
+        // fallback ke lokasi tambang / kantor
+        map.setView([-0.07, 129.41], 12);
+    }
+
+    $(document).ready(function () {
+        initMap();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        loadIUP(1); // <-- id_iup
+        // CSRF
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: "{% url 'get-mine-iup' %}",
+            method: "GET",
+            dataType: "json",
+            success: function (data) {
+                var options = '';
+                $.each(data.results, function (key, value) {
+                    options += '<option value="' + value.id + '">' + value.text + '</option>';
+                });
+                $('#id_iup').append(options).select2({
+                    width: '100%',
+                });
+            }
+        });
+
+        $('#id_iup').on('change', function () {
+            const iupId = $(this).val();
+            if (!iupId) {
+                Swal.fire("Info", "Silakan pilih IUP dulu", "info");
+                return;
+            }
+            loadIUP(iupId);
+        });
+    });
+
+    function loadIUP(iupId) {
+        $.getJSON(`/kqms/gis/api/mine-iup/${iupId}/`, function (res) {
+            // ===== clear layer lama =====
+            if (iupLayer) map.removeLayer(iupLayer);
+            if (sourceLayer) map.removeLayer(sourceLayer);
+
+            // ===== IUP layer =====
+            iupLayer = L.geoJSON(res.iup, {
+                style: {
+                    color: '#16a34a',
+                    weight: 2,
+                    fillOpacity: 0.15
+                }
+            }).addTo(map);
+
+            map.fitBounds(iupLayer.getBounds(), { padding: [30, 30] });
+
+            // ===== Sources layer =====
+            sourceLayer = L.geoJSON(res.sources, {
+                style: function (feature) {
+                    // optional: beda warna per pit
+                    return {
+                        color: '#dc2626',
+                        weight: 2,
+                        fillOpacity: 0.5
+                    };
+                },
+                onEachFeature: function (feature, layer) {
+                    const p = feature.properties || {};
+
+                    layer.bindPopup(`
+                        <b>Source Area:</b> ${p.sources_area || '-'}<br>
+                        <b>PIT:</b> ${p.pit || '-'}<br>
+                        <b>Luas:</b> ${p.luas_ha ?? '-'} ha<br>
+                        <b>Area HA:</b> ${p.area_ha ?? '-'}<br>
+                    `);
+                }
+            }).addTo(map);
+
+
+        }).fail(function () {
+            Swal.fire("Error", "Gagal load data IUP", "error");
+        });
+    }
+
+</script>
+
+</body>
+
+</html>
+
+<style>
+
+
+</style>

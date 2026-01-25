@@ -608,10 +608,10 @@ def get_daily_ore_chart(filter_date):
         df['achievement'] = df.apply(lambda r: round((r['total'] / r['plan_data'] * 100), 2) if r['plan_data'] > 0 else 0.0, axis=1)
 
         return JsonResponse({
-            'x_data'    : df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
-            'total_actual': df['total'].tolist(),
-            'total_plan': df['plan_data'].tolist(),
-            'achievement': df['achievement'].tolist(),
+            'x_data'        : df['left_time'].tolist(),  # ini label jam (misal: "01:00", "02:00", ...)
+            'total_actual'  : df['total'].tolist(),
+            'total_plan'    : df['plan_data'].tolist(),
+            'achievement'   : df['achievement'].tolist(),
         }, safe=False)
 
 # kqms/dashboard/api/summary/mines/ore?filter_type=monthly&filter_year=2025&filter_month=7

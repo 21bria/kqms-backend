@@ -22,6 +22,15 @@ def weather_page(request):
     }
     return render(request, 'admin-mine/list-weather.html', context)
 
+def min_to_hhmm(minutes):
+    minutes = int(minutes or 0)
+    h = minutes // 60
+    m = minutes % 60
+    return f"{h:02d}:{m:02d}"
+
+def min_to_hours(minutes, digit=2):
+    return round(minutes / 60, digit) if minutes else 0
+
 class dataWeather(View):
     def post(self, request):
         data_list = self._datatables(request)
@@ -83,10 +92,12 @@ class dataWeather(View):
                 "id"         : item.id,
                 "date"       : item.date,
                 "shift"      : item.shift,
+                "category"   : item.category,
                 "start_time" : item.start_time,
                 "end_time"   : item.end_time,
-                "duration"   : item.duration,
-                "remarks"    : item.remarks
+                 # DISPLAY (HH:MM) – untuk tabel
+                "duration"    : min_to_hhmm(item.duration),
+                "remarks"    : item.remark
             } for item in object_list
         ]
 
@@ -99,6 +110,16 @@ class dataWeather(View):
             'length'         : length,
             'totalPages'     : total_pages,
         }
+
+def calc_duration_min(start_time, end_time):
+    fmt = "%H:%M"
+    start = datetime.strptime(start_time, fmt)
+    end   = datetime.strptime(end_time, fmt)
+    diff = (end - start).total_seconds() / 60
+    if diff < 0:
+        diff += 1440  # lewat tengah malam
+
+    return int(diff)
 
 @login_required
 @csrf_exempt
@@ -186,6 +207,11 @@ def create_weather(request):
                             },
                             status=422
                         )
+                    
+                    duration_min = calc_duration_min(
+                                start_time_list[idx],
+                                end_time_list[idx]
+                            )
     
                     # Simpan data baru
                     Weather.objects.create(
@@ -194,7 +220,7 @@ def create_weather(request):
                         category    = category_list[idx],
                         start_time  = start_time_list[idx],
                         end_time    = end_time_list[idx],
-                        duration    = duration_list[idx],
+                        duration    = duration_min,
                         # remark      =remark_list[idx],
                     )
 
@@ -322,13 +348,15 @@ def update_weather(request, id):
         # Dapatkan data yang akan diupdate berdasarkan ID
         data = Weather.objects.get(id=id)
 
+        duration_min = calc_duration_min(start_time, end_time)
+
         # Lakukan update data dengan nilai baru
         data.date       = date
         data.shift      = shift
         data.category   = category
         data.start_time = start_time
         data.end_time   = end_time
-        data.duration   = duration
+        data.duration   = duration_min
         data.remark     = remark
 
         # Simpan perubahan ke dalam database

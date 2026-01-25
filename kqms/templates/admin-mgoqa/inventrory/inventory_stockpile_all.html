@@ -257,14 +257,14 @@
                 const badgeClass = percentage >= 90 ? 'badge-soft-success text-success' : 'badge-soft-warning text-warning';
                 newRow.append(`<td class='text-center whitespace-nowrap'><div class='badge ${badgeClass} font-size-12'>${percentage.toFixed(2)}%</div></td>`);
 
-                newRow.append(`<td>${row.ni}</td>`);
-                newRow.append(`<td>${row.fe}</td>`);
-                newRow.append(`<td>${row.al2o3}</td>`);
-                newRow.append(`<td>${row.co}</td>`);
-                newRow.append(`<td>${row.mgo}</td>`);
-                newRow.append(`<td>${row.sio2}</td>`);
-                newRow.append(`<td>${row.cao}</td>`);
-                newRow.append(`<td>${row.cr2o3}</td>`);
+                newRow.append(`<td>${parseFloat(row.ni || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.fe || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.al2o3 || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.co || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.mgo || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.sio2 || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.cao || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
+                newRow.append(`<td>${parseFloat(row.cr2o3 || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
                 newRow.append(`<td>${parseFloat(row.sm || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}</td>`);
                 newRow.append(`<td>${row.mc}</td>`);
                 newRow.append(`<td>${row.grade}</td>`);

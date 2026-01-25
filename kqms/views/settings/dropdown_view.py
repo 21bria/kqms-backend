@@ -17,6 +17,7 @@ from ...models.vendors import Vendors
 from ...models.mine_units import mineUnitsView
 from ...models.source_model import SourceMines,SourceMinesLoading,SourceMinesDumping,SourceMinesDome
 from ...models import UnitStatus, UnitActivity, UnitLocation
+from ...models import mine_category
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -1480,6 +1481,18 @@ def get_mine_category(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+def get_mine_iup(request):
+    if request.method == 'GET':
+        try:
+            data_get =  MineIUP.objects.all().order_by('iup_name')
+            data = [{'id': item.id, 'text': item.iup_name} for item in data_get]
+            return JsonResponse({'results': data})  
+        
+        except MineIUP.DoesNotExist:
+            return JsonResponse({'error': 'Data not found'}, status=404)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 def get_sources_mine(request):
     if request.method == 'GET':
         try:
@@ -1487,7 +1500,7 @@ def get_sources_mine(request):
             data = [{'id': item.id, 'text': item.sources_area} for item in data_get]
             return JsonResponse({'results': data})  
         
-        except OreProductions.DoesNotExist:
+        except SourceMines.DoesNotExist:
             return JsonResponse({'error': 'Data not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
@@ -1673,6 +1686,30 @@ def get_jetty_in(request):
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+def getMiningCategory(request):
+    try:
+        query    = request.GET.get('q', '')
+        page     = int(request.GET.get('page', 1))
+        per_page = 10  # Jumlah item per halaman
+
+        # Filter berdasarkan query
+        data_get = mine_category.MineCategory.objects.filter(category__icontains=query).order_by('category')
+        # Pagination
+        start   = (page - 1) * per_page
+        end     = start + per_page
+        results = data_get[start:end]
+        data = {
+            'results'   : [{'id': data_get.category, 'text': data_get.category} for data_get in results],
+            'pagination': {'more': len(data_get) > end}  
+        }
+        return JsonResponse(data, safe=False)
+    
+    except Exception as e:
+        # Log the error if necessary (optional)
+        print(f"Error occurred: {e}")
+        # Return an error response
+        return JsonResponse({'error': 'An error occurred while fetching sample types.'}, status=500)
+    
 def getLocationUnits(request):
     try:
         query    = request.GET.get('q', '')

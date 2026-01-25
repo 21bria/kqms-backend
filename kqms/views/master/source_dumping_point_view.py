@@ -2,8 +2,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.http import HttpResponse
 from ...models.source_model import SourceMinesDumping
+from ...models.mine_status_units import UnitLocation
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction, IntegrityError
 from django.db import IntegrityError
 from django.shortcuts import render
 from django.db.models import Q
@@ -133,12 +135,24 @@ def insert_minesDumping(request):
         status        = 1
 
         try:
-            new_job = SourceMinesDumping.objects.create(
-                    dumping_point=dumping_point,
-                    remarks=remarks,
-                    category =category,
-                    status=status
-                    )
+            with transaction.atomic():
+                new_job = SourceMinesDumping.objects.create(
+                        dumping_point=dumping_point,
+                        remarks=remarks,
+                        category =category,
+                        status=status
+                        )
+                
+                # === SINKRON UNIT LOCATION ===
+                code = dumping_point.upper().replace(" ", "_")
+                UnitLocation.objects.update_or_create(
+                    code=code,
+                    defaults={
+                        "name": dumping_point
+                    }
+                )
+
+
             return JsonResponse({
                 'status' : 'success',
                 'message': 'Data berhasil disimpan.',
@@ -171,10 +185,28 @@ def update_minesDumping(request, id):
     if request.method == 'POST':
         try:
             job = SourceMinesDumping.objects.get(id=id)
-            job.dumping_point  = request.POST.get('dumping_point')
-            job.remarks     = request.POST.get('remarks')
-            job.category      = request.POST.get('category')
-            job.save()
+
+            dumping_point  = request.POST.get('dumping_point')
+            remarks        = request.POST.get('remarks')
+            category       = request.POST.get('category')
+
+            with transaction.atomic():
+                old_code = job.dumping_point.upper().replace(" ", "_")
+                new_code = dumping_point.upper().replace(" ", "_")
+
+                if old_code != new_code:
+                    if UnitLocation.objects.filter(code=new_code).exists():
+                        raise ValueError("Code baru sudah dipakai lokasi lain")
+
+                    unit_location = UnitLocation.objects.get(code=old_code)
+                    unit_location.code = new_code
+                    unit_location.name = dumping_point
+                    unit_location.save()
+
+                job.dumping_point  = dumping_point
+                job.remarks        = remarks
+                job.category       = category
+                job.save()
 
             return JsonResponse({
                 'id'            : job.id,

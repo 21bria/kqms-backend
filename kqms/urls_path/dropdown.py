@@ -9,7 +9,8 @@ from ..views.settings.dropdown_view import *
 urlpatterns = [
     
     # Get Dropdown dinamyc
-    path('method_dropdown/', method_dropdown, name='method-dropdown'), 
+    path('method_dropdown/', 
+    method_dropdown, name='method-dropdown'), 
     path('material_dropdown/', material_dropdown, name='material-dropdown'), 
     path('get-details-point/', get_details_point, name='get-details-point'), 
     path('get-details-source/', get_details_sources, name='get-details-source'), 
@@ -75,6 +76,7 @@ urlpatterns = [
     
     # Get All
     path('get-mine/category/', get_mine_category, name='get-mine-category'),
+    path('get-mine/iup/', get_mine_iup, name='get-mine-iup'),
     path('get-mine/source/all', get_sources_mine, name='get-mine-source-all'),
 
     # Samples
@@ -98,6 +100,7 @@ urlpatterns = [
     path('selling/get-jetty/', get_jetty_in, name='get-jetty-in'),
 
     # Unit Timesheet Dropdown
+    path('mining/get-catgory/', getMiningCategory, name='get-mining-category'), 
     path('mining/get-unit/locations/', getLocationUnits, name='get-unit-locations'), 
     path('mining/get-unit/status/', getUnitStatus, name='get-unit-status'), 
     path('mining/get-unit/activities/', getUnitActivity, name='get-unit-activities'), 

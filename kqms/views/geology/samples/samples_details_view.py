@@ -138,7 +138,7 @@ class SamplesDetails(View):
                 "to_its"         : item.to_its,
                 "sampling_deskripsi": item.sampling_deskripsi,
                 "no_sample"       : item.no_sample,
-                "username"        : item.username
+                # "username"        : item.username
                 
             } for item in object_list
         ]

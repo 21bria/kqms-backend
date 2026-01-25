@@ -66,3 +66,4 @@ sudo systemctl restart celery.service
 🚀 2. Restart Celery Beat
 sudo systemctl restart celerybeat.service
 
+pip install pyproj shapely geojson

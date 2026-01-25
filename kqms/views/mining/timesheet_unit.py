@@ -20,6 +20,26 @@ def timesheet_page(request):
     }
     return render(request, 'admin-mine/list-timesheet.html', context)
 
+def calc_duration_min(start_time, end_time):
+    fmt = "%H:%M"
+    start = datetime.strptime(start_time, fmt)
+    end   = datetime.strptime(end_time, fmt)
+
+    diff = (end - start).total_seconds() / 60
+    if diff < 0:
+        diff += 1440  # lewat tengah malam
+
+    return int(diff)
+
+def minutes_to_hhmm(minutes):
+    h = minutes // 60
+    m = minutes % 60
+    return f"{int(h):02d}:{int(m):02d}"
+
+def min_to_hour(minute):
+    return round((minute or 0) / 60, 2)
+
+
 @login_required
 def ajax_hm_unit_by_date_shift(request):
     date   = request.GET.get('date')
@@ -229,18 +249,24 @@ def ajax_hm_unit_detail(request, hm_unit_id):
 
     # Hitung total durasi
     total_minutes = details_qs.aggregate(total=Sum("duration_min"))["total"] or 0
+    total_hours = round(total_minutes / 60, 2)
 
     # Build rows
     detail_rows = []
     for d in details_qs:
+        dur_min = d.duration_min or 0
         detail_rows.append({
             "id": str(d.id),
             "start_time": d.start_time.strftime("%H:%M") if d.start_time else None,
             "end_time"  : d.end_time.strftime("%H:%M") if d.end_time else None,
-            "duration"  : d.duration_min,
+            # DATA ASLI
+            "duration_min" : dur_min,
+            # HH:MM format
+            "duration"  : minutes_to_hhmm(dur_min),  # 01:47
             "status"    : d.status.name if d.status else None,
             "activity"  : d.activity.name if d.activity else None,
             "location"  : d.location.name if d.location else None,
+            "category"  : d.category,
             "remark"    : d.remark,
         })
 
@@ -252,7 +278,7 @@ def ajax_hm_unit_detail(request, hm_unit_id):
         "unit_code"  : hm.unit.unit_code,
         "hm_start"   : float(hm.hm_start or 0),
         "hm_end"     : float(hm.hm_end or 0),
-        "total_hours": total_minutes,
+        "total_hours": total_hours,
         # status HmUnit kalau CharField akses langsung
         "status"     : hm.status,
         "details"    : detail_rows,
@@ -307,9 +333,9 @@ def ajax_hm_unit_kpi(request, hm_unit_id):
     return JsonResponse({
         "success": True,
         "kpi": {
-            "working": OP,
-            "standby": ST,
-            "maintenance": MR,
+            "working": min_to_hour(OP),
+            "standby": min_to_hour(ST),
+            "maintenance": min_to_hour(MR),
             "pa": round(PA, 2),
             "ma": round(MA, 2),
             "ua": round(UA, 2),
@@ -352,6 +378,7 @@ def create_timesheet(request):
                 'status[]'     : ['required'],
                 'activity[]'   : ['required'],
                 'location[]'   : ['required'],
+                'category[]'   : ['required'],
             }
 
             # Pesan kesalahan validasi yang disesuaikan
@@ -361,6 +388,7 @@ def create_timesheet(request):
                 'status[].required'     : 'Status is required.',
                 'activity[].required'   : 'Activity is required.',
                 'location[].required'   : 'Location is required.',
+                'category[].required'   : 'Category is required.',
             }
 
             # Validasi request
@@ -390,21 +418,26 @@ def create_timesheet(request):
 
                 start_time_list = request.POST.getlist('start_time[]')
                 end_time_list   = request.POST.getlist('end_time[]')
-                duration_list   = request.POST.getlist('duration[]')
                 status_list     = request.POST.getlist('status[]')
                 activity_list   = request.POST.getlist('activity[]')
                 location_list   = request.POST.getlist('location[]')
+                category_list   = request.POST.getlist('category[]')
 
 
                 for idx in range(len(start_time_list)):
+                    duration_min = calc_duration_min(
+                                start_time_list[idx],
+                                end_time_list[idx]
+                            )
                     HmUnitDetail.objects.create(
                         hm_unit      = hm_unit,
                         start_time   = start_time_list[idx],
                         end_time     = end_time_list[idx],
-                        duration_min = Decimal(duration_list[idx]),  # convert ke Decimal
+                        duration_min = duration_min,
                         status_id    = status_list[idx],
                         activity_id  = activity_list[idx],
                         location_id  = location_list[idx],
+                        category     = category_list[idx],
                     )
             # Setelah menyimpan semua HmUnitDetail Kembalikan respons JSON sukses
             return JsonResponse({
@@ -459,6 +492,7 @@ def getIdDetailHm(request, id):
             "location_id": d.location.id,
             "location_name": d.location.name,
 
+            "category": d.category,
             "remark": d.remark or "",
         }
 
@@ -479,11 +513,12 @@ def update_detail_hm(request, id):
     try:
         # Aturan validasi
         rules = {
-            'start_time': ['required'],
-            'end_time'  : ['required'],
+            'start_time' : ['required'],
+            'end_time'   : ['required'],
             'status'     : ['required'],
             'activity'   : ['required'],
             'location'   : ['required'],
+            'category'   : ['required'],
         }
 
         # Pesan kesalahan validasi yang disesuaikan
@@ -493,6 +528,7 @@ def update_detail_hm(request, id):
             'status.required'     : 'Status is required.',
             'activity.required'   : 'Activity is required.',
             'location.required'   : 'Location is required.',
+            'category.required'   : 'Category is required.',
         }
 
         # Validasi request
@@ -517,11 +553,12 @@ def update_detail_hm(request, id):
 
         start_time = request.POST.get('start_time')
         end_time   = request.POST.get('end_time')
-        duration   = request.POST.get('duration')
+        # duration   = request.POST.get('duration')
         status     = request.POST.get('status')
         activity   = request.POST.get('activity')
         location   = request.POST.get('location')
         unit_id    = request.POST.get('unit_id')
+        category   = request.POST.get('category')
 
         if not unit_id:
             return JsonResponse({'error': 'Unit ID harus diisi!'}, status=400)
@@ -533,19 +570,20 @@ def update_detail_hm(request, id):
 
         # Dapatkan data yang akan diupdate berdasarkan ID
         data = HmUnitDetail.objects.get(id=id)
+   
+        duration_min = calc_duration_min(start_time, end_time)
 
         # Lakukan update data dengan nilai baru
-        data.start_time = start_time
-        data.end_time   = end_time
-        data.duration   = duration
-        data.status_id  = status
-        data.activity_id= activity
-        data.location_id= location
-  
+        data.start_time   = start_time
+        data.end_time     = end_time
+        data.duration_min = duration_min
+        data.status_id    = status
+        data.activity_id  = activity
+        data.location_id  = location
+        data.category     = category
+
         # Simpan perubahan ke dalam database
         data.save()
-
-        
 
         # Kembalikan respons JSON sukses
         return JsonResponse({'success'  : True,

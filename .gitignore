@@ -34,3 +34,5 @@ celerybeat-schedule
 
 # Temp uploads
 media/tmp_duplicates/
+
+*.json

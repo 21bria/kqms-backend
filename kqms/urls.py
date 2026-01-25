@@ -3,7 +3,8 @@ from django.urls import path, include
 from .views.auth.login import *
 from .views.generate_dummy import *
 from .views.report.export_excel import *
-
+from .views.gis.geo_json_covert import *
+from .views.gis.geo_json_mine_iup import *
 
 urlpatterns = [
     path('', login_view, name='login'),
@@ -40,5 +41,14 @@ urlpatterns = [
 
     # Export Excel
     path('export/excel/page/', export_excel_page, name='export-excel-page'),
-    
+
+    # Services
+    path("gis/import/", imports_json_page, name="gis-import-page"),
+    path("gis/api/convert-geojson/", upload_convert_geojson, name="upload_convert_geojson"),
+    path("gis/sync-geojson/", sync_geojson_to_db, name="sync_geojson_to_db"),
+
+    # Geo Json Mine IUP
+    path("gis/mine-iup/", mine_iup_page, name="gis-mine-iup-page"),
+    path("gis/api/mine-iup/<int:iup_id>/",api_iup_with_sources, name="api-iup-with-sources"),
+
 ]

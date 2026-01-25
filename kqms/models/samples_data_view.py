@@ -29,7 +29,7 @@ class SamplesView(models.Model):
     no_input       = models.BigIntegerField(default=None, null=True, blank=True)
     gc_expect      = models.CharField(max_length=10, default=None, null=True, blank=True)
     no_sample      = models.CharField(max_length=15, default=None, null=True, blank=True)
-    username       = models.CharField(max_length=50,default=None, null=True, blank=True)
+    # username       = models.CharField(max_length=50,default=None, null=True, blank=True)
     created_at     = models.DateTimeField(auto_now_add=True)
 
     class Meta:

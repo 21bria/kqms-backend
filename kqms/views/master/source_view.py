@@ -1,16 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from ...models.source_model import SourceMines
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 from django.shortcuts import render
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import JsonResponse
-from ...utils.utils import clean_string
-
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
+from kqms.utils.utils import clean_string
+from ...models.source_model import MineIUP,SourceMines
 
 @login_required
 def source_page(request):
@@ -43,7 +42,8 @@ class Source_List(View):
         # Set records filtered
         records_filtered = records_total
         # Ambil semua yang valid
-        data = SourceMines.objects.all()
+        # data = SourceMines.objects.all()
+        data = SourceMines.objects.select_related('id_iup').all()
 
         if search:
             data = SourceMines.objects.filter(
@@ -75,8 +75,11 @@ class Source_List(View):
             {
                 "id"            : item.id,
                 "sources_area"  : item.sources_area,
+                "mine_iup"      : item.id_iup.iup_name if item.id_iup else None,  # Mengambil iup_name
                 "remarks"       : item.remarks,
                 "status"        : item.status,
+                "latitude"      : item.latitude,
+                "longitude"     : item.longitude
             } for item in object_list
         ]
 
@@ -87,10 +90,10 @@ class Source_List(View):
             'data': data,
         }
 
-@login_required         
+@login_required        
 @csrf_exempt
 def get_source(request, id):
-    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa']
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -99,56 +102,108 @@ def get_source(request, id):
     if request.method == 'GET':
         try:
             job = SourceMines.objects.get(id=id)
+            
+            # Jika job.mine_iup ada, ambil sumber yang relevan
+            mine_iup = {
+                'id': job.id_iup.id if job.id_iup else None,  # ID sumber
+                'iup_name': job.id_iup.iup_name if job.id_iup else None  
+            } if job.id_iup else None  
+
             data = {
                 'id'            : job.id,
                 'sources_area'  : clean_string(job.sources_area), 
                 'remarks'       : clean_string(job.remarks),
+                'mine_iup'      : clean_string(mine_iup),  # Masukkan data sumber
+                'status'        : clean_string(job.status),
                 'created_at'    : job.created_at
             }
             return JsonResponse(data)
+        
         except SourceMines.DoesNotExist:
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-@login_required    
+
+@login_required
 def insert_source(request):
-    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa']
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control','entry-vendors']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
             status=403
     )
     if request.method == 'POST':
-        sources_area = request.POST.get('sources_area')
-        remarks    = request.POST.get('remarks')
-        status        = 1
 
         try:
-            new_job = SourceMines.objects.create(sources_area=sources_area, remarks=remarks,status=status)
+            # Ambil data dari request POST
+            sources_area = request.POST.get('sources_area', '').strip()
+            id_iup       = request.POST.get('id_iup')
+            remarks      = request.POST.get('remarks')
+            status       = 1
+
+          # Aturan validasi
+            rules = {
+                'id_iup': ['required'],
+                'sources_area': ['required']
+            }
+
+            # Pesan kesalahan validasi yang disesuaikan
+            custom_messages = {
+                'id_iup.required': 'IUP is required.',
+                'sources_area.required' : 'Source is required.'
+            }
+
+            # Validasi request
+            for field, field_rules in rules.items():
+                for rule in field_rules:
+                    if rule == 'required':
+                        if not request.POST.get(field):
+                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
+                                                
+            # Pastikan ID yang diberikan ada dan valid
+            if id_iup:
+                iup_instance = MineIUP.objects.get(id=id_iup)
+            else:
+                # Jika tidak ada sources, bisa set None atau tangani sesuai kebutuhan
+                iup_instance = None
+
+            if SourceMines.objects.filter(sources_area=sources_area).exists():
+                return JsonResponse({'error': f'Data {sources_area} already exists.'}, status=400)
+
+            # Membuat objek baru SourceMinesLoading dengan instance SourceMines
+            new_job = SourceMines.objects.create(    
+                sources_area  = sources_area,
+                remarks       = remarks,
+                id_iup        = iup_instance,
+                status        = status
+            )
+
             return JsonResponse({
-                'status' : 'success',
+                'status': 'success',
                 'message': 'Data berhasil disimpan.',
                 'data': {
                     'id'            : new_job.id,
                     'sources_area'  : new_job.sources_area,
+                    'id_iup'        : new_job.id_iup_id, 
                     'remarks'       : new_job.remarks,
                     'status'        : new_job.status,
                     'created_at'    : new_job.created_at
                 }
             })
         except IntegrityError as e:
-            # Check if the error is a duplicate entry error
-            if 'Duplicate entry' in str(e):
-                return JsonResponse({'status': 'error', 'message': 'The data already exists'}, status=404)
-            else:
-                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
+        except ValidationError as e:
+            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
+
+        except Exception as e:
+            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, status=405)
+        return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
 @login_required
 def update_source(request, id):
-    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa']
+    allowed_groups = ['superadmin', 'admin-mining','admin-mgoqa','data-control']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -156,31 +211,70 @@ def update_source(request, id):
     )
     if request.method == 'POST':
         try:
+            # Ambil data job yang ada berdasarkan id
             job = SourceMines.objects.get(id=id)
+
+            # Aturan validasi
+            rules = {
+                'id_iup'         : ['required'],
+                'sources_area'  : ['required']
+            }
+
+            # Pesan kesalahan validasi yang disesuaikan
+            custom_messages = {
+                'id_iup.required'        : 'IUP is required.',
+                'sources_area.required' : 'Source is required.'
+            }
+
+            # Validasi request
+            for field, field_rules in rules.items():
+                for rule in field_rules:
+                    if rule == 'required':
+                        if not request.POST.get(field):
+                            return JsonResponse({'error': custom_messages[f'{field}.required']}, status=400)
+                                                
+            # Ambil data dari request POST
             job.sources_area = request.POST.get('sources_area')
             job.remarks      = request.POST.get('remarks')
+            
+            # Ambil id_iup  dari POST dan temukan instance MineIUP yang sesuai
+            id_iup = request.POST.get('id_iup')  
+            if id_iup:
+                job.id_sources = MineIUP.objects.get(id=id_iup)  # Ambil objek MineIUP dengan ID tersebut
+
+            # exclude(id=job.id): Mengecualikan data dengan ID yang sedang di-update agar validasi tidak menganggap data tersebut sebagai duplikat.
+            if SourceMines.objects.filter(sources_area=job.sources_area).exclude(id=job.id).exists():
+                return JsonResponse({'error': f'Data {job.sources_area} already exists.'}, status=400)
+
+            # Simpan perubahan
             job.save()
 
+            # Kembalikan response JSON
             return JsonResponse({
                 'id'            : job.id,
                 'sources_area'  : job.sources_area,
                 'remarks'       : job.remarks,
+                'iup'           : job.id_iup.id,
                 'created_at'    : job.created_at,
                 'updated_at'    : job.updated_at
             })
         
         except SourceMines.DoesNotExist:
             return JsonResponse({'error': 'Data tidak ditemukan'}, status=404)
+        
+        except SourceMines.DoesNotExist:
+            return JsonResponse({'error': 'SourceMines dengan ID yang diberikan tidak ditemukan'}, status=400)
+        
         except IntegrityError as e:
-            error_message = str(e)
-            if 'Duplicate entry' in error_message:
-                 return JsonResponse({'status': 'error', 'message': 'Data already exists'}, status=404)
-            else:
-                 return JsonResponse({'error': 'Error pada operasi database', 'message': error_message}, status=400)
+            return JsonResponse({'error': 'Terjadi kesalahan integritas database', 'message': str(e)}, status=400)
+
+        except ValidationError as e:
+            return JsonResponse({'error': 'Validasi gagal', 'message': str(e)}, status=400)
+
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
     else:
-        return JsonResponse({'error': 'Metode tidak diizinkan'}, status=405)
+        return JsonResponse({'error': 'Metode HTTP tidak diizinkan'}, status=405)
 
 @login_required
 def delete_source(request):

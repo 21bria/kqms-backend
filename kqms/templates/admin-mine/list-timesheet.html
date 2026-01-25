@@ -222,10 +222,12 @@
                                                                 <tr>
                                                                     <th scope="col" class="text-start">Start Time</th>
                                                                     <th scope="col" class="text-start">End Time</th>
-                                                                    <th scope="col" class="text-start">Duration</th>
+                                                                    <th scope="col" class="text-start" width="5%">
+                                                                        Duration</th>
                                                                     <th scope="col" class="text-start">Status</th>
                                                                     <th scope="col" class="text-start">Activity</th>
                                                                     <th scope="col" class="text-start">Location</th>
+                                                                    <th scope="col" class="text-start">Category</th>
                                                                     <th scope="col" class="text-start">Action</th>
                                                                 </tr>
                                                             </thead>
@@ -501,6 +503,12 @@
                         <div class="xl:col-span-12 col-span-12">
                             <label class="ti-form-label">Location</label>
                             <select class="ti-form-select" name="location-edit" id="location-edit">
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                        <div class="xl:col-span-12 col-span-12">
+                            <label class="ti-form-label">Category</label>
+                            <select class="ti-form-select" name="category-edit" id="category-edit">
                                 <option value="">Select</option>
                             </select>
                         </div>
@@ -816,6 +824,7 @@
                 <td><span class="font-semibold text-primary">${d.status ?? ""}</span></td>
                 <td><span class="font-semibold">${d.activity}</span></td>
                 <td><span class="font-semibold">${d.location ?? "-"}</span></td>
+                <td><span class="font-semibold">${d.category ?? "-"}</span></td>
                 <td>
                     <button class="edit-btn ti-btn ti-btn-primary ti-btn-sm" data-id="${d.id}">
                         <i class="ri-edit-line"></i>
@@ -942,8 +951,6 @@
                 window.kpiChart.render();
             }
         }
-
-
 
         // Get fuel
         $(document).on('click', '.get-fuel', function () {
@@ -1195,7 +1202,7 @@
 
             // Ambil data
             const startTimeArr = [], endTimeArr = [], durationArr = [],
-                statusArr = [], activityArr = [], locationArr = [];
+                statusArr = [], activityArr = [], locationArr = [], categoryArr = [];
 
             rows.each(function () {
                 const row = $(this);
@@ -1205,6 +1212,7 @@
                 statusArr.push(row.find('select[name="status[]"]').val());
                 activityArr.push(row.find('select[name="activity[]"]').val());
                 locationArr.push(row.find('select[name="location[]"]').val());
+                categoryArr.push(row.find('select[name="category[]"]').val());
             });
 
             const toast = Swal.mixin({
@@ -1229,6 +1237,7 @@
                     status: statusArr,
                     activity: activityArr,
                     location: locationArr,
+                    category: categoryArr,
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                 },
                 dataType: "json",
@@ -1278,9 +1287,11 @@
                         $('#start-time').val(d.start_time);
                         $('#end-time').val(d.end_time);
                         $('#duration').val(d.duration);
+                        $('#category_edit').val(d.category);
 
                         // $('#remark-edit').val(d.remark);
                         // SET DEFAULT SELECT2 VALUE
+                        setSelect2Default($('#category-edit'), d.category, d.category);
                         setSelect2Default($('#status-edit'), d.status_id, d.status_name);
                         setSelect2Default($('#activity-edit'), d.activity_id, d.activity_name);
                         setSelect2Default($('#location-edit'), d.location_id, d.location_name);
@@ -1312,6 +1323,8 @@
                 }
             });
         });
+
+
         function setSelect2Default(select, id, text) {
             var option = new Option(text, id, true, true);
             select.append(option).trigger('change');
@@ -1323,6 +1336,31 @@
                 width: '100%',
             });
 
+
+            modal.find('select[name="category-edit"]').select2({
+                placeholder: '-- Select Location --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-mining-category'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: { more: data.pagination.more }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            });
             // --- LOCATION ---
             modal.find('select[name="location-edit"]').select2({
                 placeholder: '-- Select Location --',
@@ -1417,6 +1455,7 @@
             const status = $('#status-edit').val();
             const activity = $('#activity-edit').val();
             const location = $('#location-edit').val();
+            const category = $('#category-edit').val();
             const unit_id = $('#unit_id').val();
 
             var updatedData = {
@@ -1425,6 +1464,7 @@
                 status: status,
                 activity: activity,
                 location: location,
+                category: category,
                 unit_id: unit_id,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             };
@@ -1439,6 +1479,7 @@
                         $('#status-edit').val('').trigger('change');
                         $('#activity-edit').val('').trigger('change');
                         $('#location-edit').val('').trigger('change');
+                        $('#category-edit').val('').trigger('change');
                         $('#start_time').val('');
                         $('#end_time').val('');
                         $('#duration').val('');
@@ -1618,35 +1659,70 @@
                 },
                 minimumInputLength: 0
             });
+
+            element.find('select[name="category[]"]').select2({
+                placeholder: '-- Select category --',
+                width: '100%',
+                ajax: {
+                    url: "{% url 'get-mining-category'%}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term,       // search term
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0
+            })
+
+
             element.find('select[name="status[]"]').on('change', function () {
                 let activitySelect = element.find('select[name="activity[]"]');
                 activitySelect.val(null).trigger('change');  // reset
             });
 
         }
-        // Fungsi hitung duration
+
         function calculateDuration(row) {
             let startTime = row.find('input[name="start_time[]"]').val();
             let endTime = row.find('input[name="end_time[]"]').val();
             let durationInput = row.find('input[name="duration[]"]');
 
-            if (startTime && endTime) {
-                let start = startTime.split(':');
-                let end = endTime.split(':');
-
-                let startMinutes = parseInt(start[0]) * 60 + parseInt(start[1]);
-                let endMinutes = parseInt(end[0]) * 60 + parseInt(end[1]);
-
-                let diffMinutes = endMinutes - startMinutes;
-                if (diffMinutes < 0) diffMinutes += 24 * 60; // melewati tengah malam
-
-                let decimalHours = (diffMinutes / 60).toFixed(2); // 2 desimal
-                durationInput.val(decimalHours);
-            } else {
-                1
+            if (!startTime || !endTime) {
                 durationInput.val('');
+                return;
             }
+
+            let [sh, sm] = startTime.split(':').map(Number);
+            let [eh, em] = endTime.split(':').map(Number);
+
+            let startMinutes = sh * 60 + sm;
+            let endMinutes = eh * 60 + em;
+
+            let diffMinutes = endMinutes - startMinutes;
+            if (diffMinutes < 0) diffMinutes += 1440; // lewat tengah malam
+
+            let h = Math.floor(diffMinutes / 60);
+            let m = diffMinutes % 60;
+
+            durationInput.val(
+                `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+            );
         }
+
 
         function sumDurations() {
             let total = 0;
@@ -1681,7 +1757,7 @@
             var newRow = '<tr>' +
                 '<td><input type="time" name="start_time[]" class="form-control !rounded-md"></td>' +
                 '<td><input type="time" name="end_time[]" class="form-control !rounded-md"></td>' +
-                '<td><input type="text" name="duration[]" class="form-control !rounded-md" style="width:95px;"></td>' +
+                '<td><input type="text" name="duration[]" class="form-control !rounded-md" style="width:70px;" readonly></td>' +
                 '<td>' +
                 '<select name="status[]" class="form-select" style="width: 100%;">' +
                 '<option value="">-- Select --</option>' +
@@ -1697,6 +1773,7 @@
                 '<option value="">-- Select --</option>' +
                 '</select>' +
                 '</td>' +
+                '<td><select class="form-select category" name="category[]"><option value="">---</option></select></td>' +
                 '<td><div class="flex flex-col md:inline-flex md:flex-row rounded-sm shadow-sm"><button type="button" class="removeRow ti-btn ti-btn-icon bg-danger/10 text-danger hover:bg-danger hover:text-white !rounded-full ti-btn-wave">' +
                 '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">' +
                 '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' +

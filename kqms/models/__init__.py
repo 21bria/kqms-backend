@@ -1,4 +1,5 @@
 from .mine_reserve import *
+from .mine_category import *
 from .assay_mral_model import *
 from .assay_roa_model import *
 from .block_model import *
@@ -16,6 +17,7 @@ from .sample_method import *
 from .sample_production import *
 from .sample_type import *
 from .sample_type_details import *
+from .sample_crm_certified import *
 from .selling_data import *
 from .selling_barging import *
 from .selling_barging_temp import *
