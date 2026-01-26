@@ -25,25 +25,6 @@
         <!-- Start::main-content -->
         <div class="main-content">
             <!-- Page Header -->
-            <!-- <div class="block justify-between page-header md:flex">
-                <div>
-
-                </div>
-                <ol class="flex items-center whitespace-nowrap min-w-0">
-                    <li class="text-[0.813rem] ps-[0.5rem]">
-                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
-                            href="javascript:void(0);">
-                            GIS
-                            <i
-                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
-                        </a>
-                    </li>
-                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
-                        aria-current="page">
-                        Geo-Json
-                    </li>
-                </ol>
-            </div> -->
             <!-- Page Header Close -->
             <!-- Start::row-1 -->
             <div class="grid grid-cols-12 gap-6">
@@ -56,14 +37,13 @@
                         <div class="box-body">
                             <form id="uploadForm" enctype="multipart/form-data">
                                 <div class="grid grid-cols-12 gap-4 mb-5">
-                                    <div class="xl:col-span-4 col-span-12">
+                                    <div class="xl:col-span-3 col-span-12">
                                         <select name="id_iup" id="id_iup" class="form-select">
                                             <option value="">-- Select input --</option>
                                         </select>
                                     </div>
                                 </div>
                             </form>
-
                             <div class="overflow-auto">
                                 <div id="map" style="height:700px;margin-top:5px;"></div>
                             </div>
@@ -165,12 +145,29 @@
         $('#id_iup').on('change', function () {
             const iupId = $(this).val();
             if (!iupId) {
-                Swal.fire("Info", "Silakan pilih IUP dulu", "info");
+                // Swal.fire(
+                //     "Info", "Silakan pilih IUP dulu", "info"
+                // );
+                 Swal.fire({
+                        title: 'Opss!',
+                        text: 'Silakan pilih IUP dulu.',
+                        icon: 'info',
+                        width: 380,
+                    })
                 return;
             }
             loadIUP(iupId);
         });
     });
+    const SOURCE_COLORS = [
+        '#22c55e', '#3b82f6', '#f97316',
+        '#a855f7', '#ec4899', '#14b8a6',
+        '#eab308', '#ef4444'
+    ];
+
+    function getSourceColor(sourceId) {
+        return SOURCE_COLORS[sourceId % SOURCE_COLORS.length];
+    }
 
     function loadIUP(iupId) {
         $.getJSON(`/kqms/gis/api/mine-iup/${iupId}/`, function (res) {
@@ -186,32 +183,45 @@
                     fillOpacity: 0.15
                 }
             }).addTo(map);
-
             map.fitBounds(iupLayer.getBounds(), { padding: [30, 30] });
 
             // ===== Sources layer =====
             sourceLayer = L.geoJSON(res.sources, {
                 style: function (feature) {
-                    // optional: beda warna per pit
                     return {
-                        color: '#dc2626',
+                        color: getSourceColor(feature.properties.id),
                         weight: 2,
-                        fillOpacity: 0.5
+                        fillOpacity: 0.5,
+                        dashArray: '3'
                     };
                 },
                 onEachFeature: function (feature, layer) {
                     const p = feature.properties || {};
+                    const productions = p.productions || {};
+                    const materials = productions.materials || [];
+                    const totalTonnage = productions.total || 0;
+
+                    let productionHtml = '<i>No production</i>';
+                    if (materials.length > 0) {
+                        productionHtml = '<table style="width:100%; font-size:12px; margin-top:6px"><thead><tr><th align="left">Material</th><th align="right">Tonnage</th></tr></thead><tbody>';
+                        materials.forEach(function (m) {
+                            productionHtml += `<tr><td>${m.material}</td><td align="right">${m.tonnage.toLocaleString()}</td></tr>`;
+                        });
+                        productionHtml += `<tfoot><tr style="font-weight:bold; border-top:1px solid #ccc"><td>Total</td><td align="right">${totalTonnage.toLocaleString()}</td></tr></tfoot></tbody></table>`;
+                    }
 
                     layer.bindPopup(`
-                        <b>Source Area:</b> ${p.sources_area || '-'}<br>
+                    <div style="min-width:220px">
+                        <b>Source:</b> ${p.sources_area || '-'}<br>
                         <b>PIT:</b> ${p.pit || '-'}<br>
-                        <b>Luas:</b> ${p.luas_ha ?? '-'} ha<br>
-                        <b>Area HA:</b> ${p.area_ha ?? '-'}<br>
-                    `);
+                        <b>Area:</b> ${p.luas_ha ?? '-'} ha
+                        <hr style="margin:4px 0"/>
+                        <b>Production:</b>
+                        ${productionHtml}
+                    </div>
+                `);
                 }
             }).addTo(map);
-
-
         }).fail(function () {
             Swal.fire("Error", "Gagal load data IUP", "error");
         });
