@@ -59,8 +59,8 @@
                         <div class="box-body">
                             <div class="flex justify-end mb-2">
                                 <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
-                                    <button id="addPlan" type="button"
-                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Add New</button>
+                                    <!-- <button id="addPlan" type="button"
+                                        class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave">Add New</button> -->
                                     <button id="openFilter" type="button"
                                         class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
                                     <a id="reload" href="#"
@@ -94,6 +94,7 @@
                                             <th class="bg-soft-secondary">SM</th>
                                             <th class="bg-soft-secondary">Loading</th>
                                             <th class="bg-soft-secondary">Complete</th>
+                                            <th class="bg-soft-secondary">Assay</th>
                                             <th class="bg-soft-secondary" width="7%">Action</th>
                                         </tr>
                                     </thead>
@@ -104,6 +105,7 @@
                                         <tr>
                                             <th width="5%"></th>
                                             <!-- <th></th> -->
+                                            <th></th>
                                             <th></th>
                                             <th></th>
                                             <th></th>
@@ -214,14 +216,15 @@
                                     <option value="">--- Select ---</option>
                                 </select>
                             </div>
-                            <div class="xl:col-span-4 col-span-12">
+                            <!-- <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Official</label>
                                 <select id="official" name="official" class="form-control w-full !rounded-md">
                                     <option value="">Select</option>
                                     <option value="Yes">Yes</option>
                                     <option value="No">No</option>
                                 </select>
-                            </div>
+                            </div> -->
+
                             <div class="xl:col-span-4 col-span-12" id="sampleArea">
                                 <label class="form-label">Discharging<span class="text-danger">*</span></label>
                                 <select id="id_factory" name="id_factory" class="form-control w-full !rounded-md">
@@ -249,6 +252,11 @@
                                 <label class="form-label">End Date</span></label>
                                 <input type="date" id="end_date" name="end_date" class="form-control w-full !rounded-md"
                                     placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="xl:col-span-4 col-span-12">
+                                <label class="form-label">Re-Assay<span class="text-danger">*</span></label>
+                                <input type="text" id="re_assay" name="re_assay" class="form-control w-full !rounded-md"
+                                    placeholder="0">
                             </div>
                             <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Tonnage<span class="text-danger">*</span></label>
@@ -389,12 +397,12 @@
                                 <input type="text" id="so_number_e" name="so_number_e"
                                     class="form-control w-full !rounded-md" placeholder="So Number">
                             </div>
-
-                            <div class="xl:col-span-4 col-span-12">
+                            <!-- <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Official Code</span></label>
                                 <input type="text" id="official_code_e" name="official_code_e"
                                     class="form-control w-full !rounded-md" placeholder="Official Code">
-                            </div>
+                            </div> -->
+
                             <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Start Date</span></label>
                                 <input type="date" id="start_date_e" name="start_date_e"
@@ -404,6 +412,11 @@
                                 <label class="form-label">End Date</span></label>
                                 <input type="date" id="end_date_e" name="end_date_e"
                                     class="form-control w-full !rounded-md" placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="xl:col-span-2 col-span-12">
+                                <label class="form-label">Re-Assay<span class="text-danger">*</span></label>
+                                <input type="text" id="re_assay_e" name="re_assay_e"
+                                    class="form-control w-full !rounded-md" placeholder="0">
                             </div>
                             <div class="xl:col-span-4 col-span-12">
                                 <label class="form-label">Tonnage<span class="text-danger">*</span></label>
@@ -723,6 +736,10 @@
                     data: 'end_date',
                     name: 'end_date'
                 },
+                {
+                    data: 're_assay',
+                    name: 're_assay'
+                },
 
                 {
                     'data': null,
@@ -911,7 +928,7 @@
             var end_date = $('#end_date_e').val();
             var id_surveyor = $('#id_surveyor_e').val();
             var so_number = $('#so_number_e').val();
-            var official_e = $('#official_e').val();
+            var re_assay = $('#re_assay_e').val();
             var official_code_e = $('#official_code_e').val();
             var id_factory = $('#id_factory_e').val();
             var tonnage = $('#tonnage_e').val();
@@ -935,7 +952,7 @@
                 id_surveyor: id_surveyor,
                 so_number: so_number,
                 id_factory: id_factory,
-                official: official_e,
+                re_assay: re_assay,
                 official_code: official_code_e,
                 tonnage: tonnage,
                 ni: ni,
@@ -962,8 +979,9 @@
                         $('#product_code_e').val('').trigger('change');
                         $('#id_surveyor_e').val('').trigger('change');
                         $('#id_factory_e').val('').trigger('change');
-                        $('#official_e').val('').trigger('change');
+                        // $('#official_e').val('').trigger('change');
                         $('#so_number_e').val('');
+                        $('#re_assay_e').val('');
                         $('#official_code_e').val('');
                         $('#start_date_e').val('');
                         $('#end_date_e').val('');
@@ -1171,7 +1189,7 @@
 
     $('#product_code').select2({
         ajax: {
-            url: "{% url 'get-sale-code-product' %}",
+            url: "{% url 'get-code-lot' %}",
             dataType: 'json',
             delay: 250,
             data: function (params) {
@@ -1183,7 +1201,12 @@
             processResults: function (data, params) {
                 params.page = params.page || 1;
                 return {
-                    results: data.results,
+                    results: $.map(data.results, function (item) {
+                        return {
+                            id: item.text,
+                            text: item.text
+                        };
+                    }),
                     pagination: {
                         more: data.pagination.more
                     }
@@ -1192,9 +1215,9 @@
             cache: true
         },
         minimumInputLength: 2,
-        placeholder: 'Select data',
+        placeholder: 'Select Code ??',
         allowClear: true,
-        dropdownParent: $('#add-data .ti-modal-body')
+        // theme: 'tailwindcss-3',
     });
 
 </script>
@@ -1232,7 +1255,12 @@
                 processResults: function (data, params) {
                     params.page = params.page || 1;
                     return {
-                        results: data.results,
+                        results: $.map(data.results, function (item) {
+                            return {
+                                id: item.text,
+                                text: item.text
+                            };
+                        }),
                         pagination: {
                             more: data.pagination.more
                         }
@@ -1267,6 +1295,7 @@
                     $('#id_surveyor_e').val(response.id_surveyor).trigger('change');
                     $('#id_factory_e').val(response.id_factory).trigger('change');
                     $('#official_e').val(response.official).trigger('change');
+                    $('#re_assay_e').val(response.re_assay);
                     $('#official_code_e').val(response.official_code);
                     $('#tonnage_e').val(parseFloat(response.tonnage).toFixed(2));
                     $('#ni_e').val(parseFloat(response.ni).toFixed(2));

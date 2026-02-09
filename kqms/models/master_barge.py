@@ -13,8 +13,13 @@ class BargeUnits(models.Model):
         return self.barge_code
 
     class Meta:
-        db_table  = 'master_barge'
         app_label = 'kqms'
+        db_table  = 'master_barge'
+        indexes   = [
+            models.Index(fields=['barge_code']),
+            models.Index(fields=['barge_name'])
+        ]
+        
 
 class BargePort(models.Model):
     port_name   = models.CharField(max_length=150, default=None, null=True, blank=True)
@@ -28,5 +33,9 @@ class BargePort(models.Model):
         return self.port_name
 
     class Meta:
-        db_table  = 'master_barge_port'
         app_label = 'kqms'
+        db_table  = 'master_barge_port'
+        indexes   = [
+            models.Index(fields=['port_name']),
+        ]
+       

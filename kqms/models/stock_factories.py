@@ -11,5 +11,8 @@ class StockFactories(models.Model):
         return self.factory_stock 
 
     class Meta:
-        db_table  = 'stock_factories'
         app_label = 'kqms'
+        db_table  = 'stock_factories'
+        indexes   = [
+            models.Index(fields=['factory_stock']),
+        ]

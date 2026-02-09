@@ -18,12 +18,11 @@ class Waybills(models.Model):
     updated_at    = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table  = 'waybills'
         app_label = 'kqms'
-    
-    indexes = [
+        db_table  = 'waybills'
+        indexes = [
             models.Index(fields=['sample_id'])
-    ]
+        ]
 
     @classmethod
     def is_duplicate_data(cls, sample_id):

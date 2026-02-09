@@ -18,8 +18,13 @@ class FuelConsumption(models.Model):
     updated_at      = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table  = 'mine_units_fuel_consumption'
         app_label = 'kqms'
+        db_table  = 'mine_units_fuel_consumption'
+        indexes   = [
+            models.Index(fields=['date']),
+            models.Index(fields=['unit']),
+        ]
+        
 
 class FuelConsumptionView(models.Model):
     id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

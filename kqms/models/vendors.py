@@ -11,7 +11,11 @@ class Vendors(models.Model):
         return self.code
 
     class Meta:
-        db_table  = 'vendors'
         app_label = 'kqms'
+        db_table  = 'vendors'
+        indexes   = [
+            models.Index(fields=['vendor_name']),
+            models.Index(fields=['code'])
+        ]
 
 

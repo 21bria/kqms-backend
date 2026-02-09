@@ -44,12 +44,18 @@ def import_mines_equipments(file_path, original_file_name):
     try:
         with transaction.atomic():
             for index, row in df.iterrows():
-                unit_code = row['unit_code']
-                unit_model = row.get('unit_model')
-                unit_class = row.get('unit_type')
-                brand = row.get('brand')
-                category = row.get('category')
-                vendors = row.get('vendors')
+                # unit_code = row['unit_code']
+                # unit_model = row.get('unit_model')
+                # unit_class = row.get('unit_type')
+                # brand = row.get('brand')
+                # category = row.get('category')
+                # vendors = row.get('vendors')
+                unit_code   = str(row['unit_code']).strip() if pd.notna(row['unit_code']) else None
+                unit_model  = str(row.get('unit_model')).strip() if pd.notna(row.get('unit_model')) else None
+                unit_class  = str(row.get('unit_type')).strip() if pd.notna(row.get('unit_type')) else None
+                brand       = str(row.get('brand')).strip() if pd.notna(row.get('brand')) else None
+                category    = str(row.get('category')).strip() if pd.notna(row.get('category')) else None
+                vendors     = str(row.get('vendors')).strip() if pd.notna(row.get('vendors')) else None
                 commisioning_date = row.get('commisioning_date')
                 on_hire = row.get('on_hire')
                 off_hire = row.get('off_hire')

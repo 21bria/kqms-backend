@@ -14,9 +14,12 @@ from ..views.mining.truck_factors import *
 from ..views.mining.volume_adjustment_view import *
 from ..views.mining.weather import *
 from ..views.mining.timesheet_unit import *
+from ..views.mining.import_task_timesheet import *
 from ..views.mining.timesheet_unit_summary import *
 from ..views.fueling.daily_fuel import *
 from ..views.mining.status_activity_unit import *
+from ..views.mining.append_hm_range import *
+from ..views.mining.location_activity import *
 
 
 urlpatterns = [
@@ -91,7 +94,7 @@ urlpatterns = [
     path('mine-production/weather/list/',dataWeather.as_view(),name='mine-production-weather-list'),
     path('mine-production/weather/create/', create_weather, name='mine-production-weather-create'),
     path('mine-production/weather/get/', getIdWeather, name='mine-production-weather-get'),
-    path('mine-production/weather/update/<int:id>/', update_weather, name='mine-production-weather-update'),
+    path('mine-production/weather/update/<uuid:id>/', update_weather, name='mine-production-weather-update'),
     path('mine-production/weather/delete/',delete_weather,name='mine-production-weather-delete'),
 
     # Timesheet Data
@@ -100,8 +103,26 @@ urlpatterns = [
     path('mine-production/ajax/append-all-fleet/',append_all_fleet,name='ajax_append_all_fleet'),
     path('mine-production/get-hm-unit/<uuid:id>/',getIdHmUnit,name='mine-production-get-hm-unit'),
     path('mine-production/hm-unit/update/<uuid:id>/', update_hm_unit, name='mine-production-hm-unit-update'),
-
     path('mine-production/ajax/hm-unit/fuel/<str:unit_id>/',get_fuel_by_unit,name='ajax_hm_unit_by_date_fuel'),
+    path('mine-production/ajax/delete-bulk-fuel/',delete_bulk_fuel,name='delete-bulk-fuel'),
+
+    # Import Data
+    path('mine-production/timesheet/import/page/',import_timesheet_page,name='mine-production-timesheet-import-page'),
+    # path('mine-production/timesheet/import/',import_hm_excel_task,name='mine-production-timesheet-import'),
+    path('mine-production/timesheet/import/', import_hm_excel_view,name='hm-timesheet-import'),
+    path('mine-production/timesheet/import/logs/',hm_timesheet_import_logs,name='hm-timesheet-import-logs'),
+
+    # Import Range Data
+    path('mine-production/timesheet/import/range/page/',import_timesheet_range_page,name='mine-production-timesheet-import-range-page'),
+    path('mine-production/timesheet/import/range/', import_hm_excel_range,name='hm-timesheet-import-range'),
+    path('mine-production/timesheet/import/range/logs/',hm_timesheet_import_range_logs,name='hm-timesheet-import-range-logs'),
+   
+
+    # Append HM Unit Range
+    path('mine-production/timesheet/hm-range-append/page/',append_hm_range_page,name='mine-production-timesheet-hm-range-append-page'),
+    path('mine-production/timesheet/hm-range-append/',appendRangeHMView.as_view(),name='mine-production-timesheet-hm-range-append'),
+    path('mine-production/timesheet/append-hm-range/',append_hm_range,name='append-hm-range'),
+    path('mine-production/timesheet/delete-bulk-hm-range/',delete_bulk_hm_range,name='delete-bulk-hm-range'),
 
     # Status Activity units
     path('mine-production/timesheet/status-activity/page/',activity_unit_page,name='mine-production-status-activity-page'),
@@ -110,6 +131,16 @@ urlpatterns = [
     path('mine-production/timesheet/delete/status-activity/',delete_activity_unit,name='mine-production-status-activity-delete'),
     path('mine-production/timesheet/get/status-activity/',get_id_activity_unit,name='mine-production-status-activity-get-id'),
     path('mine-production/timesheet/status-activity/update/<int:id>/', update_activity_unit, name='mine-production-status-activity-update'),
+
+    # Location Activity units
+    path('mine-production/timesheet/location-activity/page/',location_activity_page,name='mine-production-location-activity-page'),
+    path('mine-production/timesheet/location-activity-list/',viewUnitLocation.as_view(),name='mine-production-location-activity-list'),
+    path('mine-production/insert/location-activity/', insert_activity_location, name='insert-location-activity-unit'), 
+    path('mine-production/timesheet/delete/location-activity/',delete_activity_location,name='mine-production-location-activity-delete'),
+    path('mine-production/timesheet/get/location-activity/',get_id_activity_location,name='mine-production-location-activity-get-id'),
+    path('mine-production/timesheet/location-activity/update/<int:id>/', update_activity_location, name='mine-production-location-activity-update'),
+
+
 
     path('mine-production/ajax/hm-unit/<uuid:hm_unit_id>/',ajax_hm_unit_detail,name='ajax_hm_unit_detail'),
     path('mine-production/timesheet/create/', create_timesheet, name='mine-production-timesheet-create'),

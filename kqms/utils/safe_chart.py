@@ -3,11 +3,6 @@ def safe_chart_multi(workbook, worksheet, pos, title, rows, categories, series_d
                      legend_pos='top', y_axis=None, y2_axis=None):
     """
     Chart aman multi-series (stacked bar/area + optional line combine).
-    - series_defs: list of dict {name, values, (optional fill, line, smooth, y2_axis, dll.)}
-    - line_defs:   list of dict series tambahan (line chart)
-    - chart_type:  'column' | 'area' | 'bar' ...
-    - stacked: True untuk stacked
-    - y_axis, y2_axis: dict axis labels
     """
     chart_conf = {'type': chart_type}
     if stacked:
@@ -59,6 +54,14 @@ def safe_chart_multi(workbook, worksheet, pos, title, rows, categories, series_d
         chart.set_y_axis(y_axis)
     if y2_axis:
         chart.set_y2_axis(y2_axis)
+
+    # ====== Tambahkan X-axis miring 45° ======
+    chart.set_x_axis({
+        'name': 'Date',
+        'num_font': {'rotation': 45, 'bold': True,'size': 10, 'color': '#4b5563'},
+        'name_font': {'bold': True, 'size': 11},
+        'interval_unit': 1
+    })
 
     worksheet.insert_chart(pos, chart, {'x_scale': scale[0], 'y_scale': scale[1]})
     return chart

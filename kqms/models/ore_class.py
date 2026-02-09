@@ -20,5 +20,9 @@ class OreClass(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'ore_classes'
         app_label = 'kqms'
+        db_table = 'ore_classes'
+        indexes = [
+            models.Index(fields=['ore_class']),
+            models.Index(fields=['material']),
+        ]

@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.contrib.auth.models import Group
 from django.utils.text import slugify
 
@@ -20,7 +21,6 @@ class taskImports(models.Model):
     class Meta:
         db_table  = 'task_imports'
         app_label = 'kqms'
-
     
 class TaskList(models.Model):
     type_table     = models.CharField(max_length=150, unique=True)  # dijadikan unique kalau jadi kode unik
@@ -39,3 +39,34 @@ class TaskList(models.Model):
         db_table  = 'task_table_list'
         app_label = 'kqms'
         ordering  = ['type_table']
+
+
+class importTask(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PROCESSING', 'Processing'),
+        ('SUCCESS', 'Success'),
+        ('FAILED', 'Failed'),
+    ]
+
+    id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    task_id    = models.CharField(max_length=100, blank=True, null=True)
+    file_name  = models.CharField(max_length=255)
+    task_type  = models.CharField(max_length=150, default='Import Task')
+    total_rows = models.PositiveIntegerField(default=0)
+    inserted   = models.PositiveIntegerField(default=0)
+    skipped    = models.PositiveIntegerField(default=0)
+    errors     = models.JSONField(blank=True, null=True)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='PENDING'
+    )
+    # date_import = models.DateField( blank=True, null=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        app_label = 'kqms'
+        db_table = 'mine_import_task'

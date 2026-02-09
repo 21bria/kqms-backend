@@ -337,12 +337,34 @@ class Command(BaseCommand):
             order=1,
             allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
         )
+        Menu.objects.create(
+            title="Import Data",
+            url="mine-production-timesheet-import-range-page",
+            parent=time_sheet,
+            order=2,
+            allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
+        )
+        Menu.objects.create(
+            title="HM Append",
+            url="mine-production-timesheet-hm-range-append-page",
+            parent=time_sheet,
+            order=3,
+            allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
+        )
         
         Menu.objects.create(
             title="Data Status",
             url="mine-production-status-activity-page",
             parent=time_sheet,
-            order=2,
+            order=4,
+            allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
+        )
+        
+        Menu.objects.create(
+            title="Data Location",
+            url="mine-production-location-activity-page",
+            parent=time_sheet,
+            order=5,
             allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
         )
         
@@ -350,7 +372,7 @@ class Command(BaseCommand):
             title="Summary",
             url="mine-summary-hm-kpi-unit-page",
             parent=time_sheet,
-            order=3,
+            order=6,
             allowed_group_names=['superadmin','admin-demo','data-control','admin-mining','entry-vendors']
         )
         

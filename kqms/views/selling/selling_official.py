@@ -102,7 +102,8 @@ class sellingDataOfficial(View):
                 "mc"                : item.mc,
                 "sm"                : item.sm,
                 "start_date"        : item.start_date,
-                "end_date"          : item.end_date
+                "end_date"          : item.end_date,
+                "re_assay"          : item.re_assay
                 # "created_at"  : item.created_at.strftime('%Y-%m-%d %H:%M:%S'), 
 
             } for item in object_list
@@ -129,7 +130,8 @@ def create_official_sale(request):
                 'product_code' : ['required'],
                 'id_surveyor'  : ['required'],
                 'id_factory'   : ['required'],
-                'official'    : ['required'],
+                # 'official'     : ['required'],
+                're_assay'     : ['required'],
                 'tonnage'      : ['required'],
                 'ni'           : ['required'],
                 'fe'           : ['required'],
@@ -149,7 +151,8 @@ def create_official_sale(request):
                 'product_code.required'  : 'Code* !!',
                 'id_surveyor.required'   : 'Surveyor* !!',
                 'id_factory.required'    : 'Discharging* !!',
-                'official.required'      : 'Official* !!',
+                # 'official.required'      : 'Official* !!',
+                're_assay.required'      : 'Re-Assay* !!',
                 'tonnage.required'       : 'Tonagge* ',
                 'ni.required'            : 'Ni* ',
                 'fe.required'            : 'Fe* ',
@@ -186,25 +189,36 @@ def create_official_sale(request):
                 
             # Gunakan transaksi database untuk memastikan integritas data
             with transaction.atomic():
-                # Dapatkan data dari request
+                type_selling = request.POST.get('type_selling')
                 product_code = request.POST.get('product_code')
                 id_surveyor  = request.POST.get('id_surveyor')
+                re_assay     = request.POST.get('re_assay')
+                # Validasi duplikat berdasarkan kombinasi field
+                is_duplicate = SellingOfficial.objects.filter(
+                    type_selling=type_selling,
+                    product_code=product_code,
+                    id_surveyor=id_surveyor,
+                    re_assay=re_assay
+                ).exists()
 
-                checkDup = product_code + id_surveyor
+                if is_duplicate:
+                    return JsonResponse(
+                        {'message': f'Data with a combination of Type Selling, Product Code, Surveyor, and Re-Assay({re_assay}) already exists.'},
+                        status=422
+                    )
 
-                if SellingOfficial.objects.filter(check_duplicated=checkDup).exists():
-                            return JsonResponse({'message': f'{checkDup} : already exists.'}, status=422)
-    
+
                 # Simpan data baru
                 SellingOfficial.objects.create(
-                    type_selling = request.POST.get('type_selling'),
+                    type_selling = type_selling,
                     product_code = product_code,
                     start_date   = request.POST.get('start_date'),
                     end_date     = request.POST.get('end_date'),
-                    id_surveyor  = id_surveyor,
+                    id_surveyor  = request.POST.get('id_surveyor'),
                     so_number    = request.POST.get('so_number'),
                     id_factory   = request.POST.get('id_factory'),
-                    official     = request.POST.get('official'),
+                    # official     = request.POST.get('official'),
+                    re_assay     = re_assay,
                     tonnage      = request.POST.get('tonnage'),
                     ni           = request.POST.get('ni'),
                     fe           = request.POST.get('fe'),
@@ -218,7 +232,7 @@ def create_official_sale(request):
                     mc           = request.POST.get('mc'),
                     description  = request.POST.get('description'),
                     # # id_user  =auth()->id(),
-                    check_duplicated=checkDup
+                    # check_duplicated=None
                 )
 
             # Kembalikan respons JSON sukses
@@ -243,33 +257,33 @@ def getIdOfficial(request, id):
             items = SellingOfficial.objects.get(id=id)
             code_name     = None
             if items.product_code:
-                product = SellingCode.objects.filter(id=items.product_code).first()
+                product = SellingCode.objects.filter(product_code=items.product_code).first()
                 if product:
                     code_name = product.product_code
             data = {
-                'id'          : items.id,
-                'id_surveyor' : items.id_surveyor,
-                'official'    : items.official,
-                'type_selling': items.type_selling,
-                'tonnage'     : items.tonnage,
-                'id_factory'  : items.id_factory,
-                'so_number'   : items.so_number,
+                'id'            : items.id,
+                'id_surveyor'   : items.id_surveyor,
+                'official'      : items.official,
+                'type_selling'  : items.type_selling,
+                'tonnage'       : items.tonnage,
+                'id_factory'    : items.id_factory,
+                'so_number'     : items.so_number,
                 'product_code'  : items.product_code,
                 'code_name'     : clean_string(code_name),
-                'official_code': items.official_code,
-                'ni'          : items.ni,
-                'co'          : items.co,
-                'al2o3'       : items.al2o3,
-                'cao'         : items.cao,
-                'cr2o3'       : items.cr2o3,
-                'fe'          : items.fe,
-                'mgo'         : items.mgo,
-                'sio2'        : items.sio2,
-                'mno'         : items.mno,
-                'mc'          : items.mc,
-                'start_date'  : items.start_date.strftime('%Y-%m-%d'),
-                'end_date'    : items.end_date.strftime('%Y-%m-%d'),
-                'description' : items.description,
+                'ni'            : items.ni,
+                'co'            : items.co,
+                'al2o3'         : items.al2o3,
+                'cao'           : items.cao,
+                'cr2o3'         : items.cr2o3,
+                'fe'            : items.fe,
+                'mgo'           : items.mgo,
+                'sio2'          : items.sio2,
+                'mno'           : items.mno,
+                'mc'            : items.mc,
+                'start_date'    : items.start_date.strftime('%Y-%m-%d'),
+                'end_date'      : items.end_date.strftime('%Y-%m-%d'),
+                'description'   : items.description,
+                're_assay'      : items.re_assay
         
             }
             return JsonResponse(data)
@@ -288,7 +302,7 @@ def update_official(request, id):
                 'product_code' : ['required'],
                 'id_surveyor'  : ['required'],
                 'id_factory'   : ['required'],
-                'official'     : ['required'],
+                're_assay'     : ['required'],
                 'tonnage'      : ['required'],
                 'ni'           : ['required'],
                 'fe'           : ['required'],
@@ -308,7 +322,7 @@ def update_official(request, id):
                 'product_code.required'  : 'Code Lot* !!',
                 'id_surveyor.required'   : 'Surveyor* !!',
                 'id_factory.required'    : 'Discharging* !!',
-                'official.required'      : 'Official* !!',
+                're_assay.required'      : 'ReAssay* !!',
                 'tonnage.required'       : 'Tonagge* ',
                 'ni.required'            : 'Ni* ',
                 'fe.required'            : 'Fe* ',
@@ -342,26 +356,38 @@ def update_official(request, id):
                     if not pattern.match(request.POST.get(field, '')):
                         return JsonResponse({'error': custom_messages[f'{field}.regex']}, status=400)
 
+        type_selling = request.POST.get('type_selling')
         product_code = request.POST.get('product_code')
         id_surveyor  = request.POST.get('id_surveyor')
+        re_assay     = request.POST.get('re_assay')
         # Validasi duplikat
+        # Validasi duplikat berdasarkan kombinasi field
+        is_duplicate = SellingOfficial.objects.exclude(id=id).filter(
+            type_selling=type_selling,
+            product_code=product_code,
+            id_surveyor=id_surveyor,
+            re_assay=re_assay
+        ).exists()
 
-        checkDup   = f"{product_code}{id_surveyor}"
-        if SellingOfficial.objects.exclude(id=id).filter(check_duplicated=checkDup).exists(): 
-            return JsonResponse({'message': f'{checkDup} : already exists.'}, status=422)
-        
+        if is_duplicate:
+            return JsonResponse(
+                {'message': f'Data dengan kombinasi Type Selling, Product Code, Surveyor, dan Re-Assay sudah ada.'},
+                status=422
+            )
+      
         # Dapatkan data yang akan diupdate berdasarkan ID
         data = SellingOfficial.objects.get(id=id)
 
         # Lakukan update data dengan nilai baru
-        data.type_selling  = request.POST.get('type_selling')
+        data.type_selling  = type_selling
         data.product_code  = product_code
         data.start_date    = request.POST.get('start_date')
         data.end_date      = request.POST.get('end_date')
         data.id_surveyor   = id_surveyor
         data.so_number     = request.POST.get('so_number')
         data.id_factory    = request.POST.get('id_factory')
-        data.official      = request.POST.get('official')
+        # data.official      = request.POST.get('official')
+        data.re_assay      = request.POST.get('re_assay')
         data.official_code = request.POST.get('official_code')
         data.tonnage       = request.POST.get('tonnage')
         data.ni            = request.POST.get('ni')
@@ -374,9 +400,10 @@ def update_official(request, id):
         data.cr2o3         = request.POST.get('cr2o3')
         data.mno           = request.POST.get('mno')
         data.mc            = request.POST.get('mc')
+        data.re_assay      = request.POST.get('re_assay')
         data.description   = request.POST.get('description')
-       # data.id_user  =auth()->id(),
-        data.check_duplicated=checkDup
+        # data.id_user  =auth()->id(),
+        # data.check_duplicated=checkDup
 
         # Simpan perubahan ke dalam database
         data.save()

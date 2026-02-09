@@ -48,3 +48,8 @@ class SellingSurveyor(models.Model):
     class Meta:
         db_table   = 'ore_sellings_surveyor'
         app_label  = 'kqms'
+        
+        indexes = [
+            models.Index(fields=['code_surveyor']), 
+            models.Index(fields=['name_surveyor'])
+        ]

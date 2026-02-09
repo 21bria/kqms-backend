@@ -614,7 +614,7 @@ def get_kpi_daily_hauler(request):
                 -- FUEL
                 COALESCE(SUM(f.volume), 0) AS fuel,
                 -- DURATIONS
-                SUM(CASE WHEN s.code = 'OPR'
+                SUM(CASE WHEN s.code = 'EWH'
                     THEN COALESCE(d.duration_min,0) ELSE 0 END) AS op,
                 SUM(CASE WHEN s.code IN ('STB','SUPPORT','WX','SLP')
                     THEN COALESCE(d.duration_min,0) ELSE 0 END) AS st,
@@ -625,11 +625,11 @@ def get_kpi_daily_hauler(request):
                 COUNT(DISTINCT h.date) * 1440 AS total_time,
                 -- MA
                 ROUND(
-                    SUM(CASE WHEN s.code = 'OPR'
+                    SUM(CASE WHEN s.code = 'EWH'
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     NULLIF(
-                        SUM(CASE WHEN s.code IN ('OPR','PM','BD')
+                        SUM(CASE WHEN s.code IN ('EWH','PM','BD')
                             THEN COALESCE(d.duration_min,0) ELSE 0 END),
                         0
                     ) * 100,
@@ -637,7 +637,7 @@ def get_kpi_daily_hauler(request):
                 ) AS ma,
                 -- PA
                 ROUND(
-                    SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP')
+                    SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP')
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     (COUNT(DISTINCT h.date) * 1440) * 100,
@@ -645,11 +645,11 @@ def get_kpi_daily_hauler(request):
                 ) AS pa,
                 -- UA
                 ROUND(
-                        SUM(CASE WHEN s.code = 'OPR'
+                        SUM(CASE WHEN s.code = 'EWH'
                             THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                         /
                         NULLIF(
-                            SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP')
+                            SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP')
                                 THEN COALESCE(d.duration_min,0) ELSE 0 END),
                             0
                         ) * 100,
@@ -657,7 +657,7 @@ def get_kpi_daily_hauler(request):
                     ) AS ua,
                 -- EU
                 ROUND(
-                    SUM(CASE WHEN s.code = 'OPR'
+                    SUM(CASE WHEN s.code = 'EWH'
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     (COUNT(DISTINCT h.date) * 1440) * 100,
@@ -736,7 +736,7 @@ def get_kpi_daily_digger(request):
                 -- FUEL
                 COALESCE(SUM(f.volume), 0) AS fuel,
                 -- DURATIONS
-                SUM(CASE WHEN s.code = 'OPR'
+                SUM(CASE WHEN s.code = 'EWH'
                     THEN COALESCE(d.duration_min,0) ELSE 0 END) AS op,
                 SUM(CASE WHEN s.code IN ('STB','SUPPORT','WX','SLP')
                     THEN COALESCE(d.duration_min,0) ELSE 0 END) AS st,
@@ -747,11 +747,11 @@ def get_kpi_daily_digger(request):
                 COUNT(DISTINCT h.date) * 1440 AS total_time,
                 -- MA
                 ROUND(
-                    SUM(CASE WHEN s.code = 'OPR'
+                    SUM(CASE WHEN s.code = 'EWH'
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     NULLIF(
-                        SUM(CASE WHEN s.code IN ('OPR','PM','BD')
+                        SUM(CASE WHEN s.code IN ('EWH','PM','BD')
                             THEN COALESCE(d.duration_min,0) ELSE 0 END),
                         0
                     ) * 100,
@@ -759,7 +759,7 @@ def get_kpi_daily_digger(request):
                 ) AS ma,
                 -- PA
                 ROUND(
-                    SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP')
+                    SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP')
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     (COUNT(DISTINCT h.date) * 1440) * 100,
@@ -767,11 +767,11 @@ def get_kpi_daily_digger(request):
                 ) AS pa,
                 -- UA
                 ROUND(
-                        SUM(CASE WHEN s.code = 'OPR'
+                        SUM(CASE WHEN s.code = 'EWH'
                             THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                         /
                         NULLIF(
-                            SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP')
+                            SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP')
                                 THEN COALESCE(d.duration_min,0) ELSE 0 END),
                             0
                         ) * 100,
@@ -779,7 +779,7 @@ def get_kpi_daily_digger(request):
                     ) AS ua,
                 -- EU
                 ROUND(
-                    SUM(CASE WHEN s.code = 'OPR'
+                    SUM(CASE WHEN s.code = 'EWH'
                         THEN COALESCE(d.duration_min,0) ELSE 0 END)::numeric
                     /
                     (COUNT(DISTINCT h.date) * 1440) * 100,

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from ...models.mine_weather import Weather
 from django.shortcuts import render
 from django.db.models import Q
+from uuid import UUID
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
@@ -111,13 +112,22 @@ class dataWeather(View):
             'totalPages'     : total_pages,
         }
 
+
+def parse_time(val):
+    for fmt in ("%H:%M", "%H:%M:%S"):
+        try:
+            return datetime.strptime(val, fmt)
+        except ValueError:
+            pass
+    raise ValueError(f"Invalid time format: {val}")
+
 def calc_duration_min(start_time, end_time):
-    fmt = "%H:%M"
-    start = datetime.strptime(start_time, fmt)
-    end   = datetime.strptime(end_time, fmt)
+    start = parse_time(start_time)
+    end   = parse_time(end_time)
+
     diff = (end - start).total_seconds() / 60
     if diff < 0:
-        diff += 1440  # lewat tengah malam
+        diff += 1440
 
     return int(diff)
 
@@ -321,7 +331,6 @@ def update_weather(request, id):
         category    = request.POST.get('category')
         start_time  = request.POST.get('start_time')
         end_time    = request.POST.get('end_time')
-        duration    = request.POST.get('duration')
         remark      = request.POST.get('remark')
 
         # Validasi duplikat (exclude data yang sedang diupdate)
@@ -377,6 +386,7 @@ def update_weather(request, id):
     except Exception as e:
         return JsonResponse({'error': 'Terjadi kesalahan', 'message': str(e)}, status=500)
 
+
 @login_required
 def delete_weather(request):
     allowed_groups = ['superadmin','admin-mgoqa','admin-mining','data-control']
@@ -385,14 +395,20 @@ def delete_weather(request):
             {'status': 'error', 'message': 'You do not have permission'}, 
             status=403
         )
+
     if request.method == 'DELETE':
         job_id = request.GET.get('id')
-        if job_id:
-            data = Weather.objects.get(id=int(job_id))
+        if not job_id:
+            return JsonResponse({'status': 'error', 'message': 'No ID provided'}, status=400)
+
+        try:
+            job_uuid = UUID(job_id)  # validasi UUID format
+            data = Weather.objects.get(id=job_uuid)
             data.delete()
             return JsonResponse({'status': 'deleted'})
-        else:
-            return JsonResponse({'status': 'error', 'message': 'No ID provided'})
+        except ValueError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid UUID format'}, status=400)
+        except Weather.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Data not found'}, status=404)
     else:
-        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)

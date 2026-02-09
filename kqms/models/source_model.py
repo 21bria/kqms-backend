@@ -75,10 +75,9 @@ class SourceMinesLoading(models.Model):
     class Meta:
         db_table = 'mine_sources_point_loading'
         app_label= 'kqms'
-    
-    indexes = [
-        models.Index(fields=['loading_point'])
-    ]
+        indexes = [
+            models.Index(fields=['loading_point'])
+        ]
 
 class SourceMinesDumping(models.Model):
     dumping_point = models.CharField(max_length=50, unique=True)
@@ -106,10 +105,9 @@ class SourceMinesDumping(models.Model):
     class Meta:
         db_table = 'mine_sources_point_dumping'
         app_label= 'kqms'
-
-    indexes = [
-        models.Index(fields=['dumping_point'])
-    ]
+        indexes = [
+            models.Index(fields=['dumping_point'])
+        ]
 
 class SourceMinesDome(models.Model):
     pile_id     = models.CharField(max_length=50, unique=True)
@@ -143,10 +141,9 @@ class SourceMinesDome(models.Model):
     class Meta:
         db_table = 'mine_sources_point_dome'
         app_label= 'kqms'
-    
-    indexes = [
-        models.Index(fields=['pile_id'])
-    ]
+        indexes = [
+            models.Index(fields=['pile_id'])
+        ]
 
 class detailsDome(models.Model):
     pile_id       = models.CharField(max_length=50,default=None, null=True, blank=True)

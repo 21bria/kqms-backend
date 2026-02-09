@@ -28,6 +28,12 @@ from ..views.dashboard.mining.details_others import *
 from ..views.dashboard.api.daily.mining import *
 from ..views.dashboard.api.daily.productions import *
 
+# Fuel summary Report
+from ..views.dashboard.fuel.summary_fuel import *
+
+# Weather
+from ..views.dashboard.mining.weather import *
+
 urlpatterns = [
     # Reserve Dashboard
     path('api/reserve-summary/', get_reserve_summary, name='get_reserve_summary'),
@@ -51,7 +57,9 @@ urlpatterns = [
     path('api/chart/detail-quarry/', get_chart_detail_quarry, name='get_chart_detail_quarry'),
     path('api/chart/detail-others/', get_chart_detail_others, name='get_chart_detail_others'),
 
-    
+    # Weather
+    path('api/weather/data/', get_data_weather, name='get_data_weather'),
+
     # Selling Dashboard
     path('api/selling-summary/', get_selling_summary, name='get_selling_summary'),
     path('api/selling-chart/', get_chart_selling, name='get_chart_selling'),
@@ -86,6 +94,11 @@ urlpatterns = [
     # Finish Inventory
     path('api/inventory-finish/', get_inventory_finished, name='get-finish-inventory'),
     path('api/inventory-finish-stockpile/', get_stockpile_finished, name='get-finish-stockpile-inventory'),
+
+    # Fuel Summary Dashboard
+    path('api/fuel/summary/', get_chart_fuel, name='get_fuel_summary'),
+    path('api/fuel/summary/category/', get_chart_fuel_category, name='get_fuel_summary_category'),
+    path('api/fuel/summary/vendors/', get_chart_fuel_vendors, name='get_fuel_summary_vendors'),
 
 
     # For Daily Report Mining Page

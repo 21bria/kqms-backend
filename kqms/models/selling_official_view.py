@@ -21,6 +21,7 @@ class sellingOfficialView(models.Model):
     sm	             = models.FloatField(default=None, null=True, blank=True)
     start_date       = models.DateField(default=None, null=True, blank=True)
     end_date         = models.DateField(default=None, null=True, blank=True)
+    re_assay         = models.IntegerField(default=0, null=True, blank=True)
 
     class Meta:
         managed    = False

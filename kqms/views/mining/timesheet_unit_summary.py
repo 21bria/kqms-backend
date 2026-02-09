@@ -22,8 +22,9 @@ def min_to_hour(m):
 
 # @login_required
 def summary_hm_unit_kpi(request):
-    date_start     = request.GET.get('date_start')
-    date_end       = request.GET.get('date_end')
+    date_start   = request.GET.get('date_start')
+    date_end     = request.GET.get('date_end')
+    vendor       = request.GET.get('vendor')
     categories_raw = request.GET.get('categories', '[]')
 
     try:
@@ -50,7 +51,7 @@ def summary_hm_unit_kpi(request):
                 -- FUEL
                 COALESCE(SUM(f.volume), 0) AS fuel,
                 -- DURATIONS
-                COALESCE(SUM(CASE WHEN s.code = 'OPR' THEN d.duration_min END), 0) AS op,
+                COALESCE(SUM(CASE WHEN s.code = 'EWH' THEN d.duration_min END), 0) AS op,
                 COALESCE(SUM(CASE WHEN s.code IN ('STB','SUPPORT','WX','SLP') THEN d.duration_min END), 0) AS st,
                 COALESCE(SUM(CASE WHEN s.code IN ('PM','BD') THEN d.duration_min END), 0) AS mt,
                 COALESCE(SUM(CASE WHEN s.code = 'BD' THEN d.duration_min END), 0) AS bd,
@@ -58,15 +59,15 @@ def summary_hm_unit_kpi(request):
                 -- MA = OP / (OP + MT + BD)
                 ROUND(
                     COALESCE(
-                        SUM(CASE WHEN s.code = 'OPR' THEN d.duration_min END)::numeric
+                        SUM(CASE WHEN s.code = 'EWH' THEN d.duration_min END)::numeric
                         /
-                        NULLIF(SUM(CASE WHEN s.code IN ('OPR','PM','BD') THEN d.duration_min END), 0),
+                        NULLIF(SUM(CASE WHEN s.code IN ('EWH','PM','BD') THEN d.duration_min END), 0),
                     0) * 100, 2
                 ) AS ma,
                 -- PA = (OP + ST) / TOTAL
                 ROUND(
                     COALESCE(
-                        SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP') THEN d.duration_min END)::numeric
+                        SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP') THEN d.duration_min END)::numeric
                         / (COUNT(DISTINCT h.date) * 1440)
                     ) * 100,
                     2
@@ -74,9 +75,9 @@ def summary_hm_unit_kpi(request):
                 -- UA = OP / (OP + ST)
                 ROUND(
                     COALESCE(
-                        SUM(CASE WHEN s.code = 'OPR' THEN d.duration_min END)::numeric
+                        SUM(CASE WHEN s.code = 'EWH' THEN d.duration_min END)::numeric
                         /
-                        NULLIF(SUM(CASE WHEN s.code IN ('OPR','STB','SUPPORT','WX','SLP') THEN d.duration_min END), 0),
+                        NULLIF(SUM(CASE WHEN s.code IN ('EWH','STB','SUPPORT','WX','SLP') THEN d.duration_min END), 0),
                     0
                 ) * 100,
                 2
@@ -84,7 +85,7 @@ def summary_hm_unit_kpi(request):
                 -- EU = OP / TOTAL
                 ROUND(
                     COALESCE(
-                        SUM(CASE WHEN s.code = 'OPR' THEN d.duration_min END)::numeric
+                        SUM(CASE WHEN s.code = 'EWH' THEN d.duration_min END)::numeric
                         / (COUNT(DISTINCT h.date) * 1440), 0
                     ) * 100,
                     2
@@ -93,6 +94,7 @@ def summary_hm_unit_kpi(request):
             LEFT JOIN mine_units u ON u.id = h.unit_id
             LEFT JOIN mine_hm_unit_detail d ON d.hm_unit_id = h.id
             LEFT JOIN units_categories c ON c.id = u.id_category
+            LEFT JOIN vendors v ON v.id = u.id_vendor
             LEFT JOIN mine_units_categories_status s ON s.id = d.status_id
             LEFT JOIN mine_units_fuel_consumption f ON f.unit = u.unit_code
             AND f.date = h.date   -- PENTING: sinkron tanggal
@@ -106,10 +108,15 @@ def summary_hm_unit_kpi(request):
             query += f" AND LOWER(TRIM(c.category)) IN ({placeholders})"
             params.extend([c.lower().strip() for c in categories])
 
-        # filter unit
-        # if unit_code:
-        #     query += f" AND u.unit_code IN ({','.join(['%s'] * len(unit_code))})"
-        #     params.extend(unit_code)
+        # filter vendor
+        # if vendors:
+        #     query += f" AND u.vendors IN ({','.join(['%s'] * len(vendors))})"
+        #     params.extend(vendors)
+        
+        # filter vendor
+        if vendor:
+            query += " AND v.code = %s"
+            params.append(vendor)
 
         query += "GROUP BY u.unit_code,c.category ORDER BY u.unit_code"
 

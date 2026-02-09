@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
-from datetime import datetime
+from datetime import datetime, date as dt_date
 from decimal import Decimal
 from django.views.decorators.http import require_http_methods
 from kqms.models import  MineUnits,HmUnit, HmUnitDetail
@@ -92,6 +92,21 @@ def append_all_fleet(request):
             'message': 'Date dan Shift wajib diisi'
         }, status=400)
 
+    # parse string ke date
+    try:
+        import_date = datetime.strptime(date, "%Y-%m-%d").date()
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Format tanggal tidak valid (YYYY-MM-DD)'
+        }, status=400)
+
+    # validasi tidak boleh lebih besar dari hari ini
+    if import_date > dt_date.today():
+        return JsonResponse({
+            'success': False,
+            'message': 'Tanggal tidak boleh lebih besar dari hari ini'
+        }, status=400)
     created = 0
     skipped = 0
 
@@ -224,23 +239,25 @@ def update_hm_unit(request, id):
 def ajax_hm_unit_detail(request, hm_unit_id):
     try:
         # status di HmUnit bukan FK → hapus dari select_related
+        # hm = (
+        #     HmUnit.objects
+        #     .select_related('unit')
+        #     .get(id=hm_unit_id)
+        # )
+        date  = request.GET.get('date')
+        shift = request.GET.get('shift')
+
         hm = (
             HmUnit.objects
-            .select_related('unit')
-            .get(id=hm_unit_id)
+            .filter(id=hm_unit_id, date=date, shift=shift)
+            .first()
         )
     except HmUnit.DoesNotExist:
         return JsonResponse(
-            {"success": False, "message": "HM unit not found"},
+            {"success": False, "message":  "HM Unit tidak ditemukan untuk tanggal & shift ini"},
             status=404
         )
 
-    # Ambil details + relasi
-    # details_qs = (
-    #     hm.details
-    #     .select_related("status", "activity", "location")
-    #     .all()
-    # )
     details_qs = (
         hm.details
           .select_related("status", "activity", "location")

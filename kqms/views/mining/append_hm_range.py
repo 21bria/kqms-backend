@@ -1,42 +1,31 @@
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from ...models.mine_fuel_consumption import FuelConsumptionView,FuelConsumption
+import json
 from django.shortcuts import render
+from datetime import datetime, timedelta, date as dt_date
+from django.db import transaction
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.views.generic import View
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from datetime import datetime
-from django.utils.dateparse import parse_date
+from django.views.decorators.csrf import csrf_exempt
 from django.views import View
-import json
+from kqms.models import MineUnits, HmUnit
 
-def format_angka(jumlah):
-    if jumlah >= 1_000_000_000:
-        return f"{jumlah / 1_000_000_000:.2f} B"
-    elif jumlah >= 1_000_000:
-        return f"{jumlah / 1_000_000:.2f} M"
-    elif jumlah >= 1_000:
-        return f"{jumlah / 1_000:.2f} K"
-    else:
-        return str(jumlah)
-    
 @login_required
-def daily_fuel_page(request):
+def append_hm_range_page(request):
     today = datetime.today()
-    first_day_of_month = today.replace(day=1)  # Tanggal awal bulan berjalan
     context = {
-        'start_date' : first_day_of_month.strftime('%Y-%m-%d'),
-        'end_date'   : today.strftime('%Y-%m-%d'),
+        'day_date' : today.strftime('%Y-%m-%d'),
     }
+    return render(request, 'admin-mine/append-range-hm.html', context)
 
-    return render(request, 'admin-mine/fueling/list-daily-fuel.html', context)
 
-class viewDailyFuel(View):
-
+class appendRangeHMView(View):
     def post(self, request):
-        data_mine = self._datatables(request)
-        return JsonResponse(data_mine, safe=False)
+        # Ambil semua data invoice yang valid
+        data_pds = self._datatables(request)
+        return JsonResponse(data_pds, safe=False)
 
     def _datatables(self, request):
         datatables = request.POST
@@ -53,22 +42,20 @@ class viewDailyFuel(View):
         # Ambil order direction
         order_dir = datatables.get('order[0][dir]')
 
-        # Call Data
-        data = FuelConsumptionView.objects.all()
+        # Gunakan fungsi get_joined_data
+        data = HmUnit.objects.all()
 
         if search:
             data = data.filter(
-                Q(category__icontains=search) |
-                Q(vendors__icontains=search) 
+                Q(shift__icontains=search)
             )
        
         # Filter berdasarkan parameter dari request
-        startDate = request.POST.get('startDate')
-        endDate   = request.POST.get('endDate')
-  
-
-        if startDate and endDate:
-            data = data.filter(date__range=[startDate, endDate])
+        date_start = request.POST.get('date_start')
+        date_end   = request.POST.get('date_end')
+ 
+        if date_start and date_end:
+            data = data.filter(date__range=[date_start, date_end])
 
 
         # Atur sorting
@@ -95,22 +82,18 @@ class viewDailyFuel(View):
         except PageNotAnInteger:
             object_list = paginator.page(1).object_list
         except EmptyPage:
-            object_list = paginator.page(paginator.num_pages).object_list
+            object_list = paginator.page(paginator.num_pages).object_lis
 
         data = [
+         
             {
-                "id"            : item.id,
-                "date"          : item.date,
-                "shift"         : item.shift,
-                "unit"          : item.unit,
-                "category"      : item.category,
-                "hours_metre"   : item.hours_metre,
-                "drivers"       : item.drivers,
-                "charging_time" : item.charging_time,
-                "volume"        : item.volume,
-                "storage"       : item.storage,
-                "operator"      : item.operator,
-                "created_at"    : item.created_at
+                "id"         : item.id,
+                "date"       : item.date,
+                "shift"      : item.shift,
+                "hm_start"   : item.hm_start,
+                "hm_end"     : item.hm_end,
+                "unit_id"    : item.unit_id,
+                "created_at" : item.created_at,
                 
             } for item in object_list
         ]
@@ -126,65 +109,79 @@ class viewDailyFuel(View):
         }
 
 @login_required
-def get_fuel_by_unit(request, unit_id):
-    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
-    if not request.user.groups.filter(name__in=allowed_groups).exists():
-        return JsonResponse({'success': False, 'message': 'Permission denied'}, status=403)
+@require_POST
+def append_hm_range(request):
+    data = json.loads(request.body.decode())
+    date_start = data.get('date_start')
+    date_end   = data.get('date_end')
 
-    date_str = request.GET.get('date')
+    if not date_start or not date_end:
+        return JsonResponse({
+            'success': False,
+            'message': 'Tanggal wajib diisi'
+        }, status=400)
 
     try:
-        fuels = FuelConsumption.objects.filter(unit=unit_id)
-
-        if date_str:
-            date_obj = parse_date(date_str)
-            fuels = fuels.filter(date=date_obj)
-
-        fuels = fuels.order_by('charging_time')
-
-        day, night = [], []
-        total_volume = 0
-
-        for f in fuels:
-            shift = (f.shift or '').upper()
-            volume = f.volume or 0
-
-            item = {
-                "id": f.id,
-                "start_time": f.charging_time.strftime("%H:%M"),
-                "volume": volume,
-                "operator": f.operator,
-                "shift": shift,
-                "hours_metre": f.hours_metre,
-            }
-
-            total_volume += volume
-
-            if shift == 'DAY':
-                day.append(item)
-            elif shift == 'NIGHT':
-                night.append(item)
-
+        date_start = datetime.strptime(date_start, "%Y-%m-%d").date()
+        date_end   = datetime.strptime(date_end, "%Y-%m-%d").date()
+    except ValueError:
         return JsonResponse({
-            "success": True,
-            "unit_id": unit_id,
-            "date": date_str,
-            "total_volume": total_volume,  
-            "day": day,
-            "night": night
-        })
+            'success': False,
+            'message': 'Format tanggal tidak valid'
+        }, status=400)
 
-    except Exception as e:
+    if date_start > date_end:
         return JsonResponse({
-            "success": False,
-            "message": str(e)
-        }, status=500)
+            'success': False,
+            'message': 'Tanggal awal tidak boleh lebih besar'
+        }, status=400)
 
+    if date_end > dt_date.today():
+        return JsonResponse({
+            'success': False,
+            'message': 'Tanggal tidak boleh lebih besar dari hari ini'
+        }, status=400)
 
+    SHIFTS = ['Day', 'Night']
+
+    units = MineUnits.objects.filter(status=1)
+    created = 0
+    skipped = 0
+
+    with transaction.atomic():
+        current = date_start
+        while current <= date_end:
+            for shift in SHIFTS:
+                for unit in units:
+                    _, is_created = HmUnit.objects.get_or_create(
+                        unit=unit,
+                        date=current,
+                        shift=shift,
+                        defaults={
+                            'hm_start': 0,
+                            'hm_end': 0,
+                            'status': 'DRAFT'
+                        }
+                    )
+                    if is_created:
+                        created += 1
+                    else:
+                        skipped += 1
+
+            current += timedelta(days=1)
+
+    return JsonResponse({
+        'success': True,
+        'created': created,
+        'skipped': skipped,
+        'message': f'{created} data dibuat, {skipped} dilewati'
+    })
+
+# def append_hm_range(request):
 @login_required
 @csrf_exempt
-def delete_bulk_fuel(request):
-    allowed_groups = ['superadmin','data-control','admin-mining']
+def delete_bulk_hm_range(request):
+    allowed_groups = ['superadmin','admin-mining']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'}, 
@@ -211,7 +208,7 @@ def delete_bulk_fuel(request):
                 return JsonResponse({'status': 'error', 'message': 'Invalid date format'}, status=400)
 
             # filter data di rentang tanggal
-            data = FuelConsumption.objects.filter(date__range=[start_date, end_date])
+            data = HmUnit.objects.filter(date__range=[start_date, end_date])
 
             if data.exists():
                 deleted_count = data.count()

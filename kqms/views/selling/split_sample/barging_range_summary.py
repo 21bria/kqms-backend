@@ -89,7 +89,7 @@ def get_samples_monitoring(typeFilter=None, startDate=None, endDate=None, bulanF
                 COALESCE(SUM(sm), 0) AS sm,
                 type_selling
             FROM sellings_official_view
-            WHERE re_assay = 0
+            WHERE re_assay = 1
             GROUP BY product_code, type_selling
         ) AS t2 ON t1.code_lot = t2.product_code
         WHERE 1=1

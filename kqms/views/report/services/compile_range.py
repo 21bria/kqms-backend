@@ -703,3 +703,65 @@ def fetch_summary_to_date(end_date):
         "selling"   : selling,
         "inventory" : inventory
     }
+
+def fetch_fueling_to_date(ds: str, de: str):
+    with connections['kqms_db'].cursor() as cur:
+        # Fuel by Date (Daily)
+        cur.execute("""
+            WITH day_series AS (
+                SELECT generate_series(%s::date, %s::date, interval '1 day')::date AS dt
+            ),
+            actual AS (
+                SELECT
+                    date::date AS dt,
+                    SUM(volume) AS total
+                FROM mine_units_fuel_consumption
+                WHERE date BETWEEN %s AND %s
+                GROUP BY date::date
+            )
+            SELECT
+                ds.dt AS date,
+                COALESCE(a.total, 0) AS volume
+            FROM day_series ds
+            LEFT JOIN actual a ON ds.dt = a.dt
+            ORDER BY ds.dt;
+        """, [ds, de, ds, de])
+
+        daily_rows = [
+            dict(zip([c[0] for c in cur.description], r))
+            for r in cur.fetchall()
+        ]
+
+        daily_total = sum(r["volume"] or 0 for r in daily_rows)
+
+        # Fuel by Category
+        cur.execute("""
+            SELECT
+                COALESCE(TRIM(t3.category), 'Unknown') AS category,
+                ROUND(SUM(t1.volume)::NUMERIC, 2) AS volume
+            FROM mine_units_fuel_consumption t1
+            LEFT JOIN mine_units t2
+                ON t2.unit_code::text = t1.unit::text
+            LEFT JOIN units_categories t3
+                ON t3.id = t2.id_category
+            WHERE t1.date BETWEEN %s AND %s
+            GROUP BY t3.category
+            ORDER BY t3.category;
+        """, [ds, de])
+
+        category_rows = [
+            dict(zip([c[0] for c in cur.description], r))
+            for r in cur.fetchall()
+        ]
+        category_total = sum(r["volume"] or 0 for r in category_rows)
+
+    return {
+        "daily": {
+            "series": daily_rows,
+            "total" : daily_total
+        },
+        "category": {
+            "series": category_rows,
+            "total" : category_total
+        }
+    }

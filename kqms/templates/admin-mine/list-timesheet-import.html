@@ -29,7 +29,7 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Timesheet List</h3>
+                        Import Timesheet</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -157,18 +157,14 @@
                                                 <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm active"
                                                     href="javascript:void(0);" id="alltasks-item"
                                                     data-hs-tab="#all-tasks" aria-controls="all-tasks">
-                                                    Activity
+                                                    Import
                                                 </a>
                                                 <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
                                                     href="javascript:void(0);" id="fuel-item" data-hs-tab="#pending"
                                                     aria-controls="pending">
-                                                    Fueling
+                                                    Activity
                                                 </a>
-                                                <a class="w-full flex sm:w-auto hs-tab-active:font-semibold hs-tab-active:text-primary hs-tab-active:bg-primary/10 rounded-md py-2 px-3 text-sm"
-                                                    href="javascript:void(0);" id="in-progress-item"
-                                                    data-hs-tab="#in-progress" aria-controls="in-progress">
-                                                    Chart
-                                                </a>
+
 
                                             </nav>
                                         </div>
@@ -190,6 +186,72 @@
                                 <div class="tab-pane show active !p-0" id="all-tasks" aria-labelledby="alltasks-item"
                                     role="tabpanel">
                                     <div class="grid grid-cols-12 gap-x-6" id="tasks-container">
+                                        <div class="xl:col-span-12 col-span-12">
+                                            <div class="box task-pending-card">
+                                                <div class="box-body">
+                                                    <div>
+                                                        <p class="font-semibold mb-5 flex items-center"><a
+                                                                aria-label="anchor" href="javascript:void(0);"><i
+                                                                    class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Information!
+                                                        </p>
+                                                    </div>
+                                                    <div class="xl:col-span-12 col-span-12 mb-4">
+                                                        <form id="importForm" enctype="multipart/form-data">
+                                                            <div class="grid grid-cols-12 gap-4 items-end">
+                                                                <!-- File input -->
+                                                                <div class="xl:col-span-6 col-span-12">
+                                                                    <label class="sr-only">Choose file</label>
+                                                                    <input type="file" name="file" id="file" required
+                                                                        class="block w-full border border-gray-200 rounded-sm text-sm
+                                                                                file:border-0 file:bg-light file:me-4
+                                                                                file:py-2 file:px-4">
+                                                                </div>
+                                                                <!-- Button -->
+                                                                <div class="xl:col-span-1 col-span-12">
+                                                                    <button type="submit"
+                                                                        class="ti-btn ti-btn-primary-full !py-2 !px-4 ti-btn-wave w-full">
+                                                                        Submit
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div
+                                                        class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                                        <table
+                                                            class="table whitespace-nowrap  ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" class="text-start" width="25%">
+                                                                        File name</th>
+                                                                    <th scope="col" class="text-center" width="15%">
+                                                                        Status</th>
+                                                                    <th scope="col" class="text-start" width="10%">
+                                                                        inserteds</th>
+                                                                    <th scope="col" class="text-start" width="10%">
+                                                                        skipped</th>
+                                                                    <th scope="col" class="text-start" width="10%">
+                                                                        created_at</th>
+                                                                    <th scope="col" class="text-start" width="10%">erros
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody class="import-list" id="import-list">
+                                                            </tbody>
+                                                            <tfoot>
+                                                            </tfoot>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane !p-0 hidden" id="pending" aria-labelledby="fuel-item"
+                                    role="tabpanel">
+                                    <div class="grid grid-cols-12 gap-6">
+
                                         <div class="xl:col-span-12 col-span-12 task-card">
                                             <div class="box task-pending-card">
                                                 <div class="box-body">
@@ -239,15 +301,10 @@
                                                             <table id="TimesheetTable"
                                                                 class="table ti-striped-table table-hover min-w-full ti-custom-table-hover nowrap mb"
                                                                 style="width: 100%">
-                                                                <!-- <thead>
-
-                                                                    </thead> -->
-                                                                <tbody>
-
-                                                                </tbody>
+                                                                <tbody></tbody>
                                                             </table>
                                                             <!-- button -->
-                                                            <div
+                                                            <!-- <div
                                                                 class="mb-2 mt-2 flex flex-wrap items-left justify-start gap-2 lg:justify-start">
                                                                 <a href="javascript:void(0)" id="addRow"
                                                                     class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave btn-sm">
@@ -257,173 +314,13 @@
                                                                     class="ti-btn ti-btn-success-full !py-1 !px-2 ti-btn-wave btn-sm">Save
                                                                     data
                                                                 </button>
-                                                            </div>
+                                                            </div> -->
                                                         </form>
 
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-
-                                    </div>
-                                </div>
-                                <div class="tab-pane !p-0 hidden" id="pending" aria-labelledby="fuel-item"
-                                    role="tabpanel">
-                                    <div class="grid grid-cols-12 gap-6">
-                                        <div class="xl:col-span-5 col-span-12">
-                                            <div class="box task-pending-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-5 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Day
-                                                                Shift</p>
-                                                        </div>
-                                                        <div
-                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
-                                                            <table
-                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th scope="col" class="text-start">Hours
-                                                                            Metre</th>
-                                                                        <th scope="col" class="text-start">Time</th>
-                                                                        <th scope="col" class="text-start">Volume
-                                                                        </th>
-                                                                        <th scope="col" class="text-start">Fuelman
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="fuel-list-day" id="fuel-list-day">
-                                                                </tbody>
-                                                                <tfoot>
-                                                                </tfoot>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-5 col-span-12">
-                                            <div class="box task-pending-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center">
-                                                                <a aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-[#8c9097] dark:text-white/50"></i></a>Night
-                                                                Shift
-                                                            </p>
-
-                                                        </div>
-                                                        <div
-                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
-                                                            <table
-                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th scope="col" class="text-start">Hours
-                                                                            Metre</th>
-                                                                        <th scope="col" class="text-start">Time</th>
-                                                                        <th scope="col" class="text-start">Volume
-                                                                        </th>
-                                                                        <th scope="col" class="text-start">Fuelman
-                                                                        </th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="fuel-list-night" id="fuel-list-night">
-                                                                </tbody>
-                                                                <tfoot>
-
-                                                                </tfoot>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-2 col-span-12">
-                                            <div class="box task-completed-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] opacity-[0.5] me-1 text-success"></i></a>Total
-                                                                Fuel
-                                                            </p>
-                                                            <p class="font-semibold  mb-4 text-[#8c9097] dark:text-white/50 text-[1rem]"
-                                                                id="total_fuel">0.0</p>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane !p-0 hidden" id="in-progress" role="tabpanel">
-                                    <div class="grid grid-cols-12 gap-x-6">
-                                        <div class="xl:col-span-7 col-span-12">
-                                            <div class="box task-inprogress-card">
-                                                <div class="box-body">
-                                                    <div class="flex justify-between flex-wrap gap-2">
-                                                        <div>
-                                                            <p class="font-semibold mb-4 flex items-center"><a
-                                                                    aria-label="anchor" href="javascript:void(0);"><i
-                                                                        class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>KPI
-                                                                Units</p>
-
-                                                        </div>
-                                                        <div
-                                                            class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
-                                                            <table
-                                                                class="table whitespace-nowrap mb-0 ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th scope="col" class="text-start">Working</th>
-                                                                        <th scope="col" class="text-start">Standby</th>
-                                                                        <th scope="col" class="text-start">Maintenance
-                                                                        </th>
-                                                                        <th scope="col" class="text-start">PA</th>
-                                                                        <th scope="col" class="text-start">MA</th>
-                                                                        <th scope="col" class="text-start">UA</th>
-                                                                        <th scope="col" class="text-start">EU</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody class="kpi-list" id="kpi-list">
-                                                                </tbody>
-                                                                <tfoot>
-
-                                                                </tfoot>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="xl:col-span-5 col-span-12">
-                                            <div class="box task-inprogress-card">
-                                                <div class="box-body">
-
-                                                    <!-- Judul tetap kiri -->
-                                                    <div class="mb-3">
-                                                        <p class="font-semibold flex items-center">
-                                                            <i class="ri-star-s-fill text-[1rem] me-1 text-warning"></i>
-                                                            Chart KPI
-                                                        </p>
-                                                    </div>
-
-                                                    <!-- Chart di tengah -->
-                                                    <div class="flex justify-center items-center">
-                                                        <div id="chart"></div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </div>
 
@@ -586,6 +483,44 @@
 
         </div>
     </div>
+    <!-- Modal view -->
+    <div id="error-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Logs Error
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#error-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body !overflow-visible px-4">
+                    <div class="max-h-[400px] overflow-y-auto">
+                        <table class="table whitespace-nowrap table-bordered min-w-full text-sm">
+                            <thead class="bg-gray-100 sticky top-0 z-10">
+                                <tr>
+                                    <th width="15%">Row</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="error-table-body">
+                                <!-- injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                        data-hs-overlay="#error-data">Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
 </div>
 
@@ -626,9 +561,8 @@
             document.getElementById("duration").value = "";
         }
         function resetGetHM() {
-            document.getElementById("fuel-list-day").innerHTML = "";
-            document.getElementById("fuel-list-night").innerText = "";
-            document.getElementById("total_fuel").innerText = "-";
+            document.getElementById("import-list").innerHTML = "";
+
 
         }
 
@@ -640,10 +574,10 @@
             dateInput.value = dateInput.getAttribute('value');
         }
 
-        // GLOBAL FUNCTION
         let CURRENT_DATE = null;
         let CURRENT_SHIFT = null;
         let CURRENT_HM_UNIT_ID = null;
+        // GLOBAL FUNCTION
         window.loadHmUnits = function () {
             const date = dateInput.value;
             const shift = shiftInput.value;
@@ -651,6 +585,7 @@
 
             CURRENT_DATE = date;
             CURRENT_SHIFT = shift;
+
             console.log('CALL loadHmUnits()', date, shift, search);
 
             if (!date || !shift) {
@@ -707,6 +642,7 @@
             loadHmUnits();     // load daftar HM Unit baru
             resetHmDetails();  // reset detail dulu
             resetGetHM();
+            loadImportLogs(dateInput.value);
         });
 
         // Listener untuk SHIFT
@@ -841,172 +777,6 @@
             });
         }
 
-        // Listener untuk KPI
-        function renderKPI(kpi) {
-            const tbody = document.getElementById("kpi-list");
-            tbody.innerHTML = "";
-            if (!kpi) {
-                tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center text-gray-400">
-                        No KPI data
-                    </td>
-                </tr>`;
-                return;
-            }
-
-            tbody.innerHTML = `
-                <tr class="border border-defaultborder task-list">
-                    <td><span class="font-semibold">${kpi.working ?? 0}</span></td>
-                    <td><span class="font-semibold">${kpi.standby ?? 0}</span></td>
-                    <td><span class="font-semibold">${kpi.maintenance ?? 0}</span></td>
-                    <td><span class="font-semibold">${kpi.pa?.toFixed(0) ?? 0}%</span></td>
-                    <td><span class="font-semibold">${kpi.ma?.toFixed(0) ?? 0}%</span></td>
-                    <td><span class="font-semibold">${kpi.ua?.toFixed(0) ?? 0}%</span></td>
-                    <td><span class="font-semibold">${kpi.eu?.toFixed(0) ?? 0}%</span></td>
-                </tr>
-            `;
-        }
-
-        let kpiChart = null;
-
-        function renderKPIDonut(kpi) {
-            const series = [
-                kpi.pa ?? 0,
-                kpi.ma ?? 0,
-                kpi.ua ?? 0,
-                kpi.eu ?? 0
-            ];
-
-            const options = {
-                chart: {
-                    type: 'donut',
-                    height: 300
-                },
-                labels: ['PA', 'MA', 'UA', 'EU'],
-                series: series,
-                colors: ['#3b82f6', '#22c55e', '#facc15', '#ef4444'],
-
-                // dataLabels: {
-                //     enabled: true,
-                //     formatter: function (_, opts) {
-                //         const val = opts.w.config.series[opts.seriesIndex];
-                //         return val.toFixed(1) + '%';
-                //     }
-                // },
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        fontSize: '10px',
-                        // fontWeight: '600',
-                        // colors: ['#111'],   // tanpa shadow
-                    },
-                    dropShadow: {
-                        enabled: false
-                    },
-                    formatter: function (_, opts) {
-                        const val = opts.w.config.series[opts.seriesIndex];
-                        return val.toFixed(0) + '%';
-                    }
-                },
-                tooltip: {
-                    y: {
-                        formatter: function (val) {
-                            return val.toFixed(2) + '%';
-                        }
-                    }
-                },
-
-                legend: {
-                    position: 'bottom'
-                },
-
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '70%',
-                            labels: {
-                                show: true,
-                                total: {
-                                    show: true,
-                                    label: 'AVG KPI',
-                                    formatter: function () {
-                                        const avg =
-                                            (series[0] + series[1] + series[2] + series[3]) / 4;
-                                        return avg.toFixed(1) + '%';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            if (window.kpiChart) {
-                window.kpiChart.updateOptions(options);
-                window.kpiChart.updateSeries(series);
-            } else {
-                window.kpiChart = new ApexCharts(
-                    document.querySelector("#chart"),
-                    options
-                );
-                window.kpiChart.render();
-            }
-        }
-
-        // Get fuel
-        $(document).on('click', '.get-fuel', function () {
-            const unitId = $(this).data('id');
-            viewFuel(unitId);
-            // alert(unitId);
-        });
-
-        function viewFuel(unit_id) {
-            const date = dateInput.value;
-
-            if (!date) {
-                alert("Pilih tanggal dulu!");
-                return;
-            }
-
-            fetch(`/kqms/mining/mine-production/ajax/hm-unit/fuel/${unit_id}/?date=${date}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        alert(data.message);
-                        return;
-                    }
-                    renderFuelTable('#fuel-list-day', data.day);
-                    renderFuelTable('#fuel-list-night', data.night);
-                    // TOTAL FUEL
-                    document.getElementById('total_fuel').innerText =
-                        Number(data.total_volume).toFixed(2);
-                });
-        }
-
-        function renderFuelTable(selector, rows) {
-            const tbody = document.querySelector(selector);
-            tbody.innerHTML = '';
-
-            if (!rows.length) {
-                tbody.innerHTML = `
-            <tr>
-                <td colspan="4" class="text-center text-gray-400">No data</td>
-            </tr>`;
-                return;
-            }
-
-            rows.forEach(row => {
-                tbody.innerHTML += `
-            <tr>
-                <td>${row.hours_metre}</td>
-                <td>${row.start_time}</td>
-                <td>${row.volume}</td>
-                <td>${row.operator}</td>
-            </tr>
-        `;
-            });
-        }
 
         // Edit HM Sidebar
         $('#files-list').on('click', '.edit-hm', function () {
@@ -1509,6 +1279,8 @@
                             viewHmDetail(CURRENT_HM_UNIT_ID);
                             loadHmUnits(); // optional, biar tabel ikut update
                         }
+
+
                     } else {
                         alert('Terjadi kesalahan: ' + response.message);
                     }
@@ -1562,6 +1334,63 @@
             });
         });
 
+        // Import Data
+        $('#importForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('file');
+            const dateInput = document.getElementById('timesheet_date');
+            const shiftInput = document.getElementById('shift_type');
+
+            const file = fileInput.files[0];
+            const date = dateInput.value;
+            const shift = shiftInput.value;
+
+
+            // Buat FormData manual
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('date', date);
+            formData.append('shift', shift);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: '/kqms/mining/mine-production/timesheet/import/',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    // alert(res.message);
+                    Swal.fire({
+                        title: 'Proses data...',
+                        html: res.message,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                error: function () {
+                    alert('Server error');
+                }
+            });
+        });
+
+    });
+
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        setInterval(() => {
+            loadImportLogs($('#timesheet_date').val());
+        }, 9000); // refresh tiap 9 detik
     });
 
 </script>
@@ -1802,12 +1631,83 @@
     });
 </script>
 
+<script>
+
+    function loadImportLogs(date = null) {
+        let url = '/kqms/mining/mine-production/timesheet/import/logs/';
+        if (date) {
+            url += `?date=${date}`;
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(rows => {
+                const tbody = document.getElementById('import-list');
+                tbody.innerHTML = '';
+
+                if (!rows.length) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-gray-400">
+                            Tidak ada data
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                rows.forEach(row => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${row.file_name}</td>
+                        <td class="text-center">
+                        ${row.status}
+                        </td>
+                        <td>${row.inserted}</td>
+                        <td>${row.skipped}</td>
+                        <td>${row.created_at}</td>
+                        <td>
+                            ${row.errors.length
+                            ?
+                            `<button type="button" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-danger" 
+                              onclick='showErrors(${JSON.stringify(row.errors)})'>View Errors</button>`
+                            : '-'}
+                        </td>
+                    </tr>
+                `);
+                });
+            });
+    }
+
+    function showErrors(errors) {
+        const tbody = document.getElementById('error-table-body');
+        tbody.innerHTML = '';
+
+        errors.forEach(err => {
+            tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td class="text-center">${err.row}</td>
+                <td class="text-red-600">${err.error}</td>
+            </tr>
+        `);
+        });
+        window.HSOverlay.open('#error-data');
+    }
+</script>
+
 </body>
 
 </html>
 
 
 <style>
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
     tbody,
     td,
     tfoot,

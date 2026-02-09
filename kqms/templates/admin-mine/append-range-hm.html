@@ -18,7 +18,6 @@
     <!-- Start::app-sidebar -->
     {% include 'layout/sidebar.html' %}
     <!-- End::app-sidebar -->
-
     <div class="content">
         <!-- Start::main-content -->
         <div class="main-content">
@@ -27,7 +26,7 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Daily fuel consumption</h3>
+                        Data Activity Unit</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -40,27 +39,36 @@
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Fuel
+                        data mine
                     </li>
                 </ol>
             </div>
             <!-- Page Header Close -->
-
 
             <!-- Start::row-1 -->
             <div class="grid grid-cols-12 gap-6">
                 <div class="col-span-12">
                     <div class="box">
                         <div class="box-header">
-                            <h5 class="box-title">Daily fuel consumption</h5>
+                            <h5 class="box-title">Delete bulk activity</h5>
                         </div>
                         <div class="box-body">
-                            <div class="flex justify-end mb-2">
-                                <div class="ti-btn-list space-x-1 rtl:space-x-reverse">
-                                    <button id="openFilter" type="button"
-                                        class="ti-btn ti-btn-primary-full !py-1 !px-2 ti-btn-wave">Filter</button>
-                                    <a id="reload" href="#"
-                                        class="ti-btn ti-btn-warning-full !py-1 !px-2 ti-btn-wave">Reload</a>
+                            <div class="flex justify-start md:justify-end mb-2">
+                                <div class="flex flex-col md:flex-row md:items-end gap-4  w-full md:w-auto">
+                                    <div class="w-[220px]">
+                                        <label class="form-label">Start date</label>
+                                        <input type="date" class="form-control w-full !rounded-md" id="date_start"
+                                            name="date_start" value="{{day_date}}">
+                                    </div>
+                                    <div class="w-[140px]">
+                                        <label class="form-label">End Date</label>
+                                        <input type="date" class="form-control" id="date_end" name="date_end"
+                                            value="{{day_date}}">
+                                    </div>
+                                    <div class="mt-4">
+                                        <button type="button" id="applyFilterBtn"
+                                            class="ti-btn ti-btn-primary !rounded-lg ti-btn-wave mt-4">Filter</button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="overflow-auto">
@@ -69,23 +77,27 @@
                                     style="width: 100%">
                                     <thead>
                                         <tr>
-                                            <th class="bg-soft-secondary" width="4%">No</th>
-                                            <th class="bg-soft-secondary">Date</th>
-                                            <th class="bg-soft-secondary">Shift</th>
-                                            <th class="bg-soft-secondary">Unit</th>
-                                            <th class="bg-soft-secondary" width="5%">Category</th>
-                                            <th class="bg-soft-secondary">Hours Metre</th>
-                                            <th class="bg-soft-secondary">Drivers</th>
-                                            <th class="bg-soft-secondary">Time</th>
-                                            <th class="bg-soft-secondary">Volume</th>
-                                            <th class="bg-soft-secondary">Storage</th>
-                                            <th class="bg-soft-secondary">Fuelman</th>
+                                            <th>#</th>
+                                            <th>Date</th>
+                                            <th>Shift</th>
+                                            <th>HM Start</th>
+                                            <th>HM End</th>
+                                            <th>Unit id</th>
+                                            <th>Created At</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                 </table>
                                 <div class="mt-5 flex items-center justify-between">
+                                    <!-- KIRI -->
+                                    <!-- <div id="btn_append">
+                                        <button type="button" id="btn-append-hm"
+                                            class="ti-btn ti-btn-warning !rounded-lg !py-1 !px-2 ti-btn-wave">
+                                            Append HM
+                                        </button>
+                                    </div> -->
+                                    <!-- KANAN -->
                                     <div id="btn_clear">
                                         <button type="button" id="applyRemoveBtn"
                                             class="ti-btn ti-btn-danger !rounded-lg !py-1 !px-2 ti-btn-wave">
@@ -94,71 +106,24 @@
                                     </div>
                                 </div>
 
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- End::row-1 -->
-
-
         </div>
         <!-- Start::main-content -->
-
-    </div>
-
-    <!-- ========== Search Modal ========== -->
-    <div id="search-modal" class="hs-overlay ti-modal hidden mt-[1.75rem]" aria-overlay="true" tabindex="-1">
-        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
-            <div class="ti-modal-content">
-                <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70"
-                        id="mail-ComposeLabel"></h6>
-                    <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
-                        data-hs-overlay="#search-modal">
-                        <span class="sr-only">Close</span>
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <form>
-                    <div class="ti-modal-body px-4 !overflow-visible">
-                        <div class="grid grid-cols-12 gap-6 px-4 ">
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Start date</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="startDate" name="startDate"
-                                        placeholder="Choose date" value="{{start_date}}">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">End date</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-[#8c9097] dark:text-white/50"> <i
-                                            class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control" id="endDate" name="endDate"
-                                        placeholder="Choose date" value="{{end_date}}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ti-modal-footer">
-                        <!-- <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-success align-middle"
-                            id="exportButton"> Export
-                        </button> -->
-                        <button type="button" id="applyFilterBtn"
-                            class="ti-btn bg-primary text-white !font-medium">Filter</button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
 
-    <!-- Footer Start -->
-    {% include 'layout/footer.html' %}
-    <!-- Footer End -->
+</div>
+<!-- End::add task modal -->
+
+<!-- Footer Start -->
+{% include 'layout/footer.html' %}
+<!-- Footer End -->
 
 </div>
 
@@ -171,43 +136,38 @@
 
 <!-- Call JS -->
 {% include 'layout/js.html' %}
+
 <script type="text/javascript">
     $(document).ready(function () {
-        flatpickr("#startDate", { dateFormat: "Y-m-d" });
-        flatpickr("#endDate", { dateFormat: "Y-m-d" });
-        $('#btn_clear').hide(); // 
-        $(".ti-form-select").select2({
-            width: '100%',
-            // dropdownParent: $('#search-modal'),
-            dropdownParent: $('#search-modal .ti-modal-body')
-        });
         /*-- Pass Header Token ---*/
         $.ajaxSetup({
             headers: {
                 'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
             }
         });
-
+        $('#btn_clear').hide(); // 
+        // $('#btn_append').hide(); // 
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
-        let data_url = '{% url "mine-daily-fuel-list" %}';
+        let url = '{% url "mine-production-timesheet-hm-range-append" %}';
         var table = $('#data_table').DataTable({
             'processing': true,
             'serverSide': true,
             'responsive': true,
-            'autoWidth': true, language: {
+            'autoWidth': true,
+            language: {
                 paginate: {
                     previous: "«",
                     next: "»"
                 }
             },
             "ajax": {
-                "url": data_url,
+                "url": url,
                 "type": "POST",
                 dataType: 'json',
                 "data": function (data) {
-                    data.startDate = $('#startDate').val();
-                    data.endDate = $('#endDate').val();
+                    data.date_start = $('#date_start').val();
+                    data.date_end = $('#date_end').val();
                     return data;
                 },
             },
@@ -219,60 +179,13 @@
                     render: function (data, type, row, meta) {
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
-                },
-                {
-                    data: 'date',
-                    name: 'date'
-                },
-                {
-                    data: 'shift',
-                    name: 'shift'
-                },
-                {
-                    data: 'unit',
-                    name: 'unit',
-                    searchable: true
-                },
-                {
-                    data: 'category',
-                    name: 'category',
-                    searchable: true
-                },
-                {
-                    data: 'hours_metre',
-                    name: 'hours_metre',
-                    searchable: true
-                },
-                {
-                    data: 'drivers',
-                    name: 'drivers',
-                    searchable: true
-                },
-                {
-                    data: 'charging_time',
-                    name: 'charging_time',
-                    searchable: true
-                },
-
-                {
-                    data: 'volume',
-                    name: 'volume',
-                    searchable: false,
-                    render: function (data) {
-                        return parseFloat(data).toFixed(2);
-                    }
-                },
-
-                {
-                    data: 'storage',
-                    name: 'storage',
-                    searchable: true
-                },
-                {
-                    data: 'operator',
-                    name: 'operator',
-                    searchable: true
-                },
+                }, // Kolom nomor otomatis
+                { 'data': 'date', 'name': 'date', 'searchable': true },
+                { 'data': 'shift', 'name': 'shift', 'searchable': true },
+                { 'data': 'hm_start', 'name': 'hm_start', 'searchable': false },
+                { 'data': 'hm_end', 'name': 'hm_end', 'searchable': false },
+                { 'data': 'unit_id', 'name': 'unit_id', 'searchable': false },
+                { 'data': 'created_at', 'name': 'created_at', 'searchable': false }
             ],
             // Mengatur default sort pada kolom secara desc
             order: [
@@ -280,35 +193,100 @@
             ],
 
         });
-        $('#openFilter').click(function () {
-            window.HSOverlay.open('#search-modal');
-        });
 
-        /*--Filter Modal and Apply Filter---*/
+        /*--Apply Filter---*/
         $('#applyFilterBtn').click(function () {
-            window.HSOverlay.close('#search-modal');
-            table.ajax.reload();
-            $('#btn_clear').show(); //
-        });
-
-        /*  Reset */
-        $('#reload').on('click', function () {
-            $('#startDate').val('{{ start_date }}');  // Set ulang ke start_date dari context
-            $('#endDate').val('{{ end_date }}');      // Set ulang ke end_date dari context
-            table.ajax.reload(); //just reload table
-            $('#btn_clear').hide(); //
-        });
-        /* Remove data */
-        $('#applyRemoveBtn').click(function () {
-            var date_start = $('#startDate').val();
-            var date_end = $('#endDate').val();
-            var url = '{% url "delete-bulk-fuel" %}';
+            var date_start = $('#date_start').val();
+            var date_end = $('#date_end').val();
+            $('#btn_clear').hide(); // 
             if (date_start == '') {
-                $("#startDate").focus();
+                $("#date_start").focus();
                 return false;
             }
             if (date_end == '') {
-                $("#endDate").focus();
+                $("#date_end").focus();
+                return false;
+            }
+            else {
+                // $('#data_table').DataTable().clear().destroy();
+                table.ajax.reload();
+                $('#btn_clear').show(); // 
+                // $('#btn_append').show(); // 
+            }
+
+        });
+        /* Append HM Unit */
+        // document.getElementById('btn-append-hm').addEventListener('click', function () {
+        //     const dateStart = document.getElementById('date_start').value
+        //     const dateEnd = document.getElementById('date_end').value
+
+        //     Swal.fire({
+        //         title: 'Proses data...',
+        //         html: 'Sedang menyiapkan HM Unit',
+        //         allowOutsideClick: false,
+        //         allowEscapeKey: false,
+        //         showConfirmButton: false,
+        //         didOpen: () => {
+        //             Swal.showLoading()
+        //         }
+        //     })
+
+        //     fetch("{% url 'append-hm-range' %}", {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRFToken': '{{ csrf_token }}'
+        //         },
+        //         body: JSON.stringify({
+        //             date_start: dateStart,
+        //             date_end: dateEnd
+        //         })
+        //     })
+        //         .then(res => res.json())
+        //         .then(res => {
+        //             Swal.close()
+
+        //             if (res.success) {
+        //                 Swal.fire({
+        //                     icon: 'success',
+        //                     title: 'Berhasil',
+        //                     text: res.message,
+        //                     timer: 1500,
+        //                     showConfirmButton: false
+        //                 })
+        //                 table.ajax.reload();
+        //                 $('#btn_clear').hide(); // 
+        //                 // $('#btn_append').hide(); // 
+
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: 'Gagal',
+        //                     text: res.message
+        //                 })
+        //             }
+        //         })
+        //         .catch(err => {
+        //             Swal.close()
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: 'Terjadi kesalahan server'
+        //             })
+        //         })
+        // })
+        
+        /* Remove data */
+        $('#applyRemoveBtn').click(function () {
+            var date_start = $('#date_start').val();
+            var date_end = $('#date_end').val();
+            var url = '{% url "delete-bulk-hm-range" %}';
+            if (date_start == '') {
+                $("#date_start").focus();
+                return false;
+            }
+            if (date_end == '') {
+                $("#date_end").focus();
                 return false;
             }
             else {

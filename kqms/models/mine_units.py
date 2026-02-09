@@ -20,8 +20,11 @@ class MineUnits(models.Model):
         return self.unit_code
 
     class Meta:
-        db_table  = 'mine_units'
         app_label = 'kqms'
+        db_table  = 'mine_units'
+        indexes = [
+            models.Index(fields=['unit_code']),
+            ]
 
 class mineUnitsView(models.Model):
     unit_code   = models.CharField(max_length=25, default=None, null=True, blank=True)
@@ -45,6 +48,8 @@ class unitsCategories(models.Model):
     updated_at  = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table  = 'units_categories'
         app_label = 'kqms'
-
+        db_table  = 'units_categories'
+        indexes = [
+            models.Index(fields=['category']),
+            ]

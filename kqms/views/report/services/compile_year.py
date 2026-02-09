@@ -792,3 +792,73 @@ def fetch_summary_to_year(year: int):
         "selling"   : selling,
         "inventory" : inventory
     }
+
+def fetch_fueling_year(year: int):
+    with connections['kqms_db'].cursor() as cur:
+        # Fuel by Date (Year)
+        cur.execute("""
+            WITH bulan AS (
+                SELECT
+                    TO_CHAR(gs::date, 'YYYY-MM') AS dt,
+                    TO_CHAR(gs::date, 'FMMonth') AS bulan_label
+                FROM generate_series(
+                    make_date(%s, 1, 1),
+                    make_date(%s, 12, 31),
+                    interval '1 month'
+                ) gs
+            ),
+            actual AS (
+                SELECT
+                    TO_CHAR(date, 'YYYY-MM') AS dt,
+                    SUM(volume) AS total
+                FROM mine_units_fuel_consumption
+                WHERE EXTRACT(YEAR FROM date) = %s
+                GROUP BY TO_CHAR(date, 'YYYY-MM')
+            )
+            SELECT
+                b.dt as date,
+                b.bulan_label,
+                COALESCE(a.total, 0) AS volume
+            FROM bulan b
+            LEFT JOIN actual a ON b.dt = a.dt
+            ORDER BY b.dt;
+        """, [year, year, year])
+
+        daily_rows = [
+            dict(zip([c[0] for c in cur.description], r))
+            for r in cur.fetchall()
+        ]
+
+        daily_total = sum(r["volume"] or 0 for r in daily_rows)
+
+        # Fuel by Category
+        cur.execute("""
+            SELECT
+                COALESCE(TRIM(t3.category), 'Unknown') AS category,
+                ROUND(SUM(t1.volume)::NUMERIC, 2) AS volume
+            FROM mine_units_fuel_consumption t1
+            LEFT JOIN mine_units t2
+                ON t2.unit_code::text = t1.unit::text
+            LEFT JOIN units_categories t3
+                ON t3.id = t2.id_category
+            WHERE EXTRACT(YEAR FROM t1.date) = %s        
+            GROUP BY t3.category
+            ORDER BY t3.category;
+        """, [year])
+
+        category_rows = [
+            dict(zip([c[0] for c in cur.description], r))
+            for r in cur.fetchall()
+        ]
+        category_total = sum(r["volume"] or 0 for r in category_rows)
+
+    return {
+        "daily": {
+            "series": daily_rows,
+            "total" : daily_total
+        },
+        "category": {
+            "series": category_rows,
+            "total" : category_total
+        }
+    }

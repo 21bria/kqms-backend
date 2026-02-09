@@ -1,0 +1,546 @@
+﻿{% load static %}
+
+{% include 'layout/head.html' %}
+<!-- ========== Switcher  ========== -->
+{% include 'layout/switcher.html' %}
+<!-- ========== END Switcher  ========== -->
+
+<!-- Loader -->
+<div id="loader">
+    <img src="{% static 'assets/images/media/loader.svg' %}" alt="">
+</div>
+<!-- Loader -->
+<div class="page">
+
+    <!-- Start::Header -->
+    {% include 'layout/header.html' %}
+    <!-- End::Header -->
+    <!-- Start::app-sidebar -->
+    {% include 'layout/sidebar.html' %}
+    <!-- End::app-sidebar -->
+
+
+    <div class="content">
+
+        <!-- Start::main-content -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="block justify-between page-header md:flex">
+                <div>
+                    <h3
+                        class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
+                        Import Activity Units</h3>
+                </div>
+                <ol class="flex items-center whitespace-nowrap min-w-0">
+                    <li class="text-[0.813rem] ps-[0.5rem]">
+                        <a class="flex items-center text-primary hover:text-primary dark:text-primary truncate"
+                            href="javascript:void(0);">
+                            Pages
+                            <i
+                                class="ti ti-chevrons-right flex-shrink-0 text-[#8c9097] dark:text-white/50 px-[0.5rem] overflow-visible rtl:rotate-180"></i>
+                        </a>
+                    </li>
+                    <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
+                        aria-current="page">
+                        Timesheet List
+                    </li>
+                </ol>
+            </div>
+            <!-- Page Header Close -->
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-9">
+                    <div class="box">
+                        <!-- <div class="box-header">
+                            <h5 class="box-title">Import Activity Units</h5>
+                        </div> -->
+                        <div class="box-body">
+                            <div>
+                                <p class="font-semibold mb-5 flex items-center"><a aria-label="anchor"
+                                        href="javascript:void(0);"><i
+                                            class="ri-star-s-fill text-[1rem] me-1 text-warning"></i></a>Information!
+                                </p>
+                            </div>
+                            <div class="xl:col-span-12 col-span-12 mb-4">
+                                <form id="importForm" enctype="multipart/form-data">
+                                    <div class="grid grid-cols-12 gap-4 items-end">
+                                        <!-- File input -->
+                                        <div class="xl:col-span-6 col-span-12">
+                                            <label class="sr-only">Choose file</label>
+                                            <input type="file" name="file" id="file" required class="block w-full border border-gray-200 rounded-sm text-sm
+                                                    file:border-0 file:bg-light file:me-4 file:py-2 file:px-4">
+                                        </div>
+                                        <!-- Button -->
+                                        <div class="xl:col-span-1 col-span-12">
+                                            <button type="submit"
+                                                class="ti-btn ti-btn-primary-full !py-2 !px-4 ti-btn-wave w-full">
+                                                Submit
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="table-responsive border border-bottom-0 dark:border-defaultborder/10">
+                                <table
+                                    class="table whitespace-nowrap  ti-striped-table table-hover min-w-full ti-custom-table-hover fixed_header">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="text-start" width="25%">
+                                                File name</th>
+                                            <th scope="col" class="text-center" width="15%">
+                                                Status</th>
+                                            <th scope="col" class="text-start" width="10%">
+                                                inserteds</th>
+                                            <th scope="col" class="text-start" width="10%">
+                                                skipped</th>
+                                            <th scope="col" class="text-start" width="10%">
+                                                created_at</th>
+                                            <th scope="col" class="text-start" width="10%">erros
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="import-list" id="import-list">
+                                    </tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Start::main-content -->
+        </div>
+
+    </div>
+
+
+    <!-- Modal view -->
+    <div id="error-data" class="hs-overlay hidden ti-modal" tabindex="-1">
+        <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
+            <div class="ti-modal-content">
+                <div class="ti-modal-header">
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">
+                        Logs Error
+                    </h6>
+                    <button type="button" class="hs-dropdown-toggle text-[1rem] font-semibold"
+                        data-hs-overlay="#error-data">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="ti-modal-body !overflow-visible px-4">
+                    <div class="max-h-[400px] overflow-y-auto">
+                        <table class="table whitespace-nowrap table-bordered min-w-full text-sm">
+                            <thead class="bg-gray-100 sticky top-0 z-10">
+                                <tr>
+                                    <th width="15%">Row</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="error-table-body">
+                                <!-- injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="ti-modal-footer">
+                    <button type="button" class="hs-dropdown-toggle ti-btn  ti-btn-light align-middle"
+                        data-hs-overlay="#error-data">Close
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Footer Start -->
+    {% include 'layout/footer.html' %}
+    <!-- Footer End -->
+
+</div>
+
+<!-- Back To Top -->
+<div class="scrollToTop">
+    <span class="arrow"><i class="ri-arrow-up-s-fill text-xl"></i></span>
+</div>
+
+<div id="responsive-overlay"></div>
+
+<!-- Call JS -->
+{% include 'layout/js.html' %}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        loadImportLogs();
+        // Import Data
+        $('#importForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+            // Buat FormData manual
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            $.ajax({
+                url: '/kqms/mining/mine-production/timesheet/import/range/',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    // alert(res.message);
+                    Swal.fire({
+                        title: 'Proses data...',
+                        html: res.message,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                error: function () {
+                    alert('Server error');
+                }
+            });
+        });
+
+    });
+
+    $(document).ready(function () {
+        /*-- Pass Header Token ---*/
+        $.ajaxSetup({
+            headers: {
+                'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        setInterval(() => {
+            loadImportLogs();
+        }, 9000); // refresh tiap 9 detik
+    });
+
+    function loadImportLogs(date = null) {
+        let url = '/kqms/mining/mine-production/timesheet/import/range/logs/';
+        if (date) {
+            url += `?date=${date}`;
+        }
+
+        fetch(url)
+            .then(res => res.json())
+            .then(rows => {
+                const tbody = document.getElementById('import-list');
+                tbody.innerHTML = '';
+
+                if (!rows.length) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-gray-400">
+                            Tidak ada data
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                rows.forEach(row => {
+                    tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td>${row.file_name}</td>
+                        <td class="text-center">
+                        ${row.status}
+                        </td>
+                        <td>${row.inserted}</td>
+                        <td>${row.skipped}</td>
+                        <td>${row.created_at}</td>
+                        <td>
+                            ${row.errors.length
+                            ?
+                            `<button type="button" class="ti-btn !py-1 !px-2 !text-[0.75rem] ti-btn-danger" 
+                              onclick='showErrors(${JSON.stringify(row.errors)})'>View Errors</button>`
+                            : '-'}
+                        </td>
+                    </tr>
+                `);
+                });
+            });
+    }
+
+    function showErrors(errors) {
+        const tbody = document.getElementById('error-table-body');
+        tbody.innerHTML = '';
+
+        errors.forEach(err => {
+            tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td class="text-center">${err.row}</td>
+                <td class="text-red-600">${err.error}</td>
+            </tr>
+        `);
+        });
+        window.HSOverlay.open('#error-data');
+    }
+</script>
+
+</body>
+
+</html>
+
+
+<style>
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    tbody,
+    td,
+    tfoot,
+    th,
+    thead,
+    tr {
+        border-color: inherit;
+        border-style: solid;
+        border-width: 0;
+    }
+
+
+
+    table {
+        text-align: left;
+        position: relative;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 0.25rem;
+    }
+
+
+    th {
+        background: rgb(246 248 250);
+        position: sticky;
+        top: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Mode gelap */
+    .dark th {
+        background: #1f2937;
+        /* abu-abu gelap */
+        box-shadow: 0 2px 2px -1px rgba(255, 255, 255, 0.2);
+        /* bayangan putih samar */
+        color: #f9fafb;
+        /* teks jadi terang */
+    }
+
+    #loader {
+        display: none;
+        /* Mulai sembunyikan loader */
+        text-align: center;
+        position: relative;
+        /* Atur posisi relative untuk pengaturan lebih lanjut */
+        padding: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.50rem;
+        text-align: start;
+        vertical-align: middle;
+        font-size: 0.813rem;
+        font-weight: 500;
+        line-height: 1.462;
+    }
+
+
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Select 2 */
+    .select2-container {
+        z-index: 999999 !important;
+    }
+
+    .select2-dropdown {
+        z-index: 999999 !important;
+    }
+
+    /* Khusus untuk HSOverlay modal */
+    .select2-container--open .select2-dropdown {
+        z-index: 99999999 !important;
+    }
+
+    /* Styling untuk Select2 container */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Styling untuk Select2 selection */
+    .select2-container--default .select2-selection--single {
+        height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        align-items: center !important;
+        padding: 0 12px !important;
+        background-color: #fff !important;
+    }
+
+    /* Styling untuk rendered text (teks yang dipilih) */
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+        line-height: normal !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+    }
+
+    /* Styling untuk placeholder */
+    .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        color: #9ca3af !important;
+    }
+
+    /* Styling untuk tombol clear (X) */
+    .select2-container--default .select2-selection--single .select2-selection__clear {
+        position: absolute !important;
+        right: 30px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+        text-align: center !important;
+        line-height: 18px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+        background-color: #e5e7eb !important;
+        color: #374151 !important;
+    }
+
+    /* Styling untuk dropdown arrow */
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 8px !important;
+        width: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow b {
+        border-color: #6b7280 transparent transparent transparent !important;
+        border-style: solid !important;
+        border-width: 5px 4px 0 4px !important;
+        height: 0 !important;
+        left: 0 !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        width: 0 !important;
+    }
+
+    /* Styling untuk dropdown */
+    .select2-dropdown {
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Styling untuk search box di dropdown */
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db !important;
+        border-radius: 4px !important;
+        padding: 8px 12px !important;
+        margin: 8px !important;
+        width: calc(100% - 16px) !important;
+    }
+
+    /* Styling untuk options */
+    .select2-results__option {
+        padding: 8px 12px !important;
+        color: #374151 !important;
+    }
+
+    .select2-results__option--highlighted {
+        background-color: #6466f1 !important;
+        color: white !important;
+    }
+
+    /* Styling untuk container dengan allowClear */
+    .select2-container--default.select2-container--allowclear .select2-selection--single .select2-selection__rendered {
+        padding-right: 50px !important;
+        /* Beri ruang untuk tombol clear dan arrow */
+    }
+
+    /* Styling khusus untuk multiple select jika diperlukan */
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 6px !important;
+        padding: 4px 8px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #6466f1 !important;
+        border: 1px solid #6466f1 !important;
+        border-radius: 4px !important;
+        color: white !important;
+        padding: 2px 8px !important;
+        margin: 2px !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: white !important;
+        margin-right: 6px !important;
+        font-weight: bold !important;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #fecaca !important;
+    }
+
+    /* Styling untuk focus state */
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #6466f1 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    }
+
+    /* Styling untuk disabled state */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #f9fafb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed !important;
+    }
+</style>

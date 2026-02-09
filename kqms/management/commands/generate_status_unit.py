@@ -8,14 +8,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # === Insert UnitStatus ===
         status_data = [
-            ("OPR", "OPERATING"),
+            ("EWH", "WORKING"),
             ("STB", "STANDBY"),
             ("BD", "BREAKDOWN"),
-            ("PM", "MAINTENANCE"),
-            ("SUPPORT", "Support"),
-            ("OFF", "Off / Non Shift"),
-            ("WX", "Weather"),       # tambahan untuk cuaca / kondisi
-            ("SLP", "Slippery"),
+            # ("PM", "MAINTENANCE"),
+            # ("SUPPORT", "Support"),
+            # ("OFF", "Off / Non Shift"),
+            # ("WX", "Weather"), 
+            # ("SLP", "Slippery"),
         ]
 
         status_objects = {}
@@ -33,34 +33,22 @@ class Command(BaseCommand):
         # === Insert UnitActivity linked to UnitStatus ===
         activity_data = [
             # OPERATING
-            ("OPR", "LOAD", "Loading Ore"),
-            ("OPR", "LOAD", "Loading Waste"),
-            ("OPR", "HAUL", "Hauling Ore"),
-            ("OPR", "HAUL", "Hauling Waste"),
-            ("OPR", "DOZ", "Dozing"),
-            ("OPR", "GRD", "Grader"),
-            ("OPR", "CMP", "Compactor"),
-            ("OPR", "WTR", "Water Truck"),
-            
+            ("EWH", "D_EWH", "Default"),
+
             # STANDBY
-            ("STB", "P2H", "Pre-Start Check"),
-            ("STB", "WAIT", "Waiting"),
-            ("STB", "IDLE", "Idle"),
-            ("STB", "MEAL", "Meal Break"),
-            
+            ("STB", "D_STB", "Default"),
+       
             # PM / Maintenance
-            ("PM", "PM250", "PM 250 HM"),
-            ("BD", "TR", "Tyre Problem"),
-            ("BD", "HYD", "Hydraulic Problem"),
-            ("BD", "UNC", "Unschedule"),
+            ("BD", "USC", "Unshceduled"),
+            # ("PM", "PM250", "PM 250 HM"),
             
             # SUPPORT / OFF
-            ("SUPPORT", "SUP", "Support Work"),
-            ("OFF", "OFF", "Off / Non Shift"),
+            # ("SUPPORT", "SUP", "Support Work"),
+            # ("OFF", "OFF", "Off / Non Shift"),
             
             # Weather / condition
-            ("WX", "RAIN", "Raining"),
-            ("SLP", "SLIP", "Slippery"),
+            # ("WX", "RAIN", "Raining"),
+            # ("SLP", "SLIP", "Slippery"),
         ]
 
         for st, code, name in activity_data:

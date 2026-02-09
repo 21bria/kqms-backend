@@ -29,7 +29,7 @@
                 <div>
                     <h3
                         class="!text-defaulttextcolor dark:!text-defaulttextcolor/70 dark:text-white dark:hover:text-white text-[1.125rem] font-semibold">
-                        Status Unit Activity</h3>
+                        Location Activity</h3>
                 </div>
                 <ol class="flex items-center whitespace-nowrap min-w-0">
                     <li class="text-[0.813rem] ps-[0.5rem]">
@@ -42,7 +42,7 @@
                     </li>
                     <li class="text-[0.813rem] text-defaulttextcolor font-semibold hover:text-primary dark:text-[#8c9097] dark:text-white/50 "
                         aria-current="page">
-                        Status units
+                        Location Activity
                     </li>
                 </ol>
             </div>
@@ -73,10 +73,8 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" class="text-start" width="3%">No</th>
-                                            <th scope="col" class="text-start" width="6%">Code</th>
-                                            <th scope="col" class="text-start">Name</th>
-                                            <!-- <th scope="col" class="text-start">Status</th> -->
-                                            <th scope="col" class="text-start">Category</th>
+                                            <!-- <th scope="col" class="text-start" width="20%">Code</th> -->
+                                            <th scope="col" class="text-start">Location</th>
                                             <th scope="col" class="text-start" width="5%">Action</th>
                                         </tr>
                                     </thead>
@@ -112,27 +110,13 @@
                 <form id="entryForm" name="entryForm">
                     <div class="ti-modal-body px-4 !overflow-visible">
                         <div class="grid grid-cols-12 gap-6 px-4 ">
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Code</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="code" name="code"
-                                        placeholder="Enter Code">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Category</label>
-                                <select id="status" name="status" class="ti-form-select w-full !rounded-md">
-                                    <option value="">-- Select --</option>
-                                </select>
-                            </div>
                             <div class="xl:col-span-12 col-span-12">
-                                <label class="form-label">Activity</label>
+                                <label class="form-label">Location</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="activity" name="activity"
-                                        placeholder="Enter Activity">
+                                    <input type="text" class="form-control" id="location" name="location"
+                                        placeholder="Enter Location">
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     <div class="ti-modal-footer">
@@ -153,7 +137,8 @@
         <div class="hs-overlay-open:mt-7 ti-modal-box mt-0 ease-out">
             <div class="ti-modal-content">
                 <div class="ti-modal-header">
-                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">Update Data
+                    <h6 class="modal-title text-[1rem] font-semibold text-default dark:text-defaulttextcolor/70">Update
+                        Data
                     </h6>
                     <button type="button" class="hs-dropdown-toggle !text-[1rem] !font-semibold"
                         data-hs-overlay="#edit-modal">
@@ -165,27 +150,13 @@
                     <div class="ti-modal-body px-4 !overflow-visible">
                         <div class="grid grid-cols-12 gap-6 px-4 ">
                             <input type="hidden" class="form-control" id="id" name="id">
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Code</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="code_edit" name="code_edit"
-                                        placeholder="Enter Code">
-                                </div>
-                            </div>
-                            <div class="xl:col-span-6 col-span-12">
-                                <label class="form-label">Category</label>
-                                <select id="status_edit" name="status_edit" class="ti-form-select w-full !rounded-md">
-                                    <option value="">-- Select --</option>
-                                </select>
-                            </div>
                             <div class="xl:col-span-12 col-span-12">
-                                <label class="form-label">Activity</label>
+                                <label class="form-label">Location</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="activity_edit" name="activity_edit"
-                                        placeholder="Enter Activity">
+                                    <input type="text" class="form-control" id="location_edit" name="location_edit"
+                                        placeholder="Enter Location">
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     <div class="ti-modal-footer">
@@ -220,6 +191,9 @@
 {% include 'layout/js.html' %}
 <script type="text/javascript">
     $(document).ready(function () {
+        $('#addNew').click(function () {
+            window.HSOverlay.open('#add-modal');
+        });
         $(".ti-form-select").select2({
             width: '100%',
             dropdownParent: $('#add-modal .ti-modal-body')
@@ -233,7 +207,7 @@
 
         table = $('#data_table').DataTable().clear().destroy();
         /*-- Render DataTable --*/
-        let data_url = '{% url "mine-production-status-activity-list" %}';
+        let data_url = '{% url "mine-production-location-activity-list" %}';
         var table = $('#data_table').DataTable({
             'processing': true,
             'serverSide': true,
@@ -258,23 +232,15 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
                 }, // Kolom nomor otomatis
-                {
-                    data: 'code',
-                    name: 'code'
-                },
+                // {
+                //     data: 'code',
+                //     name: 'code'
+                // },
                 {
                     data: 'name',
                     name: 'name'
                 },
-                // {
-                //     data: 'status',
-                //     name: 'status'
-                // },
-                {
-                    data: 'category',
-                    name: 'category',
-                    // searchable: true
-                },
+
                 {
                     'data': null,
                     'name': 'action',
@@ -322,7 +288,7 @@
                 padding: '2em',
             });
             $.ajax({
-                url: "{% url 'insert-status-activity-unit' %}",
+                url: "{% url 'insert-location-activity-unit' %}",
                 type: "POST",
                 data: formData,
                 dataType: "json",
@@ -371,16 +337,12 @@
         /* Update Data*/
         $('#updateButton').click(function () {
             var id = $('#id').val();
-            var code = $('#code_edit').val();
-            var name = $('#activity_edit').val();
-            var status = $('#status_edit').val();
+            var location = $('#location_edit').val();
 
             var updatedData = {
-                code: code,
-                name: name,
-                status: status,
+                location: location
             };
-            var url = '/kqms/mining/mine-production/timesheet/status-activity/update/' + id + '/';
+            var url = '/kqms/mining/mine-production/timesheet/location-activity/update/' + id + '/';
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -388,9 +350,7 @@
                 success: function (response) {
                     if (response.success) {
                         $('#id').val('');
-                        $('#code_deit').val('');
-                        $('#status_edit').val('').trigger('change');
-                        $('#activity_edit').val('');
+                        $('#location_edit').val('');
                         window.HSOverlay.close('#edit-modal');
                         // Tampilkan notifikasi sukses
                         const toast = window.Swal.mixin({
@@ -400,11 +360,6 @@
                             timer: 2000,
                             padding: '2em',
                         });
-                        // toast.fire({
-                        //     icon: 'success',
-                        //     html: response.message,
-                        //     padding: '2em',
-                        // });
                         $('#success-entry').find('strong').text('Success!');
                         $('#success-entry').find('span').text('Data update successfully.');
                         $('#success-entry').show();
@@ -471,7 +426,7 @@
         /*--- Delete ---*/
         $('#data_table').on('click', '.deleteData', function () {
             var id = $(this).data('id');
-            var url = '{% url "mine-production-status-activity-delete" %}?id=' + id;
+            var url = '{% url "mine-production-location-activity-delete" %}?id=' + id;
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -510,87 +465,12 @@
     });
 </script>
 
-<!-- add New -->
-<script>
-    $(document).ready(function () {
-        $('#addNew').click(function () {
-            window.HSOverlay.open('#add-modal');
-        });
-
-        // Ambil data dropdwon
-        $('#status').select2({
-            placeholder: '-- Select --',
-            width: '100%',
-            dropdownParent: $('#add-modal .ti-modal-body'),
-            allowClear: true,
-            ajax: {
-                url: "{% url 'get-unit-status' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term || '',
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            }
-        });
-
-
-    });
-</script>
 
 <!-- Get Data for Edit -->
 <script>
-    $(document).ready(function () {
-        $('#status_edit').select2({
-            placeholder: '-- Select --',
-            width: '100%',
-            dropdownParent: $('#edit-modal .ti-modal-body'),
-            allowClear: false,
-            ajax: {
-                url: "{% url 'get-unit-status' %}",
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        q: params.term || '',
-                        page: params.page || 1
-                    };
-                },
-                processResults: function (data, params) {
-                    params.page = params.page || 1;
-
-                    return {
-                        results: data.results,
-                        pagination: {
-                            more: data.pagination.more
-                        }
-                    };
-                },
-                cache: true
-            }
-        });
-
-
-
-    });
-
-    /* Button Edit Click */
     $('body').on('click', '.editData', function () {
         var id = $(this).data('id');
-        var url = '{% url "mine-production-status-activity-get-id" %}';
+        var url = '{% url "mine-production-location-activity-get-id" %}';
         $.ajax({
             url: url,
             type: "GET",
@@ -603,10 +483,7 @@
                     window.HSOverlay.open('#edit-modal');
                     // Mengisi formulir dengan data yang diterima
                     $('#id').val(response.id);
-                    $('#code_edit').val(response.code);
-                    $('#activity_edit').val(response.name);
-                    let option = new Option(response.status_text, response.status, true, true);
-                    $('#status_edit').append(option).trigger('change');
+                    $('#location_edit').val(response.name);
                 } else {
                     alert(
                         'Data tidak ditemukan'

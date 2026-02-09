@@ -36,6 +36,9 @@ class SampleCrmCertified(models.Model):
         db_table    = "sample_crm_certified"
         verbose_name = "Sample CRM Certified"
         verbose_name_plural = "Sample CRM Certified"
+        indexes = [
+            models.Index(fields=['oreas_name']),
+        ]
 
     def __str__(self):
         return self.oreas_name or f"CRM {self.id}"

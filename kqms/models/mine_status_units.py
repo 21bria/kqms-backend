@@ -29,8 +29,14 @@ class HmUnit(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        app_label = 'kqms'
         db_table = 'mine_hm_unit'
         unique_together = ('unit', 'date', 'shift')
+        indexes = [
+            models.Index(fields=['unit']), 
+            models.Index(fields=['date']),
+            models.Index(fields=['shift']), 
+        ]
 
     def __str__(self):
         return f'{self.unit.unit_code} | {self.date} | {self.shift}'
@@ -41,18 +47,22 @@ class UnitStatus(models.Model):
     category = models.CharField(
         max_length=20,
         choices=[
-            ('OPERATING', 'Operating'),
+            ('Working', 'working'),
             ('STANDBY', 'Standby'),
             ('BREAKDOWN', 'Breakdown'),
-            ('MAINTENANCE', 'Maintenance'),
-            ('SUPPORT', 'Support'),
-            ('OFF', 'Off / Non Shift'),
+            # ('MAINTENANCE', 'Maintenance'),
+            # ('SUPPORT', 'Support'),
+            # ('OFF', 'Off / Non Shift'),
         ]
     )
 
     class Meta:
         db_table = 'mine_units_categories_status'
         app_label = 'kqms'
+        indexes = [
+            models.Index(fields=['name']),
+            models.Index(fields=['category']),
+            ]
 
 class UnitActivity(models.Model):
     status = models.ForeignKey(

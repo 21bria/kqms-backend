@@ -35,7 +35,8 @@ from .compile_range import (
     fetch_production_mining,
     fetch_inventory_balance,
     fetch_inventory_dome,
-    fetch_summary_to_date
+    fetch_summary_to_date,
+    fetch_fueling_to_date,
 )
 from .compile_year import (
     fetch_production_quality_year, 
@@ -45,7 +46,8 @@ from .compile_year import (
     fetch_production_mining_year,
     fetch_inventory_balance_year,
     fetch_inventory_dome_year,
-    fetch_summary_to_year
+    fetch_summary_to_year,
+    fetch_fueling_year
 )
 def parse_label(dt_val):
     if isinstance(dt_val, date):          # datetime.date / datetime
@@ -72,6 +74,7 @@ def excel_unified_summary(request):
         barging = fetch_barging(date_start, date_end)
         inv     = fetch_inventory_balance(date_start, date_end)
         invlist = fetch_inventory_dome(date_end)
+        fuel    = fetch_fueling_to_date(date_start, date_end)
         summary = fetch_summary_to_date(date_end)
     elif mode == "year" and year:
         try:
@@ -85,6 +88,7 @@ def excel_unified_summary(request):
         barging = fetch_barging_year(year)
         inv     = fetch_inventory_balance_year(year)
         invlist = fetch_inventory_dome_year(year)
+        fuel    = fetch_fueling_year(year)
         summary = fetch_summary_to_year(year)
     else:
         return HttpResponseBadRequest("Invalid mode or missing parameters")
@@ -178,7 +182,6 @@ def excel_unified_summary(request):
     ws_sell.set_column('B:G', 15)
 
   
-
     # === Sheet Barging ====
     ws_barging = workbook.add_worksheet('Barging')
     ws_barging.write_row(
@@ -271,7 +274,7 @@ def excel_unified_summary(request):
     ws_invlist = workbook.add_worksheet('Data_Inventory')
     ws_invlist.write_row(
         'A1',
-        ['Stockpile', 'Pile ID', 'Material', 'Total Ore', 'Released',
+        ['Stockpile', 'Dome', 'Material', 'Total Ore', 'Released',
         'Total Selling', 'Balance', 'Ni', 'Co', 'Fe', 'MgO', 'SiO2', 'SM'],
         fmt_th
     )
@@ -296,6 +299,44 @@ def excel_unified_summary(request):
     ws_invlist.set_column('D:G', 14)   # total ore, released, selling, balance
     ws_invlist.set_column('H:N', 10)   # Ni, Co, Fe, MgO, SiO2, SM,Direct
 
+
+   # === Sheet Data_Fueling
+    ws_fuellist = workbook.add_worksheet('Data_Fueling')
+
+    # Header Date & Volume
+    ws_fuellist.write_row(0, 0, ['Date', 'Volume'], fmt_th)
+
+    # Category setup
+    categories = [c["category"] for c in fuel["category"]["series"]]
+    category_map = {c["category"]: c["volume"] for c in fuel["category"]["series"]}
+
+    start_col = 4  # Kolom E
+
+    # Header category (row 0)
+    for idx, cat in enumerate(categories):
+        ws_fuellist.write(0, start_col + idx, cat, fmt_th)
+
+    # Daily data
+    for i, r in enumerate(fuel["daily"]["series"], start=1):
+        ws_fuellist.write(i, 0, str(r['date']), fmt_td)
+        ws_fuellist.write_number(i, 1, r['volume'] or 0, fmt_num)
+
+    # Isi TOTAL category hanya di baris pertama data (row 1)
+    for idx, cat in enumerate(categories):
+        ws_fuellist.write_number(
+            1,  # hanya satu baris
+            start_col + idx,
+            category_map.get(cat, 0),
+            fmt_num
+        )
+
+    # Column width
+    ws_fuellist.set_column('A:A', 14)  # Date
+    ws_fuellist.set_column('B:B', 12)  # Volume
+
+    col_count = len(categories)
+    col_width = min(70, 120 / max(col_count, 1))
+    ws_fuellist.set_column(start_col, start_col + col_count - 1, col_width)
 
     # tambahkan blok summary Quality, Selling, Mining :
     # === Sheet Summary
@@ -376,6 +417,7 @@ def excel_unified_summary(request):
         selling_title   = f"Selling by Period (Range: {date_start} → {date_end})"
         barging_title   = f"Barging by Period (Range: {date_start} → {date_end})"
         inventory_title = f"Inventory by Period (Range: {date_start} → {date_end})"
+        fuel_title      = f"Fuel Consumption by Period (Range: {date_start} → {date_end})"
     elif mode == "year":
         mining_title    = f"Mining by Period (Year: {year})"
         quality_title   = f"Material Type by Period (Year: {year})"
@@ -383,6 +425,7 @@ def excel_unified_summary(request):
         selling_title   = f"Selling by Period (Year: {year})"
         barging_title   = f"Barging by Period (Year: {year})"
         inventory_title = f"Inventory by Period (Year: {year})"
+        fuel_title      = f"Fuel Consumption by Period (Year: {year})"
     else:
         mining_title    = "Mining by Period"
         quality_title   = "Material Type by Period"
@@ -390,6 +433,7 @@ def excel_unified_summary(request):
         selling_title   = "Selling by Period"
         barging_title   = "Barging by Period"
         inventory_title = "Inventory by Period"
+        fuel_title      = "Fuel Consumption by Period"
 
 
     # ---------------- Mining Section ----------------
@@ -675,7 +719,6 @@ def excel_unified_summary(request):
     )
 
     
-
     # ================= Inventory Summary =================
     ws_sum.write('A109', inventory_title, fmt_title)
     ws_sum.write_row('A110', ['Metric', 'Value'], fmt_th)
@@ -706,7 +749,7 @@ def excel_unified_summary(request):
     ws_sum.write(f'A{row}', 'Opening Stock (Next)', fmt_td)
     ws_sum.write_number(f'B{row}', closing_stock, fmt_num); row += 1
 
-
+   
     if inv["rows"]:
         first, last = 2, len(inv["rows"]) + 1
         categories = f'=Stock_Opname!$A${first}:$A${last}'
@@ -753,16 +796,112 @@ def excel_unified_summary(request):
         scale=(2.07, 1.32),
         chart_type='area' if mode == "range" else 'column',
         stacked=True if mode == "range" else False,
-        legend_pos='bottom',
+        legend_pos='top',
         y_axis={'name': 'Production / Selling'},
         y2_axis={'name': 'Stock Opname'}
     )
-
 
     # Lebarkan kolom summary
     ws_sum.set_column('A:A', 21)
     ws_sum.set_column('B:B', 25)
 
+   # ================= Fueling Summary =================
+    ws_sum.write('A131', fuel_title, fmt_title)
+    row = 133
+
+    # ambil baris terakhir data fueling (Data_Fueling!B)
+    last_row = len(fuel["daily"]["series"]) + 1
+
+    # ---------------- Total Fuel ----------------
+    ws_sum.write(f'A{row}', 'Total Fuel', fmt_td)
+    ws_sum.write_formula(
+        f'B{row}',
+        f'=SUM(Data_Fueling!$B$2:$B${last_row})',
+        fmt_num
+    )
+    row += 2
+
+
+    # ================= Fuel by Category =================
+    ws_sum.write(f'A{row}', 'Fuel by Category', fmt_title)
+    row += 1
+
+    # header tabel
+    ws_sum.write_row(f'A{row}', ['Category', 'Total Volume'], fmt_th)
+    row += 1
+
+    category_start_row = row
+
+    # isi tabel kategori
+    for c in fuel["category"]["series"]:
+        ws_sum.write(f'A{row}', c['category'], fmt_td)
+        ws_sum.write_number(f'B{row}', c['volume'], fmt_num)
+        row += 1
+
+    # category_end_row = row - 1
+    category_end_row = 131
+    trend_chart_row = category_end_row + 2
+
+    # ================= Fuel by Category Chart =================
+    # chart_category = workbook.add_chart({'type': 'bar'})
+
+    # chart_category.add_series({
+    #     'name': 'Fuel Volume',
+    #     'categories': f"=Summary!$A${category_start_row}:$A${category_end_row}",
+    #     'values':     f"=Summary!$B${category_start_row}:$B${category_end_row}",
+    #     'data_labels': {'value': True},
+    #     'fill': {'color': '#bddddc'},
+    # })
+
+    # chart_category.set_title({'name': 'Fuel by Category'})
+    # chart_category.set_x_axis({'name': 'Volume'})
+    # chart_category.set_y_axis({'reverse': True})
+    # chart_category.set_legend({'none': True})
+    # chart_category.set_style(10)
+
+    # ws_sum.insert_chart(
+    #     f'D{category_start_row}',
+    #     chart_category,
+    #     {'x_scale': 1.4, 'y_scale': 1.3}
+    # )
+
+
+    # ================= Fuel Trend by Date Chart =================
+    chart_type = 'column' if mode == "range" else 'column'
+    chart_date = workbook.add_chart({'type': chart_type})
+
+    chart_date.add_series({
+        'name': 'Fuel Volume',
+        'categories': f'=Data_Fueling!$A$2:$A${last_row}',
+        'values':     f'=Data_Fueling!$B$2:$B${last_row}',
+        'fill': {'color': '#9cc3c1', 'transparency': 20},
+        'smooth': True if chart_type == 'column' else False,
+    })
+
+    chart_date.set_title({'name': 'Fuel Consumption'})
+    chart_date.set_x_axis({
+        'name': 'Date',
+        'num_font': {'rotation': 45, 'bold': True, 'size': 10},
+    })
+    chart_date.set_y_axis({'name': 'Volume'})
+    chart_date.set_legend({'none': True})
+    chart_date.set_style(10)
+
+    # posisi: DI BAWAH chart category
+    ws_sum.insert_chart(
+        # f'D{category_end_row + 18}',
+        f'D{trend_chart_row}',
+        chart_date,
+        {'x_scale': 2.07, 'y_scale': 1.32}  
+    )
+
+
+    # ================= Column Width =================
+    ws_sum.set_column('A:A', 21)
+    ws_sum.set_column('B:B', 25)
+
+
+  
     # Close workbook
     workbook.close()
     output.seek(0)
@@ -789,6 +928,7 @@ def pdf_unified_summary(request):
         sell    = fetch_selling(date_start, date_end)
         barging = fetch_barging(date_start, date_end)
         inv     = fetch_inventory_balance(date_start, date_end)
+        fuel    = fetch_fueling_to_date(date_start, date_end)
         summary = fetch_summary_to_date(date_end)
     elif mode == "year" and year:
         year = int(year)
@@ -798,6 +938,7 @@ def pdf_unified_summary(request):
         sell    = fetch_selling_year(year)
         barging = fetch_barging_year(year)
         inv     = fetch_inventory_balance_year(year)
+        fuel    = fetch_fueling_year(year)
         summary = fetch_summary_to_year(year)
     else:
         return HttpResponseBadRequest("Invalid mode or missing parameters")
@@ -854,114 +995,6 @@ def pdf_unified_summary(request):
         step = max(1, round(max_val / (n_ticks - 1), -2))
         vmax = ceil(max_val / step) * step
         return (0, vmax, step)
-
-    def add_section(title, metrics, rows, categories, series, line_series=None, bar_color="#add2bb"):
-        elements.append(Paragraph(title, styles['Heading2']))
-        elements.append(Spacer(1, 6))
-
-        # Metrics table
-        table = Table(metrics, colWidths=[150, 150])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
-            # Kolom Metric rata kiri
-            ('ALIGN', (0,0), (0,-1), 'LEFT'),
-            # Kolom Value rata kanan
-            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
-            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-        ]))
-        elements.append(table)
-        elements.append(Spacer(1, 10))
-
-        if rows:
-            d = Drawing(700, 300)
-
-            # --- Sumbu Y dihitung dari actual + plan (tidak ada scaling) ---
-            combined = list(series)
-            if line_series:
-                combined.append([safe_float(v) for v in line_series])
-            vmin, vmax, vstep = auto_scale_axis(combined)
-
-            # === Bar Chart (Actual) ===
-            bc = VerticalBarChart()
-            bc.x, bc.y = 50, 50
-            bc.height, bc.width = 200, 550
-            bc.data = series
-            bc.categoryAxis.categoryNames = [str(c) for c in categories]
-            bc.barWidth = 12
-
-           # rapikan label tanggal biar tidak numpuk
-            bc.categoryAxis.labels.angle = 45  
-            bc.categoryAxis.labels.boxAnchor = 'ne'   
-            bc.categoryAxis.labels.dy = -4       
-            bc.categoryAxis.labels.fontSize = 9      
-           
-
-            # Style axis
-            bc.valueAxis.valueMin  = vmin
-            bc.valueAxis.valueMax  = vmax
-            bc.valueAxis.valueStep = vstep
-            bc.valueAxis.strokeColor = HexColor("#9ca3af")
-            bc.valueAxis.labels.fillColor = HexColor("#6b7280")
-            bc.categoryAxis.strokeColor = HexColor("#9ca3af")
-            bc.categoryAxis.labels.fillColor = HexColor("#676a6e")
-            bc.categoryAxis.visibleTicks = 0
-
-            # warna bar (support multi-series)
-            bar_colors = [bar_color] if isinstance(bar_color, str) else bar_color
-            for i, c in enumerate(bar_colors):
-                if i < len(bc.bars):
-                    bc.bars[i].fillColor = HexColor(c)
-                    bc.bars[i].strokeColor = HexColor(c)   # triknya: samakan warna stroke dengan fill
-                    bc.bars[i].strokeWidth = 0             # pastikan garis pinggir 0
-            d.add(bc)
-                        
-            # === Line Chart (Plan) – tanpa scaling, pakai sumbu yang sama ===
-            if line_series:
-                lp = LinePlot()
-                lp.x, lp.y = 50, 50
-                lp.height, lp.width = 200, 550
-
-                # data X numerik 0..N-1 agar segaris dengan kategori bar
-                lp.data = [list(enumerate([safe_float(v) for v in line_series]))]
-
-
-                # definisikan axis numeric dan samakan rentang Y
-                lp.xValueAxis = XValueAxis()
-                lp.yValueAxis = YValueAxis()
-                lp.xValueAxis.valueMin  = 0
-                lp.xValueAxis.valueMax  = max(1, len(categories)-1)
-                lp.xValueAxis.valueStep = max(1, len(categories)//10)
-                lp.yValueAxis.valueMin  = vmin
-                lp.yValueAxis.valueMax  = vmax
-                lp.yValueAxis.valueStep = vstep
-
-                # >>> matikan label & ticks di X axis (biar 0-28 hilang) <<<
-                lp.xValueAxis.labels.fontSize = 0       # sembunyikan tulisan
-                lp.xValueAxis.visibleTicks = 0          # sembunyikan garis tick
-                # lp.xValueAxis.strokeColor = colors.white  # bikin invisible
-                lp.xValueAxis.strokeColor = HexColor("#9ca3af")  # abu-abu halu
-
-                # Y axis tetap jalan
-                lp.yValueAxis.valueMin  = vmin
-                lp.yValueAxis.valueMax  = vmax
-                lp.yValueAxis.valueStep = vstep
-                lp.yValueAxis.strokeColor = HexColor("#9ca3af")
-                lp.yValueAxis.labels.fillColor = HexColor("#6b7280")
-
-                lp.lines[0].strokeWidth = 0   # garis hilang
-                lp.lines[0].strokeColor = None  # tidak ada warna garis    
-                # marker tetap tampil
-                lp.lines[0].symbol = makeMarker('Circle')
-                lp.lines[0].symbol.fillColor = HexColor("#ef4444")   # warna marker isi
-                lp.lines[0].symbol.strokeColor = HexColor("#3A3939") # warna outline marker
-                lp.lines[0].symbol.size = 4                          # ukuran marker
-
-                d.add(lp)
-
-            elements.append(d)
-
-        elements.append(PageBreak())
 
     def add_section_with_summary(title, metrics, rows, categories, series, line_series=None, breakdown=None, bar_color="#1f2937"):
         elements.append(Paragraph(title, styles['Heading2']))
@@ -1277,6 +1310,91 @@ def pdf_unified_summary(request):
 
         elements.append(PageBreak()) 
 
+    def add_fuel_section( title,metrics,rows, categories, series, breakdown,line_series=None, bar_color="#1f2937"):
+        elements.append(Paragraph(title, styles['Heading2']))
+        elements.append(Spacer(1, 6))
+
+        # === Summary Table ===
+        table = Table(metrics, colWidths=[200, 150])
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            ('ALIGN', (0,0), (0,-1), 'LEFT'),
+            ('ALIGN', (1,0), (1,-1), 'RIGHT'),
+            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ]))
+        elements.append(table)
+        elements.append(Spacer(1, 10))
+
+        # === Chart (PAKAI LOGIKA YANG SAMA) ===
+        if rows:
+            d = Drawing(700, 300)
+
+            combined = list(series)
+            vmin, vmax, vstep = auto_scale_axis(combined)
+
+            bc = VerticalBarChart()
+            bc.x, bc.y = 50, 50
+            bc.height, bc.width = 200, 550
+            bc.data = series
+            bc.categoryAxis.categoryNames = categories
+            bc.barWidth = 12
+
+            bc.categoryAxis.labels.angle = 45
+            bc.categoryAxis.labels.fontSize = 9
+            bc.categoryAxis.labels.fillColor = HexColor("#6b7280")
+
+            bc.valueAxis.valueMin = vmin
+            bc.valueAxis.valueMax = vmax
+            bc.valueAxis.valueStep = vstep
+
+            bc.bars[0].fillColor = HexColor(bar_color)
+            
+            bc.valueAxis.strokeColor = HexColor("#9ca3af")
+            bc.valueAxis.labels.fillColor = HexColor("#6b7280")
+            bc.categoryAxis.strokeColor = HexColor("#9ca3af")
+            bc.categoryAxis.labels.fillColor = HexColor("#676a6e")
+
+
+            # hilangkan outline (stroke) cukup di level series
+            bc.bars[0].strokeColor = None
+            bc.bars[0].strokeWidth = 0
+            bc.bars[1].strokeColor = None
+            bc.bars[1].strokeWidth = 0
+            d.add(bc)
+
+            elements.append(d)
+
+        # === Breakdown Fuel (KHUSUS) ===
+        if breakdown and breakdown[0]:
+            elements.append(Spacer(1, 8))
+            elements.append(Paragraph(
+                "Fuel Consumption by Category",
+                styles['Heading5']
+            ))
+            elements.append(Spacer(1, 4))
+
+            col_count = len(breakdown[0])
+
+            col_width = min(70, 680 / col_count)
+
+            btable = Table(
+                breakdown,
+                colWidths=[col_width] * col_count
+            )
+
+            btable.setStyle(TableStyle([
+                ('GRID', (0,0), (-1,-1), 0.4, colors.black),
+                ('BACKGROUND', (0,0), (-1,0), colors.whitesmoke),
+                ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0,0), (-1,-1), 8),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 2),
+                ('TOPPADDING', (0,0), (-1,-1), 2),
+                ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+            ]))
+
+            elements.append(btable)
+
 
    # === Summary Section ===
     summary_title = Paragraph("Project Summary To-Date", styles['Heading4'])
@@ -1453,6 +1571,7 @@ def pdf_unified_summary(request):
         selling_title   = f"Selling by Period (Range: {date_start} → {date_end})"
         barging_title   = f"Barging by Period (Range: {date_start} → {date_end})"
         inventory_title = f"Inventory by Period (Range: {date_start} → {date_end})"
+        fuel_title      = f"Fuel Consumption by Period (Range: {date_start} → {date_end})"
     elif mode == "year":
         mining_title    = f"Mining by Period (Year: {year})"
         quality_title   = f"Material Type by Period (Year: {year})"
@@ -1460,6 +1579,7 @@ def pdf_unified_summary(request):
         selling_title   = f"Selling by Period (Year: {year})"
         barging_title   = f"Barging by Period (Year: {year})"
         inventory_title = f"Inventory by Period (Year: {year})"
+        fuel_title      = f"Fuel Consumption by Period (Year: {year})"
     else:
         mining_title    = "Mining by Period"
         quality_title   = "Material Type by Period"
@@ -1467,6 +1587,7 @@ def pdf_unified_summary(request):
         selling_title   = "Selling by Period"
         barging_title   = "Barging by Period"
         inventory_title = "Inventory by Period"
+        fuel_title      = "Fuel Consumption by Period"
 
 
     # Mining pakai summary + breakdown
@@ -1570,7 +1691,7 @@ def pdf_unified_summary(request):
         elements.append(tbl2)
         elements.append(Spacer(1, 10))
 
-     # === Page break BEFORE selling ===
+    # === Page break BEFORE selling ===
     elements.append(PageBreak())
 
 
@@ -1631,10 +1752,8 @@ def pdf_unified_summary(request):
         # [str(r['dt'].day).zfill(2) for r in inv["rows"]],
         [str(parse_label(r['dt'])).zfill(2) for r in inv["rows"]],
         barging_series,
-        line_series=None,      # ⬅ No line
+        line_series=None, 
     )
-
-    
 
     # === Inventory Section ===
     inv_sum = inv["summary"]
@@ -1652,7 +1771,6 @@ def pdf_unified_summary(request):
         [safe_float(r.get("total_out")) for r in inv["rows"]],
     ]
 
-
     add_inventory_section(
         inventory_title,
         inv_metrics,
@@ -1663,16 +1781,44 @@ def pdf_unified_summary(request):
         line_series=None  # ⬅ Hilangkan line
     )
 
+    # === Fuel Consumption Section === 
+    fuel_metrics = [
+        ["Metric", "Value"],
+        ["Total Fuel", f"{safe_float(fuel['daily']['total']):,.2f}"],
+    ]
+
+    # Chart data
+    x_labels = [
+        r["date"].strftime("%d") if hasattr(r["date"], "strftime")
+        else str(r["date"])[-2:]
+        for r in fuel["daily"]["series"]
+    ]
+
+    bar_series = [
+        [safe_float(r["volume"]) for r in fuel["daily"]["series"]]
+    ]
+
+    # Breakdown Fuel (DATA ONLY — ikut mining)
+    category_series = fuel["category"]["series"]
+
+    add_fuel_section(
+        fuel_title,
+        fuel_metrics,
+        fuel["daily"]["series"],
+        x_labels,
+        bar_series,
+        breakdown=[
+            [f"{r['category']}" for r in category_series],
+            [f"{safe_float(r['volume']):,.0f}" for r in category_series],
+        ],
+        bar_color="#7c91a2",
+        line_series=None, 
+    )
 
     # === Build PDF ===
     doc.build(elements)
     pdf = buffer.getvalue()
     buffer.close()
-
-    # response = HttpResponse(content_type="application/pdf")
-    # response['Content-Disposition'] = 'attachment; filename="KQMS-summary.pdf"'
-    # response.write(pdf)
-    # return response
 
     response = HttpResponse(content_type="application/pdf")
     response['Content-Disposition'] = 'inline; filename="KQMS-summary.pdf"'  # selalu preview

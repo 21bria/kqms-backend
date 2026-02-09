@@ -181,8 +181,7 @@
                                         <input type="hidden" name="id" id="id">
                                         <td>
                                             <div>
-                                                <input type="text" name="date" id="date" class="form-control text-black"
-                                                    data-row="0">
+                                                <input type="date" name="date_edit" id="date_edit" class="form-control text-black" placeholder="YYYY-MM-DD">
                                             </div>
                                         </td>
                                         <td>
@@ -369,7 +368,7 @@
         /* Update Data*/
         $('#updateButton').click(function () {
             var id = $('#id').val();
-            var date = $('#date').val();
+            var date = $('#date_edit').val();
             var shift = $('#shift').val();
             var category = $('#category').val();
             var start_time = $('#start_time').val();
@@ -615,7 +614,7 @@
                     window.HSOverlay.open('#edit-data');
                     // Mengisi formulir dengan data yang diterima
                     $('#id').val(response.id);
-                    $('#date').val(response.date);
+                    $('#date_edit').val(response.date);
                     $('#shift').val(response.shift).trigger('change');
                     $('#category').val(response.category).trigger('change');
                     $('#start_time').val(response.start_time);
