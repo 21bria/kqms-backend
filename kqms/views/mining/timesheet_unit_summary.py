@@ -132,7 +132,7 @@ def summary_hm_unit_kpi(request):
             result.append({
                 "unit"     : r[0],
                 "category" : r[1],
-                "fuel"     : float(r[2] or 0),
+                "fuel"     : round(float(r[2] or 0), 2),
                 # "op"       : float(r[3] or 0),
                 # "st"       : float(r[4] or 0),
                 # "mt"       : float(r[5] or 0),

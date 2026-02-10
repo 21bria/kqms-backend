@@ -43,3 +43,4 @@ from .mine_status_units import *
 from .mine_fuel_consumption import *
 from .mine_weather import *
 from .mine_units import *
+from .mine_fuel_stock import *

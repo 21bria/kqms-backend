@@ -19,6 +19,7 @@ from .import_mines_fuel_consumption import import_mines_fuel_consumption
 from .import_mines_equipments_activity import import_mines_equipments_activity
 from .import_units_activity import import_units_activity
 from .import_time_sheet import hm_timesheet_import_task
+from .import_mines_fuel_transpose import import_mines_fuel_transpose
 
 __all__ = [
     'auto_sync_dome_status_task',
@@ -43,4 +44,5 @@ __all__ = [
     'import_mines_equipments_activity',
     'hm_timesheet_import_task',
     'import_units_activity',
+    'import_mines_fuel_transpose',
     ]
