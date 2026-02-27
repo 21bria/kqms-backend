@@ -79,7 +79,7 @@ class viewUnitLocation(View):
 
 @login_required
 def insert_activity_location(request):
-    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control']
+    allowed_groups = ['superadmin', 'admin-mgoqa', 'data-control','admin-mining']
     if not request.user.groups.filter(name__in=allowed_groups).exists():
         return JsonResponse(
             {'status': 'error', 'message': 'You do not have permission'},
