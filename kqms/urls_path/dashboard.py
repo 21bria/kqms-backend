@@ -59,6 +59,7 @@ urlpatterns = [
 
     # Weather
     path('api/weather/data/', get_data_weather, name='get_data_weather'),
+    path('api/rainfall/data/', get_data_rainfall, name='get_data_rainfall'),
 
     # Selling Dashboard
     path('api/selling-summary/', get_selling_summary, name='get_selling_summary'),
