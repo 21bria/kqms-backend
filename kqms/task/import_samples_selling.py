@@ -13,6 +13,7 @@ from ..models.materials import Material
 from ..models.sample_type import SampleType
 from ..models.sample_method import SampleMethod
 from ..models.selling_code import SellingCode
+from ..models.stock_factories import StockFactories
 
 @shared_task(name='kqms.task.import_samples_selling.import_samples_selling')
 def import_samples_selling(file_path, original_file_name):
@@ -36,6 +37,8 @@ def import_samples_selling(file_path, original_file_name):
         'Shift',
         'Sample_Type',
         'Sampling_Method',
+        'Sampling_Area',
+        'Sampling_Point',
         'Material_Type',
         'Batch_Code',
         'Increments',
@@ -73,6 +76,7 @@ def import_samples_selling(file_path, original_file_name):
     method_dict   = dict(SampleMethod.objects.values_list('sample_method', 'id'))
     type_dict     = dict(SampleType.objects.values_list('type_sample', 'id'))
     code_dict     = dict(SellingCode.objects.values_list('product_code', 'id'))
+    buyer_dict    = dict(StockFactories.objects.values_list('factory_stock', 'id'))
 
     try:
         with transaction.atomic():
@@ -98,7 +102,6 @@ def import_samples_selling(file_path, original_file_name):
                     sample_type     = row.get('Sample_Type')
                     sample_method   = row.get('Sampling_Method')
                     nama_material   = row.get('Material_Type')
-
                     batch_code      = row.get('Batch_Code')
                     increments      = row.get('Increments')
                     fraction        = row.get('Fraction')
@@ -110,7 +113,10 @@ def import_samples_selling(file_path, original_file_name):
                     to_its          = row.get('To_ITS')
                     remark          = row.get('Remark')
                     sampling_desc   = row.get('Sampling_Desc')
+                    code_product    = row.get('Sampling_Point')
+                    factory         = row.get('Sampling_Area')
 
+                   
                     batch_code = None if pd.isna(batch_code) else batch_code
                     increments = 0 if pd.isna(increments) else increments
                     fraction = None if pd.isna(fraction) else fraction
@@ -122,9 +128,14 @@ def import_samples_selling(file_path, original_file_name):
                     remark = None if pd.isna(remark) else remark
                     sampling_desc = None if pd.isna(sampling_desc) else sampling_desc
 
+                    code_product = None if pd.isna(code_product) else code_product
+                    factory      = None if pd.isna(factory) else factory
+
                     id_type     = type_dict.get(sample_type)
                     id_method   = method_dict.get(sample_method)
                     id_material = material_dict.get(nama_material)
+                    id_product  = code_dict.get(code_product)
+                    id_buyer    = code_dict.get(factory)
 
                     if not id_material:
                         raise ValueError(f"Material tidak ditemukan: {nama_material}")
@@ -132,10 +143,12 @@ def import_samples_selling(file_path, original_file_name):
                         raise ValueError(f"Sample_Type tidak ditemukan: {sample_type}")
                     if not id_method:
                         raise ValueError(f"Sampling_Method tidak ditemukan: {sample_method}")
+                    if not id_product:
+                        raise ValueError(f"Product code tidak ditemukan di master SellingCode: {code_product}")
 
                     if sample_type in ['LIS', 'SAS']:
-                        kode_batch = f"{sample_type}{id_material}{batch_code or ''}"
-                        pulp_batch = f"{sample_type}{batch_code or ''}"
+                        kode_batch = f"{sample_type}{id_material}{code_product}{batch_code or ''}"
+                        pulp_batch = f"{sample_type}{code_product}{batch_code or ''}"
                         monitoring_batch = None
                         type_val = sample_type
                     else:
@@ -160,7 +173,8 @@ def import_samples_selling(file_path, original_file_name):
                             id_type_sample=id_type,
                             id_method=id_method,
                             id_material=id_material,
-                            product_code=None,  # sementara kosongkan kalau file ini memang tidak punya product_code
+                            product_code=id_product, 
+                            discharge_area=id_buyer,
                             batch_code=batch_code,
                             increments=increments,
                             fraction=fraction,
