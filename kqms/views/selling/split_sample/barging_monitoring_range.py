@@ -152,11 +152,13 @@ def get_samples_data(typeFilter=None, startDate=None, endDate=None, codeFilter=N
         params.extend(codeFilter)
 
     sql_query += """
-        GROUP BY 
-            t1.date_barge_in,t1.code_lot,t1.barge_code,
-            t2.tonnage_official,t2.ni,t2.co,t2.fe,t2.mgo,t2.sio2,
-            t3.ni_plan,t3.co_plan,t3.fe_plan,t3.mgo_plan,t3.sio2_plan,t2.re_assay,  
-            t4.tonnage_split,t4.ni_split,t4.co_split,t4.fe_split,t4.mgo_split,t4.sio2_split
+       GROUP BY 
+            t1.date_barge_in,
+            t1.code_lot,
+            t1.barge_code,
+            t2.tonnage_official, t2.ni, t2.co, t2.fe, t2.mgo, t2.sio2,
+            t3.ni_plan, t3.co_plan, t3.fe_plan, t3.mgo_plan, t3.sio2_plan, t2.re_assay,
+            t4.tonnage_split, t4.ni_split, t4.co_split, t4.fe_split, t4.mgo_split, t4.sio2_split
         ORDER BY t1.code_lot,t2.re_assay ASC
     """
 
@@ -168,6 +170,7 @@ def get_samples_data(typeFilter=None, startDate=None, endDate=None, codeFilter=N
     # Grouping
     grouped = {}
     for row in sql_data:
+        # print(row["code_lot"], row["barge_code"], row["ni_monitoring"])
         row = {k: clean_value(v) for k,v in row.items()}
         key = (row["code_lot"], row["barge_code"])
         if key not in grouped:

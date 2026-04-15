@@ -28,14 +28,27 @@ def fetch_official_split(ds: str, de: str, material: str = None):
             COALESCE(((SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage END),0)) - t2.sio2) / NULLIF(t2.sio2,0) * 100, 0) AS sio2_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT product_code,
-                   SUM(tonnage) AS tonnage_official,
-                   SUM(ni) AS ni, SUM(fe) AS fe,
-                   SUM(mgo) AS mgo, SUM(sio2) AS sio2,
-                   type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) t2 ON t1.code_lot = t2.product_code
+            SELECT *
+            FROM (
+                SELECT 
+                    product_code,
+                    tonnage AS tonnage_official,
+                    ni,
+                    fe,
+                    mgo,
+                    sio2,
+                    sm,
+                    type_selling,
+                    re_assay,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY product_code, type_selling
+                        ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+                    ) AS rn
+                FROM sellings_official_view
+            ) x
+            WHERE x.rn = 1
+        ) AS t2 
+            ON t1.code_lot = t2.product_code
         WHERE t1.date_barge_out BETWEEN %s AND %s
     """
 
@@ -83,14 +96,27 @@ def fetch_official_split_year(year: int,material: str = None):
             COALESCE(((SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage END),0)) - t2.sio2) / NULLIF(t2.sio2,0) * 100, 0) AS sio2_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT product_code,
-                   SUM(tonnage) AS tonnage_official,
-                   SUM(ni) AS ni, SUM(fe) AS fe,
-                   SUM(mgo) AS mgo, SUM(sio2) AS sio2,
-                   type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) t2 ON t1.code_lot = t2.product_code
+            SELECT *
+            FROM (
+                SELECT 
+                    product_code,
+                    tonnage AS tonnage_official,
+                    ni,
+                    fe,
+                    mgo,
+                    sio2,
+                    sm,
+                    type_selling,
+                    re_assay,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY product_code, type_selling
+                        ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+                    ) AS rn
+                FROM sellings_official_view
+            ) x
+            WHERE x.rn = 1
+        ) AS t2 
+            ON t1.code_lot = t2.product_code
         WHERE EXTRACT(YEAR FROM t1.date_barge_out) = %s
     """
 

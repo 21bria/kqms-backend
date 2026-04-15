@@ -46,7 +46,7 @@ def import_samples_selling(file_path, original_file_name):
         'Sample_WeightKg',
         'Primer_RawKg',
         'Duplicat_RawKg',
-        'To_ITS',
+        'To_Lab',
     ]
 
     missing = [col for col in required_columns if col not in df.columns]
@@ -110,7 +110,7 @@ def import_samples_selling(file_path, original_file_name):
                     sample_weight   = row.get('Sample_WeightKg')
                     primer_raw      = row.get('Primer_RawKg')
                     duplicate_raw   = row.get('Duplicat_RawKg')
-                    to_its          = row.get('To_ITS')
+                    to_lab          = row.get('To_Lab')
                     remark          = row.get('Remark')
                     sampling_desc   = row.get('Sampling_Desc')
                     code_product    = row.get('Sampling_Point')
@@ -124,7 +124,7 @@ def import_samples_selling(file_path, original_file_name):
                     sample_weight = 0 if pd.isna(sample_weight) else sample_weight
                     primer_raw = 0 if pd.isna(primer_raw) else primer_raw
                     duplicate_raw = 0 if pd.isna(duplicate_raw) else duplicate_raw
-                    to_its = None if pd.isna(to_its) else to_its
+                    to_lab = None if pd.isna(to_lab) else to_lab
                     remark = None if pd.isna(remark) else remark
                     sampling_desc = None if pd.isna(sampling_desc) else sampling_desc
 
@@ -184,7 +184,7 @@ def import_samples_selling(file_path, original_file_name):
                             remark=remark,
                             primer_raw=primer_raw,
                             duplicate_raw=duplicate_raw,
-                            to_its=to_its,
+                            to_its=to_lab,
                             unit_truck=sample_type,
                             type=type_val,
                             kode_batch=kode_batch,

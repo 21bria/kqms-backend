@@ -134,17 +134,27 @@ def splitOfficial(request):
                 - t2.sio2) / NULLIF(t2.sio2, 0) * 100, 0) AS sio2_diff
         FROM details_selling_barge_split AS t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(ni), 0) AS ni,
-                COALESCE(SUM(fe), 0) AS fe,
-                COALESCE(SUM(mgo), 0) AS mgo,
-                COALESCE(SUM(sio2), 0) AS sio2,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+            SELECT *
+            FROM (
+                SELECT 
+                    product_code,
+                    tonnage AS tonnage_official,
+                    ni,
+                    fe,
+                    mgo,
+                    sio2,
+                    sm,
+                    type_selling,
+                    re_assay,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY product_code, type_selling
+                        ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+                    ) AS rn
+                FROM sellings_official_view
+            ) x
+            WHERE x.rn = 1
+        ) AS t2 
+            ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 

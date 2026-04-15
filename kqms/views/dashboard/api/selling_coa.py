@@ -37,14 +37,28 @@ def niChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.ni) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.ni IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.ni) / NULLIF(t2.ni, 0) * 100, 0) AS ni_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(ni), 0) AS ni,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+		    SELECT 
+		        product_code,
+		        tonnage AS tonnage_official,
+		        ni,
+		        type_selling,
+		        re_assay
+		    FROM (
+		        SELECT 
+		            id,
+		            product_code,
+		            tonnage,
+		            ni,
+		            type_selling,
+		            re_assay,
+		            ROW_NUMBER() OVER (
+		                PARTITION BY product_code, type_selling
+		                ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+		            ) AS rn
+		        FROM sellings_official_view
+		    ) z
+		    WHERE rn = 1
+		) AS t2 ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 
@@ -142,14 +156,28 @@ def feChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.fe) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.fe IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.fe) / NULLIF(t2.fe, 0) * 100, 0) AS fe_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(fe), 0) AS fe,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+		    SELECT 
+		        product_code,
+		        tonnage AS tonnage_official,
+		        fe,
+		        type_selling,
+		        re_assay
+		    FROM (
+		        SELECT 
+		            id,
+		            product_code,
+		            tonnage,
+		            fe,
+		            type_selling,
+		            re_assay,
+		            ROW_NUMBER() OVER (
+		                PARTITION BY product_code, type_selling
+		                ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+		            ) AS rn
+		        FROM sellings_official_view
+		    ) z
+		    WHERE rn = 1
+		) AS t2 ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 
@@ -247,14 +275,28 @@ def mgoChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.mgo) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.mgo IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.mgo) / NULLIF(t2.mgo, 0) * 100, 0) AS mgo_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(mgo), 0) AS mgo,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+		    SELECT 
+		        product_code,
+		        tonnage AS tonnage_official,
+		        mgo,
+		        type_selling,
+		        re_assay
+		    FROM (
+		        SELECT 
+		            id,
+		            product_code,
+		            tonnage,
+		            mgo,
+		            type_selling,
+		            re_assay,
+		            ROW_NUMBER() OVER (
+		                PARTITION BY product_code, type_selling
+		                ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+		            ) AS rn
+		        FROM sellings_official_view
+		    ) z
+		    WHERE rn = 1
+		) AS t2 ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 
@@ -352,14 +394,28 @@ def sio2ChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.sio2) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sio2 IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.sio2) / NULLIF(t2.sio2, 0) * 100, 0) AS sio2_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(sio2), 0) AS sio2,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+		    SELECT 
+		        product_code,
+		        tonnage AS tonnage_official,
+		        sio2,
+		        type_selling,
+		        re_assay
+		    FROM (
+		        SELECT 
+		            id,
+		            product_code,
+		            tonnage,
+		            ni,
+		            type_selling,
+		            re_assay,
+		            ROW_NUMBER() OVER (
+		                PARTITION BY product_code, type_selling
+		                ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+		            ) AS rn
+		        FROM sellings_official_view
+		    ) z
+		    WHERE rn = 1
+		) AS t2 ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 
@@ -457,14 +513,28 @@ def smChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.sm) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sm IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.sm) / NULLIF(t2.sm, 0) * 100, 0) AS sm_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(sm), 0) AS sm,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+		    SELECT 
+		        product_code,
+		        tonnage AS tonnage_official,
+		        sm,
+		        type_selling,
+		        re_assay
+		    FROM (
+		        SELECT 
+		            id,
+		            product_code,
+		            tonnage,
+		            sm,
+		            type_selling,
+		            re_assay,
+		            ROW_NUMBER() OVER (
+		                PARTITION BY product_code, type_selling
+		                ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+		            ) AS rn
+		        FROM sellings_official_view
+		    ) z
+		    WHERE rn = 1
+		) AS t2 ON t1.code_lot = t2.product_codee
         WHERE 1=1
     """
 
@@ -570,18 +640,27 @@ def allChartCoa(request):
             COALESCE(((SUM(t1.tonnage * t1.sm) / NULLIF(SUM(CASE WHEN t1.sample_number IS NOT NULL AND t1.sm IS NOT NULL THEN t1.tonnage ELSE 0 END), 0)) - t2.sm) / NULLIF(t2.sm, 0) * 100, 0) AS sm_diff
         FROM details_selling_barge_split t1
         LEFT JOIN (
-            SELECT 
-                product_code,
-                COALESCE(SUM(tonnage), 0) AS tonnage_official,
-                COALESCE(SUM(ni), 0) AS ni,
-                COALESCE(SUM(fe), 0) AS fe,
-                COALESCE(SUM(mgo), 0) AS mgo,
-                COALESCE(SUM(sio2), 0) AS sio2,
-                COALESCE(SUM(sm), 0) AS sm,
-                type_selling
-            FROM sellings_official_view
-            GROUP BY product_code, type_selling
-        ) AS t2 ON t1.code_lot = t2.product_code
+            SELECT *
+            FROM (
+                SELECT 
+                    product_code,
+                    tonnage AS tonnage_official,
+                    ni,
+                    fe,
+                    mgo,
+                    sio2,
+                    sm,
+                    type_selling,
+                    re_assay,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY product_code, type_selling
+                        ORDER BY COALESCE(re_assay, 0) DESC, id DESC
+                    ) AS rn
+                FROM sellings_official_view
+            ) x
+            WHERE x.rn = 1
+        ) AS t2 
+            ON t1.code_lot = t2.product_code
         WHERE 1=1
     """
 
